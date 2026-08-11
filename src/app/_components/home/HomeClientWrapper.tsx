@@ -78,10 +78,10 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             exit={{ opacity: 0 }}
             animate={
               scene === 'transitioning' 
-                ? { scale: 0.92, opacity: 0, filter: 'blur(10px)', y: -40 } 
-                : { scale: 1, opacity: 1, filter: 'blur(0px)', y: 0 }
+                ? { scale: 0.96, opacity: 0, filter: 'blur(8px)' } 
+                : { scale: 1, opacity: 1, filter: 'blur(0px)' }
             }
-            transition={{ duration: 1.2, ease: EASING.inOut }}
+            transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
           >
             {/* Top Horizontal Black Band */}
             <div className="absolute top-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
@@ -90,38 +90,25 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             <div className="absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
 
             {/* Interactive Mascot Video Motion State Engine */}
-            <div className="absolute inset-0 w-full h-full">
+            <div className="absolute inset-0 w-full h-full cursor-pointer" onClick={handleShopClick}>
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
-            <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
+            <div 
+              onClick={handleShopClick}
+              className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-auto cursor-pointer pt-safe pb-safe"
+            >
               {/* Header Navigation: Top Left Logo Forced to Far Left */}
-              <div className="flex justify-between items-center w-full pointer-events-auto pt-2">
+              <div className="flex justify-between items-center w-full pt-2">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
-                  className="absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:right-auto top-10 md:top-12 z-20 flex items-center gap-2.5 pointer-events-auto"
+                  className="absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:right-auto top-10 md:top-12 z-20 flex items-center gap-2.5"
                 >
                   <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-9 h-9 md:w-12 md:h-12 object-contain" priority unoptimized />
                   <span className="hidden sm:inline-block text-[10px] font-mono tracking-widest uppercase text-ink/50 border-l border-ink/10 pl-2.5">
                     STUDIO
                   </span>
-                </motion.div>
-
-                {/* Mobile Header Quick Action Pill */}
-                <motion.div
-                  className="flex md:hidden items-center absolute right-4 top-10 pointer-events-auto"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}
-                >
-                  <button
-                    onClick={handleShopClick}
-                    className="no-drag flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-white/90 text-ink px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-sm active:scale-95 transition-all cursor-pointer"
-                  >
-                    <span>Skip Intro</span>
-                    <ArrowRight size={13} className="text-[#8b5cf6]" />
-                  </button>
                 </motion.div>
               </div>
 
@@ -298,13 +285,12 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
         {(scene === 'archive' || scene === 'transitioning') && (
           <motion.div
             className="w-full min-h-screen bg-white relative z-40"
-            initial={isReturningVisitor ? false : { opacity: 0, scale: 0.95, y: 60 }}
+            initial={isReturningVisitor ? false : { opacity: 0, y: 20 }}
             animate={{ 
               opacity: scene === 'archive' || scene === 'transitioning' ? 1 : 0,
-              scale: scene === 'archive' || scene === 'transitioning' ? 1 : 0.95,
-              y: scene === 'archive' || scene === 'transitioning' ? 0 : 60 
+              y: scene === 'archive' || scene === 'transitioning' ? 0 : 20 
             }}
-            transition={{ duration: isReturningVisitor ? 0.3 : 1.2, ease: EASING.inOut, delay: isReturningVisitor ? 0 : 0.1 }}
+            transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.05 }}
           >
              <div className="mobile-momentum">
                 <HeroSequence dict={dict} isReturningVisitor={isReturningVisitor} scene={scene} />
