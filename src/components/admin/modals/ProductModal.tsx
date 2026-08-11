@@ -887,28 +887,28 @@ export function ProductModal(props: any) {
                         {(productForm.measurements?.length || 0) > 0 && (
                           <div className="space-y-2 overflow-x-auto">
                             {productForm.category === 'celana' ? (
-                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_48px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[530px]">
+                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[530px]">
                                 <span>Size</span>
                                 <span>Waist</span>
                                 <span>Length</span>
                                 <span>Thigh</span>
                                 <span>Hip</span>
                                 <span>Leg</span>
-                                <span></span>
+                                <span className="text-center font-bold text-rose/70">Hapus</span>
                               </div>
                             ) : (
-                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_48px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[510px]">
+                              <div className="grid grid-cols-[1.2fr_1fr_1fr_1fr_1fr_40px] gap-2 text-[9px] uppercase tracking-wider text-gray-400 font-semibold px-1 min-w-[510px]">
                                 <span>Size</span>
                                 <span>Chest</span>
                                 <span>Length</span>
                                 <span>Shoulder</span>
                                 <span>Sleeve</span>
-                                <span></span>
+                                <span className="text-center font-bold text-rose/70">Hapus</span>
                               </div>
                             )}
                             
                             {productForm.measurements?.map((m, idx) => (
-                              <div key={idx} className={cn("grid gap-2 items-center min-w-[510px]", productForm.category === 'celana' ? "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_48px] min-w-[530px]" : "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_48px]")}>
+                              <div key={idx} className={cn("grid gap-2 items-center min-w-[510px]", productForm.category === 'celana' ? "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_1fr_40px] min-w-[530px]" : "grid-cols-[1.2fr_1fr_1fr_1fr_1fr_40px]")}>
                                 <input
                                   type="text"
                                   placeholder="e.g. S / 32"
@@ -1028,13 +1028,13 @@ export function ProductModal(props: any) {
                                 )}
                                 <button
                                   type="button"
-                                  title={`Hapus ukuran "${m.size || 'ini'}" dari tabel dan sinkronkan hapus dari pilihan ukuran di website shop`}
+                                  title={`Hapus ukuran "${m.size || 'ini'}" dari tabel & varian shop`}
                                   onClick={() => {
                                     const deletedSizeObj = productForm.measurements[idx];
                                     const deletedSizeStr = deletedSizeObj?.size ? deletedSizeObj.size.trim().toUpperCase() : '';
                                     const newM = productForm.measurements.filter((_, i) => i !== idx);
                                     
-                                    // Auto-sync: Also remove exact matching size from productForm.variants so it disappears from the shop website!
+                                    // Auto-sync: Also remove exact matching size from productForm.variants so it disappears from shop
                                     let newV = productForm.variants || [];
                                     if (deletedSizeStr) {
                                       newV = newV.filter(v => {
@@ -1045,69 +1045,103 @@ export function ProductModal(props: any) {
                                     }
                                     setProductForm({ ...productForm, measurements: newM, variants: newV });
                                   }}
-                                  className="p-2 bg-rose/10 hover:bg-rose text-rose hover:text-white border border-rose/30 rounded-lg transition-all duration-200 flex items-center justify-center shadow-2xs group shrink-0 cursor-pointer"
+                                  className="p-1.5 bg-rose/10 hover:bg-rose text-rose hover:text-white border border-rose/30 rounded-lg transition-all duration-200 flex items-center justify-center shadow-2xs group shrink-0 cursor-pointer w-full h-8"
                                 >
-                                  <Trash2 size={16} className="transition-transform group-hover:scale-110 shrink-0" />
+                                  <Trash2 size={15} className="transition-transform group-hover:scale-110 shrink-0" />
                                 </button>
                               </div>
                             ))}
                           </div>
                         )}
                         <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
-                          <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mr-1">Quick Add Row:</span>
+                          <span className="text-[9px] uppercase tracking-wider text-gray-400 font-bold mr-1">Quick Add / Remove Row:</span>
                           {productForm.category === 'celana' 
                             ? [['28','76','98','62','100','38'],['30','81','100','64','104','40'],['32','86','102','66','108','42'],['34','91','104','69','113','44'],['36','96','106','72','118','46'],['38','101','108','75','123','48'],['40','106','110','78','128','50'],['ALL SIZE','86','102','66','108','42']].map(([sz, w, l, th, hp, leg]) => {
-                                const exists = productForm.measurements?.some(m => m.size === sz || m.size.startsWith(sz));
+                                const fullSz = `${sz}${sz === '28' ? ' (S)' : sz === '30' ? ' (M)' : sz === '32' ? ' (L)' : sz === '34' ? ' (XL)' : sz === '36' ? ' (XXL)' : sz === '38' ? ' (3XL)' : sz === '40' ? ' (4XL)' : ''}`;
+                                const existsIndex = productForm.measurements?.findIndex(m => m.size === sz || m.size === fullSz || m.size.startsWith(sz));
+                                const exists = existsIndex !== undefined && existsIndex >= 0;
                                 return (
                                   <button
                                     key={sz}
                                     type="button"
-                                    onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: `${sz}${sz === '28' ? ' (S)' : sz === '30' ? ' (M)' : sz === '32' ? ' (L)' : sz === '34' ? ' (XL)' : sz === '36' ? ' (XXL)' : sz === '38' ? ' (3XL)' : sz === '40' ? ' (4XL)' : ''}`, waist: w, length: l, thigh: th, hip: hp, leg_opening: leg }] })}
+                                    title={exists ? `Klik untuk HAPUS ukuran ${sz}` : `Klik untuk TAMBAH ukuran ${sz}`}
+                                    onClick={() => {
+                                      if (exists) {
+                                        const newM = productForm.measurements.filter((_, i) => i !== existsIndex);
+                                        setProductForm({ ...productForm, measurements: newM });
+                                      } else {
+                                        setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: fullSz, waist: w, length: l, thigh: th, hip: hp, leg_opening: leg }] });
+                                      }
+                                    }}
                                     className={cn(
-                                      "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs",
+                                      "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs flex items-center gap-1 cursor-pointer",
                                       exists
-                                        ? "bg-rose/5 text-rose border-rose/30 hover:bg-rose/10"
+                                        ? "bg-rose/10 text-rose border-rose/40 font-bold hover:bg-rose hover:text-white"
                                         : "bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5"
                                     )}
                                   >
-                                    + {sz}
+                                    <span>{exists ? '✓' : '+'}</span>
+                                    <span>{sz}</span>
+                                    {exists && <span className="text-[8px] opacity-75">✕</span>}
                                   </button>
                                 );
                               })
                             : (productForm.category === 'hoodie' || productForm.category === 'outer' || productForm.category === 'jaket')
                               ? [['S','56','66','54','60'],['M','58','68','56','61'],['L','60','70','58','62'],['XL','63','72','60','63'],['XXL','66','74','62','64'],['3XL','69','76','64','65'],['4XL','72','78','66','66'],['5XL','75','80','68','67'],['ALL SIZE','62','71','59','63']].map(([sz, ch, ln, sh, sl]) => {
-                                  const exists = productForm.measurements?.some(m => m.size === sz);
+                                  const existsIndex = productForm.measurements?.findIndex(m => m.size === sz);
+                                  const exists = existsIndex !== undefined && existsIndex >= 0;
                                   return (
                                     <button
                                       key={sz}
                                       type="button"
-                                      onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] })}
+                                      title={exists ? `Klik untuk HAPUS ukuran ${sz}` : `Klik untuk TAMBAH ukuran ${sz}`}
+                                      onClick={() => {
+                                        if (exists) {
+                                          const newM = productForm.measurements.filter((_, i) => i !== existsIndex);
+                                          setProductForm({ ...productForm, measurements: newM });
+                                        } else {
+                                          setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] });
+                                        }
+                                      }}
                                       className={cn(
-                                        "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs",
+                                        "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs flex items-center gap-1 cursor-pointer",
                                         exists
-                                          ? "bg-rose/5 text-rose border-rose/30 hover:bg-rose/10"
+                                          ? "bg-rose/10 text-rose border-rose/40 font-bold hover:bg-rose hover:text-white"
                                           : "bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5"
                                       )}
                                     >
-                                      + {sz}
+                                      <span>{exists ? '✓' : '+'}</span>
+                                      <span>{sz}</span>
+                                      {exists && <span className="text-[8px] opacity-75">✕</span>}
                                     </button>
                                   );
                                 })
                               : [['S','52','68','46','22'],['M','54','70','48','23'],['L','56','72','50','24'],['XL','58','74','52','25'],['XXL','61','76','54','26'],['3XL','64','78','56','27'],['4XL','67','80','58','28'],['5XL','70','82','60','29'],['ALL SIZE','58','74','52','25']].map(([sz, ch, ln, sh, sl]) => {
-                                  const exists = productForm.measurements?.some(m => m.size === sz);
+                                  const existsIndex = productForm.measurements?.findIndex(m => m.size === sz);
+                                  const exists = existsIndex !== undefined && existsIndex >= 0;
                                   return (
                                     <button
                                       key={sz}
                                       type="button"
-                                      onClick={() => setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] })}
+                                      title={exists ? `Klik untuk HAPUS ukuran ${sz}` : `Klik untuk TAMBAH ukuran ${sz}`}
+                                      onClick={() => {
+                                        if (exists) {
+                                          const newM = productForm.measurements.filter((_, i) => i !== existsIndex);
+                                          setProductForm({ ...productForm, measurements: newM });
+                                        } else {
+                                          setProductForm({ ...productForm, measurements: [...(productForm.measurements || []), { size: sz, chest: ch, length: ln, shoulder: sh, sleeve: sl }] });
+                                        }
+                                      }}
                                       className={cn(
-                                        "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs",
+                                        "px-2 py-1 text-[9px] uppercase tracking-wider font-semibold rounded border transition-all shadow-2xs flex items-center gap-1 cursor-pointer",
                                         exists
-                                          ? "bg-rose/5 text-rose border-rose/30 hover:bg-rose/10"
+                                          ? "bg-rose/10 text-rose border-rose/40 font-bold hover:bg-rose hover:text-white"
                                           : "bg-white text-gray-600 border-gray-200 hover:border-rose hover:text-rose hover:bg-rose/5"
                                       )}
                                     >
-                                      + {sz}
+                                      <span>{exists ? '✓' : '+'}</span>
+                                      <span>{sz}</span>
+                                      {exists && <span className="text-[8px] opacity-75">✕</span>}
                                     </button>
                                   );
                                 })
