@@ -101,20 +101,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                     STUDIO
                   </span>
                 </motion.div>
-                
-                {/* Desktop Navigation Menu */}
-                <motion.div 
-                  className="hidden md:flex gap-4 md:gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" 
-                  initial={{ opacity: 0, y: -20 }} 
-                  animate={{ opacity: 1, y: 0 }} 
-                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}
-                >
-                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Apparel</button>
-                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Objects</button>
-                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Pantry</button>
-                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Logbook</button>
-                  <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">About</button>
-                </motion.div>
 
                 {/* Mobile Header Quick Action Pill */}
                 <motion.div
@@ -133,12 +119,14 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 </motion.div>
               </div>
 
-              {/* Main Content Area: Desktop Left Aligned, Mobile Frosted Glass Bottom Card */}
+              {/* Main Content Area: Desktop Split Layout (Left Copy, Center Video, Right Vertical Navigation) */}
               <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
                 
                 {/* Desktop Content Section */}
-                <div className="hidden md:flex flex-1 items-center my-auto">
-                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[680px] xl:max-w-[740px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
+                <div className="hidden md:flex flex-1 items-center justify-between my-auto">
+                  
+                  {/* Left Column: Brand Copy & CTA */}
+                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[640px] xl:max-w-[700px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -194,6 +182,24 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                     </motion.div>
 
                   </div>
+
+                  {/* Right Column: Vertical Navigation Menu */}
+                  <motion.div 
+                    className="hidden md:flex flex-col items-end gap-4 text-xs font-mono font-medium uppercase tracking-[0.25em] text-ink/70 pointer-events-auto mr-4 sm:mr-8 md:mr-12 lg:mr-16 xl:mr-20"
+                    initial={{ opacity: 0, x: 40 }} 
+                    animate={{ opacity: 1, x: 0 }} 
+                    transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
+                  >
+                    <span className="text-[10px] font-mono tracking-widest uppercase text-ink/40 mb-1 border-b border-ink/10 pb-1.5 w-full text-right">
+                      CATEGORIES
+                    </span>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Apparel</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Objects</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Pantry</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Logbook</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">About</button>
+                  </motion.div>
+
                 </div>
 
                 {/* Mobile Viewport Polish: Frosted Liquid-Glass Floating Card */}
@@ -249,26 +255,30 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
                 </motion.div>
 
-                {/* Bottom Left Social Footer (Desktop Only) */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: 0.75 }}
-                  className="hidden md:block pointer-events-auto ml-2 sm:ml-6 md:ml-12 lg:ml-16 pt-4"
-                >
-                  <p className="text-[11px] font-medium text-[#94a3b8] tracking-wider uppercase mb-2">Follow ninoc</p>
-                  <div className="flex items-center gap-4 text-[#64748b]">
-                    <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
-                    </a>
-                    <a href="https://ninoc.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Website">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
-                    </a>
-                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Twitter">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
-                    </a>
+                {/* Bottom Bar: Left Social Footer & Right Spec Badge (Desktop Only) */}
+                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-4">
+                  {/* Bottom Left Social */}
+                  <div>
+                    <p className="text-[11px] font-medium text-[#94a3b8] tracking-wider uppercase mb-2">Follow ninoc</p>
+                    <div className="flex items-center gap-4 text-[#64748b]">
+                      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                      </a>
+                      <a href="https://ninoc.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Website">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                      </a>
+                      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Twitter">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                      </a>
+                    </div>
                   </div>
-                </motion.div>
+
+                  {/* Bottom Right Spec Meta */}
+                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase text-right">
+                    EST. 2024 · BANDUNG ID
+                  </div>
+                </div>
+
               </div>
             </div>
           </motion.div>
