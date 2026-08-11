@@ -69,7 +69,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   };
 
   return (
-    <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-white'}`}>
+    <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-[#e3e4e7]'}`}>
       <AnimatePresence>
         {(scene === 'hero' || scene === 'transitioning') && (
           <motion.div 
@@ -138,7 +138,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 
                 {/* Desktop Content Section */}
                 <div className="hidden md:flex flex-1 items-center my-auto">
-                  <div className="w-full max-w-md md:max-w-lg lg:max-w-[500px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
+                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[680px] xl:max-w-[740px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -169,9 +169,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       initial={{ opacity: 0, x: -30 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
-                      className="text-xs sm:text-sm md:text-base text-[#475569] font-normal leading-relaxed max-w-sm sm:max-w-md"
+                      className="text-xs sm:text-sm md:text-base text-[#475569] font-normal leading-relaxed max-w-sm sm:max-w-md md:max-w-lg"
                     >
-                      Premium apparel, artisan objects, and specialty pantry — curated under one roof.
+                      Premium apparel, artisan objects, and specialty pantry curated under one roof.
                     </motion.p>
 
                     {/* Primary CTA Button */}
@@ -217,7 +217,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                   {/* Mobile Body Copy */}
                   <p className="text-xs text-[#475569] font-normal leading-relaxed">
-                    Premium apparel, artisan objects, and specialty pantry — curated under one roof.
+                    Premium apparel, artisan objects, and specialty pantry curated under one roof.
                   </p>
 
                   {/* Mobile Full-Width CTA */}
