@@ -143,13 +143,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full flex items-center justify-center bg-[#e3e4e7] select-none ${className}`}
+      className={`relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7] select-none ${className}`}
       style={{ touchAction: 'none' }}
     >
       {/* Video Rendering Stack: Separated for Mobile vs Desktop/PC/Tablet */}
-      <div className="relative w-full h-full flex items-center justify-center bg-[#e3e4e7]">
+      <div className="relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7]">
         {isMobile ? (
-          /* Mobile Video Player: Dedicated object-cover scale-[0.96] */
+          /* Mobile Video Player: Dedicated full-bleed object-cover */
           <video
             ref={videoIdleRef}
             src={config.videoPaths.idleCenter}
@@ -166,7 +166,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
-            className="absolute inset-0 w-full h-full object-cover object-center scale-[0.85] pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none"
             style={{ opacity: 1 }}
           >
             <source src={config.videoPaths.idleCenter} type="video/mp4" />
