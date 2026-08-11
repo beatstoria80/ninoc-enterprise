@@ -42,8 +42,8 @@ function MobileIntroCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.96 }}
-      animate={isTouched ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.96 }}
+      initial={{ opacity: 0, y: 40, scale: 0.94 }}
+      animate={isTouched ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.94 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
       className={`flex md:hidden flex-col bg-white/10 backdrop-blur-md border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1 ${
         isTouched ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
@@ -285,7 +285,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             exit={{ opacity: 0 }}
             animate={
               scene === 'transitioning' 
-                ? { scale: 0.96, opacity: 0, filter: 'blur(8px)' } 
+                ? { scale: 0.94, opacity: 0, filter: 'blur(8px)' } 
                 : { scale: 1, opacity: 1, filter: 'blur(0px)' }
             }
             transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
