@@ -26,6 +26,7 @@ import InteractiveMascotVideo from '@/components/mascot/InteractiveMascotVideo';
 export default function HomeClientWrapper({ products, dict }: HomeClientWrapperProps) {
   const [scene, setScene] = useState<'hero' | 'transitioning' | 'archive'>('hero');
   const [isReturningVisitor, setIsReturningVisitor] = useState(false);
+  const [isTouched, setIsTouched] = useState(false);
 
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 100, damping: 20 });
@@ -68,6 +69,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     setTimeout(() => setScene('archive'), 1200);
   };
 
+  const handleOverlayTap = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isTouched) {
+      e.stopPropagation();
+      setIsTouched(true);
+    }
+  };
+
   return (
     <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-[#e3e4e7]'}`}>
       <AnimatePresence>
@@ -90,11 +98,16 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             <div className="absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
 
             {/* Interactive Mascot Video Motion State Engine */}
-            <div className="absolute inset-0 w-full h-full cursor-pointer" onClick={handleShopClick}>
+            <div 
+              onClick={handleOverlayTap}
+              onTouchStart={handleOverlayTap}
+              className="absolute inset-0 w-full h-full cursor-pointer"
+            >
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
             <div 
-              onClick={handleShopClick}
+              onClick={handleOverlayTap}
+              onTouchStart={handleOverlayTap}
               className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-auto cursor-pointer pt-safe pb-safe"
             >
               {/* Header Navigation: Top Left Logo Forced to Far Left */}
@@ -116,7 +129,12 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
                 
                 {/* Desktop Content Section */}
-                <div className="hidden md:flex flex-1 items-center justify-between my-auto">
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={isTouched ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className={`hidden md:flex flex-1 items-center justify-between my-auto ${isTouched ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                >
                   
                   {/* Left Column: Brand Copy & CTA (Shifted Rightwards, Controlled Max-Width) */}
                   <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-8 sm:ml-16 md:ml-28 lg:ml-36 xl:ml-44">
@@ -193,14 +211,14 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                     <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">About</button>
                   </motion.div>
 
-                </div>
+                </motion.div>
 
                 {/* Mobile Viewport Polish: Translucent 20% Glass Floating Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 40, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-                  className="flex md:hidden flex-col pointer-events-auto bg-white/20 backdrop-blur-md border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1 cursor-pointer"
+                  animate={isTouched ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.96 }}
+                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className={`flex md:hidden flex-col bg-white/20 backdrop-blur-md border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1 ${isTouched ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'}`}
                 >
                   {/* Mobile Eyebrow */}
                   <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#64748b]">
@@ -222,7 +240,10 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   {/* Mobile Full-Width CTA */}
                   <div className="pt-1">
                     <motion.button
-                      onClick={handleShopClick}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleShopClick();
+                      }}
                       className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-lg shadow-purple-500/25 cursor-pointer active:scale-[0.98] transition-all"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.96 }}
@@ -253,7 +274,11 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 </motion.div>
 
                 {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - Elevated Above Bottom Black Band) */}
-                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
+                <motion.div 
+                  animate={isTouched ? { opacity: 1 } : { opacity: 0 }}
+                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
+                  className={`hidden md:flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20 ${isTouched ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                >
                   {/* Bottom Left Spec Meta (Elevated above bottom black band) */}
                   <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:left-12 bottom-12 md:bottom-14 lg:bottom-16">
                     EST. 2024 · BANDUNG ID
