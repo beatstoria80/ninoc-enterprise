@@ -250,7 +250,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#94a3b8] font-medium">
                     <span>EST. 2024 · BDG ID</span>
                     <div className="flex gap-3 text-[#64748b]">
-                      <a href="https://instagram.com/ninoc.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
+                      <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
                         Instagram
                       </a>
                       <span>·</span>
@@ -277,7 +277,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                     <p className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#94a3b8] uppercase mb-1">Follow ninoc</p>
                     <div className="flex items-center gap-3 text-[#64748b]">
                       {/* Instagram */}
-                      <a href="https://instagram.com/ninoc.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
+                      <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                       </a>
                       {/* TikTok */}
