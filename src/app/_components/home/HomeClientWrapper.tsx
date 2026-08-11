@@ -189,21 +189,21 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                   </div>
 
-                  {/* Right Column: Vertical Navigation Menu (Forced to Far Right Edge) */}
+                  {/* Right Column: Vertical Navigation Menu (Regular Style & Smaller Size) */}
                   <motion.div 
-                    className="hidden md:flex flex-col items-end gap-6 text-sm md:text-base lg:text-lg font-mono font-bold uppercase tracking-[0.25em] text-ink/80 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
+                    className="hidden md:flex flex-col items-end gap-4 text-xs md:text-[11px] lg:text-xs font-mono font-normal uppercase tracking-[0.2em] text-ink/70 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
                     initial={{ opacity: 0, x: 40 }} 
                     animate={{ opacity: 1, x: 0 }} 
                     transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
                   >
-                    <span className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-ink/40 mb-2 border-b-2 border-ink/20 pb-1.5 w-full text-right">
+                    <span className="text-[10px] font-mono font-normal tracking-[0.25em] uppercase text-ink/40 mb-1 border-b border-ink/10 pb-1.5 w-full text-right">
                       CATEGORIES
                     </span>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Apparel</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Objects</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Pantry</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Logbook</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">About</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Apparel</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Objects</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Pantry</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Logbook</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">About</button>
                   </motion.div>
 
                 </div>
