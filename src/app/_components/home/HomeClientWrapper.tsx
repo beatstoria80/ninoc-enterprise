@@ -83,8 +83,14 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.2, ease: EASING.inOut }}
           >
-            {/* Top Horizontal Black Band Accent Shape */}
-            <div className="absolute top-0 left-0 right-0 w-full h-2.5 md:h-3 bg-black z-[220] pointer-events-none" />
+            {/* Top Horizontal Black Band */}
+            <div className="absolute top-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
+
+            {/* Bottom Horizontal Black Band */}
+            <div className="absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
+
+            {/* Left Vertical Black Shape / Band Panel */}
+            <div className="hidden lg:block absolute top-0 bottom-0 left-0 w-36 xl:w-44 bg-black z-[210] pointer-events-none" />
 
             {/* Interactive Mascot Video Motion State Engine */}
             <div className="absolute inset-0 w-full h-full">
@@ -92,7 +98,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             </div>
             <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
               {/* Header Navigation */}
-              <div className="flex justify-between items-center w-full pointer-events-auto pt-2">
+              <div className="flex justify-between items-center w-full pointer-events-auto pt-6 lg:pl-40">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -128,8 +134,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 {/* Desktop Content Section */}
                 <div className="hidden md:flex flex-1 items-center justify-between my-auto">
                   
-                  {/* Left Column: Brand Copy & CTA */}
-                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[640px] xl:max-w-[700px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
+                  {/* Left Column: Brand Copy & CTA (Shifted Rightwards to Clear Left Black Band) */}
+                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[580px] xl:max-w-[640px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-8 md:ml-24 lg:ml-48 xl:ml-56">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -258,12 +264,17 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
                 </motion.div>
 
-                {/* Bottom Bar: Left Social Footer & Right Spec Badge (Desktop Only) */}
-                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-4">
-                  {/* Bottom Left Social */}
-                  <div>
-                    <p className="text-[11px] font-medium text-[#94a3b8] tracking-wider uppercase mb-2">Follow ninoc</p>
-                    <div className="flex items-center gap-4 text-[#64748b]">
+                {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - "SIMPAN DISINI") */}
+                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
+                  {/* Bottom Left Spec Meta */}
+                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase lg:ml-44">
+                    EST. 2024 · BANDUNG ID
+                  </div>
+
+                  {/* Bottom Right Social Links ("SIMPAN DISINI") */}
+                  <div className="flex flex-col items-end mr-2 sm:mr-4 md:mr-6 lg:mr-8 xl:mr-10">
+                    <p className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#94a3b8] uppercase mb-1">Follow ninoc</p>
+                    <div className="flex items-center gap-3 text-[#64748b]">
                       <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                       </a>
@@ -274,11 +285,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
                       </a>
                     </div>
-                  </div>
-
-                  {/* Bottom Right Spec Meta */}
-                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase text-right">
-                    EST. 2024 · BANDUNG ID
                   </div>
                 </div>
 
