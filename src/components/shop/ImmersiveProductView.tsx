@@ -382,64 +382,6 @@ export default function ImmersiveProductView({
                    );
                  })}
                </AnimatePresence>
-
-               {/* Desktop Floating Navigation Chevrons (Left & Right) */}
-               {images.length > 1 && (
-                 <>
-                   {activeImage > 0 && (
-                     <button
-                       type="button"
-                       onClick={(e) => {
-                         e.stopPropagation();
-                         setActiveImage(prev => prev - 1);
-                       }}
-                       className="hidden lg:flex absolute left-6 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 rounded-full bg-white/80 hover:bg-white text-ink shadow-lg backdrop-blur-md items-center justify-center border border-ink/10 transition-all hover:scale-110 active:scale-95 cursor-pointer no-drag"
-                       aria-label="Previous photo"
-                       title="Foto Sebelumnya (Panah Kiri / Drag Kanan)"
-                     >
-                       <ChevronLeft size={24} strokeWidth={2} />
-                     </button>
-                   )}
-                   {activeImage < images.length - 1 && (
-                     <button
-                       type="button"
-                       onClick={(e) => {
-                         e.stopPropagation();
-                         setActiveImage(prev => prev + 1);
-                       }}
-                       className="hidden lg:flex absolute right-6 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 rounded-full bg-white/80 hover:bg-white text-ink shadow-lg backdrop-blur-md items-center justify-center border border-ink/10 transition-all hover:scale-110 active:scale-95 cursor-pointer no-drag"
-                       aria-label="Next photo"
-                       title="Foto Selanjutnya (Panah Kanan / Drag Kiri)"
-                     >
-                       <ChevronRight size={24} strokeWidth={2} />
-                     </button>
-                   )}
-                 </>
-               )}
-
-               {/* Desktop Interactive Photo Indicator Pills */}
-               {images.length > 1 && (
-                 <div className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-[110] items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-ink/10 shadow-md no-drag">
-                   <span className="text-xs font-mono font-bold text-ink mr-1">
-                     {activeImage + 1} / {images.length}
-                   </span>
-                   {images.map((_, i) => (
-                     <button
-                       key={i}
-                       type="button"
-                       onClick={(e) => {
-                         e.stopPropagation();
-                         setActiveImage(i);
-                       }}
-                       className={cn(
-                         "h-2 rounded-full transition-all cursor-pointer",
-                         activeImage === i ? "w-6 bg-ink" : "w-2 bg-ink/20 hover:bg-ink/50"
-                       )}
-                       aria-label={`Go to photo ${i + 1}`}
-                     />
-                   ))}
-                 </div>
-               )}
              </div>
              
              {/* Mobile Bottom Navigation (Floating) */}
