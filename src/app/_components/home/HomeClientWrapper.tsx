@@ -237,11 +237,11 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#94a3b8] font-medium">
                     <span>EST. 2024 · BDG ID</span>
                     <div className="flex gap-3 text-[#64748b]">
-                      <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
+                      <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
                         Instagram
                       </a>
                       <span>·</span>
-                      <a href="https://ninoc.store" className="hover:text-[#8b5cf6] transition-colors" aria-label="ninoc.store">
+                      <a href="https://ninoc.store" onClick={(e) => e.stopPropagation()} className="hover:text-[#8b5cf6] transition-colors" aria-label="ninoc.store">
                         ninoc.store
                       </a>
                     </div>
