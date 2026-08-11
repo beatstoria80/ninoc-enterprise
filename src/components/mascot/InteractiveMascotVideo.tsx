@@ -146,37 +146,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       className={`relative w-full h-full flex items-center justify-center bg-[#e3e4e7] select-none ${className}`}
       style={{ touchAction: 'none' }}
     >
-      {/* Synchronized 2-Layer Video Stack (100% Viewport Frame Coverage) */}
+      {/* Video Rendering Stack: Separated for Mobile vs Desktop/PC/Tablet */}
       <div className="relative w-full h-full flex items-center justify-center bg-[#e3e4e7]">
-        
-        {/* Layer 0: Idle Center (Chapter 1) */}
-        <video
-          ref={videoIdleRef}
-          src={config.videoPaths.idleCenter}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          onCanPlay={(e) => {
-            e.currentTarget.muted = true;
-            e.currentTarget.play().catch(() => {});
-          }}
-          onLoadedData={(e) => {
-            e.currentTarget.muted = true;
-            e.currentTarget.play().catch(() => {});
-          }}
-          className="absolute inset-0 w-full h-full object-cover md:object-contain object-center scale-[0.96] md:scale-[0.94] pointer-events-none transition-transform duration-500 ease-out"
-          style={{ opacity: 1 }}
-        >
-          <source src={config.videoPaths.idleCenter} type="video/mp4" />
-        </video>
-
-        {/* Layer 1: Horizontal Motion (Chapter 2) - Desktop Only */}
-        {!isMobile && (
+        {isMobile ? (
+          /* Mobile Video Player: Dedicated object-cover scale-[0.96] */
           <video
-            ref={videoHorizontalRef}
-            src={config.videoPaths.horizontalMotion}
+            ref={videoIdleRef}
+            src={config.videoPaths.idleCenter}
             autoPlay
             loop
             muted
@@ -190,13 +166,61 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
-            className="absolute inset-0 w-full h-full object-cover md:object-contain object-center scale-[0.96] md:scale-[0.94] pointer-events-none transition-transform duration-500 ease-out"
-            style={{ opacity: 0 }}
+            className="absolute inset-0 w-full h-full object-cover object-center scale-[0.96] pointer-events-none"
+            style={{ opacity: 1 }}
           >
-            <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
+            <source src={config.videoPaths.idleCenter} type="video/mp4" />
           </video>
-        )}
+        ) : (
+          /* Desktop / PC / Laptop / Tablet Video Stack: Synchronized 2-Layer 3D Mouse Tracking */
+          <>
+            {/* Layer 0: Idle Center (Chapter 1) */}
+            <video
+              ref={videoIdleRef}
+              src={config.videoPaths.idleCenter}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlay={(e) => {
+                e.currentTarget.muted = true;
+                e.currentTarget.play().catch(() => {});
+              }}
+              onLoadedData={(e) => {
+                e.currentTarget.muted = true;
+                e.currentTarget.play().catch(() => {});
+              }}
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none transition-transform duration-500 ease-out"
+              style={{ opacity: 1 }}
+            >
+              <source src={config.videoPaths.idleCenter} type="video/mp4" />
+            </video>
 
+            {/* Layer 1: Horizontal Motion (Chapter 2) */}
+            <video
+              ref={videoHorizontalRef}
+              src={config.videoPaths.horizontalMotion}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlay={(e) => {
+                e.currentTarget.muted = true;
+                e.currentTarget.play().catch(() => {});
+              }}
+              onLoadedData={(e) => {
+                e.currentTarget.muted = true;
+                e.currentTarget.play().catch(() => {});
+              }}
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none transition-transform duration-500 ease-out"
+              style={{ opacity: 0 }}
+            >
+              <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
+            </video>
+          </>
+        )}
       </div>
     </div>
   );

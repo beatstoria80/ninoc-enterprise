@@ -293,7 +293,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       </a>
                     </div>
                   </div>
-                </motion.div>
+                </div>
 
               </div>
             </div>
