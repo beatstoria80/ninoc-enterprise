@@ -195,12 +195,12 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                 </div>
 
-                {/* Mobile Viewport Polish: Frosted Liquid-Glass Floating Card */}
+                {/* Mobile Viewport Polish: Translucent 20% Glass Floating Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 40, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-                  className="flex md:hidden flex-col pointer-events-auto bg-white/55 backdrop-blur-lg border border-white/70 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1"
+                  className="flex md:hidden flex-col pointer-events-auto bg-white/20 backdrop-blur-md border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1 cursor-pointer"
                 >
                   {/* Mobile Eyebrow */}
                   <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#64748b]">
@@ -234,15 +234,19 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
 
                   {/* Mobile Footer Meta */}
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#94a3b8] font-medium">
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#64748b] font-medium">
                     <span>EST. 2024 · BDG ID</span>
-                    <div className="flex gap-3 text-[#64748b]">
+                    <div className="flex gap-2.5 text-[#64748b]">
                       <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
                         Instagram
                       </a>
                       <span>·</span>
-                      <a href="https://ninoc.store" onClick={(e) => e.stopPropagation()} className="hover:text-[#8b5cf6] transition-colors" aria-label="ninoc.store">
-                        ninoc.store
+                      <a href="https://tiktok.co.id/ninocenterprise" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-[#8b5cf6] transition-colors" aria-label="TikTok">
+                        TikTok
+                      </a>
+                      <span>·</span>
+                      <a href="mailto:ninocenterprise@gmail.com" onClick={(e) => e.stopPropagation()} className="hover:text-[#8b5cf6] transition-colors" aria-label="Email">
+                        Email
                       </a>
                     </div>
                   </div>
