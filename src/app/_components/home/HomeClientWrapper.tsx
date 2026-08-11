@@ -83,13 +83,16 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.2, ease: EASING.inOut }}
           >
+            {/* Top Horizontal Black Band Accent Shape */}
+            <div className="absolute top-0 left-0 right-0 w-full h-2.5 md:h-3 bg-black z-[220] pointer-events-none" />
+
             {/* Interactive Mascot Video Motion State Engine */}
             <div className="absolute inset-0 w-full h-full">
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
             <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
               {/* Header Navigation */}
-              <div className="flex justify-between items-center w-full pointer-events-auto">
+              <div className="flex justify-between items-center w-full pointer-events-auto pt-2">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -183,21 +186,21 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                   </div>
 
-                  {/* Right Column: Vertical Navigation Menu */}
+                  {/* Right Column: Vertical Navigation Menu (Shifted Right, Larger Font & Increased Gap) */}
                   <motion.div 
-                    className="hidden md:flex flex-col items-end gap-4 text-xs font-mono font-medium uppercase tracking-[0.25em] text-ink/70 pointer-events-auto mr-4 sm:mr-8 md:mr-12 lg:mr-16 xl:mr-20"
+                    className="hidden md:flex flex-col items-end gap-6 text-sm md:text-base lg:text-lg font-mono font-bold uppercase tracking-[0.25em] text-ink/80 pointer-events-auto mr-2 sm:mr-4 md:mr-6 lg:mr-8 xl:mr-10"
                     initial={{ opacity: 0, x: 40 }} 
                     animate={{ opacity: 1, x: 0 }} 
                     transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
                   >
-                    <span className="text-[10px] font-mono tracking-widest uppercase text-ink/40 mb-1 border-b border-ink/10 pb-1.5 w-full text-right">
+                    <span className="text-xs font-mono font-bold tracking-[0.3em] uppercase text-ink/40 mb-2 border-b-2 border-ink/20 pb-1.5 w-full text-right">
                       CATEGORIES
                     </span>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Apparel</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Objects</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Pantry</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Logbook</button>
-                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">About</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Apparel</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Objects</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Pantry</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">Logbook</button>
+                    <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-6px] transition-all cursor-pointer">About</button>
                   </motion.div>
 
                 </div>
