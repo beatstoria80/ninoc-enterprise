@@ -95,7 +95,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             </div>
             <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
               {/* Header Navigation */}
-              <div className="flex justify-between items-center w-full pointer-events-auto pt-4">
+              <div className="flex justify-between items-center w-full pointer-events-auto pt-4 pl-2 sm:pl-6 md:pl-14 lg:pl-20 xl:pl-24">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -131,8 +131,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 {/* Desktop Content Section */}
                 <div className="hidden md:flex flex-1 items-center justify-between my-auto">
                   
-                  {/* Left Column: Brand Copy & CTA */}
-                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[640px] xl:max-w-[700px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
+                  {/* Left Column: Brand Copy & CTA (Shifted Rightwards, Controlled Max-Width) */}
+                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[540px] xl:max-w-[580px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-6 sm:ml-12 md:ml-20 lg:ml-28 xl:ml-32">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -264,7 +264,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - "SIMPAN DISINI") */}
                 <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
                   {/* Bottom Left Spec Meta */}
-                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase">
+                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase ml-2 sm:ml-6 md:ml-14 lg:ml-20 xl:ml-24">
                     EST. 2024 · BANDUNG ID
                   </div>
 
