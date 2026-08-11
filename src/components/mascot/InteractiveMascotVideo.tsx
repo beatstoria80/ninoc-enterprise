@@ -166,7 +166,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
             e.currentTarget.muted = true;
             e.currentTarget.play().catch(() => {});
           }}
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+          className="absolute inset-0 w-full h-full object-contain object-center scale-[0.80] sm:scale-85 md:scale-90 lg:scale-[0.88] pointer-events-none transition-transform duration-300"
           style={{ opacity: 1 }}
         >
           <source src={config.videoPaths.idleCenter} type="video/mp4" />
@@ -190,7 +190,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
-            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+            className="absolute inset-0 w-full h-full object-contain object-center scale-[0.80] sm:scale-85 md:scale-90 lg:scale-[0.88] pointer-events-none transition-transform duration-300"
             style={{ opacity: 0 }}
           >
             <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
