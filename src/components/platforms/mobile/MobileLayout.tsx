@@ -341,7 +341,7 @@ export default function MobileLayout({
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* FIXED HEADER — Hide and Rise */}
       {/* ═══════════════════════════════════════════════════════════════ */}
-      {(!hideHeader && !isOpeningSequence) && (
+      {(!hideHeader && !isOpeningSequence && isNavVisible) && (
         <header
           className="fixed top-[env(safe-area-inset-top)] left-0 right-0 z-[400] bg-white border-b border-ink/[0.05] will-change-transform shadow-sm"
         >

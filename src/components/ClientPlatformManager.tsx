@@ -12,7 +12,6 @@ export default function ClientPlatformManager({ children }: { children: React.Re
   // Default to desktop to allow SSR of children and avoid blank screens.
   const [mounted, setMounted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [introPlaying, setIntroPlaying] = useState(false);
   const { items } = useHydratedCart();
 
   // Hidden layout route configuration
@@ -60,26 +59,6 @@ export default function ClientPlatformManager({ children }: { children: React.Re
     };
   }, []);
 
-  useEffect(() => {
-    if (pathname === '/') {
-      const isPlayed = sessionStorage.getItem('ninoc_intro_played') === 'true';
-      if (!isPlayed) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setIntroPlaying(true);
-        const timer = setTimeout(() => {
-          setIntroPlaying(false);
-          sessionStorage.setItem('ninoc_intro_played', 'true');
-        }, 3500);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      sessionStorage.setItem('ninoc_intro_played', 'true');
-      setIntroPlaying(false);
-    }
-  }, [pathname]);
-
-  // Removed !mounted return to ensure `children` (e.g. video) renders instantly on SSR!
-
   const isShopPage = pathname === '/shop';
   const isCollectionsPage = pathname?.startsWith('/collections');
   const showGlobalFooter = showGlobalHeader && !isShopPage && !isCollectionsPage;
@@ -89,7 +68,7 @@ export default function ClientPlatformManager({ children }: { children: React.Re
       <MobileLayout
         cartCount={items.length}
         hideTabBar={isCheckoutPage || isProfilePage || isOnboardingPage || isLoginPage || isRegisterPage || isAdminPage}
-        hideHeader={(!showGlobalHeader && !isReturPage) || introPlaying || isShopPage}
+        hideHeader={!showGlobalHeader && !isReturPage}
       >
         {children}
       </MobileLayout>
