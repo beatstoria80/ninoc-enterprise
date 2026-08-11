@@ -89,16 +89,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             {/* Bottom Horizontal Black Band */}
             <div className="absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
 
-            {/* Left Vertical Black Shape / Band Panel */}
-            <div className="hidden lg:block absolute top-0 bottom-0 left-0 w-36 xl:w-44 bg-black z-[210] pointer-events-none" />
-
             {/* Interactive Mascot Video Motion State Engine */}
             <div className="absolute inset-0 w-full h-full">
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
             <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
               {/* Header Navigation */}
-              <div className="flex justify-between items-center w-full pointer-events-auto pt-6 lg:pl-40">
+              <div className="flex justify-between items-center w-full pointer-events-auto pt-4">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -134,8 +131,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 {/* Desktop Content Section */}
                 <div className="hidden md:flex flex-1 items-center justify-between my-auto">
                   
-                  {/* Left Column: Brand Copy & CTA (Shifted Rightwards to Clear Left Black Band) */}
-                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[580px] xl:max-w-[640px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-8 md:ml-24 lg:ml-48 xl:ml-56">
+                  {/* Left Column: Brand Copy & CTA */}
+                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[640px] xl:max-w-[700px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -267,7 +264,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - "SIMPAN DISINI") */}
                 <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
                   {/* Bottom Left Spec Meta */}
-                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase lg:ml-44">
+                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase">
                     EST. 2024 · BANDUNG ID
                   </div>
 
