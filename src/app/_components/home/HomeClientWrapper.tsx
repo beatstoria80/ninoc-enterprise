@@ -73,7 +73,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
       <AnimatePresence>
         {(scene === 'hero' || scene === 'transitioning') && (
           <motion.div 
-            className="fixed inset-0 z-[200] bg-white overflow-hidden h-[100dvh]"
+            className="fixed inset-0 z-[200] bg-[#e3e4e7] overflow-hidden h-[100dvh]"
             initial={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             exit={{ opacity: 0 }}
             animate={
@@ -159,8 +159,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       className="space-y-1"
                     >
                       <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.08] font-sans">
-                        Tactile Form, <br />
-                        Living <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
+                        Well-Made Things, <br />
+                        Chosen Well
                       </h1>
                     </motion.div>
 
@@ -171,7 +171,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
                       className="text-xs sm:text-sm md:text-base text-[#475569] font-normal leading-relaxed max-w-sm sm:max-w-md"
                     >
-                      Curated apparel, studio objects, and interactive digital forms—meticulously crafted for contemporary living.
+                      Premium apparel, artisan objects, and specialty pantry — curated under one roof.
                     </motion.p>
 
                     {/* Primary CTA Button */}
@@ -186,9 +186,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                         className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-medium tracking-wide shadow-lg shadow-purple-500/25 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:ring-offset-2"
                         whileHover={{ scale: 1.04, boxShadow: "0px 12px 28px rgba(168, 85, 247, 0.35)" }}
                         whileTap={{ scale: 0.97 }}
-                        aria-label="Explore Catalog"
+                        aria-label="Get Yours Now"
                       >
-                        <span>Explore Catalog</span>
+                        <span>Get Yours Now</span>
                         <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform duration-300" />
                       </motion.button>
                     </motion.div>
@@ -211,13 +211,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                   {/* Mobile Headline */}
                   <h1 className="text-2xl font-extrabold text-[#1e1b4b] tracking-tight leading-snug">
-                    Tactile Form, <br />
-                    Living <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
+                    Well-Made Things, <br />
+                    Chosen Well
                   </h1>
 
                   {/* Mobile Body Copy */}
                   <p className="text-xs text-[#475569] font-normal leading-relaxed">
-                    Curated apparel, studio objects, and interactive digital forms crafted for contemporary living.
+                    Premium apparel, artisan objects, and specialty pantry — curated under one roof.
                   </p>
 
                   {/* Mobile Full-Width CTA */}
@@ -227,9 +227,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                       className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-lg shadow-purple-500/25 cursor-pointer active:scale-[0.98] transition-all"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.96 }}
-                      aria-label="Explore Catalog"
+                      aria-label="Get Yours Now"
                     >
-                      <span>Explore Catalog</span>
+                      <span>Get Yours Now</span>
                       <ArrowRight size={16} />
                     </motion.button>
                   </div>

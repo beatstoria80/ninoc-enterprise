@@ -143,11 +143,11 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full flex items-center justify-center bg-white select-none overflow-hidden ${className}`}
+      className={`relative w-full h-full flex items-center justify-center bg-[#e3e4e7] select-none overflow-hidden ${className}`}
       style={{ touchAction: 'none' }}
     >
       {/* Synchronized 2-Layer Video Stack (100% Viewport Frame Coverage) */}
-      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-white">
+      <div className="relative w-full h-full flex items-center justify-center overflow-hidden bg-[#e3e4e7]">
         
         {/* Layer 0: Idle Center (Chapter 1) */}
         <video
