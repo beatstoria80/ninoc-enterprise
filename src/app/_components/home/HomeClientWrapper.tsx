@@ -128,13 +128,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               {/* Main Content Area: Desktop Split Layout (Left Copy, Center Video, Right Vertical Navigation) */}
               <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
                 
-                {/* Desktop Content Section */}
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={isTouched ? { opacity: 1 } : { opacity: 0 }}
-                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                  className={`hidden md:flex flex-1 items-center justify-between my-auto ${isTouched ? 'pointer-events-auto' : 'pointer-events-none'}`}
-                >
+                {/* Desktop Content Section (Always Active & Visible on Desktop/Laptop/Tablet) */}
+                <div className="hidden md:flex flex-1 items-center justify-between my-auto pointer-events-auto">
                   
                   {/* Left Column: Brand Copy & CTA (Shifted Rightwards, Controlled Max-Width) */}
                   <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-8 sm:ml-16 md:ml-28 lg:ml-36 xl:ml-44">
@@ -211,9 +206,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                     <button onClick={handleShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">About</button>
                   </motion.div>
 
-                </motion.div>
+                </div>
 
-                {/* Mobile Viewport Polish: Translucent 20% Glass Floating Card */}
+                {/* Mobile Viewport Polish: Translucent 10% Glass Floating Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 40, scale: 0.96 }}
                   animate={isTouched ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.96 }}
@@ -274,11 +269,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 </motion.div>
 
                 {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - Elevated Above Bottom Black Band) */}
-                <motion.div 
-                  animate={isTouched ? { opacity: 1 } : { opacity: 0 }}
-                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                  className={`hidden md:flex items-center justify-between px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20 ${isTouched ? 'pointer-events-auto' : 'pointer-events-none'}`}
-                >
+                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">    >
                   {/* Bottom Left Spec Meta (Elevated above bottom black band) */}
                   <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:left-12 bottom-12 md:bottom-14 lg:bottom-16">
                     EST. 2024 · BANDUNG ID
