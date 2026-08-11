@@ -108,21 +108,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </span>
                 </motion.div>
 
-                {/* Mobile Header Quick Action Pill */}
-                <motion.div
-                  className="flex md:hidden items-center absolute right-4 top-10"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}
-                >
-                  <button
-                    onClick={handleShopClick}
-                    className="no-drag pointer-events-auto flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-white/90 text-ink px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-sm active:scale-95 transition-all cursor-pointer"
-                  >
-                    <span>Skip Intro</span>
-                    <ArrowRight size={13} className="text-[#8b5cf6]" />
-                  </button>
-                </motion.div>
+                {/* Mobile Header Quick Action Pill - Removed Skip Intro */}
               </div>
 
               {/* Main Content Area: Desktop Split Layout (Left Copy, Center Video, Right Vertical Navigation) */}
@@ -208,27 +194,27 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                 </div>
 
-                {/* Mobile Viewport Polish: Frosted Liquid-Glass Floating Card */}
+                {/* Mobile Viewport Polish: Translucent Liquid-Glass Floating Card */}
                 <motion.div
                   initial={{ opacity: 0, y: 40, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-                  className="flex md:hidden flex-col pointer-events-auto bg-white/85 backdrop-blur-xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1"
+                  className="flex md:hidden flex-col pointer-events-auto bg-white/35 backdrop-blur-md border border-white/60 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1"
                 >
                   {/* Mobile Eyebrow */}
-                  <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#64748b]">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-bold tracking-[0.2em] uppercase text-[#475569]">
                     <span className="w-2 h-2 rounded-full bg-[#8b5cf6] animate-pulse" />
                     <span>NINOC® DESIGN STUDIO</span>
                   </div>
 
                   {/* Mobile Headline */}
-                  <h1 className="text-2xl font-extrabold text-[#1e1b4b] tracking-tight leading-snug">
+                  <h1 className="text-2xl font-black text-[#0f172a] tracking-tight leading-snug">
                     Well-Made Things, <br />
                     Chosen Well
                   </h1>
 
                   {/* Mobile Body Copy */}
-                  <p className="text-xs text-[#475569] font-normal leading-relaxed">
+                  <p className="text-xs text-[#1e293b] font-medium leading-relaxed">
                     Premium apparel, artisan objects, and specialty pantry curated under one roof.
                   </p>
 
@@ -247,9 +233,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
 
                   {/* Mobile Footer Meta */}
-                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#94a3b8] font-medium">
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-300/60 text-[10px] text-[#475569] font-semibold">
                     <span>EST. 2024 · BDG ID</span>
-                    <div className="flex gap-3 text-[#64748b]">
+                    <div className="flex gap-3 text-[#334155]">
                       <a href="https://instagram.com/ninoc.co" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
                         Instagram
                       </a>
