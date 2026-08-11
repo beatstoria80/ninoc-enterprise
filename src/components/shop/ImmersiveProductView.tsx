@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Minus, Plus, ShoppingBag, Star, Share2 } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, Star, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/types/shop';
 import { useHydratedCart } from '@/store/useCart';
@@ -184,18 +184,26 @@ export default function ImmersiveProductView({
     return null;
   }, [images, activeImage, imageDescriptionItems, currentImmersiveVariantName, selectedColor, colorDescMap]);
 
-  // Close on Escape key
+  // Close on Escape key & Navigation via Arrow keys
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         if (isMobileCheckoutOpen) setIsMobileCheckoutOpen(false);
         else onClose();
+      } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        if (images && activeImage < images.length - 1) {
+          setActiveImage(prev => prev + 1);
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        if (activeImage > 0) {
+          setActiveImage(prev => prev - 1);
+        }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose, isMobileCheckoutOpen]);
+  }, [isOpen, onClose, isMobileCheckoutOpen, images, activeImage]);
 
   // Lock body scroll
   useEffect(() => {
@@ -325,7 +333,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfectly Centered) */}
-          <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex items-center justify-center overflow-hidden">
+          <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex items-center justify-center overflow-hidden select-none">
              <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
                <AnimatePresence>
                  {images.map((img, idx) => {
@@ -345,12 +353,17 @@ export default function ImmersiveProductView({
                        drag={offset === 0 ? "x" : false}
                        dragConstraints={{ left: 0, right: 0 }}
                        dragElastic={0.2}
-                       onDragEnd={(e, { offset: dragOffset }) => {
+                       onDragEnd={(e, info) => {
                          if (offset !== 0) return;
-                         const swipe = dragOffset.x;
-                         if (swipe < -50 && activeImage < images.length - 1) {
+                         const swipeX = info.offset.x;
+                         const velocityX = info.velocity.x;
+                         
+                         // Drag Left -> Next Image
+                         if ((swipeX < -30 || velocityX < -200) && activeImage < images.length - 1) {
                            setActiveImage(prev => prev + 1);
-                         } else if (swipe > 50 && activeImage > 0) {
+                         } 
+                         // Drag Right -> Previous Image
+                         else if ((swipeX > 30 || velocityX > 200) && activeImage > 0) {
                            setActiveImage(prev => prev - 1);
                          }
                        }}
@@ -369,6 +382,64 @@ export default function ImmersiveProductView({
                    );
                  })}
                </AnimatePresence>
+
+               {/* Desktop Floating Navigation Chevrons (Left & Right) */}
+               {images.length > 1 && (
+                 <>
+                   {activeImage > 0 && (
+                     <button
+                       type="button"
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         setActiveImage(prev => prev - 1);
+                       }}
+                       className="hidden lg:flex absolute left-6 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 rounded-full bg-white/80 hover:bg-white text-ink shadow-lg backdrop-blur-md items-center justify-center border border-ink/10 transition-all hover:scale-110 active:scale-95 cursor-pointer no-drag"
+                       aria-label="Previous photo"
+                       title="Foto Sebelumnya (Panah Kiri / Drag Kanan)"
+                     >
+                       <ChevronLeft size={24} strokeWidth={2} />
+                     </button>
+                   )}
+                   {activeImage < images.length - 1 && (
+                     <button
+                       type="button"
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         setActiveImage(prev => prev + 1);
+                       }}
+                       className="hidden lg:flex absolute right-6 top-1/2 -translate-y-1/2 z-[110] w-12 h-12 rounded-full bg-white/80 hover:bg-white text-ink shadow-lg backdrop-blur-md items-center justify-center border border-ink/10 transition-all hover:scale-110 active:scale-95 cursor-pointer no-drag"
+                       aria-label="Next photo"
+                       title="Foto Selanjutnya (Panah Kanan / Drag Kiri)"
+                     >
+                       <ChevronRight size={24} strokeWidth={2} />
+                     </button>
+                   )}
+                 </>
+               )}
+
+               {/* Desktop Interactive Photo Indicator Pills */}
+               {images.length > 1 && (
+                 <div className="hidden lg:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-[110] items-center gap-2 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-ink/10 shadow-md no-drag">
+                   <span className="text-xs font-mono font-bold text-ink mr-1">
+                     {activeImage + 1} / {images.length}
+                   </span>
+                   {images.map((_, i) => (
+                     <button
+                       key={i}
+                       type="button"
+                       onClick={(e) => {
+                         e.stopPropagation();
+                         setActiveImage(i);
+                       }}
+                       className={cn(
+                         "h-2 rounded-full transition-all cursor-pointer",
+                         activeImage === i ? "w-6 bg-ink" : "w-2 bg-ink/20 hover:bg-ink/50"
+                       )}
+                       aria-label={`Go to photo ${i + 1}`}
+                     />
+                   ))}
+                 </div>
+               )}
              </div>
              
              {/* Mobile Bottom Navigation (Floating) */}
