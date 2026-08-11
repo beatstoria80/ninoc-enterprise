@@ -358,13 +358,13 @@ export default function ImmersiveProductView({
                          const swipeX = info.offset.x;
                          const velocityX = info.velocity.x;
                          
-                         // Drag Left -> Next Image
-                         if ((swipeX < -30 || velocityX < -200) && activeImage < images.length - 1) {
-                           setActiveImage(prev => prev + 1);
+                         // Drag Left -> Next Image (or wrap around to first)
+                         if (swipeX < -15 || velocityX < -100) {
+                           setActiveImage(prev => (prev < images.length - 1 ? prev + 1 : 0));
                          } 
-                         // Drag Right -> Previous Image
-                         else if ((swipeX > 30 || velocityX > 200) && activeImage > 0) {
-                           setActiveImage(prev => prev - 1);
+                         // Drag Right -> Previous Image (or wrap around to last)
+                         else if (swipeX > 15 || velocityX > 100) {
+                           setActiveImage(prev => (prev > 0 ? prev - 1 : images.length - 1));
                          }
                        }}
                        className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
