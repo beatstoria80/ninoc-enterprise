@@ -42,10 +42,10 @@ function MobileIntroCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40, scale: 0.94 }}
-      animate={isTouched ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.94 }}
+      initial={{ opacity: 0, y: 40, scale: 0.96 }}
+      animate={isTouched ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 40, scale: 0.96 }}
       transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-      className={`flex md:hidden flex-col bg-white/10 backdrop-blur-md border border-white/30 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1 ${
+      className={`flex md:hidden flex-col bg-white/5 backdrop-blur-md border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-4 space-y-2.5 mb-5 sm:mb-6 mx-1 ${
         isTouched ? 'pointer-events-auto cursor-pointer' : 'pointer-events-none'
       }`}
     >
@@ -56,9 +56,8 @@ function MobileIntroCard({
       </div>
 
       {/* Mobile Headline */}
-      <h1 className="text-2xl font-extrabold text-[#1e1b4b] tracking-tight leading-snug">
-        Well-Made Things, <br />
-        Chosen Well
+      <h1 className="text-xl font-extrabold text-[#1e1b4b] tracking-tight leading-snug">
+        Well-Made Things, Chosen Well
       </h1>
 
       {/* Mobile Body Copy */}
@@ -67,26 +66,26 @@ function MobileIntroCard({
       </p>
 
       {/* Mobile Full-Width CTA */}
-      <div className="pt-1">
+      <div className="pt-0.5">
         <motion.button
           onClick={(e) => {
             e.stopPropagation();
             onShopClick();
           }}
-          className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-lg shadow-purple-500/25 cursor-pointer active:scale-[0.98] transition-all"
+          className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white py-2.5 rounded-2xl text-xs font-semibold tracking-wide shadow-lg shadow-purple-500/25 cursor-pointer active:scale-[0.98] transition-all"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.96 }}
           aria-label="Get Yours Now"
         >
           <span>Get Yours Now</span>
-          <ArrowRight size={16} />
+          <ArrowRight size={15} />
         </motion.button>
       </div>
 
       {/* Mobile Footer Meta */}
-      <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#64748b] font-medium">
+      <div className="flex items-center justify-between pt-1 border-t border-slate-200/40 text-[10px] text-[#64748b] font-medium">
         <span>EST. 2024 · BDG ID</span>
-        <div className="flex gap-2.5 text-[#64748b]">
+        <div className="flex gap-2 text-[#64748b]">
           <a
             href="https://instagram.com/ninoc.co"
             target="_blank"
