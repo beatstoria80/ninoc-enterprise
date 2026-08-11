@@ -186,9 +186,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                   </div>
 
-                  {/* Right Column: Vertical Navigation Menu (Shifted Right, Larger Font & Increased Gap) */}
+                  {/* Right Column: Vertical Navigation Menu (Forced to Far Right Edge) */}
                   <motion.div 
-                    className="hidden md:flex flex-col items-end gap-6 text-sm md:text-base lg:text-lg font-mono font-bold uppercase tracking-[0.25em] text-ink/80 pointer-events-auto mr-2 sm:mr-4 md:mr-6 lg:mr-8 xl:mr-10"
+                    className="hidden md:flex flex-col items-end gap-6 text-sm md:text-base lg:text-lg font-mono font-bold uppercase tracking-[0.25em] text-ink/80 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
                     initial={{ opacity: 0, x: 40 }} 
                     animate={{ opacity: 1, x: 0 }} 
                     transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
