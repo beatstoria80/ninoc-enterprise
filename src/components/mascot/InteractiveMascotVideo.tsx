@@ -29,6 +29,17 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const prevHorizOpacity = useRef<number>(-1);
 
   const [isPreloaded, setIsPreloaded] = useState(true);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  // Detect mobile viewport (< 768px) to lock default idle video chapter 1
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Controllers
   const motionControllerRef = useRef<MotionStateController | null>(null);
@@ -40,6 +51,8 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 
   // Pointer Tracker initialization with strict cleanup
   useEffect(() => {
+    if (isMobile) return; // Skip pointer tracking on mobile screens
+
     const activeTracker = pointerTracker || internalTrackerRef.current || new PointerTracker(config);
     if (!pointerTracker) {
       internalTrackerRef.current = activeTracker;
@@ -54,7 +67,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         internalTrackerRef.current.detach();
       }
     };
-  }, [pointerTracker, config]);
+  }, [pointerTracker, config, isMobile]);
 
   // Immediate Video Autoplay Enforcer for 2 Video Layers
   useEffect(() => {
@@ -71,10 +84,12 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     });
 
     if (onLoaded) onLoaded();
-  }, [onLoaded]);
+  }, [onLoaded, isMobile]);
 
   // High-Performance 60 FPS Render Loop (Zero GC, Cached DOM Updates)
   useEffect(() => {
+    if (isMobile) return; // Mobile uses default idle center Chapter 1 without dual-layer crossfade overhead
+
     let animFrameId: number;
     let lastTimestamp = performance.now();
 
@@ -123,7 +138,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     animFrameId = requestAnimationFrame(renderLoop);
 
     return () => cancelAnimationFrame(animFrameId);
-  }, [isPreloaded, pointerTracker]);
+  }, [isPreloaded, pointerTracker, isMobile]);
 
   return (
     <div
@@ -157,28 +172,30 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           <source src={config.videoPaths.idleCenter} type="video/mp4" />
         </video>
 
-        {/* Layer 1: Horizontal Motion (Chapter 2) */}
-        <video
-          ref={videoHorizontalRef}
-          src={config.videoPaths.horizontalMotion}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          onCanPlay={(e) => {
-            e.currentTarget.muted = true;
-            e.currentTarget.play().catch(() => {});
-          }}
-          onLoadedData={(e) => {
-            e.currentTarget.muted = true;
-            e.currentTarget.play().catch(() => {});
-          }}
-          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
-          style={{ opacity: 0 }}
-        >
-          <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
-        </video>
+        {/* Layer 1: Horizontal Motion (Chapter 2) - Desktop Only */}
+        {!isMobile && (
+          <video
+            ref={videoHorizontalRef}
+            src={config.videoPaths.horizontalMotion}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            onCanPlay={(e) => {
+              e.currentTarget.muted = true;
+              e.currentTarget.play().catch(() => {});
+            }}
+            onLoadedData={(e) => {
+              e.currentTarget.muted = true;
+              e.currentTarget.play().catch(() => {});
+            }}
+            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none"
+            style={{ opacity: 0 }}
+          >
+            <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
+          </video>
+        )}
 
       </div>
     </div>

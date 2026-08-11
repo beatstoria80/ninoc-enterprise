@@ -87,26 +87,57 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             <div className="absolute inset-0 w-full h-full">
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
-            <div className="absolute inset-0 h-full flex flex-col justify-between p-6 md:p-12 z-10 text-ink pointer-events-none">
+            <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
               {/* Header Navigation */}
               <div className="flex justify-between items-center w-full pointer-events-auto">
-                <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}>
-                  <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-10 h-10 md:w-12 md:h-12 object-contain" priority unoptimized />
+                <motion.div 
+                  initial={{ opacity: 0, y: -20 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
+                  className="flex items-center gap-2.5"
+                >
+                  <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-9 h-9 md:w-12 md:h-12 object-contain" priority unoptimized />
+                  <span className="hidden sm:inline-block text-[10px] font-mono tracking-widest uppercase text-ink/50 border-l border-ink/10 pl-2.5">
+                    STUDIO
+                  </span>
                 </motion.div>
                 
-                {/* Navigation Menu moved to Top Right */}
-                <motion.div className="flex gap-4 md:gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}>
+                {/* Desktop Navigation Menu */}
+                <motion.div 
+                  className="hidden md:flex gap-4 md:gap-8 text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink/70" 
+                  initial={{ opacity: 0, y: -20 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}
+                >
                   <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Apparel</button>
                   <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Objects</button>
                   <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Pantry</button>
                   <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">Logbook</button>
                   <button onClick={handleShopClick} className="hover:text-ink transition-colors cursor-pointer">About</button>
                 </motion.div>
+
+                {/* Mobile Header Quick Action Pill */}
+                <motion.div
+                  className="flex md:hidden items-center"
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}
+                >
+                  <button
+                    onClick={handleShopClick}
+                    className="no-drag pointer-events-auto flex items-center gap-1.5 bg-white/80 backdrop-blur-md border border-white/90 text-ink px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-sm active:scale-95 transition-all cursor-pointer"
+                  >
+                    <span>Skip Intro</span>
+                    <ArrowRight size={13} className="text-[#8b5cf6]" />
+                  </button>
+                </motion.div>
               </div>
 
-              {/* Main Content Area: Left Section Headline, Copy & CTA */}
-              <div className="flex flex-col justify-between flex-grow w-full max-w-[1800px] mx-auto py-6 md:py-12">
-                <div className="flex-1 flex items-center my-auto">
+              {/* Main Content Area: Desktop Left Aligned, Mobile Frosted Glass Bottom Card */}
+              <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
+                
+                {/* Desktop Content Section */}
+                <div className="hidden md:flex flex-1 items-center my-auto">
                   <div className="w-full max-w-md md:max-w-lg lg:max-w-[500px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-16 xl:ml-20">
                     
                     {/* Eyebrow / Overline */}
@@ -165,12 +196,65 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
                 </div>
 
-                {/* Bottom Left Social Footer */}
+                {/* Mobile Viewport Polish: Frosted Liquid-Glass Floating Card */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
+                  className="flex md:hidden flex-col pointer-events-auto bg-white/85 backdrop-blur-xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-2 mx-1"
+                >
+                  {/* Mobile Eyebrow */}
+                  <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#64748b]">
+                    <span className="w-2 h-2 rounded-full bg-[#8b5cf6] animate-pulse" />
+                    <span>NINOC® DESIGN STUDIO</span>
+                  </div>
+
+                  {/* Mobile Headline */}
+                  <h1 className="text-2xl font-extrabold text-[#1e1b4b] tracking-tight leading-snug">
+                    Tactile Form, <br />
+                    Living <span className="bg-gradient-to-r from-[#a855f7] via-[#ec4899] to-[#3b82f6] bg-clip-text text-transparent">Motion</span>
+                  </h1>
+
+                  {/* Mobile Body Copy */}
+                  <p className="text-xs text-[#475569] font-normal leading-relaxed">
+                    Curated apparel, studio objects, and interactive digital forms crafted for contemporary living.
+                  </p>
+
+                  {/* Mobile Full-Width CTA */}
+                  <div className="pt-1">
+                    <motion.button
+                      onClick={handleShopClick}
+                      className="w-full flex items-center justify-center gap-2.5 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white py-3.5 rounded-2xl text-sm font-semibold tracking-wide shadow-lg shadow-purple-500/25 cursor-pointer active:scale-[0.98] transition-all"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.96 }}
+                      aria-label="Explore Catalog"
+                    >
+                      <span>Explore Catalog</span>
+                      <ArrowRight size={16} />
+                    </motion.button>
+                  </div>
+
+                  {/* Mobile Footer Meta */}
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[10px] text-[#94a3b8] font-medium">
+                    <span>EST. 2024 · BDG ID</span>
+                    <div className="flex gap-3 text-[#64748b]">
+                      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors" aria-label="Instagram">
+                        Instagram
+                      </a>
+                      <span>·</span>
+                      <a href="https://ninoc.store" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors" aria-label="Website">
+                        ninoc.store
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Bottom Left Social Footer (Desktop Only) */}
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.75 }}
-                  className="pointer-events-auto ml-2 sm:ml-6 md:ml-12 lg:ml-16 pt-4"
+                  className="hidden md:block pointer-events-auto ml-2 sm:ml-6 md:ml-12 lg:ml-16 pt-4"
                 >
                   <p className="text-[11px] font-medium text-[#94a3b8] tracking-wider uppercase mb-2">Follow ninoc</p>
                   <div className="flex items-center gap-4 text-[#64748b]">
