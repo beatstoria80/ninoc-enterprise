@@ -71,7 +71,7 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
             <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
               {/* Left: Branding */}
-              <div className="lg:col-span-4 space-y-2.5 md:space-y-4 lg:pt-36 xl:pt-44">
+              <div className="lg:col-span-4 space-y-2.5 md:space-y-4 lg:pt-48 xl:pt-56 2xl:pt-64">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -211,7 +211,7 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
               </div>
 
               {/* Right: Metadata Sidebar (Pushed Down Significantly) */}
-              <div className="col-span-2 lg:col-span-4 lg:pt-60 xl:pt-72 2xl:pt-80 -mt-10 md:mt-0 lg:mt-0">
+              <div className="col-span-2 lg:col-span-4 lg:pt-72 xl:pt-88 2xl:pt-[380px] -mt-10 md:mt-0 lg:mt-0">
                 <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
                   {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
                     <motion.div key={item.label} className="space-y-0" variants={metadataVariants} initial="hidden" animate="visible" custom={i}>
