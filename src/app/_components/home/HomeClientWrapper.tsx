@@ -94,13 +94,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               <InteractiveMascotVideo className="w-full h-full" />
             </div>
             <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
-              {/* Header Navigation */}
-              <div className="flex justify-between items-center w-full pointer-events-auto pt-4 pl-2 sm:pl-4 md:pl-6 lg:pl-8 xl:pl-10">
+              {/* Header Navigation: Top Left Logo Forced to Far Left */}
+              <div className="flex justify-between items-center w-full pointer-events-auto pt-2">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
-                  className="flex items-center gap-2.5"
+                  className="absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:right-auto top-10 md:top-12 z-20 flex items-center gap-2.5 pointer-events-auto"
                 >
                   <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-9 h-9 md:w-12 md:h-12 object-contain" priority unoptimized />
                   <span className="hidden sm:inline-block text-[10px] font-mono tracking-widest uppercase text-ink/50 border-l border-ink/10 pl-2.5">
@@ -110,7 +110,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
                 {/* Mobile Header Quick Action Pill */}
                 <motion.div
-                  className="flex md:hidden items-center"
+                  className="flex md:hidden items-center absolute right-4 top-10"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.3 }}
@@ -213,7 +213,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   initial={{ opacity: 0, y: 40, scale: 0.96 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.2 }}
-                  className="flex md:hidden flex-col pointer-events-auto bg-white/85 backdrop-blur-xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-2 mx-1"
+                  className="flex md:hidden flex-col pointer-events-auto bg-white/85 backdrop-blur-xl border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.12)] rounded-3xl p-5 space-y-3.5 mb-14 mx-1"
                 >
                   {/* Mobile Eyebrow */}
                   <div className="inline-flex items-center gap-2 text-[10px] font-semibold tracking-[0.2em] uppercase text-[#64748b]">
@@ -261,15 +261,15 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
                 </motion.div>
 
-                {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - Flush Right Aligned with Categories Menu) */}
+                {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - Elevated Above Bottom Black Band) */}
                 <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
-                  {/* Bottom Left Spec Meta */}
-                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase ml-2 sm:ml-4 md:ml-6 lg:ml-8 xl:ml-10">
+                  {/* Bottom Left Spec Meta (Elevated above bottom black band) */}
+                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:left-12 bottom-12 md:bottom-14 lg:bottom-16">
                     EST. 2024 · BANDUNG ID
                   </div>
 
-                  {/* Bottom Right Social Links (Flush Right Aligned with Categories Menu) */}
-                  <div className="hidden md:flex flex-col items-end absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 bottom-4 md:bottom-6 z-20">
+                  {/* Bottom Right Social Links (Elevated Above Bottom Black Band & Flush Right Aligned with Categories Menu) */}
+                  <div className="hidden md:flex flex-col items-end absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 bottom-12 md:bottom-14 lg:bottom-16 z-20">
                     <p className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#94a3b8] uppercase mb-1">Follow ninoc</p>
                     <div className="flex items-center gap-3 text-[#64748b]">
                       <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
