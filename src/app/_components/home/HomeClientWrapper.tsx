@@ -136,9 +136,9 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
-            className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-semibold tracking-[0.25em] uppercase text-[#64748b]"
+            className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#475569]"
           >
-            <span className="w-2 h-2 rounded-full bg-[#8b5cf6]" />
+            <span className="w-2 h-2 rounded-full bg-[#8b5cf6] shadow-sm shadow-purple-500/50" />
             <span>NINOC® DESIGN & PRODUCTION STUDIO</span>
           </motion.div>
 
@@ -148,7 +148,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
             transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
             className="space-y-1"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#1e1b4b] tracking-tight leading-[1.08] font-sans">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] tracking-tight leading-[1.08] font-sans drop-shadow-2xs">
               Well-Made Things, <br />
               Chosen Well
             </h1>
@@ -158,7 +158,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
-            className="text-xs sm:text-sm md:text-base text-[#475569] font-normal leading-relaxed max-w-sm sm:max-w-md md:max-w-lg"
+            className="text-xs sm:text-sm md:text-base text-[#334155] font-medium leading-relaxed max-w-sm sm:max-w-md md:max-w-lg"
           >
             Premium apparel, artisan objects, and specialty pantry curated under one roof.
           </motion.p>
@@ -171,8 +171,8 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
           >
             <motion.button
               onClick={onShopClick}
-              className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-medium tracking-wide shadow-lg shadow-purple-500/25 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:ring-offset-2"
-              whileHover={{ scale: 1.04, boxShadow: "0px 12px 28px rgba(168, 85, 247, 0.35)" }}
+              className="group inline-flex items-center gap-3 bg-gradient-to-r from-[#a855f7] to-[#8b5cf6] text-white px-8 py-3.5 rounded-full text-sm sm:text-base font-bold tracking-wide shadow-lg shadow-purple-500/30 transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8b5cf6] focus:ring-offset-2"
+              whileHover={{ scale: 1.04, boxShadow: "0px 14px 32px rgba(168, 85, 247, 0.45)" }}
               whileTap={{ scale: 0.97 }}
               aria-label="Get Yours Now"
             >
@@ -184,12 +184,12 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
 
         {/* Right Column: Vertical Navigation Menu */}
         <motion.div
-          className="hidden md:flex flex-col items-end gap-4 text-xs md:text-[11px] lg:text-xs font-mono font-normal uppercase tracking-[0.2em] text-ink/70 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
+          className="hidden md:flex flex-col items-end gap-4 text-xs md:text-[11px] lg:text-xs font-mono font-bold uppercase tracking-[0.2em] text-ink/80 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
           initial={{ opacity: 0, x: 40 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
         >
-          <span className="text-[10px] font-mono font-normal tracking-[0.25em] uppercase text-ink/40 mb-1 border-b border-ink/10 pb-1.5 w-full text-right">
+          <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-ink/60 mb-1 border-b border-ink/15 pb-1.5 w-full text-right">
             CATEGORIES
           </span>
           <button onClick={onShopClick} className="hover:text-[#8b5cf6] hover:translate-x-[-4px] transition-all cursor-pointer">Apparel</button>
