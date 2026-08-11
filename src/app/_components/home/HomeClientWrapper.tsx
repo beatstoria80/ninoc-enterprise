@@ -269,7 +269,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 </motion.div>
 
                 {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - Elevated Above Bottom Black Band) */}
-                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">    >
+                <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
                   {/* Bottom Left Spec Meta (Elevated above bottom black band) */}
                   <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:left-12 bottom-12 md:bottom-14 lg:bottom-16">
                     EST. 2024 · BANDUNG ID
