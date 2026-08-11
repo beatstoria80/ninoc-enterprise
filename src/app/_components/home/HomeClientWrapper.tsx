@@ -95,7 +95,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             </div>
             <div className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-none pt-safe pb-safe">
               {/* Header Navigation */}
-              <div className="flex justify-between items-center w-full pointer-events-auto pt-4 pl-2 sm:pl-6 md:pl-14 lg:pl-20 xl:pl-24">
+              <div className="flex justify-between items-center w-full pointer-events-auto pt-4 pl-2 sm:pl-4 md:pl-6 lg:pl-8 xl:pl-10">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -132,7 +132,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 <div className="hidden md:flex flex-1 items-center justify-between my-auto">
                   
                   {/* Left Column: Brand Copy & CTA (Shifted Rightwards, Controlled Max-Width) */}
-                  <div className="w-full max-w-lg md:max-w-xl lg:max-w-[540px] xl:max-w-[580px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-6 sm:ml-12 md:ml-20 lg:ml-28 xl:ml-32">
+                  <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-8 sm:ml-16 md:ml-28 lg:ml-36 xl:ml-44">
                     
                     {/* Eyebrow / Overline */}
                     <motion.div
@@ -261,15 +261,15 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   </div>
                 </motion.div>
 
-                {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - "SIMPAN DISINI") */}
+                {/* Bottom Bar: Left Spec Badge & Right Social Footer (Desktop Only - Flush Right Aligned with Categories Menu) */}
                 <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
                   {/* Bottom Left Spec Meta */}
-                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase ml-2 sm:ml-6 md:ml-14 lg:ml-20 xl:ml-24">
+                  <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase ml-2 sm:ml-4 md:ml-6 lg:ml-8 xl:ml-10">
                     EST. 2024 · BANDUNG ID
                   </div>
 
-                  {/* Bottom Right Social Links ("SIMPAN DISINI") */}
-                  <div className="flex flex-col items-end mr-2 sm:mr-4 md:mr-6 lg:mr-8 xl:mr-10">
+                  {/* Bottom Right Social Links (Flush Right Aligned with Categories Menu) */}
+                  <div className="hidden md:flex flex-col items-end absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 bottom-4 md:bottom-6 z-20">
                     <p className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#94a3b8] uppercase mb-1">Follow ninoc</p>
                     <div className="flex items-center gap-3 text-[#64748b]">
                       <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#8b5cf6] transition-colors p-1" aria-label="Instagram">
