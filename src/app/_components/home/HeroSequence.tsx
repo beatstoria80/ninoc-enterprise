@@ -71,7 +71,7 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
             <div className="grid grid-cols-2 lg:grid-cols-12 gap-4 lg:gap-12 items-center lg:items-start">
 
               {/* Left: Branding */}
-              <div className="lg:col-span-4 space-y-2.5 md:space-y-4 lg:pt-24">
+              <div className="lg:col-span-4 space-y-2.5 md:space-y-4 lg:pt-36 xl:pt-44">
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9, y: 30 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -198,20 +198,20 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
                   </motion.div>
                 </motion.div>
 
-                {/* Technical Detail card */}
+                {/* Technical Detail card (Uncropped & Neatly Positioned Inside Frame) */}
                 <motion.div
                   initial={{ opacity: 0, y: 50, scale: 0.9 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   transition={{ delay: 0.8, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
-                  className="absolute -bottom-8 -right-8 bg-white p-6 rounded-none border border-ink/5 shadow-xl hidden md:block z-30"
+                  className="absolute bottom-4 right-4 md:bottom-6 md:right-6 bg-white/95 backdrop-blur-md p-4 rounded-lg border border-slate-200/80 shadow-2xl hidden md:block z-30"
                 >
-                  <p className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.3em] text-ink/50 mb-2">Enterprise Store</p>
-                  <p className="text-xs md:text-[10px] font-medium text-ink uppercase">Curated with precision<br />Fashion · Objects · Pantry</p>
+                  <p className="text-[11px] md:text-[8px] font-mono font-bold uppercase tracking-[0.3em] text-ink/50 mb-1.5">Enterprise Store</p>
+                  <p className="text-xs md:text-[10px] font-mono font-bold text-ink uppercase leading-snug">Curated with precision<br />Apparel · Objects · Pantry</p>
                 </motion.div>
               </div>
 
               {/* Right: Metadata Sidebar */}
-              <div className="col-span-2 lg:col-span-4 lg:pt-20 -mt-10 md:mt-0 lg:mt-0">
+              <div className="col-span-2 lg:col-span-4 lg:pt-32 xl:pt-40 -mt-10 md:mt-0 lg:mt-0">
                 <div className="hidden md:flex flex-col space-y-3 border-l border-ink/5 pl-8">
                   {[{ label: 'Year', value: 'Est. 2024' }, { label: 'Location', value: 'Bandung, Indonesia' }, { label: 'Philosophy', value: '"Functionality through absolute simplicity."' }].map((item, i) => (
                     <motion.div key={item.label} className="space-y-0" variants={metadataVariants} initial="hidden" animate="visible" custom={i}>
