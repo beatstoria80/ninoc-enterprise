@@ -140,6 +140,41 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     return () => cancelAnimationFrame(animFrameId);
   }, [isPreloaded, pointerTracker, isMobile]);
 
+  // Mobile Continuous Video Playback Loop (Prevents browser pause on touch or card appearance)
+  useEffect(() => {
+    if (!isMobile) return;
+
+    let animId: number;
+    const keepPlaying = () => {
+      const v = videoIdleRef.current;
+      if (v && v.paused) {
+        v.muted = true;
+        v.play().catch(() => {});
+      }
+      animId = requestAnimationFrame(keepPlaying);
+    };
+    animId = requestAnimationFrame(keepPlaying);
+
+    const handleUserInteraction = () => {
+      const v = videoIdleRef.current;
+      if (v && v.paused) {
+        v.muted = true;
+        v.play().catch(() => {});
+      }
+    };
+
+    window.addEventListener('touchstart', handleUserInteraction, { passive: true });
+    window.addEventListener('pointerdown', handleUserInteraction, { passive: true });
+    window.addEventListener('click', handleUserInteraction, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('touchstart', handleUserInteraction);
+      window.removeEventListener('pointerdown', handleUserInteraction);
+      window.removeEventListener('click', handleUserInteraction);
+    };
+  }, [isMobile]);
+
   return (
     <div
       ref={containerRef}
@@ -149,7 +184,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       {/* Video Rendering Stack: Separated for Mobile vs Desktop/PC/Tablet */}
       <div className="relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7]">
         {isMobile ? (
-          /* Mobile Video Player: Dedicated full-bleed object-cover */
+          /* Mobile Video Player: Dedicated full-bleed object-cover with auto-resumer */
           <video
             ref={videoIdleRef}
             src={config.videoPaths.idleCenter}
@@ -163,6 +198,10 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               e.currentTarget.play().catch(() => {});
             }}
             onLoadedData={(e) => {
+              e.currentTarget.muted = true;
+              e.currentTarget.play().catch(() => {});
+            }}
+            onPause={(e) => {
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
