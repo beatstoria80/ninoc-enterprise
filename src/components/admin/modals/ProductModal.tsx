@@ -1628,28 +1628,12 @@ export function ProductModal(props: any) {
                                     const colorDescLabel = `Color${imgType}Desc:${group.color}`;
                                     const colorSpec = productForm.specifications?.find(s =>
                                       s.label && s.label.trim().toLowerCase() === colorSpecLabel.trim().toLowerCase()
-                                    ) || (
-                                      colorGroups.length === 1
-                                        ? productForm.specifications?.find(s => s.label && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}:`))
-                                        : undefined
                                     );
                                     const descSpec = productForm.specifications?.find(s =>
                                       s.label && s.label.trim().toLowerCase() === colorDescLabel.trim().toLowerCase()
-                                    ) || (
-                                      colorGroups.length === 1
-                                        ? productForm.specifications?.find(s => s.label && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}desc:`))
-                                        : undefined
                                     );
 
-                                    const fallbackImage = colorGroups.length === 1 ? (
-                                      imgType === 'Image' ? productForm.image_url :
-                                      imgType === 'P1' ? productForm.perspective1 :
-                                      imgType === 'P2' ? productForm.perspective2 :
-                                      imgType === 'P3' ? productForm.perspective3 :
-                                      imgType === 'P4' ? productForm.perspective4 : undefined
-                                    ) : undefined;
-
-                                    const colorImage = colorSpec?.value || fallbackImage;
+                                    const colorImage = colorSpec?.value || '';
                                     const descValue = descSpec?.value || '';
                                     const labelDisplay = imgType === 'Image' ? 'Main Image' : `Gallery ${imgType}`;
                                     
@@ -1685,25 +1669,14 @@ export function ProductModal(props: any) {
                                                     const newUrl = data.results[0].url;
                                                     const newSpecs = [...(productForm.specifications || [])];
                                                     const specIdx = newSpecs.findIndex(s => 
-                                                      s && typeof s.label === 'string' && (
-                                                        s.label.trim().toLowerCase() === colorSpecLabel.trim().toLowerCase() ||
-                                                        (colorGroups.length === 1 && s.label.trim().toLowerCase().startsWith(`color${imgType.toLowerCase()}:`))
-                                                      )
+                                                      s && typeof s.label === 'string' && s.label.trim().toLowerCase() === colorSpecLabel.trim().toLowerCase()
                                                     );
                                                     if (specIdx >= 0) {
                                                       newSpecs[specIdx] = { label: colorSpecLabel, value: newUrl };
                                                     } else {
                                                       newSpecs.push({ label: colorSpecLabel, value: newUrl });
                                                     }
-                                                    const updates: any = { specifications: newSpecs };
-                                                    if (colorGroups.length === 1) {
-                                                      if (imgType === 'Image') updates.image_url = newUrl;
-                                                      else if (imgType === 'P1') updates.perspective1 = newUrl;
-                                                      else if (imgType === 'P2') updates.perspective2 = newUrl;
-                                                      else if (imgType === 'P3') updates.perspective3 = newUrl;
-                                                      else if (imgType === 'P4') updates.perspective4 = newUrl;
-                                                    }
-                                                    setProductForm(prev => ({ ...prev, ...updates }));
+                                                    setProductForm(prev => ({ ...prev, specifications: newSpecs }));
                                                   } catch (err) {
                                                     alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
                                                   } finally {
@@ -1731,23 +1704,12 @@ export function ProductModal(props: any) {
                                                   onClick={() => {
                                                     const newSpecs = (productForm.specifications || []).filter(s => {
                                                       if (!s || typeof s.label !== 'string') return true;
-                                                      const lbl = s.label.trim().toLowerCase();
-                                                      if (lbl === colorSpecLabel.trim().toLowerCase()) return false;
-                                                      if (colorGroups.length === 1 && lbl.startsWith(`color${imgType.toLowerCase()}:`)) return false;
-                                                      return true;
+                                                      return s.label.trim().toLowerCase() !== colorSpecLabel.trim().toLowerCase();
                                                     });
-                                                    const updates: any = { specifications: newSpecs };
-                                                    if (colorGroups.length === 1) {
-                                                      if (imgType === 'Image') updates.image_url = '';
-                                                      else if (imgType === 'P1') updates.perspective1 = '';
-                                                      else if (imgType === 'P2') updates.perspective2 = '';
-                                                      else if (imgType === 'P3') updates.perspective3 = '';
-                                                      else if (imgType === 'P4') updates.perspective4 = '';
-                                                    }
-                                                    setProductForm(prev => ({ ...prev, ...updates }));
+                                                    setProductForm(prev => ({ ...prev, specifications: newSpecs }));
                                                   }}
                                                   className="px-2 py-1 bg-rose/10 hover:bg-rose/20 text-rose text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap"
-                                                  title="Remove image"
+                                                  title="Hapus foto varian ini (tidak mempengaruhi galeri utama)"
                                                 >
                                                   Hapus
                                                 </button>
