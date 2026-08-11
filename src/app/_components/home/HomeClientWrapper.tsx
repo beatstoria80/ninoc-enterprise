@@ -290,9 +290,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Top & Bottom Horizontal Black Framing Bands */}
-            <div className="absolute top-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
-            <div className="absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
+            {/* Top & Bottom Horizontal Black Framing Bands (Desktop Only) */}
+            <div className="hidden md:block absolute top-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
+            <div className="hidden md:block absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
 
             {/* Mascot Video Container */}
             <div 

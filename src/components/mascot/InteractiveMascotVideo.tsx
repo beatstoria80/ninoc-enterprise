@@ -166,7 +166,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
-            className="absolute inset-0 w-full h-full object-cover object-center scale-[0.96] pointer-events-none"
+            className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none"
             style={{ opacity: 1 }}
           >
             <source src={config.videoPaths.idleCenter} type="video/mp4" />
