@@ -27,6 +27,7 @@ export class MotionStateController {
   private currentX = 0;
   private velocity = 0;
   private stateName: MotionStateName = 'IDLE_CENTER';
+  private turnRightTimer = 0;
 
   // Zero-Allocation Buffer: Pre-allocated scratch frame mutated in-place
   private readonly scratchFrame: MotionStateFrame = {
@@ -54,7 +55,7 @@ export class MotionStateController {
    * Zero GC allocations occur inside this method.
    */
   public update(pointer: Readonly<PointerState>, dt: number): Readonly<MotionStateFrame> {
-    const isRightDrag = pointer.isHovered && pointer.targetX > 0;
+    const isRightDrag = pointer.isHovered && pointer.targetX > 0.05;
     const targetX = isRightDrag ? pointer.targetX : 0.0;
 
     const response = isRightDrag ? this.config.motionResponse : this.config.returnToCenterSpeed;
@@ -67,25 +68,29 @@ export class MotionStateController {
     // Clamp position strictly between 0.0 (Idle Main) and 1.0 (Full Right Drag)
     this.currentX = Math.max(0.0, Math.min(1.0, this.currentX));
 
-    // Determine target layer opacities for the 3 motion states
     let idleOpacity = 1.0;
     let horizontalOpacity = 0.0;
     let categoryNodOpacity = 0.0;
 
-    if (pointer.isCategoryHovered) {
-      // State 3: Category Hover Nodding Loop
-      idleOpacity = 0.0;
-      horizontalOpacity = 0.0;
-      categoryNodOpacity = 1.0;
-      this.stateName = 'CATEGORY_NODDING';
-    } else if (this.currentX > 0.03) {
-      // State 2: Moving Rightward towards category area
-      idleOpacity = 0.0;
-      horizontalOpacity = 1.0;
-      categoryNodOpacity = 0.0;
-      this.stateName = 'MOVING_HORIZONTAL';
+    if (isRightDrag) {
+      this.turnRightTimer += dt;
+
+      // 1. Immediately play Chapter 2 (Rightward Motion) for ~0.35s turn animation
+      // 2. Followed immediately by Chapter 3 (Nodding Loop - looping_mengangguk.mp4)
+      if (pointer.isCategoryHovered || this.turnRightTimer > 0.35) {
+        idleOpacity = 0.0;
+        horizontalOpacity = 0.0;
+        categoryNodOpacity = 1.0;
+        this.stateName = 'CATEGORY_NODDING';
+      } else {
+        idleOpacity = 0.0;
+        horizontalOpacity = 1.0;
+        categoryNodOpacity = 0.0;
+        this.stateName = 'MOVING_HORIZONTAL';
+      }
     } else {
-      // State 1: Idle Center
+      // Cursor moved back to the left: reset timer & return to Idle Center (Chapter 1)
+      this.turnRightTimer = 0;
       idleOpacity = 1.0;
       horizontalOpacity = 0.0;
       categoryNodOpacity = 0.0;
