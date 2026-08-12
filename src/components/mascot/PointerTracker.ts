@@ -112,7 +112,7 @@ export class PointerTracker {
     // Zone 2: Right area inside/near mascot frame (Red box area)
     const rightFrameZoneX = centerX + (rect.width * 0.1);
     // Zone 3: Past mascot frame into right-hand CATEGORIES navigation menu
-    const categoryMenuZoneX = rect.right + 80;
+    const categoryMenuZoneX = rect.right + 10;
 
     if (clientX >= categoryMenuZoneX) {
       // Zone 3: Past the video frame to the right categories menu -> Nodding Loop (looping_mengangguk.mp4)
