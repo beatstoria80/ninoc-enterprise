@@ -73,22 +73,42 @@ export class MotionStateController {
     let categoryNodOpacity = 0.0;
 
     if (isRightDrag) {
-      // 1. Moving Right / Hovering Categories: Play pure Nodding Loop directly
-      this.turnRightTimer = 0.001; // Marker that right drag was active
-      idleOpacity = 0.0;
-      horizontalOpacity = 0.0;
-      categoryNodOpacity = 1.0;
-      this.stateName = 'CATEGORY_NODDING';
-    } else {
-      // 2. Moving Left / Returning to Center: Use Chapter 2 (turn motion) as return animation
-      const returnDuration = this.config.chapter2Duration ?? 1.2;
-      
-      if (this.turnRightTimer > 0 && this.turnRightTimer < returnDuration) {
-        this.turnRightTimer += dt;
+      this.turnRightTimer += dt;
+      const ch2Duration = this.config.chapter2Duration ?? 1.8;
+
+      // Phase 1: Play Chapter 2 (mascot turns from center → right) for ch2Duration seconds
+      if (this.turnRightTimer < ch2Duration) {
         idleOpacity = 0.0;
-        horizontalOpacity = 1.0; // Chapter 2 plays on returning to center
+        horizontalOpacity = 1.0;
         categoryNodOpacity = 0.0;
-        this.stateName = 'RETURNING_CENTER';
+        this.stateName = 'MOVING_HORIZONTAL';
+      } else {
+        // Phase 2: After turn completes, play pure Nodding Loop (Chapter 3)
+        idleOpacity = 0.0;
+        horizontalOpacity = 0.0;
+        categoryNodOpacity = 1.0;
+        this.stateName = 'CATEGORY_NODDING';
+      }
+    } else {
+      // Cursor moved back to the left: Play Chapter 2 as return-to-center animation
+      const returnDuration = this.config.chapter2Duration ?? 1.8;
+
+      if (this.turnRightTimer > 0 && this.turnRightTimer < returnDuration + 999) {
+        // Return phase: Chapter 2 plays as mascot turns back to center
+        this.turnRightTimer += dt;
+        if (this.turnRightTimer < returnDuration + returnDuration) {
+          idleOpacity = 0.0;
+          horizontalOpacity = 1.0;
+          categoryNodOpacity = 0.0;
+          this.stateName = 'RETURNING_CENTER';
+        } else {
+          // Return animation complete → back to Idle Center (Chapter 1)
+          this.turnRightTimer = 0;
+          idleOpacity = 1.0;
+          horizontalOpacity = 0.0;
+          categoryNodOpacity = 0.0;
+          this.stateName = 'IDLE_CENTER';
+        }
       } else {
         this.turnRightTimer = 0;
         idleOpacity = 1.0;
