@@ -174,6 +174,10 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
             vHoriz.play().catch(() => {});
           }
         } else if (targetActiveLayer === 2 && vCategoryNod) {
+          // Keep Chapter 2 (vHoriz) active as steady turned-right background layer underneath nodding video
+          if (vHoriz && !vHoriz.paused) {
+            vHoriz.pause();
+          }
           if (vCategoryNod.paused) {
             vCategoryNod.play().catch(() => {});
           }

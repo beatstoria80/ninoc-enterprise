@@ -107,8 +107,9 @@ export class MotionStateController {
         this.stateName = 'MOVING_HORIZONTAL';
       } else {
         // Stage 3: After Chapter 2 turn completes → transition into pure Nodding Loop (Chapter 3)
+        // Keep horizontalOpacity = 1.0 as the smooth background video layer underneath nodding video
         idleOpacity = 0.0;
-        horizontalOpacity = 0.0;
+        horizontalOpacity = 1.0;
         categoryNodOpacity = 1.0;
         this.stateName = 'CATEGORY_NODDING';
       }
