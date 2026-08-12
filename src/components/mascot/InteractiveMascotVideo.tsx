@@ -337,7 +337,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
                 e.currentTarget.muted = true;
                 e.currentTarget.play().catch(() => {});
               }}
-              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none transition-transform duration-500 ease-out transform-gpu will-change-transform"
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.88] pointer-events-none transition-transform duration-500 ease-out transform-gpu will-change-transform"
               style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
             >
               <source src={config.videoPaths.categoryNodding} type="video/mp4" />
