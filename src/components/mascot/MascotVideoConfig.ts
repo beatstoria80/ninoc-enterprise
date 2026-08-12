@@ -29,7 +29,7 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   returnToCenterSpeed: 0.15,
   
   videoCrossfadeDurationMs: 120,
-  chapter2Duration: 1.8,
+  chapter2Duration: 2.4, // Extended duration for complete rightward turn animation before transitioning to nodding loop
   chapter2StartTime: 0.1,
   categoryNodStartTime: 0.5, // Bypasses initial turn-left lead-in frames to start directly on pure nodding loop
   
