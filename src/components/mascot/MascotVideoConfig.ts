@@ -31,7 +31,7 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   videoCrossfadeDurationMs: 120,
   chapter2Duration: 1.8,
   chapter2StartTime: 0.1,
-  categoryNodStartTime: 0.1,
+  categoryNodStartTime: 0.5, // Bypasses initial turn-left lead-in frames to start directly on pure nodding loop
   
   videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',
