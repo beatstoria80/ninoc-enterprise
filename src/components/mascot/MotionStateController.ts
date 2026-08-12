@@ -79,7 +79,7 @@ export class MotionStateController {
     let horizontalOpacity = 0.0;
     let categoryNodOpacity = 0.0;
 
-    const ch2Duration = this.config.chapter2Duration ?? 1.8;
+    const ch2Duration = this.config.chapter2Duration ?? 3.2;
 
     // ─── Edge Detection: Cursor just entered right zone (fresh turn) ───
     if (isRightDrag && !this.wasRightDrag) {
@@ -97,7 +97,7 @@ export class MotionStateController {
     if (isRightDrag) {
       // ═══ RIGHTWARD MOTION (3-Stage Sequential Chain: Chapter 1 → Chapter 2 → Chapter 3) ═══
       this.turnRightTimer += dt;
-      const turnPhaseDuration = this.config.chapter2Duration ?? 1.8;
+      const turnPhaseDuration = this.config.chapter2Duration ?? 3.2;
 
       if (this.turnRightTimer < turnPhaseDuration) {
         // Stage 2: Mandatory Chapter 2 turn motion (turns mascot from center → right pose)

@@ -136,8 +136,8 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           if (targetActiveLayer === 1 && vHoriz) {
             try {
               if (frame.stateName === 'RETURNING_CENTER') {
-                // When returning left from nodding/right, seed currentTime to turned-right frame for reverse playback
-                const maxReturnTime = Math.min(vHoriz.duration || 1.8, (config.chapter2StartTime ?? 0.1) + 1.4);
+                // When returning left from nodding/right, seed currentTime to turned-right frame for full extended reverse playback
+                const maxReturnTime = Math.min(vHoriz.duration || 3.2, (config.chapter2StartTime ?? 0.1) + 2.8);
                 vHoriz.currentTime = maxReturnTime;
                 vHoriz.pause();
               } else {
@@ -163,12 +163,12 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         // Active stream playback & 60 FPS Reverse Controller
         if (targetActiveLayer === 1 && vHoriz) {
           if (frame.stateName === 'RETURNING_CENTER') {
-            // 60 FPS Reverse Playback: decrement currentTime dynamically frame by frame
+            // 60 FPS Reverse Playback: decrement currentTime dynamically frame by frame across full extended duration
             vHoriz.pause();
             const minTime = config.chapter2StartTime ?? 0.1;
             const currentT = vHoriz.currentTime;
             if (currentT > minTime) {
-              vHoriz.currentTime = Math.max(minTime, currentT - dt * 1.4);
+              vHoriz.currentTime = Math.max(minTime, currentT - dt * 0.95);
             }
           } else if (vHoriz.paused) {
             vHoriz.play().catch(() => {});
