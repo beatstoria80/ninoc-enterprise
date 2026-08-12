@@ -17,18 +17,18 @@ export interface MascotVideoConfigType {
 }
 
 export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze({
-  pointerDeadZone: 0.10,
-  pointerSensitivity: 1.2,
+  pointerDeadZone: 0.05,
+  pointerSensitivity: 1.5,
   
-  motionDamping: 0.14,
-  motionResponse: 0.08,
-  returnToCenterSpeed: 0.06,
+  motionDamping: 0.15,
+  motionResponse: 0.28,
+  returnToCenterSpeed: 0.10,
   
-  videoCrossfadeDurationMs: 250,
+  videoCrossfadeDurationMs: 150,
   
   videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',
-    horizontalMotion: '/videos/Mascot_horizontal_motion_video_chapter_2.mp4',
+    horizontalMotion: '/videos/looping_mengangguk.mp4',
   }),
   
   reducedMotionFactor: 0.1,

@@ -110,14 +110,15 @@ export class PointerTracker {
     const clampedX = Math.max(-1.0, Math.min(1.0, rawX * this.config.pointerSensitivity));
     const clampedY = Math.max(-1.0, Math.min(1.0, rawY));
 
-    // Rightward Drag Only: React strictly when cursor moves to the right (clampedX > 0)
+    // Rightward Drag / Category Selection: React strictly when cursor moves to the right
     const dz = this.config.pointerDeadZone;
 
     let targetX = 0;
-    if (clampedX > dz) {
-      const normRange = (clampedX - dz) / (1.0 - dz);
+    if (clampedX > dz || clientX > centerX) {
+      const normRange = Math.max(0, (clampedX - dz) / (1.0 - dz));
       const smoothResponse = normRange * normRange * (3 - 2 * normRange); // Hermite interpolation
-      targetX = smoothResponse;
+      // Instantly register strong rightward target so mascot turns right to watch categories selection
+      targetX = Math.max(0.7, smoothResponse);
     }
 
     if (this.state.reducedMotion) {
@@ -140,16 +141,23 @@ export class PointerTracker {
     const rect = this.container.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
 
-    if (
-      e.clientX >= rect.left &&
-      e.clientX <= rect.right &&
-      e.clientY >= rect.top &&
-      e.clientY <= rect.bottom
-    ) {
+    const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
+
+    // Check if cursor is in the vertical vicinity of the hero/container
+    const verticalMargin = Math.max(250, windowHeight * 0.45);
+    const isYActive = e.clientY >= (rect.top - verticalMargin) && e.clientY <= (rect.bottom + verticalMargin);
+
+    // Keep active when cursor is inside container OR extended to the right side (where categories group menu is located)
+    const isRightSideCategories = e.clientX >= (rect.left + rect.width * 0.15);
+
+    if (isYActive && (isRightSideCategories || (e.clientX >= rect.left && e.clientX <= rect.right))) {
       this.state.isHovered = true;
       this.updatePointer(e.clientX, e.clientY, false);
     } else if (this.state.isHovered) {
-      this.handleMouseLeave();
+      // Deactivate when cursor moves far left or outside vertical bounds
+      if (!isYActive || e.clientX < rect.left - 150) {
+        this.handleMouseLeave();
+      }
     }
   };
 
