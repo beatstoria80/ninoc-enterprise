@@ -27,7 +27,13 @@ export class MotionStateController {
   private currentX = 0;
   private velocity = 0;
   private stateName: MotionStateName = 'IDLE_CENTER';
+  
+  // Separate timers for forward (right) and return (left) phases
   private turnRightTimer = 0;
+  private returnTimer = 0;
+  
+  // Edge detection: was cursor in right zone on previous frame?
+  private wasRightDrag = false;
 
   // Zero-Allocation Buffer: Pre-allocated scratch frame mutated in-place
   private readonly scratchFrame: MotionStateFrame = {
@@ -58,6 +64,7 @@ export class MotionStateController {
     const isRightDrag = pointer.isHovered && pointer.targetX > 0.05;
     const targetX = isRightDrag ? pointer.targetX : 0.0;
 
+    // Spring physics interpolation
     const response = isRightDrag ? this.config.motionResponse : this.config.returnToCenterSpeed;
     const damping = this.config.motionDamping;
 
@@ -72,9 +79,24 @@ export class MotionStateController {
     let horizontalOpacity = 0.0;
     let categoryNodOpacity = 0.0;
 
+    const ch2Duration = this.config.chapter2Duration ?? 1.8;
+
+    // ─── Edge Detection: Cursor just entered right zone (fresh turn) ───
+    if (isRightDrag && !this.wasRightDrag) {
+      // Fresh rightward entry: reset turn timer for full Chapter 2 animation
+      this.turnRightTimer = 0;
+      this.returnTimer = 0;
+    }
+
+    // ─── Edge Detection: Cursor just left right zone (start return) ───
+    if (!isRightDrag && this.wasRightDrag) {
+      // Just moved left: start return timer from 0 for full Chapter 2 return animation
+      this.returnTimer = 0;
+    }
+
     if (isRightDrag) {
+      // ═══ RIGHTWARD MOTION ═══
       this.turnRightTimer += dt;
-      const ch2Duration = this.config.chapter2Duration ?? 1.8;
 
       // Phase 1: Play Chapter 2 (mascot turns from center → right) for ch2Duration seconds
       if (this.turnRightTimer < ch2Duration) {
@@ -89,34 +111,37 @@ export class MotionStateController {
         categoryNodOpacity = 1.0;
         this.stateName = 'CATEGORY_NODDING';
       }
-    } else {
-      // Cursor moved back to the left: Play Chapter 2 as return-to-center animation
-      const returnDuration = this.config.chapter2Duration ?? 1.8;
+    } else if (this.wasRightDrag || this.returnTimer > 0) {
+      // ═══ RETURNING TO CENTER ═══
+      // Play Chapter 2 as return-to-center animation for ch2Duration seconds
+      this.returnTimer += dt;
 
-      if (this.turnRightTimer > 0 && this.turnRightTimer < returnDuration + 999) {
-        // Return phase: Chapter 2 plays as mascot turns back to center
-        this.turnRightTimer += dt;
-        if (this.turnRightTimer < returnDuration + returnDuration) {
-          idleOpacity = 0.0;
-          horizontalOpacity = 1.0;
-          categoryNodOpacity = 0.0;
-          this.stateName = 'RETURNING_CENTER';
-        } else {
-          // Return animation complete → back to Idle Center (Chapter 1)
-          this.turnRightTimer = 0;
-          idleOpacity = 1.0;
-          horizontalOpacity = 0.0;
-          categoryNodOpacity = 0.0;
-          this.stateName = 'IDLE_CENTER';
-        }
+      if (this.returnTimer < ch2Duration) {
+        idleOpacity = 0.0;
+        horizontalOpacity = 1.0;
+        categoryNodOpacity = 0.0;
+        this.stateName = 'RETURNING_CENTER';
       } else {
+        // Return animation complete → back to Idle Center (Chapter 1)
+        this.returnTimer = 0;
         this.turnRightTimer = 0;
         idleOpacity = 1.0;
         horizontalOpacity = 0.0;
         categoryNodOpacity = 0.0;
         this.stateName = 'IDLE_CENTER';
       }
+    } else {
+      // ═══ IDLE CENTER ═══
+      this.turnRightTimer = 0;
+      this.returnTimer = 0;
+      idleOpacity = 1.0;
+      horizontalOpacity = 0.0;
+      categoryNodOpacity = 0.0;
+      this.stateName = 'IDLE_CENTER';
     }
+
+    // Update edge detection state for next frame
+    this.wasRightDrag = isRightDrag;
 
     const horizontalTimeFraction = Math.max(0.0, Math.min(1.0, this.currentX));
 

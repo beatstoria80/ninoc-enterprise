@@ -35,7 +35,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const currentHorizOpacity = useRef<number>(0.0);
   const currentCategoryNodOpacity = useRef<number>(0.0);
 
-  const [isPreloaded, setIsPreloaded] = useState(true);
   const [isMobile, setIsMobile] = useState<boolean>(false);
 
   // Detect mobile viewport (< 768px) to lock default idle video chapter 1
@@ -200,7 +199,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     animFrameId = requestAnimationFrame(renderLoop);
 
     return () => cancelAnimationFrame(animFrameId);
-  }, [isPreloaded, pointerTracker, isMobile, config]);
+  }, [pointerTracker, isMobile, config]);
 
   // Mobile Continuous Video Playback Loop (Prevents browser pause on touch or card appearance)
   useEffect(() => {
