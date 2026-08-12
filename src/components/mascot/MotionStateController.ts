@@ -95,18 +95,18 @@ export class MotionStateController {
     }
 
     if (isRightDrag) {
-      // ═══ RIGHTWARD MOTION (2-Phase Sequential Handoff) ═══
+      // ═══ RIGHTWARD MOTION (3-Stage Sequential Chain: Chapter 1 → Chapter 2 → Chapter 3) ═══
       this.turnRightTimer += dt;
-      const turnPhaseDuration = 0.8; // Initial rightward turn animation duration
+      const turnPhaseDuration = this.config.chapter2Duration ?? 1.8;
 
-      if (this.turnRightTimer < turnPhaseDuration && !pointer.isCategoryHovered) {
-        // Phase 1: Inside video frame / initial turn -> Play Rightward Turn Motion (Chapter 2)
+      if (this.turnRightTimer < turnPhaseDuration) {
+        // Stage 2: Mandatory Chapter 2 turn motion (turns mascot from center → right pose)
         idleOpacity = 0.0;
         horizontalOpacity = 1.0;
         categoryNodOpacity = 0.0;
         this.stateName = 'MOVING_HORIZONTAL';
       } else {
-        // Phase 2: In Categories area or turn complete -> Play pure Nodding Loop (Chapter 3)
+        // Stage 3: After Chapter 2 turn completes → transition into pure Nodding Loop (Chapter 3)
         idleOpacity = 0.0;
         horizontalOpacity = 0.0;
         categoryNodOpacity = 1.0;
