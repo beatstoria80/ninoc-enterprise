@@ -43,7 +43,6 @@ export class PointerTracker {
 
       container.addEventListener('mousemove', this.handleMouseMove, { passive: true });
       container.addEventListener('mouseenter', this.handleMouseEnter, { passive: true });
-      container.addEventListener('mouseleave', this.handleMouseLeave, { passive: true });
 
       container.addEventListener('touchstart', this.handleTouchStart, { passive: true });
       container.addEventListener('touchmove', this.handleTouchMove, { passive: true });
@@ -65,7 +64,6 @@ export class PointerTracker {
     if (this.container) {
       this.container.removeEventListener('mousemove', this.handleMouseMove);
       this.container.removeEventListener('mouseenter', this.handleMouseEnter);
-      this.container.removeEventListener('mouseleave', this.handleMouseLeave);
 
       this.container.removeEventListener('touchstart', this.handleTouchStart);
       this.container.removeEventListener('touchmove', this.handleTouchMove);
