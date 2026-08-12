@@ -25,10 +25,11 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const videoHorizontalRef = useRef<HTMLVideoElement | null>(null);
   const videoCategoryNodRef = useRef<HTMLVideoElement | null>(null);
 
-  // Cached opacity refs to eliminate redundant DOM mutations
+  // Cached opacity & transform refs to eliminate redundant DOM mutations
   const prevIdleOpacity = useRef<number>(-1);
   const prevHorizOpacity = useRef<number>(-1);
   const prevCategoryNodOpacity = useRef<number>(-1);
+  const prevTranslateX = useRef<number>(-999);
 
   // Smooth lerp state containers
   const currentIdleOpacity = useRef<number>(1.0);
@@ -191,6 +192,16 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         if (vCategoryNod && Math.abs(prevCategoryNodOpacity.current - currentCategoryNodOpacity.current) > 0.001) {
           prevCategoryNodOpacity.current = currentCategoryNodOpacity.current;
           vCategoryNod.style.opacity = currentCategoryNodOpacity.current.toFixed(3);
+        }
+
+        // Dynamic Horizontal Spatial Translation: Shift mascot frame rightward (up to 70px) based on frame.currentX
+        const targetShiftX = frame.currentX * 70;
+        if (Math.abs(prevTranslateX.current - targetShiftX) > 0.1) {
+          prevTranslateX.current = targetShiftX;
+          const transformStr = `scale(0.94) translate3d(${targetShiftX.toFixed(1)}px, 0px, 0px)`;
+          if (vIdle) vIdle.style.transform = transformStr;
+          if (vHoriz) vHoriz.style.transform = transformStr;
+          if (vCategoryNod) vCategoryNod.style.transform = transformStr;
         }
       }
 

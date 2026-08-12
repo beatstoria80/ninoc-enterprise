@@ -75,9 +75,9 @@ export class MotionStateController {
     if (isRightDrag) {
       this.turnRightTimer += dt;
 
-      // 1. Immediately play Chapter 2 (Rightward Motion) for ~0.35s turn animation
-      // 2. Followed immediately by Chapter 3 (Nodding Loop - looping_mengangguk.mp4)
-      if (pointer.isCategoryHovered || this.turnRightTimer > 0.35) {
+      // 1. Immediately play Chapter 2 (Rightward Motion) for full rightward turn animation (~1.2s)
+      // 2. Followed by Chapter 3 (Nodding Loop - looping_mengangguk.mp4) when over categories menu or after full turn
+      if (pointer.isCategoryHovered || this.turnRightTimer > 1.2) {
         idleOpacity = 0.0;
         horizontalOpacity = 0.0;
         categoryNodOpacity = 1.0;
