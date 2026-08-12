@@ -7,6 +7,8 @@ export interface MascotVideoConfigType {
   readonly returnToCenterSpeed: number;   // Smooth return speed when pointer leaves hero
   
   readonly videoCrossfadeDurationMs: number; // Layer transition opacity crossfade duration in ms
+  readonly chapter2Duration: number;        // Extended duration in seconds for Chapter 2 rightward motion (~1.8s)
+  readonly chapter2StartTime: number;       // Start timestamp offset in seconds to skip initial still frame
   
   readonly videoPaths: {
     readonly idleCenter: string;        // Chapter 1: Neutral Idle / Center
@@ -26,6 +28,8 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   returnToCenterSpeed: 0.15,
   
   videoCrossfadeDurationMs: 120,
+  chapter2Duration: 1.8,
+  chapter2StartTime: 0.1,
   
   videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',

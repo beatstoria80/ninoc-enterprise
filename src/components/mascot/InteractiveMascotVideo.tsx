@@ -135,9 +135,9 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           activeLayerRef.current = targetActiveLayer;
           
           if (targetActiveLayer === 1 && vHoriz) {
-            // Reset chapter_2.mp4 to frame 0 (center pose) so mascot physically turns from center to right
+            // Seek directly to moving frame segment (config.chapter2StartTime, default 0.1s)
             try {
-              vHoriz.currentTime = 0;
+              vHoriz.currentTime = config.chapter2StartTime ?? 0.1;
               vHoriz.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 2 && vCategoryNod) {
@@ -147,12 +147,12 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               vCategoryNod.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 0) {
-            // When returning to center idle, reset chapter_2 to frame 0 so next turn starts from center
+            // When returning to center idle, reset chapter_2 to movement start frame so next turn starts smoothly
             if (vIdle && vIdle.paused) {
               vIdle.play().catch(() => {});
             }
             if (vHoriz) {
-              vHoriz.currentTime = 0;
+              vHoriz.currentTime = config.chapter2StartTime ?? 0.1;
             }
           }
         }
@@ -200,7 +200,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     animFrameId = requestAnimationFrame(renderLoop);
 
     return () => cancelAnimationFrame(animFrameId);
-  }, [isPreloaded, pointerTracker, isMobile]);
+  }, [isPreloaded, pointerTracker, isMobile, config]);
 
   // Mobile Continuous Video Playback Loop (Prevents browser pause on touch or card appearance)
   useEffect(() => {
