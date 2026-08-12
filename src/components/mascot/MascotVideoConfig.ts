@@ -19,13 +19,13 @@ export interface MascotVideoConfigType {
 
 export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze({
   pointerDeadZone: 0.05,
-  pointerSensitivity: 1.5,
+  pointerSensitivity: 1.8,
   
-  motionDamping: 0.15,
-  motionResponse: 0.24,
-  returnToCenterSpeed: 0.10,
+  motionDamping: 0.12,
+  motionResponse: 0.45,
+  returnToCenterSpeed: 0.15,
   
-  videoCrossfadeDurationMs: 150,
+  videoCrossfadeDurationMs: 120,
   
   videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',

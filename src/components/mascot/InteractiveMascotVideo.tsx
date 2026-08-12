@@ -165,7 +165,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         const targetHoriz = frame.weights.horizontalOpacity;
         const targetCategoryNod = frame.weights.categoryNodOpacity;
 
-        const lerpRate = Math.min(1.0, dt * 14);
+        const lerpRate = Math.min(1.0, dt * 20);
 
         currentIdleOpacity.current = lerp(currentIdleOpacity.current, targetIdle, lerpRate);
         currentHorizOpacity.current = lerp(currentHorizOpacity.current, targetHoriz, lerpRate);

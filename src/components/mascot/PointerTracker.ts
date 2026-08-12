@@ -103,32 +103,27 @@ export class PointerTracker {
     const rect = this.container.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
 
-    const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const centerX = rect.left + rect.width / 2;
-
-    const rawX = (clientX - centerX) / (rect.width / 2);
-    const clampedX = Math.max(-1.0, Math.min(1.0, rawX * this.config.pointerSensitivity));
-
-    const dz = this.config.pointerDeadZone;
 
     let targetX = 0;
     let isCategory = false;
 
-    // Detect category menu zone (right of mascot container / right section of screen)
-    const categoryZoneX = rect.right - 20;
+    // Spatial Thresholds based on Mascot Card Container Bounds
+    // Zone 2: Right area inside/near mascot frame (Red box area)
+    const rightFrameZoneX = centerX + (rect.width * 0.1);
+    // Zone 3: Past mascot frame into right-hand CATEGORIES navigation menu
+    const categoryMenuZoneX = rect.right + 80;
 
-    if (clientX >= categoryZoneX) {
-      // State 3: Cursor is over / inside right-hand category menu
+    if (clientX >= categoryMenuZoneX) {
+      // Zone 3: Past the video frame to the right categories menu -> Nodding Loop (looping_mengangguk.mp4)
       targetX = 1.0;
       isCategory = true;
-    } else if (clientX > centerX + (rect.width * dz)) {
-      // State 2: Cursor is moving rightward in transit area
-      const normRange = Math.max(0, (clampedX - dz) / (1.0 - dz));
-      const smoothResponse = normRange * normRange * (3 - 2 * normRange);
-      targetX = Math.max(0.6, smoothResponse);
+    } else if (clientX >= rightFrameZoneX) {
+      // Zone 2: Inside right area of mascot frame (Red Box in diagram) -> High-Speed Rightward Turn (Chapter 2)
+      targetX = 1.0;
       isCategory = false;
     } else {
-      // State 1: Cursor is centered or on left side
+      // Zone 1: Left / Center -> Idle Center (Chapter 1)
       targetX = 0;
       isCategory = false;
     }
@@ -137,7 +132,7 @@ export class PointerTracker {
       targetX *= this.config.reducedMotionFactor;
     }
 
-    this.state.normX = clampedX;
+    this.state.normX = (clientX - centerX) / (rect.width / 2);
     this.state.normY = 0;
     this.state.targetX = targetX;
     this.state.isCategoryHovered = isCategory;
