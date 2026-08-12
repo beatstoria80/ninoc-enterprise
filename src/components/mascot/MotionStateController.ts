@@ -97,19 +97,20 @@ export class MotionStateController {
     if (isRightDrag) {
       // ═══ RIGHTWARD MOTION ═══
       this.turnRightTimer += dt;
+      const ch2Duration = this.config.chapter2Duration ?? 2.4;
 
-      if (pointer.isCategoryHovered) {
-        // Cursor OUTSIDE video frame (in Categories area): Play pure Nodding Loop (Chapter 3)
-        idleOpacity = 0.0;
-        horizontalOpacity = 0.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      } else {
-        // Cursor INSIDE video frame (Zone 2 right frame area): Play Rightward Turn Motion (Chapter 2)
+      // Phase 1: ALWAYS play Chapter 2 (mascot moving/turning from center → right) FIRST for ch2Duration seconds
+      if (this.turnRightTimer < ch2Duration) {
         idleOpacity = 0.0;
         horizontalOpacity = 1.0;
         categoryNodOpacity = 0.0;
         this.stateName = 'MOVING_HORIZONTAL';
+      } else {
+        // Phase 2: After center-to-right motion completes, transition to pure Nodding Loop (Chapter 3)
+        idleOpacity = 0.0;
+        horizontalOpacity = 0.0;
+        categoryNodOpacity = 1.0;
+        this.stateName = 'CATEGORY_NODDING';
       }
     } else if (this.wasRightDrag || this.returnTimer > 0) {
       // ═══ RETURNING TO CENTER ═══
