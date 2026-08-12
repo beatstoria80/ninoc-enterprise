@@ -20,13 +20,20 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   
-  // Video element refs for the 2 motion state chapters
+  // Video element refs for the 3 motion state chapters
   const videoIdleRef = useRef<HTMLVideoElement | null>(null);
   const videoHorizontalRef = useRef<HTMLVideoElement | null>(null);
+  const videoCategoryNodRef = useRef<HTMLVideoElement | null>(null);
 
   // Cached opacity refs to eliminate redundant DOM mutations
   const prevIdleOpacity = useRef<number>(-1);
   const prevHorizOpacity = useRef<number>(-1);
+  const prevCategoryNodOpacity = useRef<number>(-1);
+
+  // Smooth lerp state containers
+  const currentIdleOpacity = useRef<number>(1.0);
+  const currentHorizOpacity = useRef<number>(0.0);
+  const currentCategoryNodOpacity = useRef<number>(0.0);
 
   const [isPreloaded, setIsPreloaded] = useState(true);
   const [isMobile, setIsMobile] = useState<boolean>(false);
@@ -69,12 +76,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     };
   }, [pointerTracker, config, isMobile]);
 
-  // Immediate Video Autoplay Enforcer for 2 Video Layers
+  // Immediate Video Autoplay Enforcer for 3 Video Layers
   useEffect(() => {
     const vIdle = videoIdleRef.current;
     const vHoriz = videoHorizontalRef.current;
+    const vCategoryNod = videoCategoryNodRef.current;
 
-    [vIdle, vHoriz].forEach((v) => {
+    [vIdle, vHoriz, vCategoryNod].forEach((v) => {
       if (v) {
         v.muted = true;
         v.defaultMuted = true;
@@ -86,12 +94,14 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     if (onLoaded) onLoaded();
   }, [onLoaded, isMobile]);
 
-  // High-Performance 60 FPS Render Loop (Zero GC, Cached DOM Updates)
+  // High-Performance 60 FPS Render Loop with Liquid Smooth Opacity Crossfading
   useEffect(() => {
-    if (isMobile) return; // Mobile uses default idle center Chapter 1 without dual-layer crossfade overhead
+    if (isMobile) return;
 
     let animFrameId: number;
     let lastTimestamp = performance.now();
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * Math.min(1, t);
 
     const renderLoop = (now: number) => {
       const dt = Math.min((now - lastTimestamp) / 1000, 0.05);
@@ -102,33 +112,45 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 
       const vIdle = videoIdleRef.current;
       const vHoriz = videoHorizontalRef.current;
+      const vCategoryNod = videoCategoryNodRef.current;
 
       if (tracker && motion && vIdle && vHoriz) {
         const pointer = tracker.getState();
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
-        // Ensure background video playback
-        if (vIdle.paused) {
-          vIdle.muted = true;
-          vIdle.play().catch(() => {});
-        }
-        if (vHoriz.paused) {
-          vHoriz.muted = true;
-          vHoriz.play().catch(() => {});
+        // Keep all background video streams playing smoothly for zero-latency crossfade
+        [vIdle, vHoriz, vCategoryNod].forEach((v) => {
+          if (v && v.paused) {
+            v.muted = true;
+            v.play().catch(() => {});
+          }
+        });
+
+        // Smooth Opacity Interpolation (Lerp) over ~100ms
+        const targetIdle = frame.weights.idleOpacity;
+        const targetHoriz = frame.weights.horizontalOpacity;
+        const targetCategoryNod = frame.weights.categoryNodOpacity;
+
+        const lerpRate = Math.min(1.0, dt * 14);
+
+        currentIdleOpacity.current = lerp(currentIdleOpacity.current, targetIdle, lerpRate);
+        currentHorizOpacity.current = lerp(currentHorizOpacity.current, targetHoriz, lerpRate);
+        currentCategoryNodOpacity.current = lerp(currentCategoryNodOpacity.current, targetCategoryNod, lerpRate);
+
+        // Smart DOM Opacity Diffing: Only write style when value changes
+        if (Math.abs(prevIdleOpacity.current - currentIdleOpacity.current) > 0.001) {
+          prevIdleOpacity.current = currentIdleOpacity.current;
+          vIdle.style.opacity = currentIdleOpacity.current.toFixed(3);
         }
 
-        // Smart DOM Opacity Diffing: Only write style when value changes meaningfully
-        const nextIdle = frame.weights.idleOpacity;
-        const nextHoriz = frame.weights.horizontalOpacity;
-
-        if (Math.abs(prevIdleOpacity.current - nextIdle) > 0.001) {
-          prevIdleOpacity.current = nextIdle;
-          vIdle.style.opacity = nextIdle.toFixed(3);
+        if (Math.abs(prevHorizOpacity.current - currentHorizOpacity.current) > 0.001) {
+          prevHorizOpacity.current = currentHorizOpacity.current;
+          vHoriz.style.opacity = currentHorizOpacity.current.toFixed(3);
         }
 
-        if (Math.abs(prevHorizOpacity.current - nextHoriz) > 0.001) {
-          prevHorizOpacity.current = nextHoriz;
-          vHoriz.style.opacity = nextHoriz.toFixed(3);
+        if (vCategoryNod && Math.abs(prevCategoryNodOpacity.current - currentCategoryNodOpacity.current) > 0.001) {
+          prevCategoryNodOpacity.current = currentCategoryNodOpacity.current;
+          vCategoryNod.style.opacity = currentCategoryNodOpacity.current.toFixed(3);
         }
       }
 
@@ -211,7 +233,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
             <source src={config.videoPaths.idleCenter} type="video/mp4" />
           </video>
         ) : (
-          /* Desktop / PC / Laptop / Tablet Video Stack: Synchronized 2-Layer 3D Mouse Tracking */
+          /* Desktop / PC / Laptop / Tablet Video Stack: Synchronized 3-Layer Mouse & Category Tracking */
           <>
             {/* Layer 0: Idle Center (Chapter 1) */}
             <video
@@ -236,7 +258,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               <source src={config.videoPaths.idleCenter} type="video/mp4" />
             </video>
 
-            {/* Layer 1: Horizontal Motion (Chapter 2) */}
+            {/* Layer 1: Rightward Motion (Chapter 2 - Moving to Right Area) */}
             <video
               ref={videoHorizontalRef}
               src={config.videoPaths.horizontalMotion}
@@ -257,6 +279,29 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
             >
               <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
+            </video>
+
+            {/* Layer 2: Category Selection Nodding Loop (Chapter 3 - Looping Mengangguk) */}
+            <video
+              ref={videoCategoryNodRef}
+              src={config.videoPaths.categoryNodding}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onCanPlay={(e) => {
+                e.currentTarget.muted = true;
+                e.currentTarget.play().catch(() => {});
+              }}
+              onLoadedData={(e) => {
+                e.currentTarget.muted = true;
+                e.currentTarget.play().catch(() => {});
+              }}
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none transition-transform duration-500 ease-out transform-gpu will-change-transform"
+              style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
+            >
+              <source src={config.videoPaths.categoryNodding} type="video/mp4" />
             </video>
           </>
         )}

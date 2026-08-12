@@ -1,12 +1,13 @@
 import { DEFAULT_MASCOT_VIDEO_CONFIG, MascotVideoConfigType } from './MascotVideoConfig';
 
 export interface PointerState {
-  normX: number;          // Raw normalized X [-1.0 .. +1.0]
-  normY: number;          // Raw normalized Y [-1.0 .. +1.0]
-  targetX: number;        // Smoothstep dead-zone adjusted X target [-1.0 .. +1.0]
-  isHovered: boolean;     // Is cursor/touch currently active over hero
-  isTouch: boolean;       // Is interaction touch-based
-  reducedMotion: boolean; // Does user request reduced motion
+  normX: number;              // Raw normalized X [-1.0 .. +1.0]
+  normY: number;              // Raw normalized Y [-1.0 .. +1.0]
+  targetX: number;            // Smoothstep dead-zone adjusted X target [-1.0 .. +1.0]
+  isHovered: boolean;         // Is cursor/touch currently active over hero/right area
+  isCategoryHovered: boolean; // Is cursor specifically hovering over category navigation items
+  isTouch: boolean;           // Is interaction touch-based
+  reducedMotion: boolean;     // Does user request reduced motion
 }
 
 export class PointerTracker {
@@ -20,6 +21,7 @@ export class PointerTracker {
     normY: 0,
     targetX: 0,
     isHovered: false,
+    isCategoryHovered: false,
     isTouch: false,
     reducedMotion: false,
   };
@@ -110,15 +112,28 @@ export class PointerTracker {
     const clampedX = Math.max(-1.0, Math.min(1.0, rawX * this.config.pointerSensitivity));
     const clampedY = Math.max(-1.0, Math.min(1.0, rawY));
 
-    // Rightward Drag / Category Selection: React strictly when cursor moves to the right
     const dz = this.config.pointerDeadZone;
 
     let targetX = 0;
-    if (clampedX > dz || clientX > centerX) {
+    let isCategory = false;
+
+    // Detect if pointer has reached the right-hand category navigation zone (right of mascot card)
+    const categoryThreshold = rect.right - 40;
+
+    if (clientX >= categoryThreshold) {
+      // Cursor is at/over the right-hand categories menu
+      targetX = 1.0;
+      isCategory = true;
+    } else if (clampedX > dz || clientX > centerX) {
+      // Cursor is in rightward transit area (before categories menu)
       const normRange = Math.max(0, (clampedX - dz) / (1.0 - dz));
-      const smoothResponse = normRange * normRange * (3 - 2 * normRange); // Hermite interpolation
-      // Instantly register strong rightward target so mascot turns right to watch categories selection
-      targetX = Math.max(0.7, smoothResponse);
+      const smoothResponse = normRange * normRange * (3 - 2 * normRange);
+      targetX = Math.max(0.6, smoothResponse);
+      isCategory = false;
+    } else {
+      // Cursor is left/centered
+      targetX = 0;
+      isCategory = false;
     }
 
     if (this.state.reducedMotion) {
@@ -128,6 +143,7 @@ export class PointerTracker {
     this.state.normX = clampedX;
     this.state.normY = clampedY;
     this.state.targetX = targetX;
+    this.state.isCategoryHovered = isCategory;
     this.state.isTouch = isTouch;
   }
 
@@ -143,18 +159,16 @@ export class PointerTracker {
 
     const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-    // Check if cursor is in the vertical vicinity of the hero/container
+    // Check if cursor is in vertical vicinity of hero
     const verticalMargin = Math.max(250, windowHeight * 0.45);
     const isYActive = e.clientY >= (rect.top - verticalMargin) && e.clientY <= (rect.bottom + verticalMargin);
 
-    // Keep active when cursor is inside container OR extended to the right side (where categories group menu is located)
     const isRightSideCategories = e.clientX >= (rect.left + rect.width * 0.15);
 
     if (isYActive && (isRightSideCategories || (e.clientX >= rect.left && e.clientX <= rect.right))) {
       this.state.isHovered = true;
       this.updatePointer(e.clientX, e.clientY, false);
     } else if (this.state.isHovered) {
-      // Deactivate when cursor moves far left or outside vertical bounds
       if (!isYActive || e.clientX < rect.left - 150) {
         this.handleMouseLeave();
       }
@@ -167,6 +181,7 @@ export class PointerTracker {
 
   private handleMouseLeave = (): void => {
     this.state.isHovered = false;
+    this.state.isCategoryHovered = false;
     this.state.normX = 0;
     this.state.normY = 0;
     this.state.targetX = 0;

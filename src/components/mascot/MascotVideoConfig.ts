@@ -10,7 +10,8 @@ export interface MascotVideoConfigType {
   
   readonly videoPaths: {
     readonly idleCenter: string;        // Chapter 1: Neutral Idle / Center
-    readonly horizontalMotion: string;  // Chapter 2: Center <-> Horizontal Motion
+    readonly horizontalMotion: string;  // Chapter 2: Center -> Rightward Motion
+    readonly categoryNodding: string;   // Chapter 3: Category Selection Nodding Loop
   };
 
   readonly reducedMotionFactor: number;
@@ -21,14 +22,15 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   pointerSensitivity: 1.5,
   
   motionDamping: 0.15,
-  motionResponse: 0.28,
+  motionResponse: 0.24,
   returnToCenterSpeed: 0.10,
   
   videoCrossfadeDurationMs: 150,
   
   videoPaths: Object.freeze({
     idleCenter: '/videos/Ninoc_mascot_idle_video_animation_chapter_1.mp4',
-    horizontalMotion: '/videos/looping_mengangguk.mp4',
+    horizontalMotion: '/videos/Mascot_horizontal_motion_video_chapter_2.mp4',
+    categoryNodding: '/videos/looping_mengangguk.mp4',
   }),
   
   reducedMotionFactor: 0.1,
