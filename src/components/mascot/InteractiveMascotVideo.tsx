@@ -94,6 +94,9 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     if (onLoaded) onLoaded();
   }, [onLoaded, isMobile]);
 
+  // Track active layer index (0: Idle, 1: Horiz, 2: Category Nodding)
+  const activeLayerRef = useRef<number>(0);
+
   // High-Performance 60 FPS Render Loop with Liquid Smooth Opacity Crossfading
   useEffect(() => {
     if (isMobile) return;
@@ -118,7 +121,38 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         const pointer = tracker.getState();
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
-        // Keep all background video streams playing smoothly for zero-latency crossfade
+        // Frame-Sync Layer Transitioning: Seek incoming layer to frame 0 for crisp action sync
+        let targetActiveLayer = 0;
+        if (frame.weights.categoryNodOpacity > 0.5) {
+          targetActiveLayer = 2;
+        } else if (frame.weights.horizontalOpacity > 0.5) {
+          targetActiveLayer = 1;
+        } else {
+          targetActiveLayer = 0;
+        }
+
+        if (activeLayerRef.current !== targetActiveLayer) {
+          activeLayerRef.current = targetActiveLayer;
+          
+          if (targetActiveLayer === 1 && vHoriz) {
+            try {
+              vHoriz.currentTime = 0;
+              vHoriz.play().catch(() => {});
+            } catch (e) {}
+          } else if (targetActiveLayer === 2 && vCategoryNod) {
+            try {
+              vCategoryNod.currentTime = 0;
+              vCategoryNod.play().catch(() => {});
+            } catch (e) {}
+          } else if (targetActiveLayer === 0 && vIdle) {
+            try {
+              vIdle.currentTime = 0;
+              vIdle.play().catch(() => {});
+            } catch (e) {}
+          }
+        }
+
+        // Keep background video streams playing smoothly
         [vIdle, vHoriz, vCategoryNod].forEach((v) => {
           if (v && v.paused) {
             v.muted = true;

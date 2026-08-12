@@ -103,35 +103,32 @@ export class PointerTracker {
     const rect = this.container.getBoundingClientRect();
     if (rect.width === 0 || rect.height === 0) return;
 
+    const windowWidth = typeof window !== 'undefined' ? window.innerWidth : 1200;
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
 
     const rawX = (clientX - centerX) / (rect.width / 2);
-    const rawY = (clientY - centerY) / (rect.height / 2);
-
     const clampedX = Math.max(-1.0, Math.min(1.0, rawX * this.config.pointerSensitivity));
-    const clampedY = Math.max(-1.0, Math.min(1.0, rawY));
 
     const dz = this.config.pointerDeadZone;
 
     let targetX = 0;
     let isCategory = false;
 
-    // Detect if pointer has reached the right-hand category navigation zone (right of mascot card)
-    const categoryThreshold = rect.right - 40;
+    // Detect category menu zone (right of mascot container / right section of screen)
+    const categoryZoneX = rect.right - 20;
 
-    if (clientX >= categoryThreshold) {
-      // Cursor is at/over the right-hand categories menu
+    if (clientX >= categoryZoneX) {
+      // State 3: Cursor is over / inside right-hand category menu
       targetX = 1.0;
       isCategory = true;
-    } else if (clampedX > dz || clientX > centerX) {
-      // Cursor is in rightward transit area (before categories menu)
+    } else if (clientX > centerX + (rect.width * dz)) {
+      // State 2: Cursor is moving rightward in transit area
       const normRange = Math.max(0, (clampedX - dz) / (1.0 - dz));
       const smoothResponse = normRange * normRange * (3 - 2 * normRange);
       targetX = Math.max(0.6, smoothResponse);
       isCategory = false;
     } else {
-      // Cursor is left/centered
+      // State 1: Cursor is centered or on left side
       targetX = 0;
       isCategory = false;
     }
@@ -141,7 +138,7 @@ export class PointerTracker {
     }
 
     this.state.normX = clampedX;
-    this.state.normY = clampedY;
+    this.state.normY = 0;
     this.state.targetX = targetX;
     this.state.isCategoryHovered = isCategory;
     this.state.isTouch = isTouch;
@@ -159,19 +156,14 @@ export class PointerTracker {
 
     const windowHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
 
-    // Check if cursor is in vertical vicinity of hero
-    const verticalMargin = Math.max(250, windowHeight * 0.45);
-    const isYActive = e.clientY >= (rect.top - verticalMargin) && e.clientY <= (rect.bottom + verticalMargin);
+    // Keep pointer tracking active across the viewport hero section
+    const isYActive = e.clientY >= 0 && e.clientY <= Math.max(rect.bottom + 250, windowHeight * 0.85);
 
-    const isRightSideCategories = e.clientX >= (rect.left + rect.width * 0.15);
-
-    if (isYActive && (isRightSideCategories || (e.clientX >= rect.left && e.clientX <= rect.right))) {
+    if (isYActive) {
       this.state.isHovered = true;
       this.updatePointer(e.clientX, e.clientY, false);
     } else if (this.state.isHovered) {
-      if (!isYActive || e.clientX < rect.left - 150) {
-        this.handleMouseLeave();
-      }
+      this.handleMouseLeave();
     }
   };
 
