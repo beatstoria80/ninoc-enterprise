@@ -75,18 +75,18 @@ export class MotionStateController {
     if (isRightDrag) {
       this.turnRightTimer += dt;
 
-      // 1. Immediately play Chapter 2 (Rightward Motion) for full rightward turn animation (~1.2s)
-      // 2. Followed by Chapter 3 (Nodding Loop - looping_mengangguk.mp4) when over categories menu or after full turn
-      if (pointer.isCategoryHovered || this.turnRightTimer > 1.2) {
-        idleOpacity = 0.0;
-        horizontalOpacity = 0.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      } else {
+      // Always play Chapter 2 (Rightward Motion) FIRST when turning right (~1.0s)
+      // Then seamlessly transition to Chapter 3 (Nodding Loop) after Chapter 2 completes
+      if (this.turnRightTimer < 1.0) {
         idleOpacity = 0.0;
         horizontalOpacity = 1.0;
         categoryNodOpacity = 0.0;
         this.stateName = 'MOVING_HORIZONTAL';
+      } else {
+        idleOpacity = 0.0;
+        horizontalOpacity = 0.0;
+        categoryNodOpacity = 1.0;
+        this.stateName = 'CATEGORY_NODDING';
       }
     } else {
       // Cursor moved back to the left: reset timer & return to Idle Center (Chapter 1)
