@@ -134,31 +134,45 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           activeLayerRef.current = targetActiveLayer;
           
           if (targetActiveLayer === 1 && vHoriz) {
-            // Seek directly to moving frame segment (config.chapter2StartTime, default 0.1s)
             try {
-              vHoriz.currentTime = config.chapter2StartTime ?? 0.1;
-              vHoriz.play().catch(() => {});
+              if (frame.stateName === 'RETURNING_CENTER') {
+                // When returning left from nodding/right, seed currentTime to turned-right frame for reverse playback
+                const maxReturnTime = Math.min(vHoriz.duration || 1.8, (config.chapter2StartTime ?? 0.1) + 1.4);
+                vHoriz.currentTime = maxReturnTime;
+                vHoriz.pause();
+              } else {
+                // Forward rightward turn entry: seek directly to movement start frame
+                vHoriz.currentTime = config.chapter2StartTime ?? 0.1;
+                vHoriz.play().catch(() => {});
+              }
             } catch (e) {}
           } else if (targetActiveLayer === 2 && vCategoryNod) {
-            // Seek directly to pure nodding loop frame segment (config.categoryNodStartTime, default 0.1s)
+            // Seek directly to pure nodding loop frame segment
             try {
-              vCategoryNod.currentTime = config.categoryNodStartTime ?? 0.1;
+              vCategoryNod.currentTime = config.categoryNodStartTime ?? 0.5;
               vCategoryNod.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 0) {
-            // When returning to center idle, reset chapter_2 to movement start frame so next turn starts smoothly
+            // When returning to center idle, ensure idle video plays
             if (vIdle && vIdle.paused) {
               vIdle.play().catch(() => {});
-            }
-            if (vHoriz) {
-              vHoriz.currentTime = config.chapter2StartTime ?? 0.1;
             }
           }
         }
 
-        // Active stream playback enforcer
-        if (targetActiveLayer === 1 && vHoriz && vHoriz.paused) {
-          vHoriz.play().catch(() => {});
+        // Active stream playback & 60 FPS Reverse Controller
+        if (targetActiveLayer === 1 && vHoriz) {
+          if (frame.stateName === 'RETURNING_CENTER') {
+            // 60 FPS Reverse Playback: decrement currentTime dynamically frame by frame
+            vHoriz.pause();
+            const minTime = config.chapter2StartTime ?? 0.1;
+            const currentT = vHoriz.currentTime;
+            if (currentT > minTime) {
+              vHoriz.currentTime = Math.max(minTime, currentT - dt * 1.4);
+            }
+          } else if (vHoriz.paused) {
+            vHoriz.play().catch(() => {});
+          }
         } else if (targetActiveLayer === 2 && vCategoryNod && vCategoryNod.paused) {
           vCategoryNod.play().catch(() => {});
         } else if (targetActiveLayer === 0 && vIdle && vIdle.paused) {

@@ -109,17 +109,17 @@ export class PointerTracker {
     let isCategory = false;
 
     // Spatial Thresholds based on Mascot Card Container Bounds
-    // Zone 2: Right area inside/near mascot frame (Red box area)
-    const rightFrameZoneX = centerX + (rect.width * 0.1);
-    // Zone 3: Past mascot frame into right-hand CATEGORIES navigation menu
-    const categoryMenuZoneX = rect.right + 10;
+    // Zone 2: Right area inside mascot frame container
+    const rightFrameZoneX = centerX + (rect.width * 0.05);
+    // Zone 3: Strictly OUTSIDE mascot frame container to the right (Categories Navigation Menu)
+    const categoryMenuZoneX = rect.right;
 
     if (clientX >= categoryMenuZoneX) {
-      // Zone 3: Past the video frame to the right categories menu -> Nodding Loop (looping_mengangguk.mp4)
+      // Zone 3: Outside video frame in category menu -> Pure Nodding Loop (Chapter 3)
       targetX = 1.0;
       isCategory = true;
     } else if (clientX >= rightFrameZoneX) {
-      // Zone 2: Inside right area of mascot frame (Red Box in diagram) -> High-Speed Rightward Turn (Chapter 2)
+      // Zone 2: Inside right area of mascot video frame -> Rightward Turn Motion (Chapter 2)
       targetX = 1.0;
       isCategory = false;
     } else {
