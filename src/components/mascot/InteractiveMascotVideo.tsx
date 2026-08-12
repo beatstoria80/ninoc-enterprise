@@ -121,7 +121,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         const pointer = tracker.getState();
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
-        // Frame-Sync Layer Transitioning: Seek incoming layer to frame 0 for crisp action sync
+        // Frame-Sync Layer Transitioning & Stream Control
         let targetActiveLayer = 0;
         if (frame.weights.categoryNodOpacity > 0.5) {
           targetActiveLayer = 2;
@@ -135,30 +135,36 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           activeLayerRef.current = targetActiveLayer;
           
           if (targetActiveLayer === 1 && vHoriz) {
+            // Reset chapter_2.mp4 to frame 0 (center pose) so mascot physically turns from center to right
             try {
               vHoriz.currentTime = 0;
               vHoriz.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 2 && vCategoryNod) {
+            // Start looping_mengangguk.mp4 from frame 0 for category nodding loop
             try {
               vCategoryNod.currentTime = 0;
               vCategoryNod.play().catch(() => {});
             } catch (e) {}
-          } else if (targetActiveLayer === 0 && vIdle) {
-            try {
-              vIdle.currentTime = 0;
+          } else if (targetActiveLayer === 0) {
+            // When returning to center idle, reset chapter_2 to frame 0 so next turn starts from center
+            if (vIdle && vIdle.paused) {
               vIdle.play().catch(() => {});
-            } catch (e) {}
+            }
+            if (vHoriz) {
+              vHoriz.currentTime = 0;
+            }
           }
         }
 
-        // Keep background video streams playing smoothly
-        [vIdle, vHoriz, vCategoryNod].forEach((v) => {
-          if (v && v.paused) {
-            v.muted = true;
-            v.play().catch(() => {});
-          }
-        });
+        // Active stream playback enforcer
+        if (targetActiveLayer === 1 && vHoriz && vHoriz.paused) {
+          vHoriz.play().catch(() => {});
+        } else if (targetActiveLayer === 2 && vCategoryNod && vCategoryNod.paused) {
+          vCategoryNod.play().catch(() => {});
+        } else if (targetActiveLayer === 0 && vIdle && vIdle.paused) {
+          vIdle.play().catch(() => {});
+        }
 
         // Smooth Opacity Interpolation (Lerp) over ~100ms
         const targetIdle = frame.weights.idleOpacity;
