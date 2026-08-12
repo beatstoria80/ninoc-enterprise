@@ -95,21 +95,22 @@ export class MotionStateController {
     }
 
     if (isRightDrag) {
-      // ═══ RIGHTWARD MOTION ═══
+      // ═══ RIGHTWARD MOTION (2-Phase Sequential Handoff) ═══
       this.turnRightTimer += dt;
+      const turnPhaseDuration = 0.8; // Initial rightward turn animation duration
 
-      if (pointer.isCategoryHovered) {
-        // Cursor OUTSIDE video frame (in Categories navigation menu): Play pure Nodding Loop (Chapter 3)
-        idleOpacity = 0.0;
-        horizontalOpacity = 0.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      } else {
-        // Cursor INSIDE video frame (Right half of mascot frame): Play Rightward Turn Motion (Chapter 2)
+      if (this.turnRightTimer < turnPhaseDuration && !pointer.isCategoryHovered) {
+        // Phase 1: Inside video frame / initial turn -> Play Rightward Turn Motion (Chapter 2)
         idleOpacity = 0.0;
         horizontalOpacity = 1.0;
         categoryNodOpacity = 0.0;
         this.stateName = 'MOVING_HORIZONTAL';
+      } else {
+        // Phase 2: In Categories area or turn complete -> Play pure Nodding Loop (Chapter 3)
+        idleOpacity = 0.0;
+        horizontalOpacity = 0.0;
+        categoryNodOpacity = 1.0;
+        this.stateName = 'CATEGORY_NODDING';
       }
     } else if (this.wasRightDrag || this.returnTimer > 0) {
       // ═══ RETURNING TO CENTER (CHAPTER 2 REVERSE) ═══

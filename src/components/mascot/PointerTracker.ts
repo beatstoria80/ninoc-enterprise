@@ -109,8 +109,8 @@ export class PointerTracker {
     // Spatial Thresholds based on Mascot Card Container Bounds
     // Zone 2: Right area inside mascot frame container
     const rightFrameZoneX = centerX + (rect.width * 0.05);
-    // Zone 3: Strictly OUTSIDE mascot frame container to the right (Categories Navigation Menu)
-    const categoryMenuZoneX = rect.right;
+    // Zone 3: OUTSIDE mascot frame container to the right (Categories Navigation Menu with hysteresis)
+    const categoryMenuZoneX = rect.right + 10;
 
     if (clientX >= categoryMenuZoneX) {
       // Zone 3: Outside video frame in category menu -> Pure Nodding Loop (Chapter 3)

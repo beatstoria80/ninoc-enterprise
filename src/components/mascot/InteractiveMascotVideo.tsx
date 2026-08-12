@@ -173,8 +173,17 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           } else if (vHoriz.paused) {
             vHoriz.play().catch(() => {});
           }
-        } else if (targetActiveLayer === 2 && vCategoryNod && vCategoryNod.paused) {
-          vCategoryNod.play().catch(() => {});
+        } else if (targetActiveLayer === 2 && vCategoryNod) {
+          if (vCategoryNod.paused) {
+            vCategoryNod.play().catch(() => {});
+          }
+          // Liquid Loop Boundary Safeguard: Seamlessly loop back to pure nodding start frame (categoryNodStartTime)
+          const nodStart = config.categoryNodStartTime ?? 0.5;
+          if (vCategoryNod.duration && vCategoryNod.currentTime >= vCategoryNod.duration - 0.15) {
+            try {
+              vCategoryNod.currentTime = nodStart;
+            } catch (e) {}
+          }
         } else if (targetActiveLayer === 0 && vIdle && vIdle.paused) {
           vIdle.play().catch(() => {});
         }
