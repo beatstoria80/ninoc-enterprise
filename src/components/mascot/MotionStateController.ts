@@ -73,29 +73,29 @@ export class MotionStateController {
     let categoryNodOpacity = 0.0;
 
     if (isRightDrag) {
-      this.turnRightTimer += dt;
-
-      // Always play Chapter 2 (Rightward Motion) FIRST when turning right (uses config.chapter2Duration, default ~1.8s)
-      // Then seamlessly transition to Chapter 3 (Nodding Loop) after Chapter 2 completes
-      const ch2Duration = this.config.chapter2Duration ?? 1.8;
-      if (this.turnRightTimer < ch2Duration) {
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'MOVING_HORIZONTAL';
-      } else {
-        idleOpacity = 0.0;
-        horizontalOpacity = 0.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      }
-    } else {
-      // Cursor moved back to the left: reset timer & return to Idle Center (Chapter 1)
-      this.turnRightTimer = 0;
-      idleOpacity = 1.0;
+      // 1. Moving Right / Hovering Categories: Play pure Nodding Loop directly
+      this.turnRightTimer = 0.001; // Marker that right drag was active
+      idleOpacity = 0.0;
       horizontalOpacity = 0.0;
-      categoryNodOpacity = 0.0;
-      this.stateName = 'IDLE_CENTER';
+      categoryNodOpacity = 1.0;
+      this.stateName = 'CATEGORY_NODDING';
+    } else {
+      // 2. Moving Left / Returning to Center: Use Chapter 2 (turn motion) as return animation
+      const returnDuration = this.config.chapter2Duration ?? 1.2;
+      
+      if (this.turnRightTimer > 0 && this.turnRightTimer < returnDuration) {
+        this.turnRightTimer += dt;
+        idleOpacity = 0.0;
+        horizontalOpacity = 1.0; // Chapter 2 plays on returning to center
+        categoryNodOpacity = 0.0;
+        this.stateName = 'RETURNING_CENTER';
+      } else {
+        this.turnRightTimer = 0;
+        idleOpacity = 1.0;
+        horizontalOpacity = 0.0;
+        categoryNodOpacity = 0.0;
+        this.stateName = 'IDLE_CENTER';
+      }
     }
 
     const horizontalTimeFraction = Math.max(0.0, Math.min(1.0, this.currentX));

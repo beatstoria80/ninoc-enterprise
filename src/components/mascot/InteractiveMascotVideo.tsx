@@ -141,9 +141,9 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               vHoriz.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 2 && vCategoryNod) {
-            // Start looping_mengangguk.mp4 from frame 0 for category nodding loop
+            // Seek directly to pure nodding loop frame segment (config.categoryNodStartTime, default 0.1s)
             try {
-              vCategoryNod.currentTime = 0;
+              vCategoryNod.currentTime = config.categoryNodStartTime ?? 0.1;
               vCategoryNod.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 0) {
