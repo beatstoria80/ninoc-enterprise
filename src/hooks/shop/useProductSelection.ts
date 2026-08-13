@@ -202,12 +202,12 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       is_perishable: product.is_perishable,
       warehouse_id: product.warehouse_id,
       origin_postal_code: product.warehouses?.postal_code,
-      warehouse_name: product.warehouses?.name || product.warehouses?.city || 'Gudang Utama',
+      warehouse_name: product.warehouses?.city ? `Fasilitas ${product.warehouses.city}` : (product.warehouses?.name || undefined),
     }, effectiveSize, effectiveColor, sizeSurcharge, qtyToAdd, availableStock);
     
     if (result && (result as any).success === false) {
-      const currentWarehouseName = cartItems[0]?.warehouse_name || 'Gudang Utama';
-      const newWarehouseName = product.warehouses?.name || product.warehouses?.city || 'Gudang Lain';
+      const currentWarehouseName = cartItems[0]?.warehouse_name || 'lokasi saat ini';
+      const newWarehouseName = product.warehouses?.city ? `Fasilitas ${product.warehouses.city}` : (product.warehouses?.name || 'lokasi lain');
       
       setConflictInfo({
         isOpen: true,

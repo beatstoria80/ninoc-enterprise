@@ -1210,10 +1210,16 @@ export default function CheckoutPage() {
                 <h2 className="text-xs md:text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.logisticsSelection}</h2>
               </div>
               {items.length > 0 && items[0]?.warehouse_name && (
-                <div className="px-3 py-2 bg-ink/5 border border-ink/10 rounded-sm flex items-center gap-2 mt-1">
-                  <span className="text-rose text-[11px] md:text-[9px] font-medium uppercase tracking-widest">
-                    📦 Dikirim dari: <strong className="font-bold">{items[0].warehouse_name}</strong>
-                  </span>
+                <div className="px-3 py-2.5 bg-emerald-50/80 border border-emerald-200/60 rounded-lg flex items-start gap-2.5 mt-1.5">
+                  <span className="text-emerald-600 text-sm mt-0.5">🚚</span>
+                  <div className="flex-1">
+                    <p className="text-[11px] md:text-[9px] font-medium text-emerald-800">
+                      Pesanan ini akan dikirim dari <strong>{items[0].warehouse_name}</strong>
+                    </p>
+                    <p className="text-[10px] md:text-[8px] text-emerald-600/80 mt-0.5">
+                      Produk dari lokasi lain perlu dipesan terpisah
+                    </p>
+                  </div>
                 </div>
               )}
 

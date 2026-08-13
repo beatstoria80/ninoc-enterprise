@@ -150,7 +150,7 @@ export default function QuickBuyModal() {
         is_perishable: quickBuyProduct.is_perishable,
         warehouse_id: quickBuyProduct.warehouse_id,
         origin_postal_code: quickBuyProduct.warehouses?.postal_code,
-        warehouse_name: quickBuyProduct.warehouses?.name || quickBuyProduct.warehouses?.city || 'Gudang Utama',
+        warehouse_name: quickBuyProduct.warehouses?.city ? `Fasilitas ${quickBuyProduct.warehouses.city}` : (quickBuyProduct.warehouses?.name || undefined),
       },
       selectedSize || undefined,
       selectedColor || undefined,
@@ -160,8 +160,8 @@ export default function QuickBuyModal() {
     );
 
     if (result && (result as any).success === false) {
-      const currentWarehouseName = cartItems[0]?.warehouse_name || 'Gudang Utama';
-      const newWarehouseName = quickBuyProduct.warehouses?.name || quickBuyProduct.warehouses?.city || 'Gudang Lain';
+      const currentWarehouseName = cartItems[0]?.warehouse_name || 'lokasi saat ini';
+      const newWarehouseName = quickBuyProduct.warehouses?.city ? `Fasilitas ${quickBuyProduct.warehouses.city}` : (quickBuyProduct.warehouses?.name || 'lokasi lain');
       
       setConflictInfo({
         isOpen: true,

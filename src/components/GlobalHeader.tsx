@@ -333,8 +333,8 @@ function CartItem({
               </PressScale>
             </motion.div>
             {item.warehouse_name && (
-              <div className="text-[9px] md:text-[6.5px] font-semibold uppercase tracking-widest text-rose opacity-90 mb-0.5">
-                📦 {item.warehouse_name}
+              <div className="text-[9px] md:text-[6.5px] font-medium uppercase tracking-widest text-ink/50 mb-0.5">
+                🚚 Dikirim dari {item.warehouse_name}
               </div>
             )}
             <div className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size || 'N/A'}</div>

@@ -61,12 +61,12 @@ export function WarehouseConflictModal({
 
                 {/* Title */}
                 <h3 className="mb-1 text-base font-semibold text-ink">
-                  Produk dari Gudang Berbeda
+                  Lokasi Pengiriman Berbeda
                 </h3>
 
                 {/* Description */}
                 <p className="mb-4 text-[13px] leading-relaxed text-ink/60">
-                  Setiap pesanan diproses dari <strong>satu gudang</strong>. Produk ini berasal dari gudang yang berbeda dengan keranjang Anda.
+                  Produk ini dikirim dari <strong>lokasi berbeda</strong> dengan item di keranjang kamu. Untuk menjaga kualitas pengiriman, masing-masing harus dipesan terpisah.
                 </p>
 
                 {/* Warehouse comparison */}
@@ -74,16 +74,16 @@ export function WarehouseConflictModal({
                   <div className="flex items-start gap-2.5">
                     <ShoppingBag size={13} className="mt-0.5 shrink-0 text-ink/40" />
                     <div className="flex-1 min-w-0">
-                      <span className="text-ink/50">Keranjang kamu:</span>
-                      <p className="font-medium text-ink truncate">{currentWarehouseName}</p>
+                      <span className="text-ink/50">Di keranjang saat ini</span>
+                      <p className="font-medium text-ink truncate">Dikirim dari {currentWarehouseName}</p>
                     </div>
                   </div>
                   <div className="my-2 border-t border-dashed border-ink/10" />
                   <div className="flex items-start gap-2.5">
                     <ArrowRight size={13} className="mt-0.5 shrink-0 text-rose-400" />
                     <div className="flex-1 min-w-0">
-                      <span className="text-ink/50">Produk ini:</span>
-                      <p className="font-medium text-rose-500 truncate">{newWarehouseName}</p>
+                      <span className="text-ink/50">Produk yang ingin ditambahkan</span>
+                      <p className="font-medium text-rose-500 truncate">Dikirim dari {newWarehouseName}</p>
                     </div>
                   </div>
                 </div>
@@ -98,14 +98,14 @@ export function WarehouseConflictModal({
                       }}
                       className="w-full rounded-xl bg-ink py-2.5 text-[13px] font-medium text-white transition-opacity hover:opacity-80 active:opacity-70"
                     >
-                      Kosongkan Keranjang & Tambah Produk Ini
+                      Ganti Isi Keranjang
                     </button>
                   )}
                   <button
                     onClick={onClose}
                     className="w-full rounded-xl border border-ink/12 py-2.5 text-[13px] font-medium text-ink/70 transition-colors hover:bg-ink/[0.04]"
                   >
-                    Batal, Lanjutkan Pesanan Sebelumnya
+                    Tetap Belanja yang Sekarang
                   </button>
                 </div>
               </div>

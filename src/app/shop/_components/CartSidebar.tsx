@@ -155,8 +155,8 @@ export function CartSidebar({
                       </div>
                       <div className="flex flex-col gap-0.5 mb-auto mt-0.5 relative">
                         {item.warehouse_name && (
-                          <div className="text-[9px] md:text-[7.5px] text-rose font-semibold uppercase tracking-widest opacity-90">
-                            📦 {item.warehouse_name}
+                          <div className="text-[9px] md:text-[7.5px] text-ink/50 font-medium uppercase tracking-widest">
+                            🚚 Dikirim dari {item.warehouse_name}
                           </div>
                         )}
                         <div className="flex items-center gap-1">
