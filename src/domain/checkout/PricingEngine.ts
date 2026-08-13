@@ -4,9 +4,11 @@ export interface DatabaseProduct {
   id: string;
   price: number;
   name: string;
+  stock_quantity?: number | null;
+  stock?: number | null;
   supplier_id?: string | null;
   product_costings?: Array<{ supplier_base_price?: number; supplier_surcharge_cost?: number; ninoc_markup?: number }> | any;
-  variants?: Array<{ id: string; size?: string | null; color?: string | null }>;
+  variants?: Array<{ id: string; size?: string | null; color?: string | null; stock_quantity?: number | null }>;
 }
 
 export interface ProcessedOrderItem {

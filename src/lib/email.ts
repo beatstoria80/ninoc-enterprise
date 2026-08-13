@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer';
-import { getAppUrl } from './utils.ts';
+import { getAppUrl } from './utils';
 
 // Nodemailer transporter helper (lazily reads process.env)
 function getTransporter() {

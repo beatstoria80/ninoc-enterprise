@@ -54,7 +54,7 @@ export class CheckoutValidator {
     items: CheckoutItem[],
     customer: CustomerDetails,
     ip: string
-  ): { isValid: boolean; errorResponse?: NextResponse; sanitizedPhone?: string; fullName?: string } {
+  ): { isValid: boolean; errorResponse?: NextResponse; sanitizedPhone?: string; fullName?: string; sanitizedItems?: CheckoutItem[] } {
     // 1. Cart validation
     if (!Array.isArray(items) || items.length === 0) {
       return { isValid: false, errorResponse: NextResponse.json({ error: 'Keranjang belanja kosong' }, { status: 400 }) };
@@ -116,6 +116,6 @@ export class CheckoutValidator {
       };
     }
 
-    return { isValid: true, sanitizedPhone, fullName };
+    return { isValid: true, sanitizedPhone, fullName, sanitizedItems: items };
   }
 }

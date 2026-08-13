@@ -1,5 +1,5 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { CheckoutValidator, CustomerDetails } from './CheckoutValidator';
+import { CheckoutValidator, CustomerDetails, CheckoutItem } from './CheckoutValidator';
 import { PricingEngine } from './PricingEngine';
 import { OrderRepository } from '@/repositories/OrderRepository';
 import { getSnapApi } from '@/lib/midtrans';
@@ -24,7 +24,7 @@ export class CheckoutService {
   constructor(private readonly supabaseAdmin: SupabaseClient) {}
 
   public async processCheckout(
-    items: unknown[],
+    items: CheckoutItem[] | any[],
     customerDetails: CustomerDetails,
     shippingDetails: Record<string, unknown>,
     promo: unknown,
@@ -32,7 +32,7 @@ export class CheckoutService {
     affiliateCookieValue: string | undefined
   ): Promise<CheckoutProcessResponse> {
     // 1. Validate & Sanitize Input
-    const validation = CheckoutValidator.validateRequest(items, customerDetails, clientIp);
+    const validation = CheckoutValidator.validateRequest(items as CheckoutItem[], customerDetails, clientIp);
     if (!validation.isValid) {
       return {
         status: 400,
@@ -48,7 +48,7 @@ export class CheckoutService {
     const orderRepo = new OrderRepository(this.supabaseAdmin);
 
     // 3. Fetch Product Costings & Variants
-    const productIds = Array.from(new Set(validation.sanitizedItems!.map((i) => i.id)));
+    const productIds = Array.from(new Set((validation.sanitizedItems || []).map((i: any) => i.id as string)));
     const { data: dbProducts, error: dbError } = await orderRepo.getProductsByIds(productIds);
 
     if (dbError) {
@@ -84,7 +84,7 @@ export class CheckoutService {
     }
 
     // 4. Calculate Prices & Build Breakdown via O(1) Pricing Engine
-    const pricing = PricingEngine.calculateOrderBreakdown(validation.sanitizedItems!, dbProducts, shippingDetails, promo);
+    const pricing = PricingEngine.calculateOrderBreakdown(validation.sanitizedItems!, dbProducts, shippingDetails as any, promo as any);
     if (pricing.error) {
       return { status: 400, payload: { error: pricing.error } };
     }
@@ -131,7 +131,7 @@ export class CheckoutService {
     const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
     const orderNumber = `NC-${datePart}-${randPart}`;
 
-    const shipments = (shippingDetails.shipments as Record<string, unknown>[]) || (Array.isArray(shippingDetails) ? shippingDetails : []);
+    const shipments = (shippingDetails as any)?.shipments || (Array.isArray(shippingDetails) ? shippingDetails : []);
 
     const orderCreation = await orderRepo.createOrderWithInventoryLock(
       orderId,
@@ -150,8 +150,8 @@ export class CheckoutService {
     }
 
     // 8. Generate Midtrans Snap Token
-    const snap = getSnapApi();
     const appUrl = getAppUrl();
+    const snap = getSnapApi();
     const parameter = {
       transaction_details: { order_id: orderId, gross_amount: pricing.grossAmount },
       customer_details: {
@@ -180,7 +180,7 @@ export class CheckoutService {
       credit_card: { secure: true },
       custom_expiry: { expiry_duration: 24, unit: 'hour' },
       callbacks: {
-        finish: `${appUrl}/payment/success?order_id=${orderId}&courier=${shippingDetails.method || ''}`,
+        finish: `${appUrl}/payment/success?order_id=${orderId}&courier=${(shippingDetails.method as string) || ''}`,
         unfinish: `${appUrl}/shop`,
         error: `${appUrl}/checkout`,
       },
@@ -194,7 +194,7 @@ export class CheckoutService {
     // 9. Fire Asynchronous WhatsApp Notification (Non-blocking Next.js after)
     after(() => {
       try {
-        const formattedPhone = formatPhoneNumber(customerDetails.phone);
+        const formattedPhone = customerDetails.phone ? formatPhoneNumber(customerDetails.phone) : '';
         if (formattedPhone) {
           const estDelivery = '2-5 hari kerja';
           sendCheckoutPendingWA({
