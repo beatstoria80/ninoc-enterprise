@@ -83,7 +83,7 @@ export default function GlobalFooter() {
 
         {/* Base */}
         <div className="flex flex-col gap-1.5">
-          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">NINOC ENTERPRISE STUDIO</h4>
+          <h4 className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink mb-0.5">NINOC ENTERPRISE</h4>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-start gap-1.5">
               <MapPin size={9} className="text-rose mt-0.5 flex-shrink-0" />
@@ -114,8 +114,8 @@ export default function GlobalFooter() {
             </div>
             <div className="flex items-center gap-1.5">
               <Mail size={9} className="text-rose flex-shrink-0" />
-              <a href="mailto:cs@ninoc.store" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
-                cs@ninoc.store
+              <a href="mailto:ninocenterprise@gmail.com" className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/60 hover:text-rose transition-colors lowercase cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-1 rounded-sm">
+                ninocenterprise@gmail.com
               </a>
             </div>
           </div>
