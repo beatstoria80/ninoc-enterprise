@@ -35,7 +35,7 @@ export default function ShippingPolicyPage() {
     {
       id: "06",
       title: "LOKASI GUDANG & KONTAK LOGISTIK",
-      text: "Gudang Utama NINOC ENTERPRISE:\nKompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292\n\nUntuk kendala keterlambatan atau pertanyaan logistik, silakan hubungi tim kami di cs@ninoc.store atau WhatsApp +628211983774."
+      text: "Gudang Utama NINOC ENTERPRISE:\nKompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI, KOTA BANDUNG, JAWA BARAT, ID, 40292\n\nUntuk kendala keterlambatan atau pertanyaan logistik, silakan hubungi tim kami di ninocenterprise@gmail.com atau WhatsApp +628211983774."
     }
   ];
 

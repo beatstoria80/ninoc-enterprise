@@ -81,7 +81,7 @@ const HELP_SECTIONS: HelpSection[] = [
 const DEFAULT_VALUES: Record<string, any> = {
   help_guide_customer_care: {
     wa: '08211983774',
-    email: 'cs@ninoc.store',
+    email: 'ninocenterprise@gmail.com',
     hours: 'Senin–Sabtu, 08.00–17.00 WIB',
     notes: 'Untuk pertanyaan mengenai pembayaran, retur, atau refund, silakan buat tiket bantuan melalui fitur Support Chat di pojok kanan bawah.',
   },

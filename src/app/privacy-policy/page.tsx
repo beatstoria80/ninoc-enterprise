@@ -267,8 +267,8 @@ export default function PrivacyPolicyPage() {
               </p>
               <div className="p-4 bg-[#181818] border border-white/10 space-y-1.5">
                 <p className="text-xs font-mono text-white/90"><strong>NINOC Enterprise</strong></p>
-                <p className="text-xs font-mono text-white/60">Email: legal@ninoc.store</p>
-                <p className="text-xs font-mono text-white/60">WhatsApp: +62 813-2220-3112</p>
+                <p className="text-xs font-mono text-white/60">Email: ninocenterprise@gmail.com</p>
+                <p className="text-xs font-mono text-white/60">WhatsApp: +62 821-1983-774</p>
                 <p className="text-xs font-mono text-white/60">Address: Griya Saluyu, Bandung 40292, West Java, Indonesia</p>
               </div>
             </div>

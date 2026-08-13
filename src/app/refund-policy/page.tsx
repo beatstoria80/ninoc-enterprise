@@ -70,7 +70,7 @@ export default function RefundPolicyPage() {
     {
       id: "GEN-03",
       title: "ALAMAT PENERIMAAN RETUR GUDANG PUSAT",
-      text: "NINOC ENTERPRISE CENTRAL HUB (STUDIO & ROASTERY)\nKompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Kec. Rancasari, Kota Bandung, Jawa Barat 40292, Indonesia\n\nEmail Layanan Resmi: cs@ninoc.store | WhatsApp Support: +62 821-1983-774"
+      text: "NINOC ENTERPRISE CENTRAL HUB (STUDIO & ROASTERY)\nKompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Kec. Rancasari, Kota Bandung, Jawa Barat 40292, Indonesia\n\nEmail Layanan Resmi: ninocenterprise@gmail.com | WhatsApp Support: +62 821-1983-774"
     }
   ];
 

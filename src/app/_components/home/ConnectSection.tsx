@@ -52,7 +52,7 @@ export default function ConnectSection() {
 
             {/* Email */}
             <a
-              href="mailto:beatstoria.ai@gmail.com"
+              href="mailto:ninocenterprise@gmail.com"
               className="group flex flex-col items-center text-center p-6 border border-ink/5 hover:border-rose/30 hover:bg-rose/[0.02] transition-all"
             >
               <motion.div
@@ -66,7 +66,7 @@ export default function ConnectSection() {
                 </svg>
               </motion.div>
               <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60 mb-1">Email Us</p>
-              <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">beatstoria.ai@gmail.com</p>
+              <p className="text-base md:text-sm font-display font-medium italic text-ink group-hover:text-rose transition-colors">ninocenterprise@gmail.com</p>
               <p className="text-xs md:text-[7px] text-ink/50 uppercase tracking-widest mt-1">Direct Message</p>
             </a>
 
