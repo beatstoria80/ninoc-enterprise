@@ -42,68 +42,68 @@ export function VerificationStatusAlert({
       case 'invalid_order':
         return {
           icon: ShieldAlert,
-          badgeText: 'Status: ID Pesanan Tidak Ditemukan',
+          badgeText: 'STATUS: ID PESANAN TIDAK TERIDENTIFIKASI',
           badgeBg: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
           gradientBorder: 'from-rose-500/40 via-stone-800/40 to-stone-900/60',
           accentColor: 'text-rose-400',
-          defaultTitle: 'Nomor Order / Invoice Tidak Terverifikasi',
+          defaultTitle: 'Nomor Pesanan / Invoice Tidak Terverifikasi',
           reasons: [
-            'Nomor Order atau Nomor HP tidak sesuai dengan pencatatan di database server.',
-            'Format Nomor Order salah (Format standar: NINOC-XXXXXXXXXXXXXXXX atau NC-XXXXXXXX).',
-            'Pesanan belum terbuat sempurna saat checkout atau koneksi jaringan terputus.',
+            'Nomor pesanan atau kontak seluler tidak terdaftar pada basis data server.',
+            'Format pengenal tidak sesuai standar resmi (Format valid: NINOC-XXXX / NC-XXXX).',
+            'Sesi transaksi belum terenkripsi sempurna atau koneksi terputus saat checkout.',
           ],
         };
       case 'retur_expired':
         return {
           icon: Clock,
-          badgeText: 'Status: Batas Waktu Klaim (48 jam) Terlewati',
+          badgeText: 'STATUS: MASA GARANSI (48 JAM) BERAKHIR',
           badgeBg: 'bg-amber-500/10 text-amber-400 border-amber-500/30',
           gradientBorder: 'from-amber-500/40 via-stone-800/40 to-stone-900/60',
           accentColor: 'text-amber-400',
-          defaultTitle: 'Masa Klaim Garansi Retur Telah Kedaluwarsa',
+          defaultTitle: 'Batas Waktu Pengajuan Klaim Retur Telah Kedaluwarsa',
           reasons: [
-            'Kebijakan garansi retur/penukaran NINOC berlaku maksimal 2x24 jam sejak paket dinyatakan diterima oleh kurir.',
-            'Waktu penerimaan terdeteksi otomatis dari integrasi sistem lacak kurir WhatsApp/Biteship.',
-            'Jika ada kendala khusus (cacat tersembunyi), silakan hubungi tim Customer Care kami secara langsung.',
+            'Masa garansi pengajuan klaim (2x24 jam) terhitung sejak serah terima logistik telah berakhir.',
+            'Waktu penerimaan paket terekam secara real-time melalui integrasi sistem manifes kurir.',
+            'Prosedur evaluasi khusus dapat dikonsultasikan melalui Layanan Pelanggan Resmi.',
           ],
         };
       case 'expired':
         return {
           icon: Clock,
-          badgeText: 'Status: Transaksi Kedaluwarsa',
+          badgeText: 'STATUS: SESI PEMBAYARAN KEDALUWARSA',
           badgeBg: 'bg-orange-500/10 text-orange-400 border-orange-500/30',
           gradientBorder: 'from-orange-500/40 via-stone-800/40 to-stone-900/60',
           accentColor: 'text-orange-400',
-          defaultTitle: 'Waktu Pembayaran Telah Berakhir',
+          defaultTitle: 'Durasi Pembayaran Transaksi Telah Berakhir',
           reasons: [
-            'Batas waktu pembayaran 24 jam di Midtrans telah berakhir tanpa konfirmasi pembayaran.',
-            'Jika Anda sudah terlanjur mentransfer dana, mohon isi form klaim refund rekening atau hubungi CS.',
-            'Stok produk telah dikembalikan otomatis ke katalog publik untuk menjaga keadilan pembeli lain.',
+            'Batas durasi otorisasi pembayaran (24 jam) pada payment gateway telah berakhir.',
+            'Pengembalian dana untuk transaksi yang terlanjur terproses memerlukan verifikasi manual.',
+            'Alokasi stok inventori secara otomatis dikembalikan ke katalog publik.',
           ],
         };
       case 'unauthorized':
         return {
           icon: ShieldAlert,
-          badgeText: 'Status: Akses Dibatasi',
+          badgeText: 'STATUS: OTORISASI AKUN DIBATASI',
           badgeBg: 'bg-red-500/10 text-red-400 border-red-500/30',
           gradientBorder: 'from-red-500/40 via-stone-800/40 to-stone-900/60',
           accentColor: 'text-red-400',
-          defaultTitle: 'Pesanan Tidak Terdaftar Pada Akun Ini',
+          defaultTitle: 'Akses Dibatasi — Kredensial Akun Berbeda',
           reasons: [
-            'Pesanan ini dibuat menggunakan akun email/nomor WhatsApp yang berbeda.',
-            'Silakan login menggunakan akun yang sesuai atau gunakan pencarian Guest Order.',
+            'Kredensial akun aktif tidak memiliki wewenang akses terhadap data pesanan terkait.',
+            'Silakan lakukan autentikasi ulang menggunakan akun terdaftar atau mode Pencarian Pelanggan.',
           ],
         };
       default:
         return {
           icon: AlertTriangle,
-          badgeText: 'Status: Kendala Verifikasi Data',
+          badgeText: 'STATUS: SINKRONISASI DATA KENDALA',
           badgeBg: 'bg-rose-500/10 text-rose-400 border-rose-500/30',
           gradientBorder: 'from-rose-500/40 via-stone-800/40 to-stone-900/60',
           accentColor: 'text-rose-400',
-          defaultTitle: 'Terjadi Kendala Verifikasi',
+          defaultTitle: 'Kendala Verifikasi Sistem',
           reasons: [
-            message || 'Data yang Anda masukkan memerlukan pemeriksaan lebih lanjut.',
+            message || 'Data transaksi yang dimasukkan memerlukan pemeriksaan lebih lanjut oleh sistem.',
           ],
         };
     }
@@ -113,7 +113,7 @@ export function VerificationStatusAlert({
   const IconComponent = theme.icon;
   const displayTitle = title || theme.defaultTitle;
   const waHelpUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(
-    `Halo Admin NINOC Enterprise, saya memerlukan bantuan verifikasi pesanan:\nOrder ID: ${orderId || 'Tidak Diketahui'}\nKendala: ${message}`
+    `Halo Layanan Pelanggan NINOC Enterprise, mohon bantuan verifikasi pesanan:\nOrder ID: ${orderId || 'Tidak Diketahui'}\nKendala: ${message}`
   )}`;
 
   return (
@@ -171,7 +171,7 @@ export function VerificationStatusAlert({
         <div className="mt-4 border-t border-stone-800/60 pt-3.5">
           <p className="text-[10px] uppercase tracking-widest font-semibold text-stone-400 mb-2 flex items-center gap-1.5">
             <HelpCircle className="h-3.5 w-3.5 text-rose-400" />
-            Penjelasan & Fakta Verifikasi Transparan:
+            CATATAN DISKRIPSI SINKRONISASI SISTEM:
           </p>
           <ul className="space-y-1.5 text-xs text-stone-300">
             {theme.reasons.map((reason, idx) => (
@@ -192,7 +192,7 @@ export function VerificationStatusAlert({
             className="inline-flex items-center gap-2 rounded-lg bg-emerald-600/90 px-3.5 py-2 text-xs font-semibold text-white shadow-lg transition-all hover:bg-emerald-500 hover:shadow-emerald-900/30 focus:outline-none focus:ring-2 focus:ring-emerald-400"
           >
             <MessageSquare className="h-3.5 w-3.5" />
-            <span>Bantuan CS WhatsApp</span>
+            <span>Layanan Pelanggan Official</span>
           </a>
 
           <button
@@ -201,7 +201,7 @@ export function VerificationStatusAlert({
             className="inline-flex items-center gap-2 rounded-lg border border-stone-700 bg-stone-900 px-3.5 py-2 text-xs font-semibold text-stone-200 shadow-sm transition-all hover:border-stone-500 hover:bg-stone-800 hover:text-white"
           >
             <Mail className="h-3.5 w-3.5 text-rose-400" />
-            <span>Cara Cari Invoice</span>
+            <span>Panduan Resi & Invoice</span>
           </button>
 
           {onRetry && (
@@ -210,7 +210,7 @@ export function VerificationStatusAlert({
               onClick={onRetry}
               className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/20 hover:text-white"
             >
-              <span>Coba Lagi</span>
+              <span>Verifikasi Ulang</span>
               <ChevronRight className="h-3.5 w-3.5" />
             </button>
           )}
