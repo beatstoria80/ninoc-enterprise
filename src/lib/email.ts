@@ -1,13 +1,15 @@
 import nodemailer from 'nodemailer';
 
-// Nodemailer transporter configuration
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.SMTP_EMAIL, // e.g., ninocenterprise@gmail.com
-    pass: process.env.SMTP_PASSWORD, // Google App Password
-  },
-});
+// Nodemailer transporter helper (lazily reads process.env)
+function getTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+}
 
 export async function sendEmailInvoice(order: any, customerEmail: string) {
   if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
@@ -129,7 +131,7 @@ export async function sendEmailInvoice(order: any, customerEmail: string) {
   `;
 
   try {
-    const info = await transporter.sendMail({
+    const info = await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `Invoice NINOC #${orderIdShort} - Pembayaran Berhasil`,
@@ -230,7 +232,7 @@ export async function sendEmailReturConfirmation(returRequest: any, order: any, 
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `Konfirmasi Retur Pesanan #${orderIdShort}`,
@@ -312,7 +314,7 @@ export async function sendEmailReturStatusUpdate(returRequest: any, order: any, 
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[${statusText}] Status Retur Pesanan #${orderIdShort}`,
@@ -380,7 +382,7 @@ export async function sendEmailReminder(order: any, customerEmail: string) {
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Menunggu Pembayaran] Pesanan #${orderIdShort}`,
@@ -447,7 +449,7 @@ export async function sendEmailShipping(order: any, customerEmail: string, track
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Pesanan Dikirim] Paket Anda dari NINOC sedang dalam perjalanan`,
@@ -513,7 +515,7 @@ export async function sendEmailDelivered(order: any, customerEmail: string) {
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Pesanan Tiba] Paket NINOC Anda telah sampai di tujuan`,
@@ -626,7 +628,7 @@ export async function sendEmailOrderCancelled(order: any, customerEmail: string,
   `;
 
   try {
-    await transporter.sendMail({
+    await getTransporter().sendMail({
       from: `"NINOC STORE" <${process.env.SMTP_EMAIL}>`,
       to: customerEmail,
       subject: `[Dibatalkan] Pesanan #${orderNumber} & Informasi Pengembalian Dana`,
