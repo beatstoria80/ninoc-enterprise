@@ -153,26 +153,33 @@ export function CartSidebar({
                           <Trash2 size={12} strokeWidth={2} />
                         </button>
                       </div>
-                      <div className="flex items-center gap-1 mb-auto mt-0.5 relative">
-                        <span className="text-[11px] md:text-[8px] font-medium text-ink/60 uppercase tracking-wider">
-                          {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
-                        </span>
-                        {displayMeasurements.length > 0 && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              const key = `${item.id}-${item.size}-${item.color}`;
-                              setMeasurementPopupItemKey(prev => prev === key ? null : key);
-                            }}
-                            className="text-rose/50 hover:text-rose transition-colors"
-                            title="View size chart"
-                          >
-                            <Ruler size={10} />
-                          </button>
+                      <div className="flex flex-col gap-0.5 mb-auto mt-0.5 relative">
+                        {item.warehouse_name && (
+                          <div className="text-[9px] md:text-[7.5px] text-rose font-semibold uppercase tracking-widest opacity-90">
+                            📦 {item.warehouse_name}
+                          </div>
                         )}
-                        {(item.size_surcharge || 0) > 0 && (
-                          <span className="text-[10px] md:text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
-                        )}
+                        <div className="flex items-center gap-1">
+                          <span className="text-[11px] md:text-[8px] font-medium text-ink/60 uppercase tracking-wider">
+                            {item.color ? `Color ${item.color} / ` : ''}Size {item.size}
+                          </span>
+                          {displayMeasurements.length > 0 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const key = `${item.id}-${item.size}-${item.color}`;
+                                setMeasurementPopupItemKey(prev => prev === key ? null : key);
+                              }}
+                              className="text-rose/50 hover:text-rose transition-colors"
+                              title="View size chart"
+                            >
+                              <Ruler size={10} />
+                            </button>
+                          )}
+                          {(item.size_surcharge || 0) > 0 && (
+                            <span className="text-[10px] md:text-[7px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm uppercase tracking-wider">+15K</span>
+                          )}
+                        </div>
                         {/* Measurement Popover */}
                         {measurementPopupItemKey === `${item.id}-${item.size}-${item.color}` && (
                           <div className="absolute top-full left-0 mt-1 z-50 bg-ink text-white border border-ink shadow-xl p-3 min-w-[200px] animate-in fade-in zoom-in-95 duration-200">

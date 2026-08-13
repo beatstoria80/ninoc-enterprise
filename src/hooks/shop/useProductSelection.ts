@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useHydratedCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
+import { useHydratedCart, useCartUI, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { 
   hasSizes, 
   getAvailableSizes, 
@@ -19,7 +19,8 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
-  const { addItem } = useHydratedCart();
+  const { addItem, items: cartItems } = useHydratedCart();
+  const setConflictInfo = useCartUI(state => state.setConflictInfo);
 
   // Derived state: hasProductSizes, availableSizes
   const hasProductSizes = useMemo(() => hasSizes(product), [product]);
@@ -201,10 +202,39 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       is_perishable: product.is_perishable,
       warehouse_id: product.warehouse_id,
       origin_postal_code: product.warehouses?.postal_code,
+      warehouse_name: product.warehouses?.name || product.warehouses?.city || 'Gudang Utama',
     }, effectiveSize, effectiveColor, sizeSurcharge, qtyToAdd, availableStock);
     
     if (result && (result as any).success === false) {
-      alert((result as any).error);
+      const currentWarehouseName = cartItems[0]?.warehouse_name || 'Gudang Utama';
+      const newWarehouseName = product.warehouses?.name || product.warehouses?.city || 'Gudang Lain';
+      
+      setConflictInfo({
+        isOpen: true,
+        currentWarehouseName,
+        newWarehouseName,
+        product: {
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          price: product.price,
+          image_url: colorImageUrl,
+          weight_grams: product.weight_grams,
+          department_id: product.department_id,
+          category: product.category,
+          is_perishable: product.is_perishable,
+          warehouse_id: product.warehouse_id,
+          origin_postal_code: product.warehouses?.postal_code,
+          warehouse_name: newWarehouseName,
+        },
+        options: {
+          size: effectiveSize || undefined,
+          color: effectiveColor || undefined,
+          sizeSurcharge,
+          qty: qtyToAdd,
+          maxStock: availableStock,
+        }
+      });
       return false;
     }
 

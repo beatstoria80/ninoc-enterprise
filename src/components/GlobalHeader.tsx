@@ -249,7 +249,7 @@ function CartItem({
   onQuantityChange,
   onImageClick
 }: {
-  item: { id: string; name: string; price: number; quantity: number; size?: string; color?: string; image_url?: string | null; maxStock?: number };
+  item: { id: string; name: string; price: number; quantity: number; size?: string; color?: string; image_url?: string | null; maxStock?: number; warehouse_name?: string };
   index: number;
   onRemove: () => void;
   onQuantityChange: (delta: number) => void;
@@ -332,6 +332,11 @@ function CartItem({
                 <Plus size={12} strokeWidth={2} />
               </PressScale>
             </motion.div>
+            {item.warehouse_name && (
+              <div className="text-[9px] md:text-[6.5px] font-semibold uppercase tracking-widest text-rose opacity-90 mb-0.5">
+                📦 {item.warehouse_name}
+              </div>
+            )}
             <div className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-ink/60">Size {item.size || 'N/A'}</div>
           </div>
           <motion.div

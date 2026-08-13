@@ -4,13 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT, useHydratedCart } from '@/store/useCart';
+import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT, useHydratedCart, useCartUI } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
 import { findVariant } from '@/lib/domain/product';
 
 export default function QuickBuyModal() {
   const router = useRouter();
-  const { addItem } = useHydratedCart();
+  const { addItem, items: cartItems } = useHydratedCart();
+  const setConflictInfo = useCartUI(state => state.setConflictInfo);
   const [quickBuyProduct, setQuickBuyProduct] = useState<any | null>(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
@@ -136,7 +137,7 @@ export default function QuickBuyModal() {
     const variantImg = safeVariants.find((v: any) => v.color?.trim().toUpperCase() === safeColor && v.image_url)?.image_url;
     const finalImageUrl = safeColor ? (colorImages[safeColor] || variantImg || quickBuyProduct.image_url || null) : (quickBuyProduct.image_url || null);
 
-    addItem(
+    const result = addItem(
       {
         id: quickBuyProduct.id,
         name: quickBuyProduct.name,
@@ -149,6 +150,7 @@ export default function QuickBuyModal() {
         is_perishable: quickBuyProduct.is_perishable,
         warehouse_id: quickBuyProduct.warehouse_id,
         origin_postal_code: quickBuyProduct.warehouses?.postal_code,
+        warehouse_name: quickBuyProduct.warehouses?.name || quickBuyProduct.warehouses?.city || 'Gudang Utama',
       },
       selectedSize || undefined,
       selectedColor || undefined,
@@ -156,6 +158,41 @@ export default function QuickBuyModal() {
       1,
       availableStock
     );
+
+    if (result && (result as any).success === false) {
+      const currentWarehouseName = cartItems[0]?.warehouse_name || 'Gudang Utama';
+      const newWarehouseName = quickBuyProduct.warehouses?.name || quickBuyProduct.warehouses?.city || 'Gudang Lain';
+      
+      setConflictInfo({
+        isOpen: true,
+        currentWarehouseName,
+        newWarehouseName,
+        product: {
+          id: quickBuyProduct.id,
+          name: quickBuyProduct.name,
+          slug: quickBuyProduct.slug,
+          price: quickBuyProduct.price,
+          image_url: finalImageUrl,
+          weight_grams: quickBuyProduct.weight_grams,
+          department_id: quickBuyProduct.department_id,
+          category: quickBuyProduct.category,
+          is_perishable: quickBuyProduct.is_perishable,
+          warehouse_id: quickBuyProduct.warehouse_id,
+          origin_postal_code: quickBuyProduct.warehouses?.postal_code,
+          warehouse_name: newWarehouseName,
+        },
+        options: {
+          size: selectedSize || undefined,
+          color: selectedColor || undefined,
+          sizeSurcharge: surcharge,
+          qty: 1,
+          maxStock: availableStock,
+        }
+      });
+      setQuickBuyProduct(null);
+      return;
+    }
+
     setQuickBuyProduct(null);
     router.push('/checkout');
   };

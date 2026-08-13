@@ -1209,6 +1209,13 @@ export default function CheckoutPage() {
                 <span className="text-xs md:text-[9px] font-display font-medium italic text-ink/50">03</span>
                 <h2 className="text-xs md:text-[10px] font-display font-medium italic uppercase tracking-widest text-ink">{dict.checkout.logisticsSelection}</h2>
               </div>
+              {items.length > 0 && items[0]?.warehouse_name && (
+                <div className="px-3 py-2 bg-ink/5 border border-ink/10 rounded-sm flex items-center gap-2 mt-1">
+                  <span className="text-rose text-[11px] md:text-[9px] font-medium uppercase tracking-widest">
+                    📦 Dikirim dari: <strong className="font-bold">{items[0].warehouse_name}</strong>
+                  </span>
+                </div>
+              )}
 
               <div className={cn(
                 "border border-ink/20 bg-ink/5 mt-1 relative overflow-visible",

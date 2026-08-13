@@ -23,6 +23,7 @@ export interface CartItem {
   maxStock?: number; // inventory limit for this variant
   warehouse_id?: string | null;
   origin_postal_code?: string;
+  warehouse_name?: string;
 }
 
 interface CartStore {
@@ -32,6 +33,7 @@ interface CartStore {
   removeItem: (id: string, size?: string, color?: string) => void;
   updateQuantity: (id: string, quantity: number, size?: string, color?: string, maxStock?: number) => void;
   clearCart: () => void;
+  clearAndAddItem: (product: Omit<CartItem, 'quantity' | 'size' | 'color' | 'size_surcharge'>, size?: string, color?: string, sizeSurcharge?: number, qty?: number, maxStock?: number) => void;
 }
 
 const calculateTotal = (items: CartItem[]) => {
@@ -99,6 +101,7 @@ export const useCart = create<CartStore>()(
                   is_perishable: product.is_perishable ?? existingItem.is_perishable,
                   warehouse_id: product.warehouse_id ?? existingItem.warehouse_id,
                   origin_postal_code: product.origin_postal_code ?? existingItem.origin_postal_code,
+                  warehouse_name: product.warehouse_name ?? existingItem.warehouse_name,
                   size_surcharge: sizeSurcharge ?? existingItem.size_surcharge
                 }
               : item
@@ -123,6 +126,11 @@ export const useCart = create<CartStore>()(
         set({ items: newItems, totalPrice: calculateTotal(newItems) });
       },
       clearCart: () => set({ items: [], totalPrice: 0 }),
+      clearAndAddItem: (product, size, color, sizeSurcharge = 0, qty = 1, maxStock = 999) => {
+        const initialQty = Math.min(maxStock, qty);
+        const newItem = { ...product, quantity: initialQty, size, color, size_surcharge: sizeSurcharge, maxStock };
+        set({ items: [newItem], totalPrice: calculateTotal([newItem]) });
+      },
     }),
     { 
       name: 'ninoc-cart-storage',
@@ -148,3 +156,27 @@ export const useHydratedCart = () => {
     isHydrated
   };
 };
+
+export interface CartUIConflictInfo {
+  isOpen: boolean;
+  currentWarehouseName: string;
+  newWarehouseName: string;
+  product: any;
+  options: {
+    size?: string;
+    color?: string;
+    sizeSurcharge?: number;
+    qty?: number;
+    maxStock?: number;
+  };
+}
+
+interface CartUIStore {
+  conflictInfo: CartUIConflictInfo | null;
+  setConflictInfo: (info: CartUIConflictInfo | null) => void;
+}
+
+export const useCartUI = create<CartUIStore>((set) => ({
+  conflictInfo: null,
+  setConflictInfo: (info) => set({ conflictInfo: info }),
+}));
