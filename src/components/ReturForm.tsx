@@ -8,6 +8,7 @@ import {
   Video, Upload, X, Check, AlertCircle, ChevronRight, ChevronLeft,
   RefreshCw, Package, FileText, Clock, Play, Pause
 } from 'lucide-react';
+import { VerificationStatusAlert } from '@/components/ui/VerificationStatusAlert';
 
 interface ReturFormProps {
   orderId?: string;
@@ -519,10 +520,21 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             {/* Step 1 Error */}
             <AnimatePresence>
               {error && (
-                <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-1.5 p-2 bg-red-50 border border-red-100 rounded-sm">
-                  <AlertCircle size={10} className="text-red-500 shrink-0" />
-                  <p className="text-[10px] text-red-600">{error}</p>
-                </motion.div>
+                <VerificationStatusAlert
+                  type={
+                    error.toLowerCase().includes('kedaluwarsa') || error.toLowerCase().includes('2x24') || error.toLowerCase().includes('48 jam')
+                      ? 'retur_expired'
+                      : error.toLowerCase().includes('tidak valid') || error.toLowerCase().includes('tidak ditemukan')
+                      ? 'invalid_order'
+                      : error.toLowerCase().includes('tidak terdaftar')
+                      ? 'unauthorized'
+                      : 'generic'
+                  }
+                  message={error}
+                  orderId={orderId}
+                  onRetry={() => setError('')}
+                  onClose={() => setError('')}
+                />
               )}
             </AnimatePresence>
 
@@ -772,10 +784,19 @@ export function ReturForm({ orderId: initialOrderId, isGuest = false, onSuccess,
             {/* Error */}
             <AnimatePresence>
               {error && (
-                <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-1.5 p-2 bg-red-50 border border-red-100 rounded-sm">
-                  <AlertCircle size={10} className="text-red-500 shrink-0" />
-                  <p className="text-[10px] text-red-600">{error}</p>
-                </motion.div>
+                <VerificationStatusAlert
+                  type={
+                    error.toLowerCase().includes('kedaluwarsa') || error.toLowerCase().includes('2x24') || error.toLowerCase().includes('48 jam')
+                      ? 'retur_expired'
+                      : error.toLowerCase().includes('tidak valid') || error.toLowerCase().includes('tidak ditemukan')
+                      ? 'invalid_order'
+                      : 'generic'
+                  }
+                  message={error}
+                  orderId={orderId}
+                  onRetry={() => setError('')}
+                  onClose={() => setError('')}
+                />
               )}
             </AnimatePresence>
 

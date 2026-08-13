@@ -10,6 +10,7 @@ import CourierLogo from '@/components/CourierLogo';
 import { supabase } from '@/lib/supabase';
 import jsQR from 'jsqr';
 import { AlertTriangle, CheckCircle } from 'lucide-react';
+import { VerificationStatusAlert } from '@/components/ui/VerificationStatusAlert';
 
 const MapTracker = dynamic(() => import('@/components/MapTracker'), {
   ssr: false,
@@ -428,7 +429,21 @@ export default function TrackClient() {
             <input ref={phoneInputRef} type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="08xxxxxxxxxx" className="w-full px-3 py-2 text-[13px] font-medium border border-ink/20 bg-white focus:border-rose focus:outline-none focus:ring-2 focus:ring-rose/20 placeholder:text-ink/60 text-ink" aria-label="Phone number" />
             <p className="text-[10px] md:text-[8px] text-ink/60 uppercase tracking-widest mt-1 italic">*Wajib diisi demi keamanan data pengiriman.</p>
           </div>
-          {error && <div className="px-3 py-2 bg-red-50 border border-red-200 text-xs md:text-[9px] text-red-500 font-semibold uppercase tracking-wider">{error}</div>}
+          {error && (
+            <VerificationStatusAlert
+              type={
+                error.toLowerCase().includes('kadaluarsa') || error.toLowerCase().includes('expired')
+                  ? 'expired'
+                  : error.toLowerCase().includes('tidak ditemukan') || error.toLowerCase().includes('tidak terdaftar')
+                  ? 'invalid_order'
+                  : 'generic'
+              }
+              message={error}
+              orderId={orderNumber}
+              onRetry={() => setError('')}
+              onClose={() => setError('')}
+            />
+          )}
           <button type="submit" disabled={loading || !orderNumber.trim() || !phone.trim()} className="w-full py-3 bg-rose text-white text-xs md:text-[10px] uppercase tracking-[0.3em] font-semibold hover:bg-rose/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 mt-2">
             {loading ? 'Loading…' : 'Lacak Pesanan'}
           </button>
