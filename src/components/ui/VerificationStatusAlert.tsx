@@ -112,7 +112,8 @@ export function VerificationStatusAlert({
   const theme = getThemeConfig();
   const IconComponent = theme.icon;
   const displayTitle = title || theme.defaultTitle;
-  const waHelpUrl = `https://wa.me/6281234567890?text=${encodeURIComponent(
+  const officialWaNumber = process.env.NEXT_PUBLIC_ADMIN_WA_NUMBER || '6285722341018';
+  const waHelpUrl = `https://wa.me/${officialWaNumber}?text=${encodeURIComponent(
     `Halo Layanan Pelanggan NINOC Enterprise, mohon bantuan verifikasi pesanan:\nOrder ID: ${orderId || 'Tidak Diketahui'}\nKendala: ${message}`
   )}`;
 
