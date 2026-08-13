@@ -171,7 +171,7 @@ export function VerificationStatusAlert({
         <div className="mt-4 border-t border-stone-800/60 pt-3.5">
           <p className="text-[10px] uppercase tracking-widest font-semibold text-stone-400 mb-2 flex items-center gap-1.5">
             <HelpCircle className="h-3.5 w-3.5 text-rose-400" />
-            DETAIL DIAGNOSTIK SISTEM:
+            RINCIAN STATUS PESANAN:
           </p>
           <ul className="space-y-1.5 text-xs text-stone-300">
             {theme.reasons.map((reason, idx) => (
