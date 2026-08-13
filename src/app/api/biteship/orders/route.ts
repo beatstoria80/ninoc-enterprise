@@ -45,12 +45,16 @@ async function saveOrderToSupabase(
   const currentCount = orderData?.print_count || 0;
 
   // Update order with tracking info and increment print count
+  // Only transition to 'shipped' if status is 'paid' or 'processing' — do not regress other statuses
+  const currentStatus = orderData?.status || 'paid';
+  const nextStatus = ['paid', 'processing'].includes(currentStatus) ? 'shipped' : currentStatus;
+
   const { error: updateError } = await adminClient
     .from('orders')
     .update({
       tracking_id: trackingId,
       courier: `${courierCompany} ${courierType}`.toUpperCase(),
-      status: orderData?.status === 'paid' ? 'shipped' : orderData?.status || 'shipped',
+      status: nextStatus,
       print_count: currentCount + 1,
     })
     .eq('id', orderId);
@@ -180,7 +184,7 @@ export async function POST(req: Request) {
     const {
       order_id,
       courier_company,
-      courier_type,
+      courier_type: rawCourierType,
       destination,
       origin,
       items,
@@ -188,7 +192,7 @@ export async function POST(req: Request) {
     } = parseResult.data;
 
     const apiKey = process.env.BITESHIP_API_KEY;
-    const courierType = courier_type.toLowerCase();
+    const courierType = rawCourierType.toLowerCase();
 
     // Check if already shipped to prevent double dispatch
     const { data: existingOrder } = await adminClient
@@ -237,13 +241,16 @@ export async function POST(req: Request) {
 
         if (response.ok && data.success !== false) {
           // Success — save to Supabase
-          await saveOrderToSupabase(order_id, data.waybill_id, data.courier_company, data.courier_type, data);
+          // IMPORTANT: Biteship returns both waybill_id (nomor resi) and tracking_id (internal tracking ID)
+          // We store tracking_id (for tracking API) but expose waybill_id (for customer/label display)
+          const biteshipTrackingId = data.tracking_id || data.waybill_id;
+          await saveOrderToSupabase(order_id, biteshipTrackingId, data.courier_company, data.courier_type, data);
 
           return NextResponse.json({
             success: true,
             source: 'biteship',
             waybill_id: data.waybill_id,
-            tracking_id: data.waybill_id,
+            tracking_id: biteshipTrackingId,
             courier_company: data.courier_company,
             courier_type: data.courier_type,
             status: data.status,

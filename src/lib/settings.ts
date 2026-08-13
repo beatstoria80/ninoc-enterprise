@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { supabaseAdmin } from './supabaseAdmin';
 
 export interface DecorationSettings {
   storeName: string;
@@ -48,7 +49,7 @@ export interface BiteshipActivationSettings {
 }
 
 export async function getBiteshipActivationSettings(): Promise<BiteshipActivationSettings> {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('atelier_settings')
     .select('value')
     .eq('key', 'biteship_activation')
@@ -64,7 +65,7 @@ export async function getBiteshipActivationSettings(): Promise<BiteshipActivatio
 
   return {
     api_key_name: 'API_webhook_ninoc',
-    activated_couriers: ['jne', 'jnt', 'sicepat'],
+    activated_couriers: ['jne', 'jnt', 'sicepat', 'grab', 'gojek'],
     test_order_delivered: '',
     test_order_cancelled: '',
     supports_price_change: false,
@@ -83,7 +84,7 @@ export async function upsertBiteshipActivationSettings(
   const existing = await getBiteshipActivationSettings();
   const merged: BiteshipActivationSettings = { ...existing, ...patch };
 
-  const { error } = await supabase
+  const { error } = await supabaseAdmin
     .from('atelier_settings')
     .upsert(
       {
