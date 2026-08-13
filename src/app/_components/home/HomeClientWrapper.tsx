@@ -131,7 +131,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
     <>
       <div className="hidden md:flex flex-1 items-center justify-between my-auto pointer-events-auto">
         {/* Left Column: Brand Copy & CTA */}
-        <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-8 sm:ml-16 md:ml-28 lg:ml-36 xl:ml-44">
+        <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-20 xl:ml-28 2xl:ml-36">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -299,10 +299,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Top & Bottom Horizontal Black Framing Bands (Desktop Only) */}
-            <div className="hidden md:block absolute top-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
-            <div className="hidden md:block absolute bottom-0 left-0 right-0 w-full h-8 md:h-10 bg-black z-[220] pointer-events-none" />
-
             {/* Mascot Video Container */}
             <div 
               onClick={handleOverlayTap}
@@ -316,19 +312,19 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             <div 
               onClick={handleOverlayTap}
               onTouchStart={handleOverlayTap}
-              className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-12 z-10 text-ink pointer-events-auto cursor-pointer pt-safe pb-safe"
+              className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 z-10 text-ink pointer-events-auto cursor-pointer pt-safe pb-safe"
             >
               {/* Header Logo */}
-              <div className="flex justify-between items-center w-full pt-2">
+              <div className="flex justify-between items-center w-full pt-1">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={{ opacity: 1, y: 0 }} 
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
-                  className="absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:right-auto top-10 md:top-12 z-20 flex items-center gap-2.5"
+                  className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
                 >
-                  <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-9 h-9 md:w-12 md:h-12 object-contain" priority unoptimized />
-                  <span className="hidden sm:inline-block text-[10px] font-mono tracking-widest uppercase text-ink/50 border-l border-ink/10 pl-2.5">
-                    STUDIO
+                  <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-8 h-8 md:w-10 md:h-10 object-contain" priority unoptimized />
+                  <span className="hidden sm:inline-block text-[9px] md:text-[10px] font-mono tracking-widest uppercase text-ink/70 border-l border-ink/15 pl-2.5">
+                    ENTERPRISE
                   </span>
                 </motion.div>
               </div>
