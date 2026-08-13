@@ -1,12 +1,12 @@
 /**
  * NINOC Multi-Channel Notification Engine
- * 
+ *
  * Centralized service for sending notifications across all channels:
  * - In-App (user_notifications table + realtime badge)
  * - Web Push (Service Worker + VAPID)
  * - WhatsApp (Cloud API)
  * - Email (SMTP)
- * 
+ *
  * SERVER-SIDE ONLY — never import in client components.
  */
 
@@ -30,11 +30,15 @@ if (VAPID_PUBLIC && VAPID_PRIVATE) {
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface NotificationPayload {
-  userId?: string | null;       // null = guest (no in-app / push)
+  userId?: string | null; // null = guest (no in-app / push)
   title: string;
   message: string;
-  actionLink?: string;          // e.g. /profile/orders/ORDER_ID
-  icon?: string;                // Push notification icon
+  actionLink?: string; // e.g. /profile/orders/ORDER_ID
+  icon?: string; // Push notification icon
+}
+
+export interface WebPushSendError extends Error {
+  statusCode?: number;
 }
 
 // ─── 1. In-App Notification ───────────────────────────────────────────────────
@@ -46,16 +50,14 @@ export async function insertInAppNotification(
   actionLink?: string
 ): Promise<boolean> {
   try {
-    const { error } = await supabaseAdmin
-      .from('user_notifications')
-      .insert({
-        user_id: userId,
-        title,
-        message,
-        action_link: actionLink || null,
-        is_read: false,
-      });
-    
+    const { error } = await supabaseAdmin.from('user_notifications').insert({
+      user_id: userId,
+      title,
+      message,
+      action_link: actionLink || null,
+      is_read: false,
+    });
+
     if (error) {
       console.error('[Notification] In-App insert failed:', error.message);
       return false;
@@ -110,17 +112,15 @@ export async function sendPushNotification(
           payload
         );
         result.sent++;
-      } catch (pushError: any) {
+      } catch (pushError: unknown) {
         result.failed++;
+        const errObj = pushError as WebPushSendError;
         // If subscription expired (410 Gone or 404), remove it
-        if (pushError.statusCode === 410 || pushError.statusCode === 404) {
-          await supabaseAdmin
-            .from('push_subscriptions')
-            .delete()
-            .eq('id', sub.id);
+        if (errObj.statusCode === 410 || errObj.statusCode === 404) {
+          await supabaseAdmin.from('push_subscriptions').delete().eq('id', sub.id);
           console.log(`[Push] Removed expired subscription: ${sub.id}`);
         } else {
-          console.error(`[Push] Failed to send to ${sub.endpoint}:`, pushError.message);
+          console.error(`[Push] Failed to send to ${sub.endpoint}:`, errObj.message);
         }
       }
     }
@@ -137,17 +137,13 @@ export async function notifyAllChannels(payload: NotificationPayload): Promise<v
   const { userId, title, message, actionLink } = payload;
 
   if (!userId) {
-    // Guest user — skip in-app and push (no user ID to target)
     console.log('[Notification] Skipping in-app/push for guest order.');
     return;
   }
 
   // Fire all notifications in parallel (don't block each other)
   const results = await Promise.allSettled([
-    // 1. In-App Notification (badge in header)
     insertInAppNotification(userId, title, message, actionLink),
-
-    // 2. Web Push Notification (browser/mobile)
     sendPushNotification(userId, title, message, actionLink),
   ]);
 
@@ -155,6 +151,8 @@ export async function notifyAllChannels(payload: NotificationPayload): Promise<v
   const pushResult = results[1];
 
   console.log(
-    `[Notification] userId=${userId} | In-App=${inAppResult.status} | Push=${pushResult.status === 'fulfilled' ? JSON.stringify(pushResult.value) : 'failed'}`
+    `[Notification] userId=${userId} | In-App=${inAppResult.status} | Push=${
+      pushResult.status === 'fulfilled' ? JSON.stringify(pushResult.value) : 'failed'
+    }`
   );
 }
