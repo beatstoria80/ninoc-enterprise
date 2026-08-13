@@ -45,8 +45,14 @@ export function getProductStock(product: any): number {
  * Automatically enforces HTTPS in production/staging and removes trailing slashes.
  */
 export function getAppUrl(): string {
-  const rawUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase'))
+  let rawUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase'))
     ? process.env.NEXT_PUBLIC_APP_URL
     : 'https://ninoc.store';
+
+  rawUrl = rawUrl.trim();
+  if (!rawUrl.startsWith('http://') && !rawUrl.startsWith('https://')) {
+    rawUrl = `https://${rawUrl}`;
+  }
+
   return rawUrl.replace(/^http:\/\/(?!localhost)/, 'https://').replace(/\/+$/, '');
 }
