@@ -65,7 +65,7 @@ export default function RefundPolicyPage() {
     {
       id: "GEN-02",
       title: "PROSES VERIFIKASI & WAKTU PENCAIRAN REFUND (REFUND TIMELINE)",
-      text: "• Pengajuan retur dilakukan melalui menu 'Retur' di navigasi bawah atau dasbor akun pelanggan.\n• Tim inspeksi Quality Control (QC) kami membutuhkan waktu 1–2 hari kerja untuk memverifikasi video unboxing dan fisik barang yang dikembalikan.\n• Setelah lolos inspeksi, pengembalian dana (refund) diproses dalam waktu 3–5 hari kerja langsung ke metode pembayaran awal (Kartu Kredit, Virtual Account Bank, atau E-Wallet)."
+      text: "• Pengajuan retur dilakukan melalui menu 'Retur' di navigasi bawah atau dasbor akun pelanggan.\n• Tim inspeksi Quality Control (QC) kami membutuhkan waktu 1–2 hari kerja untuk memverifikasi video unboxing dan fisik barang yang dikembalikan.\n• Setelah lolos inspeksi QC, pengembalian dana (refund) diproses dalam 1–3 hari kerja. Untuk transaksi Kartu Kredit/E-Wallet/QRIS, refund dikreditkan via Midtrans Gateway. Untuk transaksi Bank Transfer/Virtual Account, refund ditransfer langsung oleh Tim Keuangan NINOC ke nomor rekening bank/e-wallet yang dikonfirmasi oleh pembeli."
     },
     {
       id: "GEN-03",
