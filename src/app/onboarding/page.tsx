@@ -57,16 +57,16 @@ function CustomDropdown({
         disabled={disabled}
         onClick={() => { if (!disabled) setOpen(o => !o); setSearch(''); }}
         className={cn(
-          "w-full flex items-center justify-between bg-white border rounded-lg py-3 px-4 text-sm font-semibold transition-colors shadow-sm",
-          open ? "border-rose ring-2 ring-rose/10" : "border-slate-300 hover:border-slate-400",
+          "w-full flex items-center justify-between bg-white border py-3 px-4 text-xs font-semibold uppercase tracking-wider transition-all rounded-none",
+          open ? "border-ink" : "border-ink/20 hover:border-ink/40",
           disabled && "opacity-50 cursor-not-allowed",
-          !selected && "text-slate-500"
+          !selected && "text-ink/40"
         )}
       >
-        <span className={cn(selected ? "text-slate-800 font-medium" : "text-slate-500")}>
+        <span className={cn(selected ? "text-ink font-medium" : "text-ink/40")}>
           {selected ? selected.name : placeholder}
         </span>
-        <ChevronDown size={13} className={cn("text-slate-400 shrink-0 transition-transform", open && "rotate-180")} />
+        <ChevronDown size={12} className={cn("text-ink/40 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
 
       <AnimatePresence>
@@ -75,26 +75,26 @@ function CustomDropdown({
             initial={{ opacity: 0, y: -4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 overflow-hidden"
+            transition={{ duration: 0.1 }}
+            className="absolute top-full left-0 right-0 mt-1 bg-white border border-ink/20 rounded-none shadow-2xl z-50 overflow-hidden"
           >
             {searchable && (
-              <div className="p-2 border-b border-slate-100">
+              <div className="p-2 border-b border-ink/10">
                 <div className="relative">
-                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink/40" />
                   <input
                     autoFocus
                     value={search}
                     onChange={e => setSearch(e.target.value)}
-                    placeholder="Ketik untuk cari..."
-                    className="w-full pl-8 pr-3 py-2.5 text-sm border border-slate-300 rounded-md outline-none focus:border-rose/40 placeholder:text-slate-400 font-medium"
+                    placeholder="CARILOKASI..."
+                    className="w-full pl-8 pr-3 py-2 text-xs border border-ink/20 rounded-none outline-none focus:border-ink/60 placeholder:text-ink/30 font-medium uppercase tracking-wider"
                   />
                 </div>
               </div>
             )}
             <div className="max-h-40 overflow-y-auto minimal-scroll">
               {filtered.length === 0 ? (
-                <div className="px-4 py-4 text-center"><p className="text-sm font-medium text-slate-500">Tidak ditemukan</p></div>
+                <div className="px-4 py-4 text-center"><p className="text-xs font-bold uppercase tracking-widest text-ink/40">Tidak ditemukan</p></div>
               ) : (
                 filtered.map(opt => (
                   <button
@@ -102,11 +102,11 @@ function CustomDropdown({
                     type="button"
                     onClick={() => { onChange(opt.id, opt.name); setOpen(false); setSearch(''); }}
                     className={cn(
-                      "w-full px-4 py-3 text-left text-sm font-semibold flex items-center justify-between hover:bg-rose/5 transition-colors",
-                      opt.id === value && "bg-rose/5"
+                      "w-full px-4 py-2.5 text-left text-xs font-semibold uppercase tracking-wider flex items-center justify-between hover:bg-ink/[0.03] transition-colors",
+                      opt.id === value && "bg-ink/5"
                     )}
                   >
-                    <span className={cn(opt.id === value ? "text-rose font-medium" : "text-slate-800")}>{opt.name}</span>
+                    <span className={cn(opt.id === value ? "text-rose font-bold" : "text-ink")}>{opt.name}</span>
                     {opt.id === value && <Check size={12} className="text-rose shrink-0" />}
                   </button>
                 ))
@@ -121,11 +121,11 @@ function CustomDropdown({
 
 // ─── Field Label ───────────────────────────────────────────────────────────
 function FL({ children }: { children: React.ReactNode }) {
-  return <label className="text-sm font-medium tracking-normal text-slate-500 mb-1.5 block">{children}</label>;
+  return <label className="text-[10px] font-bold uppercase tracking-widest text-ink/50 mb-1.5 block">{children}</label>;
 }
 
 // ─── Input ────────────────────────────────────────────────────────────────
-const ip = "w-full bg-white border border-slate-300 focus:border-rose rounded-xl py-3 px-4 text-sm font-semibold text-slate-800 outline-none placeholder:text-slate-400 transition-colors shadow-sm";
+const ip = "w-full bg-white border border-ink/20 focus:border-ink rounded-none py-3 px-4 text-xs font-semibold text-ink outline-none placeholder:text-ink/30 transition-all uppercase tracking-wider";
 
 // ─── Main Page ─────────────────────────────────────────────────────────────
 export default function OnboardingPage() {
@@ -282,51 +282,53 @@ export default function OnboardingPage() {
 
   return (
     <main className={cn(
-      "min-h-screen bg-cr selection:bg-slate-800 selection:text-white flex flex-col items-center justify-start pt-6 md:pt-12 px-4 pb-12",
+      "min-h-screen bg-cr flex flex-col items-center justify-start pt-6 md:pt-16 px-4 pb-16 selection:bg-ink selection:text-white",
       isIPhone && "pt-[env(safe-area-inset-top)]"
     )}>
       {/* Header */}
-      <div className="w-full max-w-4xl flex items-center justify-between mb-6">
+      <div className="w-full max-w-4xl flex items-center justify-between mb-8 border-b border-ink/10 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-rose/10 rounded-xl flex items-center justify-center">
-            <Package size={20} className="text-rose" />
+          <div className="w-10 h-10 bg-ink flex items-center justify-center rounded-none text-white">
+            <Package size={18} />
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-800 tracking-normal">Lengkapi Data</p>
-            <p className="text-sm text-slate-500 tracking-normal font-semibold mt-0.5">Langkah {activeStep} dari 2</p>
+            <h1 className="text-sm font-bold uppercase tracking-widest text-ink">NINOC / ONBOARDING</h1>
+            <p className="text-[10px] text-ink/50 uppercase tracking-wider font-semibold mt-0.5">Langkah {activeStep} dari 2</p>
           </div>
         </div>
-        <button onClick={logout} className="text-sm font-semibold text-slate-500 hover:text-rose tracking-normal flex items-center gap-1.5 transition-colors">
-          <LogOut size={16} />Batal
+        <button onClick={logout} className="text-xs font-bold uppercase tracking-widest text-ink/60 hover:text-rose flex items-center gap-1.5 transition-colors">
+          <LogOut size={13} />Batal
         </button>
       </div>
 
       <div className="w-full max-w-4xl">
         {/* Progress Steps */}
-        <div className="flex items-center justify-center gap-2 mb-4">
+        <div className="flex items-center justify-start gap-4 mb-6">
           {steps.map((step, i) => {
             const Icon = step.icon;
             const isActive = activeStep === step.id;
             const isCompleted = completedSteps.includes(step.id);
             return (
               <React.Fragment key={step.id}>
-                <motion.div
-                  initial={false}
-                  animate={{
-                    backgroundColor: isActive || isCompleted ? '#e11c28' : 'white',
-                    borderColor: isActive || isCompleted ? '#e11c28' : '#e5e7eb',
-                    color: isActive || isCompleted ? 'white' : '#9ca3af'
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className="w-7 h-7 rounded-lg border-2 flex items-center justify-center"
-                >
-                  {isCompleted ? <Check size={13} strokeWidth={2.5} /> : <Icon size={13} strokeWidth={1.5} />}
-                </motion.div>
-                <span className={cn("text-sm font-bold tracking-normal", isActive || isCompleted ? "text-rose" : "text-slate-400")}>
-                  {step.label}
-                </span>
+                <div className="flex items-center gap-2">
+                  <motion.div
+                    initial={false}
+                    animate={{
+                      backgroundColor: isActive || isCompleted ? '#000000' : 'transparent',
+                      borderColor: isActive || isCompleted ? '#000000' : '#e5e7eb',
+                      color: isActive || isCompleted ? '#ffffff' : '#9ca3af'
+                    }}
+                    transition={{ duration: 0.15 }}
+                    className="w-6 h-6 border flex items-center justify-center rounded-none text-[10px]"
+                  >
+                    {isCompleted ? <Check size={11} strokeWidth={3} /> : <Icon size={11} strokeWidth={2} />}
+                  </motion.div>
+                  <span className={cn("text-xs font-bold uppercase tracking-widest", isActive || isCompleted ? "text-ink" : "text-ink/40")}>
+                    {step.label}
+                  </span>
+                </div>
                 {i < steps.length - 1 && (
-                  <div className={cn("flex-1 h-px max-w-[28px]", isCompleted ? "bg-rose" : "bg-slate-200")} />
+                  <div className={cn("flex-1 h-px max-w-[40px]", isCompleted ? "bg-ink" : "bg-ink/10")} />
                 )}
               </React.Fragment>
             );
@@ -335,39 +337,42 @@ export default function OnboardingPage() {
 
         {/* Email Badge */}
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 mb-3"
+          className="flex items-center gap-2 bg-ink/5 border border-ink/10 rounded-none px-4 py-2.5 mb-4 justify-between w-full"
         >
-          <CheckCircle size={13} className="text-emerald-500 shrink-0" />
-          <span className="text-sm font-bold text-emerald-800 truncate">{userEmail}</span>
+          <div className="flex items-center gap-2">
+            <CheckCircle size={12} className="text-ink/60" />
+            <span className="text-xs font-bold uppercase tracking-wider text-ink/80">{userEmail}</span>
+          </div>
+          <span className="text-[9px] font-bold bg-ink text-white px-2 py-0.5 rounded-none tracking-widest uppercase">TERVERIFIKASI</span>
         </motion.div>
 
         {/* Form Card */}
         <motion.div
-          initial={{ opacity: 0, y: 6 }}
+          initial={{ opacity: 0, y: 4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden"
+          className="bg-white border border-ink/15 rounded-none shadow-sm overflow-hidden"
         >
           <AnimatePresence mode="wait">
             {/* ── STEP 1: Identitas ── */}
             {activeStep === 1 && (
               <motion.div
                 key="step1"
-                initial={{ opacity: 0, x: -12 }}
+                initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 12 }}
-                transition={{ duration: 0.15 }}
-                className="p-5 md:p-8"
+                exit={{ opacity: 0, x: 10 }}
+                transition={{ duration: 0.1 }}
+                className="p-6 md:p-10"
               >
                 {/* Section label */}
-                <div className="flex items-center gap-3 mb-6">
-                  <span className="text-sm font-bold text-rose bg-rose/10 px-2.5 py-1 rounded tracking-normal">01</span>
-                  <span className="text-base font-bold tracking-normal text-slate-800">Identitas Diri</span>
+                <div className="flex items-center gap-3 mb-8">
+                  <span className="text-xs font-bold text-white bg-ink px-2.5 py-1 rounded-none tracking-wider">01</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-ink">Identitas Diri</span>
                 </div>
 
                 {/* 3-column grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <div>
                     <FL>Nama Depan</FL>
                     <input value={f.fn} onChange={e => set('fn', e.target.value)} className={ip} placeholder="John" />
@@ -398,14 +403,14 @@ export default function OnboardingPage() {
                   </div>
                 </div>
 
-                <div className="flex justify-end border-t border-slate-100 pt-6 mt-2">
+                <div className="flex justify-end border-t border-ink/10 pt-6 mt-4">
                   <button
                     type="button"
                     onClick={goToStep2}
-                    className="w-full md:w-auto bg-slate-800 text-white py-4 px-10 rounded-xl text-sm font-bold tracking-normal flex items-center justify-center gap-2 hover:bg-rose transition-colors shadow-sm"
+                    className="w-full md:w-auto bg-ink text-white py-3.5 px-8 rounded-none text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose transition-all cursor-pointer"
                   >
                     <span>Lanjut ke Alamat</span>
-                    <ArrowRight size={16} />
+                    <ArrowRight size={14} />
                   </button>
                 </div>
               </motion.div>
@@ -415,31 +420,31 @@ export default function OnboardingPage() {
             {activeStep === 2 && (
               <motion.div
                 key="step2"
-                initial={{ opacity: 0, x: 12 }}
+                initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -12 }}
-                transition={{ duration: 0.15 }}
-                className="p-5 md:p-8"
+                exit={{ opacity: 0, x: -10 }}
+                transition={{ duration: 0.1 }}
+                className="p-6 md:p-10"
               >
                 {/* Section label */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-100 pb-4 mb-6 gap-3">
+                <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-ink/10 pb-4 mb-6 gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-bold text-rose bg-rose/10 px-2.5 py-1 rounded tracking-normal">02</span>
-                    <span className="text-base font-bold tracking-normal text-slate-800">Alamat Lengkap</span>
+                    <span className="text-xs font-bold text-white bg-ink px-2.5 py-1 rounded-none tracking-wider">02</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-ink">Alamat Lengkap</span>
                   </div>
                   {/* Address Type Selector */}
-                  <div className="flex bg-slate-100 p-1 rounded-lg w-full md:w-auto">
+                  <div className="flex bg-ink/5 p-1 rounded-none border border-ink/10 w-full md:w-auto">
                     <button 
                       type="button"
                       onClick={() => setF(p => ({ ...p, address_type: 'Home' }))}
-                      className={cn("flex-1 px-2 md:px-4 py-2 text-xs md:text-sm font-bold tracking-normal transition-colors rounded-md truncate", f.address_type === 'Home' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
+                      className={cn("flex-1 px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors rounded-none truncate cursor-pointer", f.address_type === 'Home' ? "bg-ink text-white shadow-sm" : "text-ink/50 hover:text-ink")}
                     >
                       Rumah / Home
                     </button>
                     <button 
                       type="button"
                       onClick={() => setF(p => ({ ...p, address_type: 'Office' }))}
-                      className={cn("flex-1 px-2 md:px-4 py-2 text-xs md:text-sm font-bold tracking-normal transition-colors rounded-md truncate", f.address_type === 'Office' ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-800")}
+                      className={cn("flex-1 px-4 py-1.5 text-xs font-bold uppercase tracking-wider transition-colors rounded-none truncate cursor-pointer", f.address_type === 'Office' ? "bg-ink text-white shadow-sm" : "text-ink/50 hover:text-ink")}
                     >
                       Kantor / Office
                     </button>
@@ -447,44 +452,44 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* 3-column grid for address fields */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <div>
                     <FL>Nama Jalan</FL>
-                    <input value={f.street} onChange={e => set('street', e.target.value)} className={ip} placeholder="Jl. Asia Afrika" />
+                    <input value={f.street} onChange={e => set('street', e.target.value)} className={ip} placeholder="JL. ASIA AFRIKA" />
                   </div>
                   <div>
                     <FL>No. Rumah</FL>
-                    <input value={f.house_number} onChange={e => set('house_number', e.target.value)} className={ip} placeholder="No. 22" />
+                    <input value={f.house_number} onChange={e => set('house_number', e.target.value)} className={ip} placeholder="NO. 22" />
                   </div>
                   <div>
                     <FL>Provinsi</FL>
-                    <CustomDropdown value={f.prov} options={provinces} onChange={(id) => set('prov', id)} placeholder="Pilih Provinsi" searchable />
+                    <CustomDropdown value={f.prov} options={provinces} onChange={(id) => set('prov', id)} placeholder="PILIH PROVINSI" searchable />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                   <div>
                     <FL>Kota / Kabupaten</FL>
-                    <CustomDropdown value={f.city} options={regencies} onChange={(id) => set('city', id)} placeholder="Pilih Kota" disabled={!f.prov} searchable />
+                    <CustomDropdown value={f.city} options={regencies} onChange={(id) => set('city', id)} placeholder="PILIH KOTA" disabled={!f.prov} searchable />
                   </div>
                   <div>
                     <FL>Kecamatan</FL>
-                    <CustomDropdown value={f.dist} options={districts} onChange={(id) => set('dist', id)} placeholder="Pilih Kecamatan" disabled={!f.city} searchable />
+                    <CustomDropdown value={f.dist} options={districts} onChange={(id) => set('dist', id)} placeholder="PILIH KECAMATAN" disabled={!f.city} searchable />
                   </div>
                   <div>
                     <FL>Kel / Desa</FL>
                     <CustomDropdown
                       value={f.villId}
                       options={villages}
-                      onChange={(id, name) => { set('villId', id); }}
-                      placeholder={f.dist ? "Pilih Kel/Desa" : "Pilih Kecamatan dulu"}
+                      onChange={(id) => { set('villId', id); }}
+                      placeholder={f.dist ? "PILIH KEL/DESA" : "PILIH KECAMATAN DULU"}
                       disabled={!f.dist}
                       searchable
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                   <div>
                     <FL>Kode Pos</FL>
                     <input value={f.postal} onChange={e => setF(p => ({ ...p, postal: e.target.value }))} className={ip} placeholder="40111" />
@@ -500,11 +505,11 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex flex-col-reverse md:flex-row md:justify-end gap-3 border-t border-slate-100 pt-6 mt-2">
+                <div className="flex flex-col-reverse md:flex-row md:justify-end gap-3 border-t border-ink/10 pt-6 mt-4">
                   <button
                     type="button"
                     onClick={() => setActiveStep(1)}
-                    className="w-full md:w-auto bg-slate-100 text-slate-600 py-4 px-10 rounded-xl text-sm font-bold tracking-normal flex items-center justify-center gap-2 hover:bg-slate-200 transition-colors"
+                    className="w-full md:w-auto bg-ink/5 text-ink/75 py-3 px-8 rounded-none text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-ink/10 transition-all cursor-pointer"
                   >
                     Kembali
                   </button>
@@ -512,12 +517,12 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={submit}
                     disabled={isSaving}
-                    className="w-full md:w-auto bg-slate-800 text-white py-4 px-10 rounded-xl text-sm font-bold tracking-normal flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-colors shadow-sm"
+                    className="w-full md:w-auto bg-ink text-white py-3.5 px-10 rounded-none text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-rose disabled:opacity-50 transition-all cursor-pointer shadow-sm"
                   >
                     {isSaving ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <><span>Simpan & Selesai</span><ArrowRight size={16} /></>
+                      <><span>Simpan & Selesai</span><ArrowRight size={14} /></>
                     )}
                   </button>
                 </div>

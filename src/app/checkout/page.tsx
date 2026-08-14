@@ -1223,10 +1223,7 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <div className={cn(
-                "border border-ink/20 bg-ink/5 mt-1 relative overflow-visible",
-                isMobile ? "flex flex-col" : "grid grid-cols-3"
-              )}>
+              <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
                 {loadingShipping && (
                   <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
                     <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink animate-pulse">{dict.checkout.calculating}</span>
@@ -1251,87 +1248,66 @@ export default function CheckoutPage() {
                 )}
                 {displayOptions.map((option) => {
                   const methodId = `${option.courier_name} ${option.courier_service_name}`;
+                  const isSelected = shippingMethod === methodId;
                   return (
-                  <React.Fragment key={`${option.company}-${option.courier_service_name}`}>
-                  <button
-                    type="button"
-                    onClick={() => handleShippingChange(methodId, option.price)}
-                    className={cn(
-                      "relative transition-all bg-white border-l-2 cursor-pointer w-full text-left",
-                      isMobile
-                        ? "flex items-center justify-between py-3 px-3 min-h-[48px] active:bg-ink/[0.03]"
-                        : "group flex flex-col items-center py-2.5 px-1 border-l-0 border-t-2",
-                      shippingMethod === methodId
-                        ? "bg-ink text-white border-ink"
-                        : "border-transparent hover:bg-ink/[0.01]"
-                    )}
-                  >
-                    {/* Mobile: horizontal layout */}
-                    {isMobile ? (
-                      <>
-                        <div className="flex flex-col items-start gap-0.5 min-w-0 flex-1 pr-2">
-                          <div className="flex items-center gap-2 mb-1">
-                            <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
-                            <span className={cn("text-xs md:text-[10px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white" : "text-ink/70")}>{option.courier_name}</span>
+                    <React.Fragment key={`${option.company}-${option.courier_service_name}`}>
+                      <button
+                        type="button"
+                        onClick={() => handleShippingChange(methodId, option.price)}
+                        className={cn(
+                          "relative p-4 transition-all duration-200 border text-left flex flex-col gap-2.5 justify-between min-h-[120px] rounded-none cursor-pointer w-full",
+                          isSelected
+                            ? "bg-ink border-ink text-white shadow-lg shadow-ink/10"
+                            : "bg-white border-ink/15 text-ink hover:border-ink/40 hover:bg-ink/[0.01]"
+                        )}
+                      >
+                        {/* Header: Logo, Name & Service Code */}
+                        <div className="flex items-center justify-between w-full gap-2">
+                          <div className="flex items-center gap-2">
+                            <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1.5 py-0.5 rounded-[2px]" />
+                            <span className={cn("text-[10px] font-bold uppercase tracking-widest", isSelected ? "text-white" : "text-ink/80")}>
+                              {option.courier_name}
+                            </span>
                           </div>
-                          <span className={cn("text-[11px] md:text-[8px] font-medium uppercase tracking-widest truncate w-full", shippingMethod === methodId ? "text-white/60" : "text-ink/50")}>{option.courier_service_name} • {getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}</span>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className={cn("text-sm md:text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
-                            IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          <span className={cn("text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-wider", isSelected ? "bg-white/20 text-white" : "bg-ink/5 text-ink/70")}>
+                            {option.courier_service_name}
                           </span>
-                          {shippingMethod === methodId && (
-                            <div className="w-4 h-4 bg-white rounded-none flex items-center justify-center shrink-0">
-                              <CheckCircle size={10} className="text-ink" />
-                            </div>
+                        </div>
+
+                        {/* Middle: Clear & Transparent Logistics Information */}
+                        <div className="flex flex-col gap-1 w-full">
+                          <span className={cn("text-[11px] font-bold uppercase tracking-wider leading-snug", isSelected ? "text-white" : "text-ink")}>
+                            {getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}
+                          </span>
+                          {option.description && (
+                            <span className={cn("text-[9px] font-medium leading-relaxed", isSelected ? "text-white/60" : "text-ink/50")}>
+                              {option.description}
+                            </span>
                           )}
                         </div>
-                      </>
-                    ) : (
-                      /* Desktop: vertical layout with hover tooltip */
-                      <>
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
-                          <span className={cn("text-xs md:text-[9px] font-medium uppercase tracking-widest flex items-center gap-1", shippingMethod === methodId ? "text-white" : "text-ink/60")}>
-                            {option.courier_name}
-                            <span className={cn("text-[9px] md:text-[7px] font-bold px-1 rounded-[2px]", shippingMethod === methodId ? "bg-white/20 text-white" : "bg-ink/5 text-ink/50")}>
-                              {option.courier_service_name}
-                            </span>
-                          </span>
-                          <div className={cn("transition-colors relative z-20", shippingMethod === methodId ? "text-white/60 hover:text-white" : "text-ink/50 hover:text-ink")}>
-                            <Info size={10} />
-                          </div>
-                        </div>
-                        <span className={cn("text-sm md:text-[11px] font-display font-medium italic", shippingMethod === methodId ? "text-white" : "text-ink")}>
-                          IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                        </span>
 
-                        {/* Pop-up Info (Tooltip) - Desktop only */}
-                        <div className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 w-[180px] bg-ink border border-ink shadow-2xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 origin-bottom scale-95 group-hover:scale-100 pointer-events-none flex flex-col gap-1.5 text-left">
-                          <div className="flex items-center justify-between border-b border-white/10 pb-1.5">
-                            <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose">{option.courier_name}</span>
-                            <span className="text-[10px] md:text-[7px] border border-white/20 px-1 py-0.5 text-white/80 uppercase tracking-widest">{option.courier_service_name}</span>
-                          </div>
-                          <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] text-white/60"><span className="text-white">{getEstimatedDeliveryDate(option.duration, isLateForInstant, option.courier_name)}</span></span>
-                          <span className="text-[11px] md:text-[8px] font-medium tracking-[0.02em] text-white/50 leading-relaxed">{option.description}</span>
-                          
-                          {/* Triangle Arrow */}
-                          <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-ink rotate-45 border-b border-r border-ink"></div>
+                        {/* Footer: Price & Selection Status */}
+                        <div className="flex items-end justify-between w-full mt-1 pt-2 border-t border-dashed border-current/10">
+                          <span className={cn("text-xs font-display font-medium italic", isSelected ? "text-rose-300" : "text-rose-600")}>
+                            IDR {option.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                          </span>
+                          {isSelected && (
+                            <CheckCircle size={10} className="text-white shrink-0" />
+                          )}
                         </div>
-                      </>
-                    )}
-                  </button>
-                  {/* LATE SLA WARNING */}
-                  {shippingMethod === methodId && (option.courier_name.toLowerCase().includes('gosend') || option.courier_name.toLowerCase().includes('grab') || option.duration.toLowerCase().includes('same day') || option.duration.toLowerCase().includes('instant')) && isLateForInstant && (
-                    <div className={cn("col-span-1 lg:col-span-1 p-2 bg-rose/5 border-t border-rose/10 flex items-start gap-2", isMobile ? "" : "border-l-0")}>
-                      <AlertTriangle size={12} className="text-rose shrink-0 mt-0.5" />
-                      <p className="text-[10px] md:text-[8px] font-medium text-rose/90 uppercase tracking-wide leading-tight">
-                        Melewati batas operasional (15:00 WIB). Pesanan Instant/SameDay ini akan diproses & dikirim BESOK HARI.
-                      </p>
-                    </div>
-                  )}
-                  </React.Fragment>
-                )})}
+                      </button>
+                      {/* LATE SLA WARNING */}
+                      {shippingMethod === methodId && (option.courier_name.toLowerCase().includes('gosend') || option.courier_name.toLowerCase().includes('grab') || option.duration.toLowerCase().includes('same day') || option.duration.toLowerCase().includes('instant')) && isLateForInstant && (
+                        <div className="col-span-1 md:col-span-3 p-3 bg-rose-50 border border-rose-200 flex items-start gap-2.5 mt-1">
+                          <AlertTriangle size={14} className="text-rose shrink-0 mt-0.5" />
+                          <p className="text-[10px] md:text-[9px] font-medium text-rose-900 uppercase tracking-wide leading-tight">
+                            Melewati batas operasional (15:00 WIB). Pesanan Instant/SameDay ini akan diproses & dikirim BESOK HARI.
+                          </p>
+                        </div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
               </div>
             </motion.section>
           </form>
