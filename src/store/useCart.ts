@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useState, useEffect } from 'react';
+import { SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/lib/constants/pricing';
 
-// Sizes that incur an extra surcharge (XXL and above)
-export const SURCHARGE_SIZES = ['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL'];
-export const SIZE_SURCHARGE_AMOUNT = 25000; // Rp 25.000
+// Re-export for backward compatibility — existing consumers import from '@/store/useCart'
+export { SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT };
 
 export interface CartItem {
   id: string;

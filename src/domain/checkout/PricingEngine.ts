@@ -1,4 +1,10 @@
 import { CheckoutItem, ShippingDetails, PromoDetails } from './CheckoutValidator';
+import {
+  SURCHARGE_SIZES,
+  SIZE_SURCHARGE_AMOUNT,
+  PLATFORM_FEE,
+  MAX_ITEM_NAME_LENGTH,
+} from '@/lib/constants/pricing';
 
 export interface DatabaseProduct {
   id: string;
@@ -31,10 +37,10 @@ export interface PricingPolicyConfig {
 }
 
 const DEFAULT_PRICING_POLICY: PricingPolicyConfig = {
-  surchargeSizes: new Set(['XXL', '2XL', '3XL', 'XXXL', '4XL', '5XL']),
-  sizeSurchargeAmount: 25000,
-  platformFee: 2500,
-  maxItemNameLength: 50,
+  surchargeSizes: new Set(SURCHARGE_SIZES),
+  sizeSurchargeAmount: SIZE_SURCHARGE_AMOUNT,
+  platformFee: PLATFORM_FEE,
+  maxItemNameLength: MAX_ITEM_NAME_LENGTH,
 };
 
 export class PricingEngine {

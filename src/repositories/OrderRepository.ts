@@ -22,68 +22,71 @@ export class OrderRepository {
     // 2. If embedded query fails (e.g. schema differences, missing columns, or PostgREST relationship error),
     // automatically fallback to independent queries so checkout verification never fails.
     if (error || !products) {
-      console.warn('[OrderRepository] Embedded getProductsByIds query failed, falling back to split queries:', error?.message || error);
+      console.warn('[OrderRepository] Embedded getProductsByIds query failed, falling back to concurrent split queries:', error?.message || error);
 
-      const { data: baseProducts, error: baseError } = await this.db
-        .from('products')
-        .select('id, price, name, supplier_id, stock_quantity')
-        .in('id', productIds);
+      // Fire all three independent queries concurrently to minimize latency (1x RTT instead of 3x)
+      const [baseResult, variantsResult, costingsResult] = await Promise.all([
+        // Base products — try specific columns first, fallback to wildcard
+        (async () => {
+          try {
+            const res = await this.db.from('products').select('id, price, name, supplier_id, stock_quantity').in('id', productIds);
+            if (res.error || !res.data) {
+              console.warn('[OrderRepository] Base products query failed, trying wildcard:', res.error?.message);
+              return await this.db.from('products').select('*').in('id', productIds);
+            }
+            return res;
+          } catch (e) {
+            return { data: null, error: e as any };
+          }
+        })(),
 
-      let rawProducts: any[] = [];
-      if (baseError || !baseProducts) {
-        console.warn('[OrderRepository] Base products query failed, trying wildcard select:', baseError?.message || baseError);
-        const { data: wildcardProducts, error: wildcardError } = await this.db
-          .from('products')
-          .select('*')
-          .in('id', productIds);
+        // Variants
+        (async () => {
+          try {
+            return await this.db.from('variants').select('id, product_id, size, color, stock_quantity').in('product_id', productIds);
+          } catch (e) {
+            console.warn('[OrderRepository] Fallback variants fetch skipped/failed:', e);
+            return { data: null, error: e as any };
+          }
+        })(),
 
-        if (wildcardError || !wildcardProducts) {
-          console.error('[OrderRepository] Fatal product verification failure:', wildcardError || baseError);
-          return { data: null, error: wildcardError || baseError || error };
-        }
-        rawProducts = wildcardProducts;
-      } else {
-        rawProducts = baseProducts;
+        // Product costings
+        (async () => {
+          try {
+            return await this.db.from('product_costings').select('*').in('product_id', productIds);
+          } catch (e) {
+            console.warn('[OrderRepository] Fallback costings fetch skipped/failed:', e);
+            return { data: null, error: e as any };
+          }
+        })(),
+      ]);
+
+      if (baseResult.error || !baseResult.data) {
+        console.error('[OrderRepository] Fatal product verification failure:', baseResult.error || error);
+        return { data: null, error: baseResult.error || error };
       }
 
-      // Independent fetch for variants
+      // Build lookup maps from concurrent results
       const variantsMap = new Map<string, any[]>();
-      try {
-        const { data: variantsData } = await this.db
-          .from('variants')
-          .select('id, product_id, size, color, stock_quantity')
-          .in('product_id', productIds);
-        if (variantsData) {
-          for (const v of variantsData) {
-            if (!variantsMap.has(v.product_id)) variantsMap.set(v.product_id, []);
-            variantsMap.get(v.product_id)!.push(v);
-          }
+      if (variantsResult.data) {
+        for (const v of variantsResult.data) {
+          if (!variantsMap.has(v.product_id)) variantsMap.set(v.product_id, []);
+          variantsMap.get(v.product_id)!.push(v);
         }
-      } catch (e) {
-        console.warn('[OrderRepository] Fallback variants fetch skipped/failed:', e);
       }
 
-      // Independent fetch for product_costings
       const costingsMap = new Map<string, any>();
-      try {
-        const { data: costingsData } = await this.db
-          .from('product_costings')
-          .select('*')
-          .in('product_id', productIds);
-        if (costingsData) {
-          for (const c of costingsData) {
-            costingsMap.set(c.product_id, {
-              supplier_base_price: c.supplier_base_price ?? c.supplier_cost ?? 0,
-              supplier_surcharge_cost: c.supplier_surcharge_cost ?? 0,
-              ninoc_markup: c.ninoc_markup ?? 0,
-            });
-          }
+      if (costingsResult.data) {
+        for (const c of costingsResult.data) {
+          costingsMap.set(c.product_id, {
+            supplier_base_price: c.supplier_base_price ?? c.supplier_cost ?? 0,
+            supplier_surcharge_cost: c.supplier_surcharge_cost ?? 0,
+            ninoc_markup: c.ninoc_markup ?? 0,
+          });
         }
-      } catch (err) {
-        console.warn('[OrderRepository] Fallback costings fetch skipped/failed:', err);
       }
 
-      const stitchedProducts = rawProducts.map((p: any) => ({
+      const stitchedProducts = baseResult.data.map((p: any) => ({
         ...p,
         variants: variantsMap.get(p.id) || p.variants || [],
         product_costings: costingsMap.get(p.id) ? [costingsMap.get(p.id)] : (p.product_costings || []),

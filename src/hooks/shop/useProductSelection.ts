@@ -149,7 +149,7 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     if (remainingStock <= 0) return false;
 
     let sizeSurcharge = 0;
-    if (SURCHARGE_SIZES.includes(effectiveSize.toUpperCase())) {
+    if ((SURCHARGE_SIZES as readonly string[]).includes(effectiveSize.toUpperCase())) {
       sizeSurcharge = SIZE_SURCHARGE_AMOUNT;
     }
 

@@ -2,7 +2,7 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import { CheckoutValidator, CustomerDetails, CheckoutItem } from './CheckoutValidator';
 import { PricingEngine } from './PricingEngine';
 import { OrderRepository } from '@/repositories/OrderRepository';
-import { getSnapApi } from '@/lib/midtrans';
+import { getSnapApiSingleton } from '@/lib/midtrans';
 import { getAppUrl } from '@/lib/utils';
 import { StockValidator, StockValidationResult } from './StockValidator';
 import { sendCheckoutPendingWA, formatPhoneNumber } from '@/lib/whatsapp';
@@ -71,7 +71,7 @@ export class CheckoutService {
     }
 
     if (dbProducts.length !== productIds.length) {
-      const foundIds = new Set(dbProducts.map((p) => p.id));
+      const foundIds = new Set(dbProducts.map((p: any) => p.id));
       const missingIds = productIds.filter((id) => !foundIds.has(id));
       console.warn(`[CheckoutService] Partial product mismatch. Missing IDs: [${missingIds.join(', ')}]`);
       return {
@@ -101,6 +101,36 @@ export class CheckoutService {
       };
     }
 
+    // 4.6 Backend Warehouse Integrity Validation
+    // Prevents API-bypass attacks that mix items from different warehouses in a single order.
+    const sanitizedItems = validation.sanitizedItems!;
+    if (sanitizedItems.length > 1) {
+      const itemsWithWarehouse = sanitizedItems.filter((item: any) => item.warehouse_id || item.origin_postal_code);
+      if (itemsWithWarehouse.length > 1) {
+        const firstWarehouseId = (itemsWithWarehouse[0] as any).warehouse_id;
+        const firstPostal = (itemsWithWarehouse[0] as any).origin_postal_code;
+
+        for (let i = 1; i < itemsWithWarehouse.length; i++) {
+          const itemWarehouseId = (itemsWithWarehouse[i] as any).warehouse_id;
+          const itemPostal = (itemsWithWarehouse[i] as any).origin_postal_code;
+
+          const hasConflict = (firstWarehouseId || itemWarehouseId)
+            ? firstWarehouseId !== itemWarehouseId
+            : (firstPostal && itemPostal && firstPostal !== itemPostal);
+
+          if (hasConflict) {
+            console.warn(`[CheckoutService] Warehouse conflict detected: ${firstWarehouseId || firstPostal} vs ${itemWarehouseId || itemPostal}`);
+            return {
+              status: 400,
+              payload: {
+                error: 'Tidak dapat menggabungkan produk dari lokasi gudang/fasilitas yang berbeda dalam satu pesanan. Silakan checkout terpisah.',
+              },
+            };
+          }
+        }
+      }
+    }
+
     // 5. Resolve Affiliate Tracking
     let affiliateId: string | null = null;
     try {
@@ -117,11 +147,6 @@ export class CheckoutService {
       }
     } catch (e) {
       console.error('[CheckoutService] Affiliate lookup error:', e);
-    }
-
-    // 6. Upsert Address if Authenticated User
-    if (customerDetails.user_id) {
-      await orderRepo.upsertCustomerAddress(customerDetails.user_id, customerDetails, firstName, lastName);
     }
 
     // 7. Generate Identifiers & Create Order with Row-Level Lock
@@ -149,9 +174,9 @@ export class CheckoutService {
       return { status: 409, payload: { error: orderCreation.error } };
     }
 
-    // 8. Generate Midtrans Snap Token
+    // 8. Generate Midtrans Snap Token (uses cached singleton instance)
     const appUrl = getAppUrl();
-    const snap = getSnapApi();
+    const snap = getSnapApiSingleton();
     const parameter = {
       transaction_details: { order_id: orderId, gross_amount: pricing.grossAmount },
       customer_details: {
@@ -191,8 +216,15 @@ export class CheckoutService {
     const snapToken = transaction.token as string;
     await orderRepo.updateSnapToken(orderId, snapToken);
 
-    // 9. Fire Asynchronous WhatsApp Notification (Non-blocking Next.js after)
+    // 9. Fire Non-Blocking Background Tasks (address sync + WA notification)
     after(() => {
+      // 9a. Upsert customer address in background — removed from critical path to save ~200ms
+      if (customerDetails.user_id) {
+        orderRepo.upsertCustomerAddress(customerDetails.user_id, customerDetails, firstName, lastName)
+          .catch((err) => console.error('[CheckoutService Async] Address upsert error:', err));
+      }
+
+      // 9b. WhatsApp Checkout Pending notification
       try {
         const formattedPhone = customerDetails.phone ? formatPhoneNumber(customerDetails.phone) : '';
         if (formattedPhone) {
