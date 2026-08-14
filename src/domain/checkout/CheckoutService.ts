@@ -103,30 +103,37 @@ export class CheckoutService {
 
     // 4.6 Backend Warehouse Integrity Validation
     // Prevents API-bypass attacks that mix items from different warehouses in a single order.
+    // Perfectly mirrors the single-order warehouse validation rules enforced in useCart.ts
     const sanitizedItems = validation.sanitizedItems!;
     if (sanitizedItems.length > 1) {
-      const itemsWithWarehouse = sanitizedItems.filter((item: any) => item.warehouse_id || item.origin_postal_code);
-      if (itemsWithWarehouse.length > 1) {
-        const firstWarehouseId = (itemsWithWarehouse[0] as any).warehouse_id;
-        const firstPostal = (itemsWithWarehouse[0] as any).origin_postal_code;
+      const firstItem = sanitizedItems[0] as any;
+      const existingWarehouseId = firstItem.warehouse_id;
+      const existingPostal = firstItem.origin_postal_code;
 
-        for (let i = 1; i < itemsWithWarehouse.length; i++) {
-          const itemWarehouseId = (itemsWithWarehouse[i] as any).warehouse_id;
-          const itemPostal = (itemsWithWarehouse[i] as any).origin_postal_code;
+      for (let i = 1; i < sanitizedItems.length; i++) {
+        const currentItem = sanitizedItems[i] as any;
+        const newWarehouseId = currentItem.warehouse_id;
+        const newPostal = currentItem.origin_postal_code;
 
-          const hasConflict = (firstWarehouseId || itemWarehouseId)
-            ? firstWarehouseId !== itemWarehouseId
-            : (firstPostal && itemPostal && firstPostal !== itemPostal);
-
-          if (hasConflict) {
-            console.warn(`[CheckoutService] Warehouse conflict detected: ${firstWarehouseId || firstPostal} vs ${itemWarehouseId || itemPostal}`);
-            return {
-              status: 400,
-              payload: {
-                error: 'Tidak dapat menggabungkan produk dari lokasi gudang/fasilitas yang berbeda dalam satu pesanan. Silakan checkout terpisah.',
-              },
-            };
+        let isConflict = false;
+        if (existingWarehouseId || newWarehouseId) {
+          if (existingWarehouseId !== newWarehouseId) {
+            isConflict = true;
           }
+        } else {
+          if (existingPostal && newPostal && existingPostal !== newPostal) {
+            isConflict = true;
+          }
+        }
+
+        if (isConflict) {
+          console.warn(`[CheckoutService] Warehouse conflict detected between items:`, firstItem.name, 'vs', currentItem.name);
+          return {
+            status: 400,
+            payload: {
+              error: 'Tidak dapat menggabungkan produk dari lokasi gudang/fasilitas yang berbeda dalam satu pesanan. Silakan checkout terpisah.',
+            },
+          };
         }
       }
     }
