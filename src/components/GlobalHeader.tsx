@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { Search, ShoppingBag, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut, Bell } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useHydratedCart, useCart } from '@/store/useCart';
 import { useBrandColor } from '@/components/BrandProvider';
@@ -427,6 +427,7 @@ function SearchResultItem({ product, index, onClick }: {
 
 export default function GlobalHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
   const dict = getDictionaryByLocale(lang);
 
@@ -699,7 +700,16 @@ export default function GlobalHeader() {
 
           {/* Cart Button */}
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6, duration: DURATION.fast }} className="flex items-center">
-            <PressScale onClick={() => setIsCartOpen(true)} className="group p-2 -m-2 flex items-center justify-center">
+            <PressScale
+              onClick={() => {
+                if (cartItemsCount >= 4) {
+                  router.push('/cart');
+                } else {
+                  setIsCartOpen(true);
+                }
+              }}
+              className="group p-2 -m-2 flex items-center justify-center"
+            >
               <div className="relative flex items-center justify-center">
                 <div className={cn("transition-colors", isDarkBg ? "text-white group-hover:text-white/80" : "text-ink/70 group-hover:text-rose")}>
                   <ShoppingBag size={18} strokeWidth={1.5} />
