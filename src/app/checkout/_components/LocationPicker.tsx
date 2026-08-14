@@ -244,13 +244,20 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, addressPar
         <div className="flex items-center gap-2">
           <MapPin size={16} className={position ? 'text-emerald-600 fill-emerald-100' : 'text-ink/60'} />
           <span className={`text-[11px] uppercase tracking-widest font-medium ${position ? 'text-emerald-700' : 'text-ink/80'}`}>
-            {position ? '✓ Titik Lokasi Tersimpan' : 'Set Pin Lokasi (Wajib Gojek/Grab)'}
+            {position ? '✓ Titik Lokasi Tersimpan' : 'Tandai Lokasi di Peta (Opsional)'}
           </span>
         </div>
         <span className={`text-[10px] uppercase tracking-widest ${position ? 'text-emerald-600 font-semibold hover:text-emerald-700' : 'text-ink/40'}`}>
           {isOpen ? 'Tutup Peta' : position ? 'Ubah PIN' : 'Buka Peta'}
         </span>
       </button>
+
+      {/* OPTIONAL HELPER TEXT TO DECREASE COGNITIVE LOAD */}
+      {!position && !isOpen && (
+        <p className="text-[10px] text-ink/40 italic leading-normal -mt-1 px-1">
+          * Pin peta bersifat opsional. Hanya diperlukan apabila Anda memilih pengiriman Instant (Gojek/Grab). Untuk pengiriman Reguler (JNE, SiCepat, J&T), silakan lewati langkah ini.
+        </p>
+      )}
 
       {/* COLLAPSIBLE MAP SECTION */}
       <AnimatePresence>
