@@ -1292,7 +1292,12 @@ export default function CheckoutPage() {
                       <>
                         <div className="flex items-center gap-1.5 mb-1">
                           <CourierLogo courier={option.courier_name} className="h-4 bg-white px-1 py-0.5 rounded-[2px]" />
-                          <span className={cn("text-xs md:text-[9px] font-medium uppercase tracking-widest", shippingMethod === methodId ? "text-white" : "text-ink/60")}>{option.courier_name}</span>
+                          <span className={cn("text-xs md:text-[9px] font-medium uppercase tracking-widest flex items-center gap-1", shippingMethod === methodId ? "text-white" : "text-ink/60")}>
+                            {option.courier_name}
+                            <span className={cn("text-[9px] md:text-[7px] font-bold px-1 rounded-[2px]", shippingMethod === methodId ? "bg-white/20 text-white" : "bg-ink/5 text-ink/50")}>
+                              {option.courier_service_name}
+                            </span>
+                          </span>
                           <div className={cn("transition-colors relative z-20", shippingMethod === methodId ? "text-white/60 hover:text-white" : "text-ink/50 hover:text-ink")}>
                             <Info size={10} />
                           </div>
