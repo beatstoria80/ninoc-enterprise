@@ -54,6 +54,56 @@ function applyGeographicRestrictions(pricing: any[], destName: string = '') {
   });
 }
 
+/**
+ * Strips out heavy freight, cargo, and trucking services that are inappropriate
+ * for small e-commerce parcels (fashion, accessories, F&B).
+ * 
+ * BLOCKED service types:
+ * - JNE JTR (Trucking), JNE Super, JNE Cargo
+ * - J&T Cargo, J&T Economy
+ * - SiCepat Cargo, SiCepat H2H (Hub to Hub)
+ * - Any service containing 'cargo', 'truck', 'freight', 'kargo'
+ * 
+ * ALLOWED: REG, YES, EZ, STD, Instant, Sameday, Express, etc.
+ */
+function applyServiceTypeFilter(pricing: any[]): any[] {
+  if (!pricing || !Array.isArray(pricing)) return pricing;
+
+  // Blocklist of service codes and keywords for heavy-freight / inappropriate services
+  const BLOCKED_SERVICE_CODES = new Set([
+    'jtr', 'jtr18', 'jtr250', 'jtr\u003e250',           // JNE Trucking variants
+    'super', 'ss',                                    // JNE Super / Super Speed (B2B bulk)
+    'eco',                                            // Economy services (too slow, B2B oriented)
+  ]);
+
+  const BLOCKED_KEYWORDS = [
+    'cargo', 'kargo', 'truck', 'trucking', 'freight',
+    'kontainer', 'container', 'heavy', 'hub to hub', 'h2h',
+  ];
+
+  return pricing.filter((rate: any) => {
+    const serviceCode = String(rate.courier_service_code || '').toLowerCase().trim();
+    const serviceName = String(rate.courier_service_name || '').toLowerCase().trim();
+    const description = String(rate.description || '').toLowerCase();
+
+    // 1. Block by exact service code match
+    if (BLOCKED_SERVICE_CODES.has(serviceCode)) return false;
+
+    // 2. Block by keyword match in service name or description
+    for (const keyword of BLOCKED_KEYWORDS) {
+      if (serviceCode.includes(keyword) || serviceName.includes(keyword) || description.includes(keyword)) {
+        return false;
+      }
+    }
+
+    // 3. Block services with extremely high prices (> Rp 500,000) as a safety net
+    //    These are almost certainly B2B/freight services that slipped through
+    if (rate.price && rate.price > 500000) return false;
+
+    return true;
+  });
+}
+
 function applyFnBRestrictions(pricing: any[], items: any[], destName: string = '') {
   const isFnBOrPerishable = items && Array.isArray(items) && items.some((it: any) => {
     return Boolean(it.is_perishable);
@@ -154,7 +204,8 @@ export async function POST(req: Request) {
             
             if (response.ok && data.success !== false) {
               const geoFiltered = applyGeographicRestrictions(data.pricing || [], destination_area_name);
-              const fnbResult = applyFnBRestrictions(geoFiltered, groupItems, destination_area_name);
+              const serviceFiltered = applyServiceTypeFilter(geoFiltered);
+              const fnbResult = applyFnBRestrictions(serviceFiltered, groupItems, destination_area_name);
               finalPricing = fnbResult.pricing;
               isFnbRestricted = fnbResult.is_fnb_restricted;
               fnbNoticeStr = fnbResult.fnb_notice;
@@ -194,7 +245,8 @@ export async function POST(req: Request) {
           // If success, return real data
           if (response.ok && data.success !== false) {
             const geoFiltered = applyGeographicRestrictions(data.pricing || [], destination_area_name);
-            const fnbResult = applyFnBRestrictions(geoFiltered, items, destination_area_name);
+            const serviceFiltered = applyServiceTypeFilter(geoFiltered);
+            const fnbResult = applyFnBRestrictions(serviceFiltered, items, destination_area_name);
             return NextResponse.json({ ...data, pricing: fnbResult.pricing, is_fnb_restricted: fnbResult.is_fnb_restricted, fnb_notice: fnbResult.fnb_notice, source: 'biteship' });
           }
 
