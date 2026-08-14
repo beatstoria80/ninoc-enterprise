@@ -849,7 +849,14 @@ export default function GlobalHeader() {
                         <span>{user ? 'Proceed to Checkout' : 'Guest Checkout'}</span>
                       </span>
                     </Link>
-                    <div className="flex items-center justify-center gap-2 opacity-30 grayscale">
+                    <Link
+                      href="/cart"
+                      onClick={() => setIsCartOpen(false)}
+                      className="w-full border border-ink text-ink hover:bg-ink hover:text-white py-3 font-medium text-[9px] uppercase tracking-[0.4em] flex items-center justify-center gap-3 transition-colors cursor-pointer focus:outline-none"
+                    >
+                      <span>View Shopping Bag</span>
+                    </Link>
+                    <div className="flex items-center justify-center gap-2 opacity-30 grayscale mt-1">
                       <ShieldCheck size={12} />
                       <span className="text-[7px] font-medium uppercase tracking-[0.2em]">Secure Transaction</span>
                     </div>
