@@ -26,11 +26,11 @@ interface LocationPickerProps {
   initialLng?: number;
   searchQuery?: string;
   addressParts?: string[];
-  onLocationSelect: (lat: number, lng: number) => void;
+  onLocationSelect: (lat: number | undefined, lng: number | undefined) => void;
 }
 
 // Map event handler component
-function LocationMarker({ position, setPosition, onSelect }: { position: L.LatLng | null, setPosition: (p: L.LatLng) => void, onSelect: (lat: number, lng: number) => void }) {
+function LocationMarker({ position, setPosition, onSelect }: { position: L.LatLng | null, setPosition: (p: L.LatLng) => void, onSelect: (lat: number | undefined, lng: number | undefined) => void }) {
   useMapEvents({
     click(e: any) {
       setPosition(e.latlng);
@@ -104,6 +104,8 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, addressPar
   );
 
   const prevQueryRef = useRef<string>('');
+  const lastSyncedLatRef = useRef<number | undefined>(initialLat);
+  const lastSyncedLngRef = useRef<number | undefined>(initialLng);
 
   // Sync position if initialLat / initialLng change from outside
   useEffect(() => {
@@ -112,6 +114,12 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, addressPar
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setPosition(newPos);
       setMapCenter([initialLat, initialLng]);
+      lastSyncedLatRef.current = initialLat;
+      lastSyncedLngRef.current = initialLng;
+    } else {
+      setPosition(null);
+      lastSyncedLatRef.current = undefined;
+      lastSyncedLngRef.current = undefined;
     }
   }, [initialLat, initialLng]);
 
@@ -125,6 +133,24 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, addressPar
 
     if (!currentQueryString) return;
     
+    // 1. Detect if the coordinates were updated/supplied from outside (e.g. address book or profile load)
+    const latLngChangedFromOutside = 
+      (initialLat !== undefined && initialLat !== null && initialLat !== 0 && initialLat !== lastSyncedLatRef.current) || 
+      (initialLng !== undefined && initialLng !== null && initialLng !== 0 && initialLng !== lastSyncedLngRef.current);
+
+    if (latLngChangedFromOutside) {
+      lastSyncedLatRef.current = initialLat;
+      lastSyncedLngRef.current = initialLng;
+      prevQueryRef.current = currentQueryString;
+      return;
+    }
+
+    // 2. Prevent overwriting a pre-existing position on first open/mount
+    if (prevQueryRef.current === '' && position) {
+      prevQueryRef.current = currentQueryString;
+      return;
+    }
+
     // Check if query actually changed
     const queryChanged = prevQueryRef.current !== currentQueryString;
     if (!queryChanged && position) return;
@@ -152,8 +178,19 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, addressPar
             const newPos = new L.LatLng(lat, lon);
 
             setMapCenter([lat, lon]);
-            setPosition(newPos);
-            onLocationSelect(lat, lon);
+            
+            // Only set position and select location automatically if we matched the full address query (i === 0).
+            // If it fell back to a coarser query (i > 0 like subdistrict/city), only update the map center
+            // to allow the user to precisely pin their location manually, preventing inaccurate auto-selections.
+            if (i === 0) {
+              setPosition(newPos);
+              onLocationSelect(lat, lon);
+            } else {
+              // If the address text changed and we only found a coarse match,
+              // clear any old/incorrect coordinates to force a fresh precise pin in the new area.
+              setPosition(null);
+              onLocationSelect(undefined, undefined);
+            }
             break; // Found valid location! Exit fallback loop
           }
         }
@@ -166,7 +203,7 @@ export function LocationPicker({ initialLat, initialLng, searchQuery, addressPar
     
     const timeoutId = setTimeout(fetchLocationWithCascadingFallback, 400);
     return () => clearTimeout(timeoutId);
-  }, [isOpen, searchQuery, addressParts, position, onLocationSelect]);
+  }, [isOpen, searchQuery, addressParts, position, onLocationSelect, initialLat, initialLng]);
 
   const handleGetCurrentLocation = () => {
     if (navigator.geolocation) {
