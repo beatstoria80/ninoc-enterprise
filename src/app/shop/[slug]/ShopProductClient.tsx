@@ -471,7 +471,12 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     const success = hookHandleAddToCart();
     if (success) {
       setAddedToCart(true);
-      setTimeout(() => setAddedToCart(false), 2000);
+      const currentItems = useCart.getState().items;
+      if (currentItems.length >= 4) {
+        router.push('/cart');
+      } else {
+        setTimeout(() => setAddedToCart(false), 2000);
+      }
     }
   };
 
