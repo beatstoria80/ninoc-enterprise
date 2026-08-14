@@ -189,7 +189,7 @@ export function CartSidebar({
                                 <X size={10} />
                               </button>
                             </div>
-                            <div className="grid grid-cols-[26px_0.6fr_0.6fr_0.9fr_max-content] gap-1.5 text-[9px] md:text-[7px] font-semibold text-white/50 uppercase tracking-wider mb-1 border-b border-white/10 pb-1 min-w-[240px]">
+                            <div className="grid grid-cols-[26px_1fr_1fr_1.5fr_2.5fr] gap-1.5 text-[9px] md:text-[7px] font-semibold text-white/50 uppercase tracking-wider mb-1 border-b border-white/10 pb-1 min-w-[240px]">
                               <span>Size</span>
                               <span className="text-center">{isPants ? 'Waist' : 'Chest'}</span>
                               <span className="text-center">Length</span>
@@ -203,7 +203,7 @@ export function CartSidebar({
                                 : `${m.shoulder || '-'} / ${m.sleeve || '-'}`;
                               return (
                                 <div key={idx} className={cn(
-                                  "grid grid-cols-[26px_0.6fr_0.6fr_0.9fr_max-content] gap-1.5 text-[10px] md:text-[8px] font-medium py-1 border-b border-white/5 min-w-[240px]",
+                                  "grid grid-cols-[26px_1fr_1fr_1.5fr_2.5fr] gap-1.5 text-[10px] md:text-[8px] font-medium py-1 border-b border-white/5 min-w-[240px]",
                                   m.size.toUpperCase() === (item.size || '').toUpperCase() ? "text-rose font-bold" : "text-white/80"
                                 )}>
                                   <span className="font-bold">{m.size}</span>
