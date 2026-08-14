@@ -125,8 +125,6 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
     };
   }, [productId, productCategory, productSubCategory]);
 
-  const { items: cartItems } = useHydratedCart();
-
   const availableStock = useMemo(() => {
     const selectedVariant = findVariant(product, effectiveSize, effectiveColor);
     if (selectedVariant) {
