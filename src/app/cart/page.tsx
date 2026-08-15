@@ -75,10 +75,7 @@ export default function CartPage() {
             </div>
 
             {/* Scrollable container when >3 items */}
-            <div className={cn(
-              "flex flex-col",
-              items.length > 3 && "max-h-[440px] overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 hover:[&::-webkit-scrollbar-thumb]:bg-ink/25 [&::-webkit-scrollbar-thumb]:rounded-full"
-            )}>
+            <div className="flex flex-col">
 
               <AnimatePresence mode="popLayout">
                 {items.map((item, index) => (
