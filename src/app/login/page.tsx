@@ -78,7 +78,7 @@ export default function LoginPage() {
       if (data?.user?.user_metadata?.role === 'admin' || loginEmail === 'admin@ninoc.store') {
         router.push('/admin');
       } else if (isSupplierLogin || loginEmail === 'supplier_test@ninoc.store' || nextUrl === '/supplier') {
-        router.push('/supplier');
+        window.location.href = '/supplier';
       } else if (nextUrl) {
         router.push(nextUrl);
       } else {
