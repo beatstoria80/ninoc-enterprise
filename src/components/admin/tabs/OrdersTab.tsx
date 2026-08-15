@@ -406,15 +406,22 @@ export function OrdersTab({
       return;
     }
 
-    // ── LOG PRINTED TIMESTAMP TO DB ──
+    // ── LOG PRINTED TIMESTAMP TO DB (BULK UPDATE) ──
     const now = new Date().toISOString();
-    Promise.all(ordersToPrint.map(async (order) => {
-      await supabase.from('orders').update({ printed_at: now }).eq('id', order.id);
-    })).then(() => {
-      if (onUpdateOrderPrinted) {
-        ordersToPrint.forEach(o => onUpdateOrderPrinted(o.id, now));
-      }
-    });
+    const orderIdsToUpdate = ordersToPrint.map(o => o.id);
+    
+    supabase.from('orders')
+      .update({ printed_at: now })
+      .in('id', orderIdsToUpdate)
+      .then(({ error }) => {
+        if (error) {
+          console.error('[Bulk Print] Failed to update printed_at:', error);
+          return;
+        }
+        if (onUpdateOrderPrinted) {
+          ordersToPrint.forEach(o => onUpdateOrderPrinted(o.id, now));
+        }
+      });
 
     const printWindow = window.open('', '_blank');
     if (!printWindow) {
@@ -638,6 +645,7 @@ export function OrdersTab({
               const courierName = courierParts[0];
               const serviceType = courierParts.slice(1).join(' ') || 'REG';
               const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+              const totalWeight = order.order_items?.reduce((s, i) => s + ((i as any).weight_grams || 250) * i.quantity, 0) || 250;
 
               const shipDate = new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
               
@@ -708,7 +716,7 @@ export function OrdersTab({
                   <div class="sender-info">
                     <div class="flex-between">
                       <div><span style="font-weight:bold">Pengirim :</span> NINOC ENTERPRISE</div>
-                      <div>(+62)812-XXXX-XXXX</div>
+                      <div>+628211983774</div>
                     </div>
                     <div class="uppercase-sm">JAWA BARAT, BANDUNG</div>
                   </div>
@@ -724,7 +732,7 @@ export function OrdersTab({
                   </div>
 
                   <div class="weight-date">
-                    <div>Weight : ${totalItems * 100} Gram</div>
+                    <div>Weight : ${totalWeight} Gram</div>
                     <div>Ship : ${shipDate}</div>
                   </div>
 
