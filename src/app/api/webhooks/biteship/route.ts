@@ -47,7 +47,6 @@ function mapBiteshipStatus(biteshipStatus: string): string {
 }
 
 function verifySignature(payload: string, signature: string, secret: string): boolean {
-  if (!secret) return true;
   const hmac = crypto.createHmac('sha256', secret);
   hmac.update(payload);
   const computed = hmac.digest('hex');
@@ -74,14 +73,19 @@ export async function POST(req: Request) {
     const webhookSecret = process.env.BITESHIP_WEBHOOK_SECRET || '';
     const signature = req.headers.get('x-biteship-signature') || '';
 
-    if (webhookSecret) {
-      if (!signature) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
-      const isValid = verifySignature(rawBody, signature, webhookSecret);
-      if (!isValid) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
+    // STRICT FAIL-CLOSED: Tolak proses webhook jika rahasia tidak dikonfigurasi di environment
+    if (!webhookSecret) {
+      console.error('[Biteship Webhook] CRITICAL: Webhook secret is not configured!');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
+    if (!signature) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const isValid = verifySignature(rawBody, signature, webhookSecret);
+    if (!isValid) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     console.log(`[Biteship Webhook] Event: ${payload.event}, Order: ${payload.order_id}`);

@@ -54,9 +54,9 @@ export async function POST(req: Request) {
 
     // 2. Try cancelling in Midtrans
     let refundStatus = 'Cancelled before payment';
-    const isProd = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
-    const baseUrl = isProd ? 'https://api.midtrans.com' : 'https://api.sandbox.midtrans.com';
     const serverKey = process.env.MIDTRANS_SERVER_KEY;
+    const isProd = serverKey?.startsWith('SB-') ? false : (process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true');
+    const baseUrl = isProd ? 'https://api.midtrans.com' : 'https://api.sandbox.midtrans.com';
     
     if (serverKey) {
       const authString = Buffer.from(serverKey + ':').toString('base64');
