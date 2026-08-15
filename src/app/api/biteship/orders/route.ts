@@ -21,11 +21,45 @@ const OrderPayloadSchema = z.object({
   courier_company: z.string().min(1),
   courier_type: z.string().min(1),
   destination: z.any().optional(),
-  origin: z.any().optional(),
   items: z.array(z.any()).optional(),
   metadata: z.any().optional()
 });
 
+async function getOriginDetails(): Promise<any> {
+  let defaultOrigin = {
+    contact_name: "NINOC Logistics",
+    contact_phone: "+628211983774",
+    address: "Kompleks Griya Saluyu, Blok AA No.87",
+    postal_code: 40292,
+    note: "Gudang Utama NINOC (Bandung)",
+    latitude: -6.953531,
+    longitude: 107.665518
+  };
+  
+  try {
+    const { data: hubData } = await adminClient
+      .from('warehouses')
+      .select('name, address, postal_code, latitude, longitude, phone')
+      .eq('is_crossdock_hub', true)
+      .limit(1)
+      .single();
+      
+    if (hubData) {
+      defaultOrigin = {
+        contact_name: "NINOC Logistics",
+        contact_phone: hubData.phone || defaultOrigin.contact_phone,
+        address: hubData.address || defaultOrigin.address,
+        postal_code: parseInt(hubData.postal_code || '40292', 10),
+        note: `Gudang Utama ${hubData.name || 'NINOC'}`,
+        latitude: hubData.latitude || defaultOrigin.latitude,
+        longitude: hubData.longitude || defaultOrigin.longitude
+      };
+    }
+  } catch (e) {
+    console.warn('[Biteship Orders] Failed to fetch Ninoc Hub from DB, using fallback.', e);
+  }
+  return defaultOrigin;
+}
 
 
 async function saveOrderToSupabase(
@@ -186,7 +220,6 @@ export async function POST(req: Request) {
       courier_company,
       courier_type: rawCourierType,
       destination,
-      origin,
       items,
       metadata
     } = parseResult.data;
@@ -220,6 +253,8 @@ export async function POST(req: Request) {
     // Try real Biteship API if key is configured
     if (apiKey && apiKey !== 'your_biteship_api_key_here') {
       try {
+        const originDetails = await getOriginDetails();
+
         const response = await fetch('https://api.biteship.com/v1/orders', {
           method: 'POST',
           headers: {
@@ -231,7 +266,7 @@ export async function POST(req: Request) {
             courier_company: courier_company.toLowerCase(),
             courier_type: courierType,
             destination,
-            origin,
+            origin: originDetails,
             items,
             metadata: metadata || {},
           }),

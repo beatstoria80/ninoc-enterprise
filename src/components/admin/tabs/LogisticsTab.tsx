@@ -142,15 +142,6 @@ export function LogisticsTab({
             longitude: order.shipping_address.longitude
           })
         },
-        origin: {
-          contact_name: "NINOC Logistics",
-          contact_phone: "+628211983774",
-          address: "Kompleks Griya Saluyu, Blok AA No.87",
-          postal_code: 40292,
-          note: "Gudang Utama NINOC (Bandung)",
-          latitude: -6.953531, // coordinates around Rancasari/Griya Saluyu Bandung
-          longitude: 107.665518
-        },
         items: order.order_items?.map(item => ({
           name: item.product_name || 'Garment Item',
           value: item.price_at_purchase || 0,
@@ -185,7 +176,7 @@ export function LogisticsTab({
       setLogisticsSelectedOrder(updatedOrder);
       if (onOrderUpdated) onOrderUpdated(updatedOrder);
       
-      alert(`Berhasil! Nomor Resi: ${data.tracking_id || data.waybill_id}\n\n[TEST MODE] Status otomatis diubah menjadi DELIVERED untuk pengujian Retur.`);
+      alert(`Berhasil Request Pickup! Nomor Resi: ${data.tracking_id || data.waybill_id}`);
 
     } catch (err: any) {
       console.error('Dispatch error:', err);
