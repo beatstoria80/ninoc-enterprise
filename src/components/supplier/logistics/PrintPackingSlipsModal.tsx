@@ -9,9 +9,20 @@ interface PrintPackingSlipsModalProps {
   isOpen: boolean;
   onClose: () => void;
   orders: any[];
+  senderOverride?: {
+    name: string;
+    phone: string;
+    city: string;
+    province: string;
+  };
 }
 
-export default function PrintPackingSlipsModal({ isOpen, onClose, orders }: PrintPackingSlipsModalProps) {
+export default function PrintPackingSlipsModal({ 
+  isOpen, 
+  onClose, 
+  orders,
+  senderOverride
+}: PrintPackingSlipsModalProps) {
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -96,7 +107,7 @@ export default function PrintPackingSlipsModal({ isOpen, onClose, orders }: Prin
                       transformOrigin: 'top left',
                       overflow: 'hidden',
                     }} className="bg-white shadow-2xl rounded-sm border border-gray-200">
-                      <ShippingLabel order={order} />
+                      <ShippingLabel order={order} senderOverride={senderOverride} />
                     </div>
                   </div>
                   <span className="text-[10px] text-gray-400 font-mono mt-1">ORDER ID: #{order.id.slice(0, 8).toUpperCase()}</span>
@@ -111,7 +122,7 @@ export default function PrintPackingSlipsModal({ isOpen, onClose, orders }: Prin
       <div id="printable-labels-area" className="hidden print:block">
         {toPackOrders.map((order) => (
           <div key={order.id} className="print-label-page bg-white text-black p-0 m-0 overflow-hidden">
-            <ShippingLabel order={order} />
+            <ShippingLabel order={order} senderOverride={senderOverride} />
           </div>
         ))}
       </div>

@@ -78,7 +78,18 @@ export function getCourierService(courier: string | null): { name: string; servi
   };
 }
 
-export function ShippingLabel({ order }: { order: Order }) {
+export function ShippingLabel({ 
+  order,
+  senderOverride
+}: { 
+  order: Order;
+  senderOverride?: {
+    name: string;
+    phone: string;
+    city: string;
+    province: string;
+  };
+}) {
   const courierInfo = getCourierService(order.courier);
   const trackingId = order.tracking_id || 'JX9689052297'; // default to something so it looks like the reference if empty
   const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
@@ -173,11 +184,11 @@ export function ShippingLabel({ order }: { order: Order }) {
         {/* SENDER INFO */}
         <div style={{ padding: '6px 8px', borderBottom: '1px dotted black' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10px' }}>
-            <div><span style={{ fontWeight: 'bold' }}>Pengirim :</span> NINOC ENTERPRISE</div>
-            <div>(+62)812-XXXX-XXXX</div>
+            <div><span style={{ fontWeight: 'bold' }}>Pengirim :</span> {senderOverride?.name || 'NINOC ENTERPRISE'}</div>
+            <div>{senderOverride?.phone || '(+62)812-XXXX-XXXX'}</div>
           </div>
           <div style={{ fontSize: '9px', textTransform: 'uppercase' }}>
-            JAWA BARAT, BANDUNG
+            {senderOverride ? `${senderOverride.province.toUpperCase()}, ${senderOverride.city.toUpperCase()}` : 'JAWA BARAT, BANDUNG'}
           </div>
         </div>
 

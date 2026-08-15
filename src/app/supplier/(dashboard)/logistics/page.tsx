@@ -17,7 +17,14 @@ export default async function SupplierLogisticsPage() {
   // Uses Clean Architecture: Controller -> Service -> Repository -> Database
   const orders = await supplierService.getLogisticsOrders(supplierUser.supplier_id);
 
+  const senderOverride = {
+    name: (supplierUser.suppliers as any)?.name || 'NINOC ENTERPRISE',
+    phone: (supplierUser.suppliers as any)?.contact_phone || '0800000000',
+    city: supplierUser.assignedWarehouse?.city || 'Bandung',
+    province: supplierUser.assignedWarehouse?.province || 'Jawa Barat'
+  };
+
   return (
-    <LogisticsTableClient orders={orders} />
+    <LogisticsTableClient orders={orders} senderOverride={senderOverride} />
   );
 }

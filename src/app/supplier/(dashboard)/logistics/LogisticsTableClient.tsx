@@ -10,7 +10,18 @@ import { ACTION_REQUIRED_STATUSES, WAITING_PICKUP_STATUSES, COMPLETED_STATUSES, 
 
 type TabStatus = 'action_required' | 'in_transit' | 'completed';
 
-export default function LogisticsTableClient({ orders }: { orders: any[] }) {
+export default function LogisticsTableClient({ 
+  orders,
+  senderOverride
+}: { 
+  orders: any[];
+  senderOverride?: {
+    name: string;
+    phone: string;
+    city: string;
+    province: string;
+  };
+}) {
   const [activeTab, setActiveTab] = useState<TabStatus>('action_required');
   const [searchQuery, setSearchQuery] = useState('');
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
@@ -180,6 +191,7 @@ export default function LogisticsTableClient({ orders }: { orders: any[] }) {
         isOpen={isPrintModalOpen} 
         onClose={() => setIsPrintModalOpen(false)} 
         orders={orders} 
+        senderOverride={senderOverride}
       />
     </div>
   );
