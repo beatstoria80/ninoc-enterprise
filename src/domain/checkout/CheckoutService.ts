@@ -23,6 +23,82 @@ export interface CheckoutProcessResponse {
 export class CheckoutService {
   constructor(private readonly supabaseAdmin: SupabaseClient) {}
 
+  /**
+   * SECURITY: Re-validates promo/voucher discount from database.
+   * NEVER trust discountAmount sent from the frontend — it can be manipulated via DevTools.
+   */
+  private async revalidatePromoFromDB(
+    promoInput: { code?: string; type?: string; affiliateId?: string } | null | undefined,
+    subtotal: number
+  ): Promise<{ code: string; discountAmount: number } | undefined> {
+    if (!promoInput || !promoInput.code) return undefined;
+
+    const upperCode = promoInput.code.toUpperCase();
+
+    // 1. Check vouchers table
+    const { data: voucher } = await this.supabaseAdmin
+      .from('vouchers')
+      .select('*')
+      .eq('code', upperCode)
+      .eq('is_active', true)
+      .single();
+
+    if (voucher) {
+      // Validate expiry
+      if (voucher.valid_until && new Date(voucher.valid_until) < new Date()) {
+        return undefined; // expired — silently ignore
+      }
+      // Validate usage limit
+      if (voucher.max_usage && voucher.usage_count !== undefined && voucher.usage_count >= voucher.max_usage) {
+        return undefined;
+      }
+      // Validate minimum order
+      if (voucher.min_order_amount && subtotal < voucher.min_order_amount) {
+        return undefined;
+      }
+
+      let discountAmount = 0;
+      if (voucher.type === 'percentage') {
+        discountAmount = subtotal * (Number(voucher.value) / 100);
+        if (voucher.max_discount && discountAmount > Number(voucher.max_discount)) {
+          discountAmount = Number(voucher.max_discount);
+        }
+      } else if (voucher.type === 'fixed_amount') {
+        discountAmount = Number(voucher.value);
+      }
+      // free_shipping handled by frontend display only
+
+      // Increment usage count atomically
+      await this.supabaseAdmin
+        .from('vouchers')
+        .update({ usage_count: (voucher.usage_count || 0) + 1 })
+        .eq('id', voucher.id);
+
+      return { code: upperCode, discountAmount };
+    }
+
+    // 2. Check affiliates table
+    const { data: affiliate } = await this.supabaseAdmin
+      .from('affiliates')
+      .select('id, customer_discount_type, customer_discount_value, status')
+      .eq('code', upperCode)
+      .eq('status', 'active')
+      .single();
+
+    if (affiliate) {
+      const dType = affiliate.customer_discount_type || 'percentage';
+      const dValue = Number(affiliate.customer_discount_value || 0);
+      let discountAmount = 0;
+      if (dValue > 0) {
+        discountAmount = dType === 'percentage' ? subtotal * (dValue / 100) : dValue;
+      }
+      return { code: upperCode, discountAmount };
+    }
+
+    // Code not found — no discount
+    return undefined;
+  }
+
   public async processCheckout(
     items: CheckoutItem[] | any[],
     customerDetails: CustomerDetails,
@@ -83,8 +159,15 @@ export class CheckoutService {
       };
     }
 
-    // 4. Calculate Prices & Build Breakdown via O(1) Pricing Engine
-    const pricing = PricingEngine.calculateOrderBreakdown(validation.sanitizedItems!, dbProducts, shippingDetails as any, promo as any);
+    // 4. SECURITY: Re-validate promo discount from database (NEVER trust frontend discountAmount)
+    const itemSubtotal = (validation.sanitizedItems || []).reduce((sum: number, item: any) => {
+      const dbProd = dbProducts.find((p: any) => p.id === item.id);
+      return sum + (Number(dbProd?.price || item.price || 0) * (item.quantity || 1));
+    }, 0);
+    const validatedPromo = await this.revalidatePromoFromDB(promo as any, itemSubtotal);
+
+    // 4.1 Calculate Prices & Build Breakdown via O(1) Pricing Engine
+    const pricing = PricingEngine.calculateOrderBreakdown(validation.sanitizedItems!, dbProducts, shippingDetails as any, validatedPromo as any);
     if (pricing.error) {
       return { status: 400, payload: { error: pricing.error } };
     }
