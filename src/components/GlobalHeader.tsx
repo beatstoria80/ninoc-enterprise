@@ -1186,6 +1186,7 @@ export default function GlobalHeader() {
                   </span>
                   {[
                     { label: 'Return & Refund', href: '/retur', highlight: true },
+                    { label: 'Supplier Dashboard', href: '/supplier' },
                     { label: 'Mitra Supplier (B2B)', href: '/supplier/apply' },
                     { label: dict.header.affiliate, href: '/affiliate' },
                     { label: dict.header.shippingTerms, href: '/help/shipping-payment' },
