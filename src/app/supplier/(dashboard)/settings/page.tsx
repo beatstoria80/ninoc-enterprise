@@ -1,7 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { Settings2, Building2, User, CreditCard, ShieldCheck, Mail, MapPin, CheckCircle2 } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import { UIPreferencesPanel } from '@/components/supplier/settings/UIPreferencesPanel';
 import { SupplierForm } from './SupplierForm';
 import { SupplierAccountForm } from './SupplierAccountForm';
 import { SupplierBankForm } from './SupplierBankForm';
@@ -109,8 +108,6 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                   )}
                 </div>
               </div>
-
-              <UIPreferencesPanel />
             </>
           )}
 
