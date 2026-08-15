@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User, Trash2 } from 'lucide-react';
+import { ShieldCheck, ShoppingBag, ArrowLeft, Lock, Info, CheckCircle, AlertTriangle, User, Trash2, ChevronDown } from 'lucide-react';
 import { useCart, useHydratedCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
@@ -237,6 +237,7 @@ export default function CheckoutPage() {
   const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
   const [createdOrderNumber, setCreatedOrderNumber] = useState<string | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isMobileSummaryOpen, setIsMobileSummaryOpen] = useState(false);
 
   // Promo Code State
   const [promoLoading, setPromoLoading] = useState(false);
@@ -1003,33 +1004,59 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Always Visible Item List for Mobile */}
-              <div id="mobile-item-list" className="pt-2 space-y-3">
-                {items.map((item) => (
-                  <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center justify-between">
-                    <div className="flex gap-3 items-center flex-1 min-w-0">
-                      <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
-                        <CheckoutCartItemImage item={item} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-1 text-ink">{item.name}</p>
-                        <div className="flex items-center gap-1">
-                          <p className="text-[10px] md:text-[7px] font-medium text-ink/50 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
-                          {(item.size_surcharge || 0) > 0 && (
-                            <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setItemToDelete({ id: item.id, name: item.name, size: item.size, color: item.color })}
-                      className="p-1.5 text-ink/50 hover:text-rose transition-colors flex-shrink-0"
+              {/* Collapsible Item List for Mobile */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsMobileSummaryOpen(!isMobileSummaryOpen)}
+                  className="w-full flex items-center justify-between text-[10px] md:text-[8px] font-bold uppercase tracking-widest text-ink/60 hover:text-ink transition-colors py-2 border-b border-ink/5"
+                >
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag size={12} />
+                    {isMobileSummaryOpen ? 'Sembunyikan Item' : `Lihat ${items.length} Item`}
+                  </span>
+                  <motion.div animate={{ rotate: isMobileSummaryOpen ? 180 : 0 }}>
+                    <ChevronDown size={14} />
+                  </motion.div>
+                </button>
+                <AnimatePresence>
+                  {isMobileSummaryOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
                     >
-                      <Trash2 size={13} />
-                    </button>
-                  </div>
-                ))}
+                      <div id="mobile-item-list" className="pt-3 space-y-3 pb-2">
+                        {items.map((item) => (
+                          <div key={`${item.id}-${item.size}-${item.color}`} className="flex gap-3 items-center justify-between">
+                            <div className="flex gap-3 items-center flex-1 min-w-0">
+                              <div className="w-8 h-8 bg-ink/5 flex-shrink-0 relative border border-ink/5">
+                                <CheckoutCartItemImage item={item} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs md:text-[9px] font-medium uppercase line-clamp-1 text-ink">{item.name}</p>
+                                <div className="flex items-center gap-1">
+                                  <p className="text-[10px] md:text-[7px] font-medium text-ink/50 uppercase">{item.color ? `Color ${item.color} | ` : ''}Size {item.size} | Qty {item.quantity}</p>
+                                  {(item.size_surcharge || 0) > 0 && (
+                                    <span className="text-[6px] font-medium text-rose bg-rose/10 px-1 py-0.5 rounded-sm">+15K</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setItemToDelete({ id: item.id, name: item.name, size: item.size, color: item.color })}
+                              className="p-1.5 text-ink/50 hover:text-rose transition-colors flex-shrink-0"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
