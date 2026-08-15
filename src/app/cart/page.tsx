@@ -74,8 +74,11 @@ export default function CartPage() {
               <div className="col-span-4 text-right">Subtotal</div>
             </div>
 
-            {/* Scrollable container when >3 items */}
-            <div className="flex flex-col">
+            {/* Scrollable container when >6 items on PC */}
+            <div className={cn(
+              "flex flex-col",
+              items.length > 6 && "md:max-h-[420px] md:overflow-y-auto md:overscroll-contain md:[&::-webkit-scrollbar]:w-[3px] md:[&::-webkit-scrollbar-track]:bg-transparent md:[&::-webkit-scrollbar-thumb]:bg-ink/15 md:hover:[&::-webkit-scrollbar-thumb]:bg-ink/30 md:[&::-webkit-scrollbar-thumb]:rounded-full"
+            )}>
 
               <AnimatePresence mode="popLayout">
                 {items.map((item, index) => (
