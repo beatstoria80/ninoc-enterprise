@@ -3,6 +3,8 @@ import { getSupplierInventoryStats } from '@/lib/services/inventory';
 import { Package, LineChart, TrendingUp, DollarSign, UtensilsCrossed, ArrowUpRight, Activity, Truck } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
+import { SupplierSalesChart } from '@/components/supplier/SupplierSalesChart';
+
 export default async function SupplierDashboard() {
   const supplierContext = await getCurrentSupplier();
 
@@ -19,6 +21,7 @@ export default async function SupplierDashboard() {
   let itemsSold = 0;
   let activeAllocations = 0;
   let recentMovements: any[] = [];
+  let validItems: any[] = [];
 
   if (supplierId) {
     try {
@@ -33,7 +36,7 @@ export default async function SupplierDashboard() {
         .order('created_at', { ascending: false });
 
       if (soldItems) {
-        const validItems = soldItems.filter((item) => {
+        validItems = soldItems.filter((item) => {
           const status = (item.orders as any)?.status;
           return status !== 'cancelled' && status !== 'refunded';
         });
@@ -141,10 +144,8 @@ export default async function SupplierDashboard() {
             <h3 className="text-lg font-bold text-gray-900">Sales Performance</h3>
             <span className="text-xs font-medium px-3 py-1 bg-gray-100 rounded-full text-gray-600">Managed by Ninoc</span>
           </div>
-          <div className="flex-1 flex flex-col items-center justify-center bg-gray-50/50 rounded-xl border border-dashed border-gray-200 min-h-[300px]">
-            <LineChart size={48} className="text-gray-300 mb-4" />
-            <p className="text-sm font-medium text-gray-500">Analytics are currently syncing</p>
-            <p className="text-xs text-gray-400 mt-1 text-center max-w-xs">Data will populate automatically as Ninoc processes orders containing your products.</p>
+          <div className="flex-1 flex flex-col pt-4 min-h-[300px]">
+            <SupplierSalesChart data={validItems || []} />
           </div>
         </div>
         

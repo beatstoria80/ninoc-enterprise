@@ -9,6 +9,7 @@ import {
   ChevronRight, ArrowRight
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { ReturDisputeChat } from './ReturDisputeChat';
 
 interface ReturRequest {
   id: string;
@@ -753,6 +754,9 @@ function ReturDetail({ retur, onClose, onRefresh }: {
             </div>
           </div>
         </div>
+
+        {/* Dispute Center Chat */}
+        <ReturDisputeChat returId={retur.id} />
       </div>
 
       {/* Footer Action Buttons */}

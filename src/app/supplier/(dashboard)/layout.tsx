@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Package, LineChart, LayoutDashboard, Settings, Truck, Coffee, UtensilsCrossed, AlertTriangle } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { SupplierLogoutButton } from '@/components/supplier/SupplierLogoutButton';
+import { SupplierNotificationListener } from '@/components/supplier/SupplierNotificationListener';
+import { PageTransition } from '@/components/supplier/PageTransition';
 
 export default async function SupplierLayout({
   children,
@@ -41,6 +43,7 @@ export default async function SupplierLayout({
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      <SupplierNotificationListener userId={supplierContext.user_id} />
       {/* Sidebar */}
       <aside className="w-64 bg-ink text-white/70 flex flex-col hidden md:flex shrink-0">
         <div className="p-6 border-b border-white/10">
@@ -90,7 +93,9 @@ export default async function SupplierLayout({
           <h2 className="text-sm font-medium text-gray-800">Partner Hub</h2>
         </header>
         <div className="flex-1 overflow-auto p-8">
-          {children}
+          <PageTransition>
+            {children}
+          </PageTransition>
         </div>
       </main>
     </div>
