@@ -85,11 +85,11 @@ export default function CartPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.04, duration: 0.2, ease: EASING.out }}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-2 items-center py-2.5 border-b border-ink/5 group relative px-2 -mx-2 hover:bg-ink/[0.015] transition-colors duration-200 rounded-sm"
+                    className="grid grid-cols-2 md:grid-cols-12 gap-x-2 gap-y-3 md:gap-2 items-center py-2.5 border-b border-ink/5 group relative px-2 -mx-2 hover:bg-ink/[0.015] transition-colors duration-200 rounded-sm"
                   >
                   {/* Image & Product info */}
                     {/* Image & Product info */}
-                    <div className="col-span-6 flex gap-3 min-w-0">
+                    <div className="col-span-2 md:col-span-6 flex gap-3 min-w-0">
                       <div className="w-12 h-16 bg-white border border-ink/10 overflow-hidden flex-shrink-0 relative">
                         {item.image_url ? (
                           <Image
@@ -127,7 +127,7 @@ export default function CartPage() {
                     </div>
 
                     {/* Quantity selector */}
-                    <div className="col-span-2 flex items-center justify-start md:justify-center mt-1 md:mt-0">
+                    <div className="col-span-1 md:col-span-2 flex items-center justify-start md:justify-center mt-1 md:mt-0">
                       <div className="flex items-center gap-2 bg-ink/[0.03] px-2 py-1 border border-ink/5 w-fit">
                         <button
                           type="button"
@@ -150,11 +150,11 @@ export default function CartPage() {
                     </div>
 
                     {/* Subtotal & Remove trigger */}
-                    <div className="col-span-4 flex items-center justify-between md:justify-end gap-4 mt-2 md:mt-0">
+                    <div className="col-span-1 md:col-span-4 flex items-center justify-end md:justify-end gap-4 mt-1 md:mt-0 relative">
                       <button
                         type="button"
                         onClick={() => removeItem(item.id, item.size, item.color)}
-                        className="absolute right-2 top-3.5 md:static text-ink/25 hover:text-rose transition-all p-1.5 cursor-pointer active:scale-90 duration-100"
+                        className="absolute -top-16 right-0 md:static text-ink/25 hover:text-rose transition-all p-1.5 cursor-pointer active:scale-90 duration-100"
                         title="Remove item"
                       >
                         <Trash2 size={12} />
