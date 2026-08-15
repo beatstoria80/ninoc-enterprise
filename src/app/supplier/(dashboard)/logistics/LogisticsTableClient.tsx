@@ -5,12 +5,14 @@ import { Truck, Package, Clock, ChevronRight, Search, FileText } from 'lucide-re
 import Link from 'next/link';
 import { format } from 'date-fns';
 import ExportCSVButton from '@/components/supplier/ExportCSVButton';
+import PrintPackingSlipsModal from '@/components/supplier/logistics/PrintPackingSlipsModal';
 
 type OrderStatus = 'action_required' | 'in_transit' | 'completed';
 
 export default function LogisticsTableClient({ orders }: { orders: any[] }) {
   const [activeTab, setActiveTab] = useState<OrderStatus>('action_required');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
   const toPackOrders = orders.filter(o => o.status === 'paid' || o.status === 'pending_packing');
   const readyOrders = orders.filter(o => o.status === 'ready_for_pickup' || o.status === 'allocated' || (o.status === 'shipped' && !o.tracking_id));
@@ -40,7 +42,10 @@ export default function LogisticsTableClient({ orders }: { orders: any[] }) {
         </div>
         <div className="flex gap-2">
           <ExportCSVButton orders={orders} />
-          <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center justify-center gap-2">
+          <button 
+            onClick={() => setIsPrintModalOpen(true)}
+            className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center justify-center gap-2"
+          >
             <FileText size={16} />
             Print Packing Slips
           </button>
@@ -167,6 +172,12 @@ export default function LogisticsTableClient({ orders }: { orders: any[] }) {
           </table>
         </div>
       </div>
+
+      <PrintPackingSlipsModal 
+        isOpen={isPrintModalOpen} 
+        onClose={() => setIsPrintModalOpen(false)} 
+        orders={orders} 
+      />
     </div>
   );
 }
