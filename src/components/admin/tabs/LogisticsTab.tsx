@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
+import { User, Eye, X, Package, Truck, Box, ScanBarcode, CheckCircle, AlertCircle, MapPin, Printer } from 'lucide-react';
 import { cn, getShippingSLA } from '@/lib/utils';
 import { format } from 'date-fns';
 import CourierLogo from '@/components/CourierLogo';
@@ -146,7 +146,7 @@ export function LogisticsTab({
           name: item.product_name || 'Garment Item',
           value: item.price_at_purchase || 0,
           quantity: item.quantity || 1,
-          weight: 500 // default 500g
+          weight: (item as any).weight_grams || 250 // fallback 250g
         })) || []
       };
 
@@ -187,6 +187,101 @@ export function LogisticsTab({
   };
 
   // Cancel order function moved to OrdersTab.tsx to prevent internal fraud from Logistics dashboard
+
+  const handlePrintResi = async (order: Order) => {
+    const courierParts = (order.courier || 'SICEPAT REG').split(' ');
+    const courierName = courierParts[0];
+    const serviceType = courierParts.slice(1).join(' ') || 'REG';
+    const totalItems = order.order_items?.reduce((s, i) => s + i.quantity, 0) || 0;
+    const totalWeight = order.order_items?.reduce((s, i) => s + ((i as any).weight_grams || 250) * i.quantity, 0) || 250;
+    const shipDate = new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '-');
+    const trackingId = order.tracking_id || 'PENDING';
+    const dest = order.shipping_address || {} as any;
+    
+    const now = new Date().toISOString();
+    try {
+      await supabase.from('orders').update({ printed_at: now, print_count: (order.print_count || 0) + 1 }).eq('id', order.id);
+      if (onOrderUpdated) onOrderUpdated({ ...order, printed_at: now, print_count: (order.print_count || 0) + 1 });
+    } catch(e) {}
+
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      alert("Please allow popups to print labels.");
+      return;
+    }
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Print Label - #${order.id.slice(0, 8)}</title>
+        <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+        <style>
+          @page { size: 100mm 150mm; margin: 0; }
+          body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; margin: 0; padding: 2mm; width: 100mm; height: 150mm; box-sizing: border-box; background: white; color: black; }
+          .label-container { border: 1px solid black; width: 100%; height: 100%; box-sizing: border-box; display: flex; flex-direction: column; }
+          .header { display: flex; border-bottom: 2px solid black; height: 18mm; }
+          .courier-box { flex: 1; border-right: 2px solid black; display: flex; flex-direction: column; justify-content: center; align-items: center; font-weight: 900; font-size: 16pt; }
+          .service-box { flex: 1; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 14pt; }
+          .barcode-section { padding: 2mm 0; border-bottom: 1px solid black; text-align: center; }
+          .barcode-section svg { max-height: 22mm; width: 85%; }
+          .addresses { display: flex; flex-direction: column; border-bottom: 1px solid black; flex: 1; }
+          .recipient-box { padding: 2mm; border-bottom: 1px dashed black; flex: 1.5; display: flex; flex-direction: column; }
+          .sender-info { padding: 2mm; flex: 1; font-size: 8pt; display: flex; flex-direction: column; justify-content: space-between; }
+          .flex-between { display: flex; justify-content: space-between; }
+          .uppercase-sm { text-transform: uppercase; font-size: 7.5pt; color: #333; margin-top: 1mm; }
+          .weight-date { display: flex; justify-content: space-between; padding: 1.5mm 2mm; border-bottom: 1px solid black; font-size: 8pt; font-weight: bold; }
+          .items-list { padding: 2mm; font-size: 7.5pt; line-height: 1.3; }
+          .items-list .item-row { display: flex; margin-bottom: 1mm; }
+          .items-list .item-qty { width: 15%; font-weight: bold; }
+          .items-list .item-name { width: 85%; }
+          .title-sm { font-size: 7pt; color: #555; text-transform: uppercase; margin-bottom: 1mm; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="label-container">
+          <div class="header">
+            <div class="courier-box">${courierName.toUpperCase()}</div>
+            <div class="service-box">${serviceType.toUpperCase()}</div>
+          </div>
+          <div class="barcode-section"><svg id="barcode"></svg></div>
+          <div class="addresses">
+            <div class="recipient-box">
+              <div class="title-sm">Penerima</div>
+              <div style="font-size:11pt; font-weight:bold; margin-bottom:1mm;">${dest.name || 'Customer'}</div>
+              <div style="font-size:10pt; font-weight:bold; margin-bottom:1mm;">${dest.phone || ''}</div>
+              <div style="font-size:8.5pt; flex:1; overflow:hidden;">${dest.address || ''}<br/>${dest.city || ''} ${dest.postal_code || ''}</div>
+            </div>
+            <div class="sender-info">
+              <div class="flex-between">
+                <div><span style="font-weight:bold">Pengirim :</span> NINOC ENTERPRISE</div>
+                <div>+628211983774</div>
+              </div>
+              <div class="uppercase-sm">JAWA BARAT, BANDUNG</div>
+            </div>
+          </div>
+          <div class="weight-date">
+            <div>Weight : ${totalWeight} Gram</div>
+            <div>Ship : ${shipDate}</div>
+          </div>
+          <div class="items-list">
+            <div class="title-sm">Isi Paket (${totalItems} Pcs)</div>
+            ${order.order_items?.map(i => "<div class='item-row'><div class='item-qty'>" + i.quantity + "x</div><div class='item-name'>" + (i.product_name || 'Garment Item') + (i.size ? ' (SZ: ' + i.size + ')' : '') + "</div></div>").join('')}
+          </div>
+        </div>
+        <script>
+          window.onload = function() {
+            JsBarcode("#barcode", "${trackingId}", { format: "CODE128", width: 2.5, height: 50, displayValue: true, fontSize: 14, fontOptions: "bold", textMargin: 4 });
+            setTimeout(() => { window.print(); setTimeout(() => { window.close(); }, 500); }, 500);
+          }
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
 
   const getTimeAgo = (dateStr: string) => {
     if (!now) return '-';
@@ -578,35 +673,47 @@ export function LogisticsTab({
                   </div>
                   
                   {['paid', 'shipped'].includes(logisticsSelectedOrder.status) && (
-                    <button 
-                      onClick={() => handleRequestPickup(logisticsSelectedOrder)}
-                      disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
-                      className={cn(
-                        "w-full py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex justify-center items-center gap-2",
-                        (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                          : logisticsSelectedOrder.status === 'shipped'
-                            ? "bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100"
-                            : "bg-ink text-white hover:bg-ink/90 shadow-md"
+                    <div className="flex flex-col gap-2">
+                      <button 
+                        onClick={() => handleRequestPickup(logisticsSelectedOrder)}
+                        disabled={isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending'}
+                        className={cn(
+                          "w-full py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex justify-center items-center gap-2",
+                          (isDispatching || logisticsSelectedOrder.status === 'pending' || logisticsSelectedOrder.payment_status === 'pending')
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                            : logisticsSelectedOrder.status === 'shipped'
+                              ? "bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100"
+                              : "bg-ink text-white hover:bg-ink/90 shadow-md"
+                        )}
+                      >
+                        {isDispatching ? (
+                          <>
+                            <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                            Memproses...
+                          </>
+                        ) : logisticsSelectedOrder.status === 'shipped' || (logisticsSelectedOrder.print_count && logisticsSelectedOrder.print_count > 0) ? (
+                          <>
+                            <Truck size={14} />
+                            Request Pickup Ulang ({logisticsSelectedOrder.print_count || 1}x Print)
+                          </>
+                        ) : (
+                          <>
+                            <Package size={14} />
+                            Panggil Kurir (Dispatch)
+                          </>
+                        )}
+                      </button>
+
+                      {(logisticsSelectedOrder.status === 'shipped' || logisticsSelectedOrder.tracking_id) && (
+                        <button
+                          onClick={() => handlePrintResi(logisticsSelectedOrder)}
+                          className="w-full py-2.5 text-xs font-bold uppercase tracking-wider rounded-lg transition-all flex justify-center items-center gap-2 bg-white text-ink border border-gray-300 hover:bg-gray-50 shadow-sm"
+                        >
+                          <Printer size={14} />
+                          Cetak Resi & Label
+                        </button>
                       )}
-                    >
-                      {isDispatching ? (
-                        <>
-                          <div className="w-3.5 h-3.5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                          Memproses...
-                        </>
-                      ) : logisticsSelectedOrder.status === 'shipped' || (logisticsSelectedOrder.print_count && logisticsSelectedOrder.print_count > 0) ? (
-                        <>
-                          <Truck size={14} />
-                          Request Pickup Ulang ({logisticsSelectedOrder.print_count || 1}x Print)
-                        </>
-                      ) : (
-                        <>
-                          <Package size={14} />
-                          Panggil Kurir (Dispatch)
-                        </>
-                      )}
-                    </button>
+                    </div>
                   )}
                 </div>
 
