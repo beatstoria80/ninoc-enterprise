@@ -2,7 +2,7 @@ import { getCurrentSupplier } from '@/lib/services/supplier';
 import { getSupplierInventoryStats } from '@/lib/services/inventory';
 import { Package, LineChart, TrendingUp, DollarSign, UtensilsCrossed, ArrowUpRight, Activity, Truck } from 'lucide-react';
 import { redirect } from 'next/navigation';
-
+import { createClient } from '@/utils/supabase/server';
 export default async function SupplierDashboard() {
   const supplierContext = await getCurrentSupplier();
 
@@ -25,7 +25,23 @@ export default async function SupplierDashboard() {
       const stats = await getSupplierInventoryStats(supplierId);
       activeAllocations = stats.activeAllocations;
       
-      // Additional real queries can be added here
+      const supabase = await createClient();
+      const { data: soldItems } = await supabase
+        .from('order_items')
+        .select('id, quantity, price, created_at, products(name)')
+        .eq('supplier_id', supplierId)
+        .order('created_at', { ascending: false });
+
+      if (soldItems) {
+        itemsSold = soldItems.reduce((acc, curr) => acc + (curr.quantity || 1), 0);
+        pendingPayouts = soldItems.reduce((acc, curr) => acc + ((curr.price || 0) * (curr.quantity || 1)), 0);
+        
+        recentMovements = soldItems.slice(0, 5).map(item => ({
+          name: (item.products as any)?.name || 'Unknown Product',
+          desc: `Sold on ${new Date(item.created_at).toLocaleDateString()}`,
+          amount: (item.price || 0) * (item.quantity || 1)
+        }));
+      }
     } catch (e) {
       console.error(e);
     }

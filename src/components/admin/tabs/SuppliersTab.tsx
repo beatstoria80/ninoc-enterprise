@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Check, X, Factory, Clock, AlertCircle, FileText, Download, ShieldCheck } from 'lucide-react';
+import { Check, X, Factory, Clock, AlertCircle, FileText, ShieldCheck, MapPin } from 'lucide-react';
 
 export function SuppliersTab() {
   const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [warehouses, setWarehouses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchSuppliers = async () => {
+  const fetchData = async () => {
     setLoading(true);
-    const { data } = await supabase.from('suppliers').select('*').order('created_at', { ascending: false });
-    if (data) setSuppliers(data);
+    const [supRes, whRes] = await Promise.all([
+      supabase.from('suppliers').select('*').order('created_at', { ascending: false }),
+      supabase.from('warehouses').select('id, name, code').eq('is_active', true)
+    ]);
+    if (supRes.data) setSuppliers(supRes.data);
+    if (whRes.data) setWarehouses(whRes.data);
     setLoading(false);
   };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchSuppliers();
+    fetchData();
   }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
     if (!confirm(`Are you sure you want to mark this supplier as ${newStatus}?`)) return;
     await supabase.from('suppliers').update({ status: newStatus }).eq('id', id);
-    fetchSuppliers();
+    fetchData();
+  };
+
+  const updateWarehouse = async (id: string, hubId: string) => {
+    await supabase.from('suppliers').update({ assigned_hub_id: hubId || null }).eq('id', id);
+    fetchData();
   };
 
   const viewDocument = async (path: string) => {
@@ -115,14 +125,29 @@ export function SuppliersTab() {
                   </div>
                 </td>
                 <td className="p-2">
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${
-                    sup.status === 'active' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
-                    sup.status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
-                    'bg-red-50 text-red-600 border border-red-200'
-                  }`}>
-                    {sup.status === 'active' ? <Check size={10} /> : sup.status === 'pending' ? <Clock size={10} /> : <X size={10} />}
-                    {sup.status}
-                  </span>
+                  <div className="flex flex-col gap-2">
+                    <span className={`inline-flex w-fit items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium uppercase tracking-wider ${
+                      sup.status === 'active' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                      sup.status === 'pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                      'bg-red-50 text-red-600 border border-red-200'
+                    }`}>
+                      {sup.status === 'active' ? <Check size={10} /> : sup.status === 'pending' ? <Clock size={10} /> : <X size={10} />}
+                      {sup.status}
+                    </span>
+                    {sup.status === 'active' && (
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <MapPin size={12} className="text-ink/50" />
+                        <select 
+                          value={sup.assigned_hub_id || ''} 
+                          onChange={(e) => updateWarehouse(sup.id, e.target.value)}
+                          className="text-[10px] px-1 py-0.5 border border-ink/20 rounded bg-white max-w-[120px]"
+                        >
+                          <option value="">Unassigned</option>
+                          {warehouses.map(w => <option key={w.id} value={w.id}>{w.code}</option>)}
+                        </select>
+                      </div>
+                    )}
+                  </div>
                 </td>
                 <td className="p-2 text-right">
                   {sup.status === 'pending' && (

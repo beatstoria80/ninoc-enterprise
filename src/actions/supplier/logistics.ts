@@ -21,7 +21,7 @@ export async function requestPickupAction(orderId: string) {
     // 1. Verify supplier owns this order via DB
     const { data: orderData, error: orderError } = await supabase
       .from('orders')
-      .select('*, order_items!inner(id, supplier_id, product_name, quantity, price_at_purchase)')
+      .select('*, order_items!inner(id, supplier_id, product_name, quantity, price_at_purchase, products(weight_grams))')
       .eq('id', orderId)
       .eq('order_items.supplier_id', supplier.supplier_id)
       .single();
@@ -35,12 +35,7 @@ export async function requestPickupAction(orderId: string) {
     }
 
     // 2. Fetch origin warehouse for this supplier
-    const { data: warehouse } = await supabase
-      .from('warehouses')
-      .select('*')
-      .eq('supplier_id', supplier.supplier_id)
-      .limit(1)
-      .single();
+    const warehouse = supplier.assignedWarehouse;
 
     if (!warehouse) {
       return { success: false, error: 'Warehouse address not configured for this supplier.' };
@@ -64,8 +59,8 @@ export async function requestPickupAction(orderId: string) {
       courier_type: courier_type,
       origin: {
         contact_name: warehouse.name || supplier.suppliers?.name,
-        contact_phone: supplier.suppliers?.contact_phone || '00000000',
-        address: warehouse.address_line || '',
+        contact_phone: supplier.suppliers?.contact_phone || warehouse.contact_phone || '00000000',
+        address: warehouse.street_address || '',
         postal_code: parseInt(warehouse.postal_code, 10) || 40292
       },
       destination: {
@@ -78,7 +73,7 @@ export async function requestPickupAction(orderId: string) {
         name: it.product_name,
         value: it.price_at_purchase,
         quantity: it.quantity,
-        weight: 100 // fallback
+        weight: (it.products && it.products.weight_grams) ? it.products.weight_grams : 100 // fallback to 100g if missing
       }))
     };
 

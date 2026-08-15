@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Plus, Save, Building, Trash2 } from 'lucide-react';
+import { MapPin, Plus, Save, Building, Trash2, Edit2 } from 'lucide-react';
 
 export function WarehouseTab() {
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({ 
     name: '', 
@@ -39,14 +40,32 @@ export function WarehouseTab() {
     fetchWarehouses();
   }, []);
 
+  const handleEdit = (wh: any) => {
+    setFormData({
+      name: wh.name || '',
+      code: wh.code || '',
+      contact_name: wh.contact_name || '',
+      contact_phone: wh.contact_phone || '',
+      contact_phone_2: wh.contact_phone_2 || '',
+      street_address: wh.street_address || '',
+      district: wh.district || '',
+      city: wh.city || '',
+      province: wh.province || '',
+      postal_code: wh.postal_code || '',
+      is_primary: wh.is_primary || false
+    });
+    setEditId(wh.id);
+    setIsAdding(true);
+  };
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       const res = await fetch('/api/admin/warehouses', {
-        method: 'POST',
+        method: editId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(editId ? { ...formData, id: editId } : formData)
       });
       if (res.ok) {
         setFormData({ 
@@ -55,6 +74,7 @@ export function WarehouseTab() {
           postal_code: '', is_primary: false
         });
         setIsAdding(false);
+        setEditId(null);
         fetchWarehouses();
       } else {
         const err = await res.json();
@@ -92,7 +112,10 @@ export function WarehouseTab() {
           <p className="text-xs text-ink/80">Configure central warehouses and B2B origins for accurate Biteship logistics rates.</p>
         </div>
         <button
-          onClick={() => setIsAdding(!isAdding)}
+          onClick={() => {
+            setIsAdding(!isAdding);
+            if (isAdding) setEditId(null);
+          }}
           className="px-3 py-1.5 bg-ink text-white text-xs uppercase tracking-wider font-medium flex items-center gap-2 rounded hover:bg-rose transition-colors"
         >
           {isAdding ? 'Cancel' : <><Plus size={14} /> Add Hub</>}
@@ -180,13 +203,22 @@ export function WarehouseTab() {
               <Building size={80} />
             </div>
             
-            <button 
-              onClick={() => handleDelete(wh.id)}
-              className="absolute top-3 right-3 p-1.5 bg-rose/10 text-rose rounded hover:bg-rose hover:text-white transition-colors opacity-0 group-hover:opacity-100 z-20"
-              title="Delete Hub"
-            >
-              <Trash2 size={14} />
-            </button>
+            <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 z-20 transition-opacity">
+              <button 
+                onClick={() => handleEdit(wh)}
+                className="p-1.5 bg-ink/10 text-ink rounded hover:bg-ink hover:text-white transition-colors"
+                title="Edit Hub"
+              >
+                <Edit2 size={14} />
+              </button>
+              <button 
+                onClick={() => handleDelete(wh.id)}
+                className="p-1.5 bg-rose/10 text-rose rounded hover:bg-rose hover:text-white transition-colors"
+                title="Delete Hub"
+              >
+                <Trash2 size={14} />
+              </button>
+            </div>
 
             <div className="flex flex-col mb-4 relative z-10">
               <div className="flex items-center justify-between mb-2">

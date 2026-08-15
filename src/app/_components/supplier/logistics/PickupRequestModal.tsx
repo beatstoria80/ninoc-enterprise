@@ -8,6 +8,7 @@ interface PickupRequestModalProps {
   onClose: () => void;
   orderId: string;
   courierName: string;
+  warehouseName?: string;
   requestAction: (orderId: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   onSuccess: () => void;
 }
@@ -17,6 +18,7 @@ export default function PickupRequestModal({
   onClose,
   orderId,
   courierName,
+  warehouseName,
   requestAction,
   onSuccess
 }: PickupRequestModalProps) {
@@ -87,7 +89,7 @@ export default function PickupRequestModal({
               <span className="text-sm text-ink/60 mt-1">Pickup From</span>
               <div className="flex items-start gap-1.5 text-sm font-medium text-ink text-right max-w-[200px]">
                 <MapPin size={14} className="text-ink/60 shrink-0 mt-1" />
-                <span>Your Main Warehouse (Configured Location)</span>
+                <span>{warehouseName || 'Your Main Warehouse (Configured Location)'}</span>
               </div>
             </div>
           </div>

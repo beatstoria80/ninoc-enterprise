@@ -117,3 +117,47 @@ export async function DELETE(req: NextRequest) {
     return apiInternalError('Failed to delete warehouse', err?.message);
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, name, code, contact_name, contact_phone, contact_phone_2, street_address, district, city, province, postal_code, is_primary } = body;
+
+    if (!id || !name || !code || !contact_phone || !street_address) {
+      return apiBadRequest('ID, Name, code, phone, and address are required');
+    }
+
+    // If setting as primary, unset other primary warehouses
+    if (is_primary) {
+      await supabaseAdmin.from('warehouses').update({ is_primary: false }).eq('is_primary', true);
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from('warehouses')
+      .update({
+        name,
+        code,
+        contact_name: contact_name || 'Logistics Admin',
+        contact_phone,
+        contact_phone_2: contact_phone_2 || null,
+        street_address,
+        district: district || 'Bandung',
+        city: city || 'Kota Bandung',
+        province: province || 'Jawa Barat',
+        postal_code: postal_code || '40292',
+        is_primary: Boolean(is_primary),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return apiBadRequest(error.message);
+    }
+
+    return apiSuccess({ data }, 200);
+  } catch (err: any) {
+    return apiInternalError('Failed to update warehouse', err?.message);
+  }
+}

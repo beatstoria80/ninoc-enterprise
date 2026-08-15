@@ -9,9 +9,10 @@ import { requestPickupAction } from '@/actions/supplier/logistics';
 interface Props {
   orderId: string;
   courierName: string;
+  warehouseName?: string;
 }
 
-export default function PickupRequestModalClient({ orderId, courierName }: Props) {
+export default function PickupRequestModalClient({ orderId, courierName, warehouseName }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
@@ -30,6 +31,7 @@ export default function PickupRequestModalClient({ orderId, courierName }: Props
         onClose={() => setIsOpen(false)}
         orderId={orderId}
         courierName={courierName}
+        warehouseName={warehouseName}
         requestAction={requestPickupAction}
         onSuccess={() => {
           // Trigger a lightweight refresh without reloading the page

@@ -99,7 +99,11 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
         
         <div className="flex gap-3 w-full md:w-auto">
           {(orderData.status === 'paid' || orderData.status === 'pending_packing') && (
-            <PickupRequestModalClient orderId={orderData.id} courierName={orderData.courier || 'Kurir'} />
+            <PickupRequestModalClient 
+              orderId={orderData.id} 
+              courierName={orderData.courier || 'Kurir'} 
+              warehouseName={supplierUser.assignedWarehouse?.name || 'Your Main Warehouse (Configured Location)'} 
+            />
           )}
           {(orderData.status === 'ready_for_pickup' || orderData.status === 'shipped') && orderData.tracking_id && (
             <button className="flex-1 md:flex-none px-6 py-2.5 bg-white border border-gray-200 text-ink text-sm font-medium rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">

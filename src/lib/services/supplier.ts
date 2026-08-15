@@ -55,8 +55,8 @@ export const getCurrentSupplier = cache(async () => {
     // Default to F&B Hub
     warehouseQuery = warehouseQuery.eq('code', 'WH-BANDUNG-FB');
   } else {
-    // Default to Main Crossdock Hub for Fashion/Goods
-    warehouseQuery = warehouseQuery.eq('code', 'WH-TG-TIU-001'); // Using main hub as default for Fashion per plan
+    // Default to Main Hub for Fashion/Goods
+    warehouseQuery = warehouseQuery.eq('code', 'WH-BANDUNG-01'); // Using main hub as default for Fashion per plan
   }
   
   const { data: warehouseData } = await warehouseQuery.limit(1).maybeSingle();
