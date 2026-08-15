@@ -492,7 +492,7 @@ export default function AdminDashboard() {
       if (!res.ok) throw new Error(data.error || 'Failed to delete product');
       
       showToast('Product deleted successfully', 'success');
-      fetchData();
+      setProducts(prev => prev.filter(p => p.id !== id));
     } catch (error: any) {
       console.error('Failed to delete product:', error);
       showToast('Failed to delete product: ' + error.message, 'error');
@@ -505,7 +505,7 @@ export default function AdminDashboard() {
         .from('products')
         .update({ is_featured: !product.is_featured, updated_at: new Date().toISOString() })
         .eq('id', product.id);
-      fetchData();
+      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, is_featured: !product.is_featured } : p));
     } catch (error) {
       console.error('Failed to toggle featured:', error);
     }
@@ -710,19 +710,32 @@ export default function AdminDashboard() {
         event: '*', 
         schema: 'public', 
         table: 'customer_profiles' 
-      }, () => {
-        // Auto refresh data when a new member registers or updates profile
-        fetchData();
+      }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setCustomers(prev => [...prev, payload.new as any]);
+        } else if (payload.eventType === 'UPDATE') {
+          setCustomers(prev => prev.map(c => c.id === payload.new.id ? (payload.new as any) : c));
+        } else if (payload.eventType === 'DELETE') {
+          setCustomers(prev => prev.filter(c => c.id !== payload.old.id));
+        }
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchData]);
+  }, []);
 
   // Real-time subscription for retur requests to update badge count
   useEffect(() => {
+    const fetchPendingReturnsCount = async () => {
+      const { count } = await supabase
+        .from('retur_requests')
+        .select('*', { count: 'exact', head: true })
+        .in('status', ['pending', 'reviewed']);
+      if (count !== null) setPendingReturns(count);
+    };
+
     const channel = supabase
       .channel('admin_retur_requests_changes')
       .on('postgres_changes', { 
@@ -730,15 +743,14 @@ export default function AdminDashboard() {
         schema: 'public', 
         table: 'retur_requests' 
       }, () => {
-        // Auto refresh data to update pendingReturns count
-        fetchData();
+        fetchPendingReturnsCount();
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchData]);
+  }, []);
 
   // Mark messages as read when session is active
   useEffect(() => {
