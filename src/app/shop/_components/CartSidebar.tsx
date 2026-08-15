@@ -110,7 +110,7 @@ export function CartSidebar({
           : "hidden 2xl:flex"
       )}
     >
-      <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px] no-drag">
+      <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px] no-drag pointer-events-auto">
         <motion.div variants={textVariants} className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
           <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60">{dict.product.yourCart}</span>
           <span className="text-xs md:text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
