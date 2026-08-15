@@ -7,9 +7,9 @@ import { createClient } from '@/utils/supabase/server';
  */
 export const getCurrentSupplier = cache(async () => {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
   
-  if (!session) {
+  if (!user || userError) {
     return null;
   }
 
@@ -23,7 +23,7 @@ export const getCurrentSupplier = cache(async () => {
   const { data: supplierUser, error } = await supabaseAdmin
     .from('supplier_users')
     .select('*, suppliers(name, description, status, contact_email, contact_phone, bank_name, bank_account_number, bank_account_holder)')
-    .eq('user_id', session.user.id)
+    .eq('user_id', user.id)
     .limit(1)
     .single();
 
@@ -78,6 +78,6 @@ export const getCurrentSupplier = cache(async () => {
     ...supplierUser,
     pillar,
     assignedWarehouse,
-    session,
+    session: { user },
   };
 });
