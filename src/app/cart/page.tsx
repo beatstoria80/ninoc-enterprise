@@ -44,9 +44,9 @@ export default function CartPage() {
   const cartItemsCount = isHydrated ? items.reduce((acc, item) => acc + item.quantity, 0) : 0;
 
   return (
-    <main className="min-h-screen bg-cr flex flex-col pt-24 pb-16 px-4 md:px-8 max-w-[1440px] mx-auto w-full selection:bg-ink selection:text-white">
+    <main className="min-h-screen bg-cr flex flex-col pt-24 pb-12 px-4 md:px-8 max-w-[1440px] mx-auto w-full selection:bg-ink selection:text-white">
       {/* Breadcrumb & Luxury Title */}
-      <div className="w-full flex flex-col gap-2 mb-8 md:mb-12 border-b border-ink/10 pb-6">
+      <div className="w-full flex flex-col gap-1.5 mb-6 md:mb-8 border-b border-ink/10 pb-4">
         <div className="flex gap-2 text-[9px] font-bold uppercase tracking-widest text-ink/40">
           <Link href="/" className="hover:text-rose transition-colors">HOME</Link>
           <span>/</span>
@@ -65,105 +65,111 @@ export default function CartPage() {
       </div>
 
       {isHydrated && items.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full">
-          {/* Left Column: Spacious Bag Items */}
-          <div className="lg:col-span-8 flex flex-col space-y-6">
-            <div className="hidden md:grid grid-cols-12 pb-3 border-b border-ink/10 text-[9px] font-bold uppercase tracking-widest text-ink/40">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start w-full">
+          {/* Left Column: Compact Bag Items */}
+          <div className="lg:col-span-8 flex flex-col space-y-0">
+            <div className="hidden md:grid grid-cols-12 pb-2.5 border-b border-ink/10 text-[9px] font-bold uppercase tracking-widest text-ink/40">
               <div className="col-span-6">Product Details</div>
               <div className="col-span-2 text-center">Quantity</div>
               <div className="col-span-4 text-right">Subtotal</div>
             </div>
 
-            <AnimatePresence mode="popLayout">
-              {items.map((item, index) => (
-                <motion.div
-                  key={`${item.id}-${item.size}-${item.color}`}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -30 }}
-                  transition={{ delay: index * 0.05, duration: 0.25, ease: EASING.out }}
-                  className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-2 items-center py-6 border-b border-ink/5 group relative"
-                >
+            {/* Scrollable container when >3 items */}
+            <div className={cn(
+              "flex flex-col",
+              items.length > 3 && "max-h-[440px] overflow-y-auto [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 hover:[&::-webkit-scrollbar-thumb]:bg-ink/25 [&::-webkit-scrollbar-thumb]:rounded-full"
+            )}>
+
+              <AnimatePresence mode="popLayout">
+                {items.map((item, index) => (
+                  <motion.div
+                    key={`${item.id}-${item.size}-${item.color}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ delay: index * 0.04, duration: 0.2, ease: EASING.out }}
+                    className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-2 items-center py-3.5 border-b border-ink/5 group relative px-2 -mx-2 hover:bg-ink/[0.015] transition-colors duration-200 rounded-sm"
+                  >
                   {/* Image & Product info */}
-                  <div className="col-span-6 flex gap-4 min-w-0">
-                    <div className="w-20 h-24 bg-white border border-ink/10 overflow-hidden flex-shrink-0 relative">
-                      {item.image_url ? (
-                        <Image
-                          src={item.image_url}
-                          alt={item.name}
-                          fill
-                          sizes="80px"
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-ink/5">
-                          <ShoppingBag size={16} className="text-ink/20" />
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 flex flex-col justify-between py-1 min-w-0">
-                      <div>
-                        <h3 className="text-xs md:text-sm font-bold uppercase tracking-wide text-ink truncate">
-                          {item.name}
-                        </h3>
-                        <p className="text-[9px] font-mono text-ink/40 mt-1 uppercase">REF: #{item.id.slice(0, 8)}</p>
-                      </div>
-                      
-                      <div className="flex flex-col gap-1.5 mt-2">
-                        {item.warehouse_name && (
-                          <span className="text-[9px] font-bold uppercase tracking-widest text-ink/50 flex items-center gap-1.5">
-                            🚚 DARI {item.warehouse_name.toUpperCase()}
-                          </span>
+                    {/* Image & Product info */}
+                    <div className="col-span-6 flex gap-3 min-w-0">
+                      <div className="w-16 h-20 bg-white border border-ink/10 overflow-hidden flex-shrink-0 relative">
+                        {item.image_url ? (
+                          <Image
+                            src={item.image_url}
+                            alt={item.name}
+                            fill
+                            sizes="64px"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-ink/5">
+                            <ShoppingBag size={14} className="text-ink/20" />
+                          </div>
                         )}
-                        <div className="flex gap-3 text-[10px] font-bold uppercase tracking-widest text-ink/60">
-                          {item.size && <span>Size: {item.size}</span>}
-                          {item.color && <span>Color: {item.color}</span>}
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center py-0.5 min-w-0 gap-1">
+                        <div>
+                          <h3 className="text-xs md:text-[13px] font-bold uppercase tracking-wide text-ink truncate group-hover:text-rose transition-colors duration-200">
+                            {item.name}
+                          </h3>
+                          <p className="text-[8px] font-mono text-ink/35 mt-0.5 uppercase">REF: #{item.id.slice(0, 8)}</p>
+                        </div>
+                        <div className="flex flex-col gap-0.5">
+                          {item.warehouse_name && (
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-ink/45 flex items-center gap-1">
+                              <Truck size={9} className="text-ink/40" /> {item.warehouse_name.toUpperCase()}
+                            </span>
+                          )}
+                          <div className="flex gap-2.5 text-[9px] font-bold uppercase tracking-widest text-ink/55">
+                            {item.size && <span>Size: {item.size}</span>}
+                            {item.color && <span>Color: {item.color}</span>}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Quantity selector */}
-                  <div className="col-span-2 flex items-center justify-start md:justify-center mt-2 md:mt-0">
-                    <div className="flex items-center gap-4 bg-ink/5 px-4 py-2 border border-ink/5 w-fit">
-                      <button
-                        type="button"
-                        onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size, item.color)}
-                        disabled={item.quantity <= 1}
-                        className="text-ink/50 hover:text-rose p-0.5 disabled:opacity-30 cursor-pointer"
-                      >
-                        <Minus size={11} strokeWidth={2.5} />
-                      </button>
-                      <span className="text-xs font-bold w-6 text-center text-ink">{item.quantity}</span>
-                      <button
-                        type="button"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
-                        disabled={item.maxStock ? item.quantity >= item.maxStock : false}
-                        className="text-ink/50 hover:text-rose p-0.5 disabled:opacity-30 cursor-pointer"
-                      >
-                        <Plus size={11} strokeWidth={2.5} />
-                      </button>
+                    {/* Quantity selector */}
+                    <div className="col-span-2 flex items-center justify-start md:justify-center mt-1 md:mt-0">
+                      <div className="flex items-center gap-3 bg-ink/[0.03] px-3 py-1.5 border border-ink/5 w-fit">
+                        <button
+                          type="button"
+                          onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size, item.color)}
+                          disabled={item.quantity <= 1}
+                          className="text-ink/50 hover:text-rose p-0.5 disabled:opacity-30 cursor-pointer active:scale-90 transition-transform duration-100"
+                        >
+                          <Minus size={10} strokeWidth={2.5} />
+                        </button>
+                        <span className="text-[11px] font-bold w-5 text-center text-ink tabular-nums">{item.quantity}</span>
+                        <button
+                          type="button"
+                          onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
+                          disabled={item.maxStock ? item.quantity >= item.maxStock : false}
+                          className="text-ink/50 hover:text-rose p-0.5 disabled:opacity-30 cursor-pointer active:scale-90 transition-transform duration-100"
+                        >
+                          <Plus size={10} strokeWidth={2.5} />
+                        </button>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Subtotal & Remove trigger */}
-                  <div className="col-span-4 flex items-center justify-between md:justify-end gap-6 mt-3 md:mt-0">
-                    {/* Trash on mobile (positioned at top right of card for clean look) */}
-                    <button
-                      type="button"
-                      onClick={() => removeItem(item.id, item.size, item.color)}
-                      className="absolute right-0 top-6 md:static text-ink/30 hover:text-rose transition-colors p-2 cursor-pointer"
-                      title="Remove item"
-                    >
-                      <Trash2 size={13} />
-                    </button>
-                    <span className="text-xs md:text-sm font-display font-semibold italic text-rose pr-2 md:pr-0">
-                      IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                    {/* Subtotal & Remove trigger */}
+                    <div className="col-span-4 flex items-center justify-between md:justify-end gap-4 mt-2 md:mt-0">
+                      <button
+                        type="button"
+                        onClick={() => removeItem(item.id, item.size, item.color)}
+                        className="absolute right-2 top-3.5 md:static text-ink/25 hover:text-rose transition-all p-1.5 cursor-pointer active:scale-90 duration-100"
+                        title="Remove item"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                      <span className="text-xs md:text-[13px] font-display font-semibold italic text-rose pr-1 md:pr-0">
+                        IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
           </div>
 
           {/* Right Column: Sticky Summary Panel */}

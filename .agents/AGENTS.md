@@ -121,3 +121,8 @@ const selectedVariant = safeVariants.find((v: any) =>
   (!effectiveColor ? true : v?.color?.toUpperCase() === effectiveColor.toUpperCase())
 );
 ```
+
+# Communication & Language Rule
+
+- **Language of Communication**: Selalu berkomunikasi, menulis rencana implementasi, menjelaskan perubahan, dan menjawab pengguna dalam **Bahasa Indonesia**. Ini adalah bahasa default untuk proyek/workspace ini.
+
