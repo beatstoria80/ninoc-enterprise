@@ -124,7 +124,7 @@ export function CartSidebar({
           </motion.div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto divide-y divide-ink/5 minimal-scroll">
+            <div className="max-h-[270px] overflow-y-auto divide-y divide-ink/5 [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 hover:[&::-webkit-scrollbar-thumb]:bg-ink/20 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {items.map((item) => (
                   <motion.div
                     variants={textVariants}
