@@ -5,12 +5,10 @@ export class SupplierRepository {
 
   /**
    * Fetches orders associated with a supplier's products.
-   * Deduplicates natively so we don't have to do it in memory.
+   * Supabase (PostgREST) naturally returns nested JSON, so rawOrders is already 
+   * uniquely grouped by order.id. No in-memory deduplication is required.
    */
   public async getLogisticsOrders(supplierId: string) {
-    // Instead of deduplicating in-memory, we can query orders that have order_items for this supplier.
-    // Supabase JS doesn't support SELECT DISTINCT gracefully with nested relations, 
-    // so we fetch exactly what we need and group it minimally.
     const { data: rawOrders, error } = await this.db
       .from('orders')
       .select(`
@@ -32,19 +30,19 @@ export class SupplierRepository {
       throw new Error(error.message);
     }
 
-    // Deduplicate orders mapping (fallback if no SQL view exists)
-    const uniqueOrderMap = new Map();
-    if (rawOrders) {
-      rawOrders.forEach((order: any) => {
-        if (!uniqueOrderMap.has(order.id)) {
-          uniqueOrderMap.set(order.id, {
-            ...order,
-            itemsCount: rawOrders.filter((ro: any) => ro.id === order.id).length
-          });
-        }
-      });
-    }
-    
-    return Array.from(uniqueOrderMap.values());
+    if (!rawOrders) return [];
+
+    // Map over the already-unique orders to calculate the true physical items count
+    return rawOrders.map((order: any) => {
+      // Calculate the total physical quantity of items to pack, not just the number of DB rows.
+      const trueItemsCount = order.order_items?.reduce((total: number, item: any) => {
+        return total + (item.quantity || 1);
+      }, 0) || 0;
+
+      return {
+        ...order,
+        itemsCount: trueItemsCount
+      };
+    });
   }
 }
