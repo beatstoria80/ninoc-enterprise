@@ -110,6 +110,13 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeInfoTab, setActiveInfoTab] = useState<'specs' | 'measurement' | null>('specs');
+
+  // Menyembunyikan spesifikasi secara default di HP agar fokus ke area Add to Cart
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setActiveInfoTab(null);
+    }
+  }, []);
   const [measurementPopupItemKey, setMeasurementPopupItemKey] = useState<string | null>(null);
   const [isReviewsDrawerOpen, setIsReviewsDrawerOpen] = useState(false);
   const [isImmersiveOpen, setIsImmersiveOpen] = useState(false);
