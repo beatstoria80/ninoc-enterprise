@@ -85,18 +85,18 @@ export default function CartPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, x: -20 }}
                     transition={{ delay: index * 0.04, duration: 0.2, ease: EASING.out }}
-                    className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-2 items-center py-3.5 border-b border-ink/5 group relative px-2 -mx-2 hover:bg-ink/[0.015] transition-colors duration-200 rounded-sm"
+                    className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-2 items-center py-2.5 border-b border-ink/5 group relative px-2 -mx-2 hover:bg-ink/[0.015] transition-colors duration-200 rounded-sm"
                   >
                   {/* Image & Product info */}
                     {/* Image & Product info */}
                     <div className="col-span-6 flex gap-3 min-w-0">
-                      <div className="w-16 h-20 bg-white border border-ink/10 overflow-hidden flex-shrink-0 relative">
+                      <div className="w-12 h-16 bg-white border border-ink/10 overflow-hidden flex-shrink-0 relative">
                         {item.image_url ? (
                           <Image
                             src={item.image_url}
                             alt={item.name}
                             fill
-                            sizes="64px"
+                            sizes="48px"
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
                           />
                         ) : (
@@ -107,10 +107,10 @@ export default function CartPage() {
                       </div>
                       <div className="flex-1 flex flex-col justify-center py-0.5 min-w-0 gap-1">
                         <div>
-                          <h3 className="text-xs md:text-[13px] font-bold uppercase tracking-wide text-ink truncate group-hover:text-rose transition-colors duration-200">
+                          <h3 className="text-[10px] md:text-[11px] font-bold uppercase tracking-wide text-ink truncate group-hover:text-rose transition-colors duration-200">
                             {item.name}
                           </h3>
-                          <p className="text-[8px] font-mono text-ink/35 mt-0.5 uppercase">REF: #{item.id.slice(0, 8)}</p>
+                          <p className="text-[7px] font-mono text-ink/35 mt-0.5 uppercase">REF: #{item.id.slice(0, 8)}</p>
                         </div>
                         <div className="flex flex-col gap-0.5">
                           {item.warehouse_name && (
@@ -118,7 +118,7 @@ export default function CartPage() {
                               <Truck size={9} className="text-ink/40" /> {item.warehouse_name.toUpperCase()}
                             </span>
                           )}
-                          <div className="flex gap-2.5 text-[9px] font-bold uppercase tracking-widest text-ink/55">
+                          <div className="flex gap-2.5 text-[7px] font-bold uppercase tracking-widest text-ink/55">
                             {item.size && <span>Size: {item.size}</span>}
                             {item.color && <span>Color: {item.color}</span>}
                           </div>
@@ -128,7 +128,7 @@ export default function CartPage() {
 
                     {/* Quantity selector */}
                     <div className="col-span-2 flex items-center justify-start md:justify-center mt-1 md:mt-0">
-                      <div className="flex items-center gap-3 bg-ink/[0.03] px-3 py-1.5 border border-ink/5 w-fit">
+                      <div className="flex items-center gap-2 bg-ink/[0.03] px-2 py-1 border border-ink/5 w-fit">
                         <button
                           type="button"
                           onClick={() => item.quantity > 1 && updateQuantity(item.id, item.quantity - 1, item.size, item.color)}
@@ -137,7 +137,7 @@ export default function CartPage() {
                         >
                           <Minus size={10} strokeWidth={2.5} />
                         </button>
-                        <span className="text-[11px] font-bold w-5 text-center text-ink tabular-nums">{item.quantity}</span>
+                        <span className="text-[10px] font-bold w-4 text-center text-ink tabular-nums">{item.quantity}</span>
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.id, item.quantity + 1, item.size, item.color)}
@@ -159,7 +159,7 @@ export default function CartPage() {
                       >
                         <Trash2 size={12} />
                       </button>
-                      <span className="text-xs md:text-[13px] font-display font-semibold italic text-rose pr-1 md:pr-0">
+                      <span className="text-[10px] md:text-[12px] font-display font-semibold italic text-rose pr-1 md:pr-0">
                         IDR {(item.price * item.quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                       </span>
                     </div>
