@@ -34,6 +34,10 @@ export async function requestPickupAction(orderId: string) {
       return { success: false, error: 'Order already has a tracking ID.' };
     }
 
+    if (!['paid', 'pending_packing'].includes(orderData.status)) {
+      return { success: false, error: `Cannot request pickup. Order status is ${orderData.status}.` };
+    }
+
     // 2. Fetch origin warehouse for this supplier
     const warehouse = supplier.assignedWarehouse;
 

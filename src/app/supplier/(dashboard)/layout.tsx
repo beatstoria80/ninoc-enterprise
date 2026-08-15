@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { Package, LineChart, LayoutDashboard, Settings, Truck, Coffee, UtensilsCrossed } from 'lucide-react';
+import { Package, LineChart, LayoutDashboard, Settings, Truck, Coffee, UtensilsCrossed, AlertTriangle } from 'lucide-react';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { SupplierLogoutButton } from '@/components/supplier/SupplierLogoutButton';
 
@@ -68,6 +68,10 @@ export default async function SupplierLayout({
           <Link href="/supplier/ledger" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <LineChart size={18} />
             <span>Sales & Payouts</span>
+          </Link>
+          <Link href="/supplier/returns" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
+            <AlertTriangle size={18} />
+            <span>Returns & Cancels</span>
           </Link>
           <Link href="/supplier/settings" className="flex items-center gap-3 px-4 py-3 text-sm hover:text-white hover:bg-white/5 rounded-md transition-colors">
             <Settings size={18} />
