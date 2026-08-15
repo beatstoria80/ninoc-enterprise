@@ -557,7 +557,8 @@ export default function AdminDashboard() {
           .update({ status, updated_at: new Date().toISOString() })
           .eq('id', orderId);
       }
-      fetchData();
+      // Optimistic update instead of expensive fetchData()
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
       if (selectedOrder?.id === orderId) {
         setSelectedOrder({ ...selectedOrder, status });
       }
@@ -572,7 +573,8 @@ export default function AdminDashboard() {
         .from('orders')
         .update({ tracking_id: trackingId, updated_at: new Date().toISOString() })
         .eq('id', orderId);
-      fetchData();
+      // Optimistic update instead of expensive fetchData()
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, tracking_id: trackingId } : o));
       if (selectedOrder?.id === orderId) {
         setSelectedOrder({ ...selectedOrder, tracking_id: trackingId });
       }
@@ -1632,6 +1634,9 @@ export default function AdminDashboard() {
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
               openOrderDetail={openOrderDetail}
+              onUpdateOrderPrinted={(orderId, printedAt) => {
+                setOrders(prev => prev.map(o => o.id === orderId ? { ...o, printed_at: printedAt } : o));
+              }}
             />
           )}
 
