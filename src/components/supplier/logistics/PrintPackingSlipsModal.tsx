@@ -3,6 +3,7 @@
 import { X, Printer, Package, User, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useEffect } from 'react';
+import { ACTION_REQUIRED_STATUSES, OrderStatus } from '@/domain/supplier/OrderStatus';
 
 interface PrintPackingSlipsModalProps {
   isOpen: boolean;
@@ -26,7 +27,7 @@ export default function PrintPackingSlipsModal({ isOpen, onClose, orders }: Prin
   if (!isOpen) return null;
 
   // Filter only orders that are ready to pack
-  const toPackOrders = orders.filter(o => o.status === 'paid' || o.status === 'pending_packing');
+  const toPackOrders = orders.filter(o => ACTION_REQUIRED_STATUSES.includes(o.status as OrderStatus));
 
   const handlePrint = () => {
     window.print();

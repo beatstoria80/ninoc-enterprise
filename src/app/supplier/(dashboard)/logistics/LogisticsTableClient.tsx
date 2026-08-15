@@ -6,20 +6,23 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import ExportCSVButton from '@/components/supplier/ExportCSVButton';
 import PrintPackingSlipsModal from '@/components/supplier/logistics/PrintPackingSlipsModal';
+import { ACTION_REQUIRED_STATUSES, WAITING_PICKUP_STATUSES, COMPLETED_STATUSES, OrderStatus } from '@/domain/supplier/OrderStatus';
 
-type OrderStatus = 'action_required' | 'in_transit' | 'completed';
+type TabStatus = 'action_required' | 'in_transit' | 'completed';
 
 export default function LogisticsTableClient({ orders }: { orders: any[] }) {
-  const [activeTab, setActiveTab] = useState<OrderStatus>('action_required');
+  const [activeTab, setActiveTab] = useState<TabStatus>('action_required');
   const [searchQuery, setSearchQuery] = useState('');
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
 
-  const toPackOrders = orders.filter(o => o.status === 'paid' || o.status === 'pending_packing');
-  const readyOrders = orders.filter(o => o.status === 'ready_for_pickup' || o.status === 'allocated' || (o.status === 'shipped' && !o.tracking_id));
-  const inTransitOrders = orders.filter(o => o.status === 'shipped' && o.tracking_id);
-  const completedOrders = orders.filter(o => o.status === 'delivered' || o.status === 'completed');
-
-  const actionRequiredOrders = [...toPackOrders, ...readyOrders];
+  const actionRequiredOrders = orders.filter(o => 
+    ACTION_REQUIRED_STATUSES.includes(o.status as OrderStatus) || 
+    WAITING_PICKUP_STATUSES.includes(o.status as OrderStatus) ||
+    (o.status === OrderStatus.SHIPPED && !o.tracking_id)
+  );
+  
+  const inTransitOrders = orders.filter(o => o.status === OrderStatus.SHIPPED && o.tracking_id);
+  const completedOrders = orders.filter(o => COMPLETED_STATUSES.includes(o.status as OrderStatus));
 
   let displayOrders = activeTab === 'action_required' ? actionRequiredOrders 
                     : activeTab === 'in_transit' ? inTransitOrders 
