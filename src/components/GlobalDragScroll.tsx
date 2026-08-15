@@ -37,6 +37,17 @@ export default function GlobalDragScroll() {
       const target = e.target as HTMLElement;
       if (target.closest('.no-drag, nav, header, a, button, input, select, textarea, [role="button"], .leaflet-container, .leaflet-interactive, .leaflet-control, .leaflet-pane')) return;
 
+      // Deteksi apakah target berada di dalam kontainer yang bisa di-scroll secara native
+      // Jika iya, biarkan scroll native bekerja dan jangan mulai drag
+      let el: HTMLElement | null = target;
+      while (el && el !== document.body && el !== document.documentElement) {
+        const style = window.getComputedStyle(el);
+        const isScrollableY = (style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight;
+        const isScrollableX = (style.overflowX === 'auto' || style.overflowX === 'scroll') && el.scrollWidth > el.clientWidth;
+        if (isScrollableY || isScrollableX) return;
+        el = el.parentElement;
+      }
+
       state.current = {
         ...state.current,
         isMouseDown: true,

@@ -110,7 +110,7 @@ export function CartSidebar({
           : "hidden 2xl:flex"
       )}
     >
-      <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px] no-drag pointer-events-auto">
+      <div className="border border-ink/10 bg-white shadow-sm flex flex-col relative z-20 h-full min-h-[300px]">
         <motion.div variants={textVariants} className="flex justify-between items-center border-b border-ink/5 px-4 py-3">
           <span className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-ink/60">{dict.product.yourCart}</span>
           <span className="text-xs md:text-[10px] font-medium text-ink">{items.length} {items.length === 1 ? dict.product.item : dict.product.items}</span>
@@ -124,7 +124,7 @@ export function CartSidebar({
           </motion.div>
         ) : (
           <>
-            <div className="max-h-[270px] overflow-y-auto overscroll-contain no-drag divide-y divide-ink/5 [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 hover:[&::-webkit-scrollbar-thumb]:bg-ink/20 [&::-webkit-scrollbar-thumb]:rounded-full">
+            <div className="max-h-[270px] overflow-y-auto overscroll-contain divide-y divide-ink/5 [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-ink/10 hover:[&::-webkit-scrollbar-thumb]:bg-ink/20 [&::-webkit-scrollbar-thumb]:rounded-full">
                 {items.map((item) => (
                   <motion.div
                     variants={textVariants}
