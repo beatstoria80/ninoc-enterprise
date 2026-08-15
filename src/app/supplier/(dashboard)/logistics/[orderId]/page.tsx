@@ -5,7 +5,6 @@ import Image from 'next/image';
 import PickupRequestModalClient from './PickupRequestModalClient';
 import AntiFraudDataVault from '@/components/supplier/AntiFraudDataVault';
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import { createClient } from '@/utils/supabase/server';
 import { format } from 'date-fns';
 
 export const metadata = {
@@ -20,10 +19,16 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
   }
 
   const orderId = params.orderId;
-  const supabase = await createClient();
+  
+  // We use the admin client here because standard RLS restricts supplier access to orders
+  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
+  const supabaseAdmin = createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
-  // 1. Fetch Order
-  const { data: orderData, error: orderError } = await supabase
+  // 1. Fetch Order via Admin Client
+  const { data: orderData, error: orderError } = await supabaseAdmin
     .from('orders')
     .select('*')
     .eq('id', orderId)
@@ -37,10 +42,10 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
     );
   }
 
-  // 2. Fetch Order Items specifically for this supplier
-  const { data: orderItems, error: itemsError } = await supabase
+  // 2. Fetch Order Items specifically for this supplier (using product_name column directly to avoid PGRST200)
+  const { data: orderItems, error: itemsError } = await supabaseAdmin
     .from('order_items')
-    .select('*, products(name)')
+    .select('*')
     .eq('order_id', orderId)
     .eq('supplier_id', supplierUser.supplier_id);
 
