@@ -44,7 +44,7 @@ export default function CartPage() {
   const cartItemsCount = isHydrated ? items.reduce((acc, item) => acc + item.quantity, 0) : 0;
 
   return (
-    <main className="min-h-screen bg-cr flex flex-col pt-24 pb-12 px-4 md:px-8 max-w-[1440px] mx-auto w-full selection:bg-ink selection:text-white">
+    <main className="min-h-screen bg-cr flex flex-col pt-16 md:pt-24 pb-12 px-4 md:px-8 max-w-[1440px] mx-auto w-full selection:bg-ink selection:text-white">
       {/* Breadcrumb & Luxury Title */}
       <div className="w-full flex flex-col gap-1.5 mb-6 md:mb-8 border-b border-ink/10 pb-4">
         <div className="flex gap-2 text-[9px] font-bold uppercase tracking-widest text-ink/40">
