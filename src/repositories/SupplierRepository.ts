@@ -17,10 +17,12 @@ export class SupplierRepository {
         customer_name, 
         customer_phone,
         status, 
+        payment_status,
+        total_price,
         courier, 
         tracking_id,
         shipping_address,
-        order_items!inner(id, supplier_id, quantity, product_name, size, color)
+        order_items!inner(id, supplier_id, quantity, product_name, size, color, price_at_purchase)
       `)
       .eq('order_items.supplier_id', supplierId)
       .order('created_at', { ascending: false });
