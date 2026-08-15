@@ -29,11 +29,18 @@ Sistem logistik supplier NINOC mengadopsi pola **Clean Architecture** berlapis u
 *   **Repository Layer (`src/repositories/SupplierRepository.ts`)**:
     *   Mengisolasi kueri Supabase ke satu titik.
     *   Menghitung jumlah item fisik pesanan secara akurat menggunakan agregasi `reduce(item.quantity)` langsung pada level *data-fetch*, menggantikan deduplikasi memori JS yang boros CPU.
+    *   **In-Memory Split-Join**: Memetakan gambar produk (`image_url`) dengan cara menanyakan data produk secara terpisah setelah `orders` didapatkan. Langkah ini menghilangkan ketergantungan relasi *foreign key* bersarang di Supabase yang sering memicu error crash database `PGRST200` pada PostgREST.
 *   **Service Layer (`src/lib/services/SupplierService.ts`)**:
-    *   Membungkus proses otentikasi supplier (`getCurrentSupplierContext()`) dan mengelola kueri logistik terintegrasi.
+    *   Membungkus proses otentikasi supplier (`getCurrentSupplierContext()`) dan mengelola kueri logistik terintegrasi dengan client admin (`supabaseAdmin`) untuk melewati batasan otorisasi RLS pada data relasi internal.
 *   **Standard Shipping Label Component (`src/components/admin/ShippingLabel.tsx`)**:
     *   Mengintegrasikan komponen label thermal standard ukuran **100mm × 150mm** yang sama dengan dashboard admin.
     *   Mendukung parameter `senderOverride` untuk memetakan alamat asal pengiriman (*origin*) ke gudang supplier Biteship Multichannel yang aktif secara dinamis.
+*   **UI & Full-Row Navigation (`src/app/supplier/(dashboard)/logistics/LogisticsTableClient.tsx`)**:
+    *   **Navigasi Penuh**: Mengaktifkan interaksi klik pada seluruh baris tabel (`<tr>`) menggunakan hook Next.js `useRouter` untuk memudahkan staf gudang masuk ke detail pesanan secara instan tanpa terbatas pada ikon tombol kecil.
+    *   **Rincian Kuantitas & Foto**: Menampilkan informasi visual thumbnail gambar produk dan detail SKU/Varian langsung di baris tabel logistik utama untuk transparansi administratif.
+*   **Otorisasi Halaman Detail (`src/app/supplier/(dashboard)/logistics/[orderId]/page.tsx`)**:
+    *   Menggunakan `supabaseAdmin` untuk bypass batasan RLS default yang mengunci tabel `orders`.
+    *   Menerapkan validasi kepemilikan ketat: sistem hanya mengizinkan pemuatan halaman detail jika pesanan tersebut mengandung minimal 1 produk milik `supplier_id` terkait. Kueri nama produk juga langsung menggunakan kolom `product_name` bawaan dari tabel `order_items` untuk keamanan mutlak tanpa join rawan eror.
 
 ---
 
