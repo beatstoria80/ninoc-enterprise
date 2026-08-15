@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { createClient } from '@/utils/supabase/server';
-import { ReturnsClient } from './ReturnsClient';
+import ReturnsClient from './ReturnsClient';
 
 export const metadata = {
   title: 'Returns & Cancellations - Supplier Hub | NINOC',
@@ -70,6 +70,7 @@ export default async function SupplierReturnsPage() {
       <ReturnsClient 
         initialReturns={processedReturns} 
         initialCancellations={processedCancellations} 
+        supplierId={supplierUser.supplier_id}
       />
     </div>
   );

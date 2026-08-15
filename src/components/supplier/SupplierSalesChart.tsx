@@ -59,7 +59,7 @@ export function SupplierSalesChart({ data }: { data: any[] }) {
           />
           <Tooltip 
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-            formatter={(value: number) => [`Rp ${value.toLocaleString('id-ID')}`, 'Revenue']}
+            formatter={(value: any) => [`Rp ${Number(value).toLocaleString('id-ID')}`, 'Revenue']}
             labelStyle={{ color: '#374151', fontWeight: 'bold', marginBottom: '4px' }}
           />
           <Area 
