@@ -159,6 +159,35 @@ export function ShippingLabel({
         position: 'relative'
       }}>
         
+        {/* Fraud Prevention: Dynamic Reprint Watermark */}
+        {order.print_count && order.print_count > 0 ? (
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%) rotate(-25deg)',
+            fontSize: '36px',
+            fontWeight: 900,
+            color: 'rgba(239, 68, 68, 0.15)', // Tailwind red-500 equivalent with opacity
+            border: '6px double rgba(239, 68, 68, 0.15)',
+            padding: '6px 12px',
+            textTransform: 'uppercase',
+            letterSpacing: '3px',
+            zIndex: 100,
+            pointerEvents: 'none',
+            whiteSpace: 'nowrap',
+            fontFamily: 'sans-serif',
+            textAlign: 'center'
+          }}>
+            DUPLICATE / REPRINT
+            {order.last_printed_by && (
+              <div style={{ fontSize: '8px', marginTop: '2px', letterSpacing: '1px', fontWeight: 'bold' }}>
+                BY: {order.last_printed_by.split(' ')[0]}
+              </div>
+            )}
+          </div>
+        ) : null}
+        
         {/* HEADER SECTION */}
         <div style={{
           display: 'flex',

@@ -4,6 +4,7 @@ import { X, Printer, Package } from 'lucide-react';
 import { useEffect } from 'react';
 import { ACTION_REQUIRED_STATUSES, OrderStatus } from '@/domain/supplier/OrderStatus';
 import { ShippingLabel } from '@/components/admin/ShippingLabel';
+import { createClient } from '@/utils/supabase/client';
 
 interface PrintPackingSlipsModalProps {
   isOpen: boolean;
@@ -40,7 +41,29 @@ export default function PrintPackingSlipsModal({
   // Filter only orders that are ready to pack
   const toPackOrders = orders.filter(o => ACTION_REQUIRED_STATUSES.includes(o.status as OrderStatus));
 
-  const handlePrint = () => {
+  const handlePrint = async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const operator = user?.email || 'Supplier Operator';
+
+    try {
+      // Execute serial updates to log the print audit events per order
+      for (const order of toPackOrders) {
+        const newCount = (order.print_count || 0) + 1;
+        await supabase
+          .from('orders')
+          .update({
+            print_count: newCount,
+            last_printed_by: `${operator} (Supplier Portal)`,
+            last_printed_at: new Date().toISOString(),
+            printed_at: new Date().toISOString()
+          })
+          .eq('id', order.id);
+      }
+    } catch (e) {
+      console.error('[PrintPackingSlipsModal] Failed to write print audit log:', e);
+    }
+
     window.print();
   };
 
@@ -97,6 +120,11 @@ export default function PrintPackingSlipsModal({
               {toPackOrders.map((order) => (
                 <div key={order.id} className="flex flex-col items-center gap-2">
                   <div style={{ position: 'relative', width: '68mm', height: '102mm', flexShrink: 0 }}>
+                    {order.print_count && order.print_count > 0 ? (
+                      <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold px-2 py-0.5 rounded shadow-lg z-50 animate-pulse">
+                        REPRINT {order.print_count}x
+                      </span>
+                    ) : null}
                     <div style={{
                       position: 'absolute',
                       top: 0,

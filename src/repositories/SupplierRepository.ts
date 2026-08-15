@@ -22,6 +22,9 @@ export class SupplierRepository {
         courier, 
         tracking_id,
         shipping_address,
+        print_count,
+        last_printed_by,
+        last_printed_at,
         order_items!inner(id, supplier_id, quantity, product_name, size, color, price_at_purchase)
       `)
       .eq('order_items.supplier_id', supplierId)
