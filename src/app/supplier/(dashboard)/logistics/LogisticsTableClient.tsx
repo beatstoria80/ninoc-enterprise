@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Truck, Package, Clock, ChevronRight, Search, FileText } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import ExportCSVButton from '@/components/supplier/ExportCSVButton';
@@ -22,6 +23,7 @@ export default function LogisticsTableClient({
     province: string;
   };
 }) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabStatus>('action_required');
   const [searchQuery, setSearchQuery] = useState('');
   const [isPrintModalOpen, setIsPrintModalOpen] = useState(false);
@@ -116,10 +118,49 @@ export default function LogisticsTableClient({
             <tbody className="divide-y divide-gray-100">
               {displayOrders.length > 0 ? (
                 displayOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
+                  <tr 
+                    key={order.id} 
+                    onClick={() => router.push(`/supplier/logistics/${order.id}`)}
+                    className="hover:bg-gray-50/50 transition-colors group cursor-pointer"
+                  >
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{order.id}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">{order.itemsCount} your items</div>
+                      <div className="flex flex-col gap-3">
+                        <div>
+                          <span className="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded text-xs">
+                            #{order.id.slice(0, 8).toUpperCase()}
+                          </span>
+                          <span className="text-xs text-gray-500 ml-2">({order.itemsCount} items)</span>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          {order.order_items?.map((item: any, idx: number) => (
+                            <div key={idx} className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded border border-gray-100 bg-gray-50 flex items-center justify-center shrink-0 overflow-hidden">
+                                {item.products?.image_url ? (
+                                  // eslint-disable-next-line @next/next/no-img-element
+                                  <img 
+                                    src={item.products.image_url} 
+                                    alt={item.product_name} 
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <Package size={14} className="text-gray-400" />
+                                )}
+                              </div>
+                              <div className="min-w-0 text-xs">
+                                <p className="font-medium text-gray-900 truncate max-w-[200px]" title={item.product_name}>
+                                  <span className="font-bold text-gray-700 mr-1">[{item.quantity}x]</span>
+                                  {item.product_name}
+                                </p>
+                                {(item.size || item.color) && (
+                                  <p className="text-[10px] text-gray-500 mt-0.5 font-mono uppercase">
+                                    {[item.color, item.size ? `SZ:${item.size}` : null].filter(Boolean).join(' / ')}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-gray-600">
                       {order.created_at ? format(new Date(order.created_at), 'dd MMM yyyy, HH:mm') : '-'}
@@ -158,12 +199,9 @@ export default function LogisticsTableClient({
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link 
-                        href={`/supplier/logistics/${order.id}`}
-                        className="inline-flex items-center justify-center p-2 rounded-full text-gray-400 hover:text-ink hover:bg-gray-100 transition-colors"
-                      >
+                      <div className="inline-flex items-center justify-center p-2 rounded-full text-gray-400 group-hover:text-ink group-hover:bg-gray-100 transition-colors">
                         <ChevronRight size={18} />
-                      </Link>
+                      </div>
                     </td>
                   </tr>
                 ))
