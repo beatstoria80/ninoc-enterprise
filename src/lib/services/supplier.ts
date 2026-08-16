@@ -1,9 +1,13 @@
 import { cache } from 'react';
 import { createClient } from '@/utils/supabase/server';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 
 /**
  * Cached service to get the current supplier's identity.
  * This prevents N+1 queries across layouts and nested server components.
+ * Refactored for Enterprise-grade performance:
+ * - Uses singleton `supabaseAdmin` to prevent connection exhaustion.
+ * - Parallelizes independent database queries via Promise.all.
  */
 export const getCurrentSupplier = cache(async () => {
   const supabase = await createClient();
@@ -13,26 +17,28 @@ export const getCurrentSupplier = cache(async () => {
     return null;
   }
 
-  // Create an admin client to bypass the broken RLS infinite recursion on supplier_users
-  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-  const supabaseAdmin = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  // PARALLEL EXECUTION: Fetch user data AND all active primary warehouses simultaneously
+  const [supplierUserResult, allWarehousesResult] = await Promise.all([
+    supabaseAdmin
+      .from('supplier_users')
+      .select('*, suppliers(name, status, contact_email, contact_phone, bank_name, bank_account_number, bank_account_holder)')
+      .eq('user_id', user.id)
+      .limit(1)
+      .single(),
+    supabaseAdmin
+      .from('warehouses')
+      .select('*')
+      .eq('is_active', true)
+  ]);
 
-  const { data: supplierUser, error } = await supabaseAdmin
-    .from('supplier_users')
-    .select('*, suppliers(name, status, contact_email, contact_phone, bank_name, bank_account_number, bank_account_holder)')
-    .eq('user_id', user.id)
-    .limit(1)
-    .single();
-
+  const { data: supplierUser, error } = supplierUserResult;
+  
   if (!supplierUser || error) {
-    console.error("getCurrentSupplier Error:", error);
+    console.error("[getCurrentSupplier] Error fetching supplier user:", error);
     return null;
   }
 
-  // Detect Pillar based on the latest product's category
+  // Fetch latest product to determine Pillar
   let pillar = 'FASHION';
   const { data: productCheck } = await supabaseAdmin
     .from('products')
@@ -49,29 +55,19 @@ export const getCurrentSupplier = cache(async () => {
     }
   }
 
-  // Fetch assigned warehouse based on Pillar mapping
-  let warehouseQuery = supabaseAdmin.from('warehouses').select('*').eq('is_active', true);
+  // Resolve Warehouse synchronously from the pre-fetched parallel data
+  const warehouses = allWarehousesResult.data || [];
+  let assignedWarehouse = null;
+  
   if (pillar === 'FNB') {
-    // Default to F&B Hub
-    warehouseQuery = warehouseQuery.eq('code', 'WH-BANDUNG-FB');
+    assignedWarehouse = warehouses.find(w => w.code === 'WH-BANDUNG-FB');
   } else {
-    // Default to Main Hub for Fashion/Goods
-    warehouseQuery = warehouseQuery.eq('code', 'WH-BANDUNG-01'); // Using main hub as default for Fashion per plan
+    assignedWarehouse = warehouses.find(w => w.code === 'WH-BANDUNG-01');
   }
-  
-  const { data: warehouseData } = await warehouseQuery.limit(1).maybeSingle();
-  
-  // If the specific hub fails, fallback to any primary hub
-  let assignedWarehouse = warehouseData;
+
+  // Fallback to any primary warehouse
   if (!assignedWarehouse) {
-    const { data: fallbackWarehouse } = await supabaseAdmin
-      .from('warehouses')
-      .select('*')
-      .eq('is_primary', true)
-      .eq('is_active', true)
-      .limit(1)
-      .maybeSingle();
-    assignedWarehouse = fallbackWarehouse;
+    assignedWarehouse = warehouses.find(w => w.is_primary) || warehouses[0] || null;
   }
 
   return {
