@@ -14,16 +14,9 @@ export class SupplierService {
     return await getCurrentSupplier();
   }
 
-  /**
-   * Retrieves deduplicated logistics orders for the dashboard view.
-   */
   public async getLogisticsOrders(supplierId: string) {
-    // We use the admin client here for supplier access if RLS restricts complex joins
-    const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-    const supabaseAdmin = createSupabaseClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
+    // Gunakan singleton supabaseAdmin untuk mencegah connection pool exhaustion
+    const { supabaseAdmin } = await import('@/lib/supabaseAdmin');
     
     const repository = this.getRepository(supabaseAdmin);
     return await repository.getLogisticsOrders(supplierId);

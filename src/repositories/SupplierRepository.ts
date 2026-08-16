@@ -5,12 +5,10 @@ export class SupplierRepository {
 
   /**
    * Fetches orders associated with a supplier's products.
-   * Supabase (PostgREST) naturally returns nested JSON, so rawOrders is already 
-   * uniquely grouped by order.id.
-   * 
-   * Note: We execute a concurrent split query to resolve product images 
-   * because there is no explicit foreign key relationship in the DB schema between 
-   * order_items and products, preventing direct nested selects.
+   * Optimized for the dashboard table view:
+   * 1. Uses a limit to prevent memory crashes on massive order volumes
+   * 2. Only selects minimal required fields from order_items (id, quantity) to prevent over-fetching
+   * 3. Sanitizes shipping_address to prevent data leakage of sensitive PII to the client
    */
   public async getLogisticsOrders(supplierId: string) {
     const { data: rawOrders, error } = await this.db
@@ -29,10 +27,11 @@ export class SupplierRepository {
         print_count,
         last_printed_by,
         last_printed_at,
-        order_items!inner(id, product_id, supplier_id, quantity, product_name, size, color, price_at_purchase)
+        order_items!inner(id, supplier_id, quantity)
       `)
       .eq('order_items.supplier_id', supplierId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(500); // Pagination failsafe for extreme loads
 
     if (error) {
       console.error('[SupplierRepository] Error fetching supplier logistics orders:', error);
@@ -41,49 +40,31 @@ export class SupplierRepository {
 
     if (!rawOrders || rawOrders.length === 0) return [];
 
-    // 1. Collect all unique product IDs from order items
-    const productIds = Array.from(
-      new Set(
-        rawOrders.flatMap(o => o.order_items?.map((oi: any) => oi.product_id).filter(Boolean) || [])
-      )
-    );
-
-    // 2. Query products in a separate concurrent request to avoid PGRST200 schema cache error
-    const productsMap = new Map<string, string | null>();
-    if (productIds.length > 0) {
-      try {
-        const { data: productsData } = await this.db
-          .from('products')
-          .select('id, image_url')
-          .in('id', productIds);
-        
-        if (productsData) {
-          productsData.forEach((p: any) => {
-            productsMap.set(p.id, p.image_url || null);
-          });
-        }
-      } catch (pErr) {
-        console.error('[SupplierRepository] Failed to fetch product images:', pErr);
-      }
-    }
-
-    // 3. Map over the orders, calculate true items count, and enrich with product images
+    // Map over the orders, calculate true items count, and sanitize shipping_address
     return rawOrders.map((order: any) => {
+      // 1. Calculate items count
       const trueItemsCount = order.order_items?.reduce((total: number, item: any) => {
         return total + (item.quantity || 1);
       }, 0) || 0;
 
-      const enrichedItems = order.order_items?.map((item: any) => ({
-        ...item,
-        products: {
-          image_url: productsMap.get(item.product_id) || null
-        }
-      })) || [];
+      // 2. Data Minimization (Sanitize PII)
+      // The dashboard UI only needs the city for the DESTINATION column.
+      // We strip out full_address, name, phone, etc.
+      let safeShippingAddress = null;
+      if (order.shipping_address) {
+        safeShippingAddress = {
+          city: order.shipping_address.city || '-'
+        };
+      }
+
+      // 3. Remove order_items array entirely before sending to client
+      // (The table view doesn't display items, only the detail page does)
+      const { order_items, shipping_address, ...orderWithoutItems } = order;
 
       return {
-        ...order,
+        ...orderWithoutItems,
         itemsCount: trueItemsCount,
-        order_items: enrichedItems
+        shipping_address: safeShippingAddress
       };
     });
   }
