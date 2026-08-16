@@ -144,8 +144,8 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
                         <h4 className="font-medium text-ink text-sm">{item.product_name || (item.products as any)?.name}</h4>
                         <p className="text-xs text-ink/60 mt-1">Product ID: {item.product_id}</p>
                       </div>
-                      <div className="text-base font-bold text-rose bg-rose/10 px-3 py-1.5 rounded-md border border-rose/20 shadow-sm flex items-center justify-center min-w-[3rem]">
-                        x{item.quantity}
+                      <div className="text-sm font-bold text-rose bg-rose/10 px-3 py-1.5 rounded-md border border-rose/20 shadow-sm flex items-center justify-center min-w-[4rem]">
+                        Qty: {item.quantity}
                       </div>
                     </div>
                     {(item.size || item.color) && (
