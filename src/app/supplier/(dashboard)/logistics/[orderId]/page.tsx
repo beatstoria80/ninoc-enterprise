@@ -11,14 +11,15 @@ export const metadata = {
   title: 'Order Logistics - Supplier Hub | NINOC',
 };
 
-export default async function SupplierLogisticsOrderDetail({ params }: { params: { orderId: string } }) {
+export default async function SupplierLogisticsOrderDetail({ params }: { params: Promise<{ orderId: string }> }) {
   const supplierUser = await getCurrentSupplier();
 
   if (!supplierUser) {
     redirect('/supplier/apply');
   }
 
-  const orderId = params.orderId;
+  const resolvedParams = await params;
+  const orderId = resolvedParams.orderId;
   
   // We use the admin client here because standard RLS restricts supplier access to orders
   const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
