@@ -148,21 +148,24 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
                     {/* Placeholder for real images if not joined */}
                     <Package className="text-gray-300" size={32} />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-medium text-ink text-sm">{item.product_name || (item.products as any)?.name}</h4>
-                        <p className="text-xs text-ink/60 mt-1">Product ID: {item.product_id}</p>
-                      </div>
+                  <div className="flex-1 flex flex-col justify-between">
+                    <div>
+                      <h4 className="font-medium text-ink text-sm leading-tight">{item.product_name || (item.products as any)?.name}</h4>
+                      <p className="text-xs text-ink/50 mt-1 font-mono">ID: {item.product_id}</p>
+                    </div>
+                    
+                    <div className="mt-4 flex items-center gap-3 flex-wrap">
+                      {(item.size || item.color) && (
+                        <div className="text-xs font-medium text-ink/80 bg-gray-100 px-3 py-1.5 rounded-md border border-gray-200">
+                          <span className="text-ink/50 font-normal mr-1">Variant:</span>
+                          {[item.size, item.color].filter(Boolean).join(' - ')}
+                        </div>
+                      )}
+                      
                       <div className="text-sm font-bold text-rose bg-rose/10 px-3 py-1.5 rounded-md border border-rose/20 shadow-sm flex items-center justify-center min-w-[4rem]">
                         Qty: {item.quantity}
                       </div>
                     </div>
-                    {(item.size || item.color) && (
-                      <div className="mt-3 text-xs text-ink/70 bg-gray-50 inline-block px-2.5 py-1 rounded border border-gray-100">
-                        Variant: {[item.size, item.color].filter(Boolean).join(', ')}
-                      </div>
-                    )}
                   </div>
                 </div>
               ))}
