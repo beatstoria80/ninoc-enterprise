@@ -1,26 +1,26 @@
 import { redirect } from 'next/navigation';
-import { Truck, Package, Clock, ChevronLeft, MapPin, CheckCircle2, User, FileText } from 'lucide-react';
+import { Truck, Package, Clock, ChevronLeft, MapPin, User, FileText, Calendar, Hash, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import PickupRequestModalClient from './PickupRequestModalClient';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { OrderStatus } from '@/domain/supplier/OrderStatus';
-import { obfuscatePhone, obfuscateName } from '@/lib/logistics-utils';
+import { obfuscatePhone, formatOrderAge } from '@/lib/logistics-utils';
 import { format } from 'date-fns';
 
 export const metadata = {
-  title: 'Order Logistics - Supplier Hub | NINOC',
+  title: 'Order Command - Supplier Hub | NINOC',
 };
 
 // --------------------------------------------------------------------------
-// Status Stepper Configuration (Single Source of Truth)
+// Status Configuration
 // --------------------------------------------------------------------------
 const TRACKING_STEPS = [
-  { id: OrderStatus.PAID, label: 'Paid', icon: CheckCircle2 },
-  { id: OrderStatus.PENDING_PACKING, label: 'Packing', icon: Package },
-  { id: OrderStatus.READY_FOR_PICKUP, label: 'Ready for Pickup', icon: Clock },
-  { id: OrderStatus.ALLOCATED, label: 'Courier Allocated', icon: Truck },
-  { id: OrderStatus.SHIPPED, label: 'Shipped', icon: CheckCircle2 },
+  { id: OrderStatus.PAID, label: 'PAID' },
+  { id: OrderStatus.PENDING_PACKING, label: 'PACKING' },
+  { id: OrderStatus.READY_FOR_PICKUP, label: 'READY' },
+  { id: OrderStatus.ALLOCATED, label: 'ALLOCATED' },
+  { id: OrderStatus.SHIPPED, label: 'SHIPPED' },
 ] as const;
 
 const STATUS_TO_STEP_INDEX: Record<string, number> = {
@@ -50,7 +50,7 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
   const resolvedParams = await params;
   const orderId = resolvedParams.orderId;
 
-  // 1. Fetch Order via singleton Admin Client (avoids connection pool exhaustion)
+  // 1. Fetch Order via singleton Admin Client
   const { data: orderData, error: orderError } = await supabaseAdmin
     .from('orders')
     .select('*')
@@ -59,8 +59,8 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
 
   if (orderError || !orderData) {
     return (
-      <div className="p-12 text-center text-ink/60">
-        Order not found or you don&apos;t have permission to view it.
+      <div className="p-8 text-center text-gray-500 font-mono text-sm">
+        ORDER NOT FOUND OR ACCESS DENIED.
       </div>
     );
   }
@@ -74,225 +74,197 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
 
   if (itemsError || !orderItems || orderItems.length === 0) {
     return (
-      <div className="p-12 text-center text-ink/60">
-        No items from your inventory found in this order.
+      <div className="p-8 text-center text-gray-500 font-mono text-sm">
+        NO ITEMS FOUND FOR YOUR INVENTORY.
       </div>
     );
   }
 
-  // 3. Extract & obfuscate buyer data
+  // 3. Extract buyer data (NO NAME OBFUSCATION, ONLY PHONE)
   const shippingAddr = orderData.shipping_address as Record<string, any> | null;
-  const buyerName = obfuscateName(orderData.customer_name || shippingAddr?.name || 'N/A');
-  const buyerPhone = obfuscatePhone(orderData.customer_phone || shippingAddr?.phone || 'N/A');
+  const buyerName = orderData.customer_name || shippingAddr?.name || 'UNKNOWN';
+  const buyerPhone = obfuscatePhone(orderData.customer_phone || shippingAddr?.phone || 'UNKNOWN');
   const buyerAddress = shippingAddr?.full_address || JSON.stringify(orderData.shipping_address);
-  const orderDate = orderData.created_at ? format(new Date(orderData.created_at), 'dd MMM yyyy, HH:mm') : '-';
+  const orderDate = orderData.created_at ? format(new Date(orderData.created_at), 'dd MMM yyyy, HH:mm:ss') : '-';
+  const orderAgeStr = formatOrderAge(orderData.created_at);
 
   // 4. Stepper state
   const currentStepIndex = resolveStepIndex(orderData.status);
-  const progressWidth = `${(currentStepIndex / (TRACKING_STEPS.length - 1)) * 100}%`;
 
-  // 5. Status flags (using enum for type safety)
+  // 5. Status flags
   const isPacking = orderData.status === OrderStatus.PAID || orderData.status === OrderStatus.PENDING_PACKING;
   const isWaitingPickup = orderData.status === OrderStatus.READY_FOR_PICKUP 
     || orderData.status === OrderStatus.ALLOCATED 
     || (orderData.status === OrderStatus.SHIPPED && !orderData.tracking_id);
-  const hasTrackingLabel = (orderData.status === OrderStatus.READY_FOR_PICKUP || orderData.status === OrderStatus.SHIPPED) && orderData.tracking_id;
+  const hasTrackingLabel = (orderData.status === OrderStatus.READY_FOR_PICKUP || orderData.status === OrderStatus.SHIPPED || orderData.status === OrderStatus.ALLOCATED) && orderData.tracking_id;
 
   return (
-    <div className="space-y-6 w-full">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div className="flex items-center gap-4">
-          <Link href="/supplier/logistics" className="p-2 -ml-2 text-ink/50 hover:text-ink hover:bg-gray-100 rounded-full transition-colors">
-            <ChevronLeft size={20} />
+    <div className="bg-gray-50 min-h-screen text-gray-900 font-sans p-4">
+      {/* COMMAND CENTER HEADER */}
+      <div className="bg-white border border-gray-300 shadow-sm mb-4 flex flex-col md:flex-row justify-between items-stretch text-xs">
+        
+        {/* Left: Identity */}
+        <div className="flex flex-1">
+          <Link href="/supplier/logistics" className="p-4 border-r border-gray-200 text-gray-400 hover:text-black hover:bg-gray-50 transition-colors flex items-center justify-center">
+            <ChevronLeft size={16} />
           </Link>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl font-display font-medium text-ink flex items-center gap-2">
-                Order <span className="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded text-base">#{orderData.id.slice(0, 8).toUpperCase()}</span>
-              </h1>
-              {isPacking && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/50">
-                   <Package size={12} />
-                  To Pack
-                </span>
-              )}
-              {isWaitingPickup && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200/50">
-                  <Clock size={12} />
-                  Waiting Pickup
-                </span>
-              )}
+          <div className="p-3 flex flex-col justify-center">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-gray-400 tracking-widest text-[10px]">ORDER ID</span>
+              <span className="font-mono font-bold text-black text-sm uppercase">#{orderData.id.slice(0, 8)}</span>
+              {isPacking && <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-widest ml-2">TO PACK</span>}
+              {isWaitingPickup && <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded text-[9px] font-bold tracking-widest ml-2">WAITING PICKUP</span>}
             </div>
-            <p className="text-sm text-ink/60 mt-1">Placed on {orderDate}</p>
+            <div className="flex items-center gap-3 mt-1 text-[10px] text-gray-500 font-mono">
+              <span className="flex items-center gap-1"><Calendar size={10} /> {orderDate}</span>
+              <span className="flex items-center gap-1 text-rose-500 font-bold"><Clock size={10} /> AGE: {orderAgeStr}</span>
+            </div>
           </div>
         </div>
-        
-        <div className="flex gap-3 w-full md:w-auto">
+
+        {/* Right: Actions */}
+        <div className="flex border-t md:border-t-0 md:border-l border-gray-200 bg-gray-50/50">
           {isPacking && (
-            <PickupRequestModalClient 
-              orderId={orderData.id} 
-              courierName={orderData.courier || 'Kurir'} 
-              warehouseName={supplierUser.assignedWarehouse?.name || 'Your Main Warehouse (Configured Location)'} 
-            />
+            <div className="border-r border-gray-200 p-2 flex items-center">
+              <PickupRequestModalClient 
+                orderId={orderData.id} 
+                courierName={orderData.courier || 'Kurir'} 
+                warehouseName={supplierUser.assignedWarehouse?.name || 'Main Warehouse'} 
+              />
+            </div>
           )}
           {hasTrackingLabel && (
-            <button className="flex-1 md:flex-none px-6 py-2.5 bg-white border border-gray-200 text-ink text-sm font-medium rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
-              <FileText size={16} />
-              Print Label
-            </button>
+            <div className="p-2 flex items-center">
+              <button className="h-full px-4 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center justify-center gap-1.5 rounded-sm">
+                <FileText size={12} />
+                PRINT WAYBILL
+              </button>
+            </div>
           )}
         </div>
       </div>
 
-      {/* Biteship / Logistics Realtime Tracker */}
-      <div className="bg-white border border-gray-200 rounded-xl p-6 w-full overflow-hidden">
-        <h3 className="font-medium text-ink text-sm flex items-center gap-2 mb-6">
-          <Truck size={16} className="text-ink/60" />
-          Logistics Tracking Status
-        </h3>
+      {/* DENSE GRID LAYOUT */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         
-        <div className="relative px-4">
-          <div className="absolute top-4 left-8 right-8 h-0.5 bg-gray-100 -translate-y-1/2 z-0 hidden sm:block"></div>
-          <div className="absolute top-4 left-8 h-0.5 bg-blue-500 -translate-y-1/2 z-0 transition-all duration-500 hidden sm:block" style={{ width: progressWidth }}></div>
+        {/* LEFT COLUMN: ITEMS & TIMELINE (Span 8) */}
+        <div className="lg:col-span-8 space-y-4">
           
-          <div className="relative z-10 flex justify-between flex-wrap gap-4 sm:flex-nowrap sm:gap-0">
-            {TRACKING_STEPS.map((s, index) => {
-              const isCompleted = index <= currentStepIndex;
-              const isCurrent = index === currentStepIndex;
-              const Icon = s.icon;
-              
-              return (
-                <div key={s.id} className="flex flex-col items-center gap-2 min-w-[80px]">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
-                    isCompleted ? 'bg-blue-500 border-blue-500 text-white shadow-sm' : 'bg-white border-gray-200 text-gray-300'
-                  } ${isCurrent ? 'ring-4 ring-blue-50' : ''}`}>
-                    <Icon size={14} />
-                  </div>
-                  <span className={`text-xs font-medium text-center ${isCompleted ? 'text-ink' : 'text-gray-400'}`}>
-                    {s.label}
+          {/* Timeline Bar (Ultra Compact) */}
+          <div className="bg-white border border-gray-300 p-2 flex items-center justify-between shadow-sm">
+            <span className="text-[9px] font-bold tracking-widest text-gray-400 w-16 uppercase">STATUS</span>
+            <div className="flex-1 flex items-center gap-1 px-4 relative">
+              <div className="absolute left-4 right-4 top-1/2 h-px bg-gray-200 -translate-y-1/2 z-0"></div>
+              <div className="absolute left-4 top-1/2 h-px bg-blue-500 -translate-y-1/2 z-0 transition-all" style={{ width: `${(currentStepIndex / (TRACKING_STEPS.length - 1)) * 100}%` }}></div>
+              {TRACKING_STEPS.map((step, idx) => (
+                <div key={step.id} className="flex-1 flex flex-col items-center z-10 relative">
+                  <div className={`w-3 h-3 rounded-full border-2 ${idx <= currentStepIndex ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-300'}`}></div>
+                  <span className={`absolute top-4 text-[8px] font-bold tracking-widest whitespace-nowrap ${idx <= currentStepIndex ? 'text-black' : 'text-gray-400'}`}>
+                    {step.label}
                   </span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content - Items Table */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-              <h3 className="font-medium text-ink text-sm flex items-center gap-2">
-                <Package size={16} className="text-ink/60" />
-                Items to Pack
-              </h3>
-              <span className="text-xs text-ink/60">{orderItems.length} items total</span>
+              ))}
             </div>
-            
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-gray-50/50 border-y border-gray-100 text-xs uppercase tracking-wider text-ink/50 font-medium">
-                    <th className="px-6 py-3">Product</th>
-                    <th className="px-6 py-3">Variant</th>
-                    <th className="px-6 py-3 text-center">Qty</th>
+          </div>
+
+          {/* Items Table (Data-Dense) */}
+          <div className="bg-white border border-gray-300 shadow-sm">
+            <div className="border-b border-gray-300 p-2 bg-gray-100 flex justify-between items-center">
+              <span className="text-[10px] font-bold tracking-widest text-gray-600 uppercase flex items-center gap-1.5">
+                <Package size={12} /> ORDER ITEMS ({orderItems.length})
+              </span>
+            </div>
+            <table className="w-full text-left text-xs font-mono">
+              <thead className="text-[9px] text-gray-400 tracking-widest uppercase border-b border-gray-200 bg-gray-50/50">
+                <tr>
+                  <th className="py-1.5 px-3 font-medium">SKU / ID</th>
+                  <th className="py-1.5 px-3 font-medium">PRODUCT</th>
+                  <th className="py-1.5 px-3 font-medium">VARIANT</th>
+                  <th className="py-1.5 px-3 font-medium text-center">QTY</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {orderItems.map((item) => (
+                  <tr key={item.id} className="hover:bg-yellow-50/50 transition-colors">
+                    <td className="py-2 px-3 text-[10px] text-gray-400">{item.product_id.split('-')[0].toUpperCase()}</td>
+                    <td className="py-2 px-3 text-black font-sans font-medium text-xs leading-tight">
+                      {item.product_name || (item.products as any)?.name}
+                    </td>
+                    <td className="py-2 px-3">
+                      {(item.size || item.color) ? (
+                        <span className="bg-gray-100 text-gray-700 px-1.5 py-0.5 border border-gray-200 text-[10px] font-bold tracking-widest uppercase">
+                          {[item.size, item.color].filter(Boolean).join(' - ')}
+                        </span>
+                      ) : (
+                        <span className="text-gray-300">-</span>
+                      )}
+                    </td>
+                    <td className="py-2 px-3 text-center">
+                      <span className="bg-black text-white px-2 py-0.5 text-xs font-bold rounded-sm inline-block min-w-[24px]">
+                        {item.quantity}
+                      </span>
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {orderItems.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50/30 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center shrink-0">
-                            <Package className="text-gray-300" size={20} />
-                          </div>
-                          <div>
-                            <div className="font-medium text-ink text-sm leading-tight max-w-[250px] md:max-w-sm truncate">
-                              {item.product_name || (item.products as any)?.name}
-                            </div>
-                            <div className="text-xs text-ink/50 mt-0.5 font-mono">
-                              ID: {item.product_id}
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        {(item.size || item.color) ? (
-                          <div className="text-xs font-medium text-ink/80 bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200 inline-block">
-                            {[item.size, item.color].filter(Boolean).join(' - ')}
-                          </div>
-                        ) : (
-                          <span className="text-xs text-ink/40">-</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <div className="inline-flex text-sm font-bold text-rose bg-rose/10 px-3 py-1 rounded-md border border-rose/20 min-w-[3rem] justify-center shadow-sm">
-                          {item.quantity}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Sidebar - Logistics Info */}
-        <div className="space-y-6">
-          {/* Shipping Info */}
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-              <h3 className="font-medium text-ink text-sm flex items-center gap-2">
-                <Truck size={16} className="text-ink/60" />
-                Logistics Detail
-              </h3>
+        {/* RIGHT COLUMN: LOGISTICS & BUYER (Span 4) */}
+        <div className="lg:col-span-4 space-y-4">
+          
+          {/* Logistics Data */}
+          <div className="bg-white border border-gray-300 shadow-sm">
+            <div className="border-b border-gray-300 p-2 bg-gray-100">
+              <span className="text-[10px] font-bold tracking-widest text-gray-600 uppercase flex items-center gap-1.5">
+                <Truck size={12} /> DISPATCH INFO
+              </span>
             </div>
-            <div className="p-5 space-y-4">
+            <div className="p-3 grid grid-cols-2 gap-4 text-xs font-mono">
               <div>
-                <span className="text-xs text-ink/50 uppercase tracking-wider block mb-1">Courier</span>
-                <div className="text-sm font-medium text-ink">{orderData.courier || 'TBD'}</div>
+                <span className="text-[9px] text-gray-400 tracking-widest uppercase block mb-0.5">COURIER</span>
+                <span className="font-bold text-black uppercase bg-gray-100 px-1.5 py-0.5 border border-gray-200">
+                  {orderData.courier || 'TBD'}
+                </span>
               </div>
-              
-              {orderData.tracking_id && (
-                <div>
-                  <span className="text-xs text-ink/50 uppercase tracking-wider block mb-1">Tracking ID (Waybill)</span>
-                  <div className="flex items-center gap-2">
-                    <div className="text-sm font-mono font-medium text-ink bg-gray-50 px-2 py-1 rounded border border-gray-100">
-                      {orderData.tracking_id}
-                    </div>
-                  </div>
-                </div>
-              )}
+              <div>
+                <span className="text-[9px] text-gray-400 tracking-widest uppercase block mb-0.5">WAYBILL/RESI</span>
+                {orderData.tracking_id ? (
+                  <span className="font-bold text-black bg-yellow-100 px-1.5 py-0.5 border border-yellow-300 select-all">
+                    {orderData.tracking_id}
+                  </span>
+                ) : (
+                  <span className="text-gray-400 text-[10px]">PENDING</span>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Destination */}
-          <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
-              <h3 className="font-medium text-ink text-sm flex items-center gap-2">
-                <MapPin size={16} className="text-ink/60" />
-                Destination
-              </h3>
+          {/* Destination Data */}
+          <div className="bg-white border border-gray-300 shadow-sm">
+            <div className="border-b border-gray-300 p-2 bg-gray-100">
+              <span className="text-[10px] font-bold tracking-widest text-gray-600 uppercase flex items-center gap-1.5">
+                <MapPin size={12} /> DESTINATION
+              </span>
             </div>
-            <div className="p-5 space-y-4">
-              <div className="flex items-start gap-3">
-                <User size={16} className="text-ink/40 shrink-0 mt-0.5" />
-                <div>
-                  <div className="text-sm font-medium text-ink">{buyerName}</div>
-                  <div className="text-xs text-ink/60 mt-0.5 font-mono">{buyerPhone}</div>
+            <div className="p-3 text-xs font-mono space-y-3">
+              <div>
+                <span className="text-[9px] text-gray-400 tracking-widest uppercase block mb-0.5">RECIPIENT</span>
+                <div className="font-bold text-black text-sm uppercase leading-tight font-sans">
+                  {buyerName}
                 </div>
+                <div className="text-gray-500 mt-0.5">{buyerPhone}</div>
               </div>
-              <div className="flex items-start gap-3">
-                <MapPin size={16} className="text-ink/40 shrink-0 mt-0.5" />
-                <div className="text-sm text-ink/80 leading-relaxed">
+              <div className="pt-2 border-t border-gray-100">
+                <span className="text-[9px] text-gray-400 tracking-widest uppercase block mb-1">ADDRESS</span>
+                <div className="text-gray-700 leading-relaxed text-[11px] font-sans">
                   {buyerAddress}
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>
