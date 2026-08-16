@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { Truck, Package, Clock, ChevronLeft, MapPin, User, FileText, Calendar, Hash, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import PickupRequestModalClient from './PickupRequestModalClient';
+import PrintWaybillButton from './PrintWaybillButton';
 import { getCurrentSupplier } from '@/lib/services/supplier';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { OrderStatus } from '@/domain/supplier/OrderStatus';
@@ -147,10 +148,7 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
           )}
           {hasTrackingLabel && (
             <div className="p-2 flex items-center">
-              <button className="h-full px-4 bg-black text-white text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center justify-center gap-1.5 rounded-sm">
-                <FileText size={12} />
-                PRINT WAYBILL
-              </button>
+              <PrintWaybillButton />
             </div>
           )}
         </div>
