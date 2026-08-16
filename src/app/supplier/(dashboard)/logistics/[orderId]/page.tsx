@@ -1,16 +1,45 @@
 import { redirect } from 'next/navigation';
-import { Truck, Package, Clock, ChevronLeft, MapPin, CheckCircle2, User, Phone, FileText } from 'lucide-react';
+import { Truck, Package, Clock, ChevronLeft, MapPin, CheckCircle2, User, FileText } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import PickupRequestModalClient from './PickupRequestModalClient';
-import AntiFraudDataVault from '@/components/supplier/AntiFraudDataVault';
 import { getCurrentSupplier } from '@/lib/services/supplier';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { OrderStatus } from '@/domain/supplier/OrderStatus';
+import { obfuscatePhone, obfuscateName } from '@/lib/logistics-utils';
 import { format } from 'date-fns';
 
 export const metadata = {
   title: 'Order Logistics - Supplier Hub | NINOC',
 };
 
+// --------------------------------------------------------------------------
+// Status Stepper Configuration (Single Source of Truth)
+// --------------------------------------------------------------------------
+const TRACKING_STEPS = [
+  { id: OrderStatus.PAID, label: 'Paid', icon: CheckCircle2 },
+  { id: OrderStatus.PENDING_PACKING, label: 'Packing', icon: Package },
+  { id: OrderStatus.READY_FOR_PICKUP, label: 'Ready for Pickup', icon: Clock },
+  { id: OrderStatus.ALLOCATED, label: 'Courier Allocated', icon: Truck },
+  { id: OrderStatus.SHIPPED, label: 'Shipped', icon: CheckCircle2 },
+] as const;
+
+const STATUS_TO_STEP_INDEX: Record<string, number> = {
+  [OrderStatus.PAID]: 0,
+  [OrderStatus.PENDING_PACKING]: 1,
+  [OrderStatus.READY_FOR_PICKUP]: 2,
+  [OrderStatus.ALLOCATED]: 3,
+  [OrderStatus.SHIPPED]: 4,
+  [OrderStatus.DELIVERED]: 4,
+  [OrderStatus.COMPLETED]: 4,
+};
+
+function resolveStepIndex(status: string): number {
+  return STATUS_TO_STEP_INDEX[status] ?? 0;
+}
+
+// --------------------------------------------------------------------------
+// Page Component
+// --------------------------------------------------------------------------
 export default async function SupplierLogisticsOrderDetail({ params }: { params: Promise<{ orderId: string }> }) {
   const supplierUser = await getCurrentSupplier();
 
@@ -20,15 +49,8 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
 
   const resolvedParams = await params;
   const orderId = resolvedParams.orderId;
-  
-  // We use the admin client here because standard RLS restricts supplier access to orders
-  const { createClient: createSupabaseClient } = await import('@supabase/supabase-js');
-  const supabaseAdmin = createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
 
-  // 1. Fetch Order via Admin Client
+  // 1. Fetch Order via singleton Admin Client (avoids connection pool exhaustion)
   const { data: orderData, error: orderError } = await supabaseAdmin
     .from('orders')
     .select('*')
@@ -43,7 +65,7 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
     );
   }
 
-  // 2. Fetch Order Items specifically for this supplier (using product_name column directly to avoid PGRST200)
+  // 2. Fetch Order Items specifically for this supplier
   const { data: orderItems, error: itemsError } = await supabaseAdmin
     .from('order_items')
     .select('*')
@@ -58,30 +80,23 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
     );
   }
 
-  const rawBuyerName = orderData.customer_name || (orderData.shipping_address as any)?.name || 'N/A';
-  const rawBuyerPhone = orderData.customer_phone || (orderData.shipping_address as any)?.phone || 'N/A';
-  const buyerAddress = (orderData.shipping_address as any)?.full_address || JSON.stringify(orderData.shipping_address);
+  // 3. Extract & obfuscate buyer data
+  const shippingAddr = orderData.shipping_address as Record<string, any> | null;
+  const buyerName = obfuscateName(orderData.customer_name || shippingAddr?.name || 'N/A');
+  const buyerPhone = obfuscatePhone(orderData.customer_phone || shippingAddr?.phone || 'N/A');
+  const buyerAddress = shippingAddr?.full_address || JSON.stringify(orderData.shipping_address);
   const orderDate = orderData.created_at ? format(new Date(orderData.created_at), 'dd MMM yyyy, HH:mm') : '-';
 
-  // Hide phone number except first 3 and last 1 digit (e.g. 085123456787 -> 085********7)
-  const obfuscatePhone = (phone: string) => {
-    if (phone.length < 5 || phone === 'N/A') return phone;
-    const first3 = phone.slice(0, 3);
-    const last1 = phone.slice(-1);
-    return `${first3}${'*'.repeat(phone.length - 4)}${last1}`;
-  };
+  // 4. Stepper state
+  const currentStepIndex = resolveStepIndex(orderData.status);
+  const progressWidth = `${(currentStepIndex / (TRACKING_STEPS.length - 1)) * 100}%`;
 
-  // Hide full name (e.g. Siti Nurhaliza -> S*** N********)
-  const obfuscateName = (name: string) => {
-    if (!name || name === 'N/A') return name;
-    return name.split(' ').map(word => {
-      if (word.length <= 1) return word;
-      return word[0] + '*'.repeat(word.length - 1);
-    }).join(' ');
-  };
-
-  const buyerName = obfuscateName(rawBuyerName); 
-  const buyerPhone = obfuscatePhone(rawBuyerPhone);
+  // 5. Status flags (using enum for type safety)
+  const isPacking = orderData.status === OrderStatus.PAID || orderData.status === OrderStatus.PENDING_PACKING;
+  const isWaitingPickup = orderData.status === OrderStatus.READY_FOR_PICKUP 
+    || orderData.status === OrderStatus.ALLOCATED 
+    || (orderData.status === OrderStatus.SHIPPED && !orderData.tracking_id);
+  const hasTrackingLabel = (orderData.status === OrderStatus.READY_FOR_PICKUP || orderData.status === OrderStatus.SHIPPED) && orderData.tracking_id;
 
   return (
     <div className="space-y-6 w-full">
@@ -96,13 +111,13 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
               <h1 className="text-xl font-display font-medium text-ink flex items-center gap-2">
                 Order <span className="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded text-base">#{orderData.id.slice(0, 8).toUpperCase()}</span>
               </h1>
-              {(orderData.status === 'paid' || orderData.status === 'pending_packing') && (
+              {isPacking && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/50">
                    <Package size={12} />
                   To Pack
                 </span>
               )}
-              {(orderData.status === 'ready_for_pickup' || orderData.status === 'allocated' || (orderData.status === 'shipped' && !orderData.tracking_id)) && (
+              {isWaitingPickup && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200/50">
                   <Clock size={12} />
                   Waiting Pickup
@@ -114,14 +129,14 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
         </div>
         
         <div className="flex gap-3 w-full md:w-auto">
-          {(orderData.status === 'paid' || orderData.status === 'pending_packing') && (
+          {isPacking && (
             <PickupRequestModalClient 
               orderId={orderData.id} 
               courierName={orderData.courier || 'Kurir'} 
               warehouseName={supplierUser.assignedWarehouse?.name || 'Your Main Warehouse (Configured Location)'} 
             />
           )}
-          {(orderData.status === 'ready_for_pickup' || orderData.status === 'shipped') && orderData.tracking_id && (
+          {hasTrackingLabel && (
             <button className="flex-1 md:flex-none px-6 py-2.5 bg-white border border-gray-200 text-ink text-sm font-medium rounded-md hover:bg-gray-50 transition-colors flex items-center justify-center gap-2">
               <FileText size={16} />
               Print Label
@@ -139,56 +154,33 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
         
         <div className="relative px-4">
           <div className="absolute top-4 left-8 right-8 h-0.5 bg-gray-100 -translate-y-1/2 z-0 hidden sm:block"></div>
+          <div className="absolute top-4 left-8 h-0.5 bg-blue-500 -translate-y-1/2 z-0 transition-all duration-500 hidden sm:block" style={{ width: progressWidth }}></div>
           
-          {(() => {
-            const statuses = [
-              { id: 'paid', label: 'Paid', icon: CheckCircle2 },
-              { id: 'packing', label: 'Packing', icon: Package },
-              { id: 'ready', label: 'Ready for Pickup', icon: Clock },
-              { id: 'allocated', label: 'Courier Allocated', icon: Truck },
-              { id: 'shipped', label: 'Shipped', icon: CheckCircle2 }
-            ];
-            
-            let currentStepIndex = 0;
-            if (orderData.status === 'pending_packing') currentStepIndex = 1;
-            if (orderData.status === 'ready_for_pickup') currentStepIndex = 2;
-            if (orderData.status === 'allocated') currentStepIndex = 3;
-            if (orderData.status === 'shipped') currentStepIndex = 4;
-            
-            const progressWidth = `${(currentStepIndex / (statuses.length - 1)) * 100}%`;
-
-            return (
-              <>
-                <div className="absolute top-4 left-8 h-0.5 bg-blue-500 -translate-y-1/2 z-0 transition-all duration-500 hidden sm:block" style={{ width: progressWidth }}></div>
-                
-                <div className="relative z-10 flex justify-between flex-wrap gap-4 sm:flex-nowrap sm:gap-0">
-                  {statuses.map((s, index) => {
-                    const isCompleted = index <= currentStepIndex;
-                    const isCurrent = index === currentStepIndex;
-                    const Icon = s.icon;
-                    
-                    return (
-                      <div key={s.id} className="flex flex-col items-center gap-2 min-w-[80px]">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
-                          isCompleted ? 'bg-blue-500 border-blue-500 text-white shadow-sm' : 'bg-white border-gray-200 text-gray-300'
-                        } ${isCurrent ? 'ring-4 ring-blue-50' : ''}`}>
-                          <Icon size={14} />
-                        </div>
-                        <span className={`text-xs font-medium text-center ${isCompleted ? 'text-ink' : 'text-gray-400'}`}>
-                          {s.label}
-                        </span>
-                      </div>
-                    );
-                  })}
+          <div className="relative z-10 flex justify-between flex-wrap gap-4 sm:flex-nowrap sm:gap-0">
+            {TRACKING_STEPS.map((s, index) => {
+              const isCompleted = index <= currentStepIndex;
+              const isCurrent = index === currentStepIndex;
+              const Icon = s.icon;
+              
+              return (
+                <div key={s.id} className="flex flex-col items-center gap-2 min-w-[80px]">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
+                    isCompleted ? 'bg-blue-500 border-blue-500 text-white shadow-sm' : 'bg-white border-gray-200 text-gray-300'
+                  } ${isCurrent ? 'ring-4 ring-blue-50' : ''}`}>
+                    <Icon size={14} />
+                  </div>
+                  <span className={`text-xs font-medium text-center ${isCompleted ? 'text-ink' : 'text-gray-400'}`}>
+                    {s.label}
+                  </span>
                 </div>
-              </>
-            );
-          })()}
+              );
+            })}
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content - Items */}
+        {/* Main Content - Items Table */}
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
