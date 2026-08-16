@@ -85,7 +85,9 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
           </Link>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-display font-medium text-ink">Order {orderData.id}</h1>
+              <h1 className="text-xl font-display font-medium text-ink flex items-center gap-2">
+                Order <span className="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded text-base">#{orderData.id.slice(0, 8).toUpperCase()}</span>
+              </h1>
               {(orderData.status === 'paid' || orderData.status === 'pending_packing') && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/50">
                   <Package size={12} />
