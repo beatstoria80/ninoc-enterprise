@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin as adminClient } from '@/lib/supabaseAdmin';
 
 export async function POST(req: Request) {
   try {
@@ -28,10 +28,7 @@ export async function POST(req: Request) {
 
       // SYNC WITH SUPABASE AUTH (RLS BYPASS FIX)
       // 1. Force the admin@ninoc.store password to be the global secret (guarantees we can log in)
-      const adminClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
+      
       
       const email = 'admin@ninoc.store';
       

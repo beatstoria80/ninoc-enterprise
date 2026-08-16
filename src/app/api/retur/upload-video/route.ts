@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createServerClient } from '@/utils/supabase/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin as adminClient } from '@/lib/supabaseAdmin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+
 
 export async function POST(req: NextRequest) {
   try {

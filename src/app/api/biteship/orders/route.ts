@@ -5,16 +5,13 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { supabaseAdmin as adminClient } from '@/lib/supabaseAdmin';
 import { z } from 'zod';
 import { sendEmailShipping } from '@/lib/email';
 import { sendShippingWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { notifyAllChannels } from '@/lib/notifications';
 
-const adminClient = createSupabaseClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+
 
 const OrderPayloadSchema = z.object({
   order_id: z.string().min(1),

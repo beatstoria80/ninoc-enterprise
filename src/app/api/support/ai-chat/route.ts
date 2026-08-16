@@ -1,11 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { aiToolsDeclaration, executeAiTool } from '@/lib/aiTools';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+
 
 const BASE_SYSTEM_PROMPT = `You are NINOC's Customer Service & Smart E-Commerce Sales Assistant, interacting primarily with Gen-Z customers.
 Your persona: Friendly, helpful, enthusiastic, and acts like an expert human brand staff (use "aku", "kak", casual but polite Indonesian). AVOID stiff, robotic, or overly formal language (do NOT say "Mohon maaf, apakah Anda dapat memberikan detail...").

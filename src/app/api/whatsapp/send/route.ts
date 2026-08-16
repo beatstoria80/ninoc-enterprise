@@ -9,7 +9,7 @@
  * - Biteship webhook (shipping notification)
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin as adminClient } from '@/lib/supabaseAdmin';
 import {
   sendInvoiceWA,
   sendShippingWA,
@@ -20,10 +20,7 @@ import {
   WA_TEMPLATES,
 } from '@/lib/whatsapp';
 
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+
 
 // ─── POST: Send a message ──────────────────────────────────────────────────
 

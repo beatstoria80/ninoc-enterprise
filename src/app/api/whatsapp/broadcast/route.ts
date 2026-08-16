@@ -9,13 +9,10 @@
  * Processing is done by the queue cron endpoint.
  */
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin as adminClient } from '@/lib/supabaseAdmin';
 import { formatPhoneNumber } from '@/lib/whatsapp';
 
-const adminClient = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-);
+
 
 // ─── POST: Create a broadcast campaign ────────────────────────────────────
 
