@@ -130,6 +130,63 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
         </div>
       </div>
 
+      {/* Biteship / Logistics Realtime Tracker */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 w-full overflow-hidden">
+        <h3 className="font-medium text-ink text-sm flex items-center gap-2 mb-6">
+          <Truck size={16} className="text-ink/60" />
+          Logistics Tracking Status
+        </h3>
+        
+        <div className="relative px-4">
+          <div className="absolute top-4 left-8 right-8 h-0.5 bg-gray-100 -translate-y-1/2 z-0 hidden sm:block"></div>
+          
+          {(() => {
+            const statuses = [
+              { id: 'paid', label: 'Paid', icon: CheckCircle2 },
+              { id: 'packing', label: 'Packing', icon: Package },
+              { id: 'ready', label: 'Ready for Pickup', icon: Clock },
+              { id: 'allocated', label: 'Courier Allocated', icon: Truck },
+              { id: 'shipped', label: 'Shipped', icon: CheckCircle2 }
+            ];
+            
+            let currentStepIndex = 0;
+            if (orderData.status === 'pending_packing') currentStepIndex = 1;
+            if (orderData.status === 'ready_for_pickup') currentStepIndex = 2;
+            if (orderData.status === 'allocated') currentStepIndex = 3;
+            if (orderData.status === 'shipped') currentStepIndex = 4;
+            
+            const progressWidth = `${(currentStepIndex / (statuses.length - 1)) * 100}%`;
+
+            return (
+              <>
+                <div className="absolute top-4 left-8 h-0.5 bg-blue-500 -translate-y-1/2 z-0 transition-all duration-500 hidden sm:block" style={{ width: progressWidth }}></div>
+                
+                <div className="relative z-10 flex justify-between flex-wrap gap-4 sm:flex-nowrap sm:gap-0">
+                  {statuses.map((s, index) => {
+                    const isCompleted = index <= currentStepIndex;
+                    const isCurrent = index === currentStepIndex;
+                    const Icon = s.icon;
+                    
+                    return (
+                      <div key={s.id} className="flex flex-col items-center gap-2 min-w-[80px]">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-colors ${
+                          isCompleted ? 'bg-blue-500 border-blue-500 text-white shadow-sm' : 'bg-white border-gray-200 text-gray-300'
+                        } ${isCurrent ? 'ring-4 ring-blue-50' : ''}`}>
+                          <Icon size={14} />
+                        </div>
+                        <span className={`text-xs font-medium text-center ${isCompleted ? 'text-ink' : 'text-gray-400'}`}>
+                          {s.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content - Items */}
         <div className="lg:col-span-2 space-y-6">
@@ -141,34 +198,52 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
               </h3>
               <span className="text-xs text-ink/60">{orderItems.length} items total</span>
             </div>
-            <div className="divide-y divide-gray-100">
-              {orderItems.map((item) => (
-                <div key={item.id} className="p-6 flex gap-4">
-                  <div className="w-20 h-20 bg-gray-100 rounded-md overflow-hidden shrink-0 flex items-center justify-center">
-                    {/* Placeholder for real images if not joined */}
-                    <Package className="text-gray-300" size={32} />
-                  </div>
-                  <div className="flex-1 flex flex-col justify-between">
-                    <div>
-                      <h4 className="font-medium text-ink text-sm leading-tight">{item.product_name || (item.products as any)?.name}</h4>
-                      <p className="text-xs text-ink/50 mt-1 font-mono">ID: {item.product_id}</p>
-                    </div>
-                    
-                    <div className="mt-4 flex items-center gap-3 flex-wrap">
-                      {(item.size || item.color) && (
-                        <div className="text-xs font-medium text-ink/80 bg-gray-100 px-3 py-1.5 rounded-md border border-gray-200">
-                          <span className="text-ink/50 font-normal mr-1">Variant:</span>
-                          {[item.size, item.color].filter(Boolean).join(' - ')}
+            
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50/50 border-y border-gray-100 text-xs uppercase tracking-wider text-ink/50 font-medium">
+                    <th className="px-6 py-3">Product</th>
+                    <th className="px-6 py-3">Variant</th>
+                    <th className="px-6 py-3 text-center">Qty</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {orderItems.map((item) => (
+                    <tr key={item.id} className="hover:bg-gray-50/30 transition-colors">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center shrink-0">
+                            <Package className="text-gray-300" size={20} />
+                          </div>
+                          <div>
+                            <div className="font-medium text-ink text-sm leading-tight max-w-[250px] md:max-w-sm truncate">
+                              {item.product_name || (item.products as any)?.name}
+                            </div>
+                            <div className="text-xs text-ink/50 mt-0.5 font-mono">
+                              ID: {item.product_id}
+                            </div>
+                          </div>
                         </div>
-                      )}
-                      
-                      <div className="text-sm font-bold text-rose bg-rose/10 px-3 py-1.5 rounded-md border border-rose/20 shadow-sm flex items-center justify-center min-w-[4rem]">
-                        Qty: {item.quantity}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                      </td>
+                      <td className="px-6 py-4">
+                        {(item.size || item.color) ? (
+                          <div className="text-xs font-medium text-ink/80 bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200 inline-block">
+                            {[item.size, item.color].filter(Boolean).join(' - ')}
+                          </div>
+                        ) : (
+                          <span className="text-xs text-ink/40">-</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="inline-flex text-sm font-bold text-rose bg-rose/10 px-3 py-1 rounded-md border border-rose/20 min-w-[3rem] justify-center shadow-sm">
+                          {item.quantity}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
