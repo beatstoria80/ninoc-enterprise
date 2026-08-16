@@ -72,7 +72,16 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
     return `${first4}-****-${last4}`;
   };
 
-  const buyerName = rawBuyerName; 
+  // Hide full name (e.g. Siti Nurhaliza -> S*** N********)
+  const obfuscateName = (name: string) => {
+    if (!name || name === 'N/A') return name;
+    return name.split(' ').map(word => {
+      if (word.length <= 1) return word;
+      return word[0] + '*'.repeat(word.length - 1);
+    }).join(' ');
+  };
+
+  const buyerName = obfuscateName(rawBuyerName); 
   const buyerPhone = obfuscatePhone(rawBuyerPhone);
 
   return (
@@ -90,7 +99,7 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
               </h1>
               {(orderData.status === 'paid' || orderData.status === 'pending_packing') && (
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200/50">
-                  <Package size={12} />
+                   <Package size={12} />
                   To Pack
                 </span>
               )}
@@ -198,25 +207,22 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
                 <MapPin size={16} className="text-ink/60" />
                 Destination
               </h3>
-              <span className="text-[10px] uppercase font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded border border-red-100">Confidential</span>
             </div>
-            <AntiFraudDataVault supplierId={supplierUser.supplier_id}>
-              <div className="p-5 space-y-4">
-                <div className="flex items-start gap-3">
-                  <User size={16} className="text-ink/40 shrink-0 mt-0.5" />
-                  <div>
-                    <div className="text-sm font-medium text-ink">{buyerName}</div>
-                    <div className="text-xs text-ink/60 mt-0.5 font-mono">{buyerPhone}</div>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <MapPin size={16} className="text-ink/40 shrink-0 mt-0.5" />
-                  <div className="text-sm text-ink/80 leading-relaxed">
-                    {buyerAddress}
-                  </div>
+            <div className="p-5 space-y-4">
+              <div className="flex items-start gap-3">
+                <User size={16} className="text-ink/40 shrink-0 mt-0.5" />
+                <div>
+                  <div className="text-sm font-medium text-ink">{buyerName}</div>
+                  <div className="text-xs text-ink/60 mt-0.5 font-mono">{buyerPhone}</div>
                 </div>
               </div>
-            </AntiFraudDataVault>
+              <div className="flex items-start gap-3">
+                <MapPin size={16} className="text-ink/40 shrink-0 mt-0.5" />
+                <div className="text-sm text-ink/80 leading-relaxed">
+                  {buyerAddress}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
