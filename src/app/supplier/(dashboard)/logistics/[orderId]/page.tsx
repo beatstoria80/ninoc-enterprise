@@ -82,9 +82,21 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
 
   // 3. Extract buyer data (NO NAME OBFUSCATION, ONLY PHONE)
   const shippingAddr = orderData.shipping_address as Record<string, any> | null;
-  const buyerName = orderData.customer_name || shippingAddr?.name || 'UNKNOWN';
-  const buyerPhone = obfuscatePhone(orderData.customer_phone || shippingAddr?.phone || 'UNKNOWN');
-  const buyerAddress = shippingAddr?.full_address || JSON.stringify(orderData.shipping_address);
+  const buyerName = orderData.customer_name || shippingAddr?.name || 'Pelanggan';
+  
+  const rawPhone = orderData.customer_phone || shippingAddr?.phone || '';
+  const buyerPhone = rawPhone && rawPhone !== 'UNKNOWN' ? obfuscatePhone(rawPhone) : '-';
+  
+  let buyerAddress = '-';
+  if (shippingAddr?.full_address) {
+    buyerAddress = shippingAddr.full_address;
+  } else if (shippingAddr?.address) {
+    buyerAddress = shippingAddr.address;
+  } else if (shippingAddr && Object.keys(shippingAddr).length > 0) {
+    // If it's a non-empty object but lacks full_address/address
+    buyerAddress = JSON.stringify(shippingAddr);
+  }
+  
   const orderDate = orderData.created_at ? format(new Date(orderData.created_at), 'dd MMM yyyy, HH:mm:ss') : '-';
   const orderAgeStr = formatOrderAge(orderData.created_at);
 
@@ -151,19 +163,24 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
         <div className="lg:col-span-8 space-y-4">
           
           {/* Timeline Bar (Ultra Compact) */}
-          <div className="bg-white border border-gray-300 p-2 flex items-center justify-between shadow-sm">
-            <span className="text-[9px] font-bold tracking-widest text-gray-400 w-16 uppercase">STATUS</span>
-            <div className="flex-1 flex items-center gap-1 px-4 relative">
-              <div className="absolute left-4 right-4 top-1/2 h-px bg-gray-200 -translate-y-1/2 z-0"></div>
-              <div className="absolute left-4 top-1/2 h-px bg-blue-500 -translate-y-1/2 z-0 transition-all" style={{ width: `${(currentStepIndex / (TRACKING_STEPS.length - 1)) * 100}%` }}></div>
-              {TRACKING_STEPS.map((step, idx) => (
-                <div key={step.id} className="flex-1 flex flex-col items-center z-10 relative">
-                  <div className={`w-3 h-3 rounded-full border-2 ${idx <= currentStepIndex ? 'bg-blue-500 border-blue-500' : 'bg-white border-gray-300'}`}></div>
-                  <span className={`absolute top-4 text-[8px] font-bold tracking-widest whitespace-nowrap ${idx <= currentStepIndex ? 'text-black' : 'text-gray-400'}`}>
-                    {step.label}
-                  </span>
-                </div>
-              ))}
+          <div className="bg-white border border-gray-300 p-2 flex items-center shadow-sm">
+            <span className="text-[9px] font-bold tracking-widest text-gray-400 w-16 uppercase shrink-0">STATUS</span>
+            <div className="flex-1 relative pt-2 pb-5 px-4">
+              {/* Connecting Line */}
+              <div className="absolute left-6 right-6 top-3 h-px bg-gray-200 z-0"></div>
+              {/* Active Progress Line */}
+              <div className="absolute left-6 top-3 h-px bg-blue-500 z-0 transition-all" style={{ width: `calc(${(currentStepIndex / (TRACKING_STEPS.length - 1)) * 100}% - 12px)` }}></div>
+              
+              <div className="flex justify-between relative z-10">
+                {TRACKING_STEPS.map((step, idx) => (
+                  <div key={step.id} className="flex flex-col items-center">
+                    <div className={`w-2.5 h-2.5 rounded-full border-[2px] bg-white ring-4 ring-white ${idx <= currentStepIndex ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}></div>
+                    <span className={`absolute top-4 text-[8px] font-bold tracking-widest uppercase whitespace-nowrap ${idx <= currentStepIndex ? 'text-black' : 'text-gray-400'}`}>
+                      {step.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
