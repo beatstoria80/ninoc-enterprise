@@ -63,11 +63,12 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
   const buyerAddress = (orderData.shipping_address as any)?.full_address || JSON.stringify(orderData.shipping_address);
   const orderDate = orderData.created_at ? format(new Date(orderData.created_at), 'dd MMM yyyy, HH:mm') : '-';
 
-  // Hide full phone number except last 3 digits like Shopee (e.g. 081234567890 -> *********890)
+  // Hide phone number except first 3 and last 1 digit (e.g. 085123456787 -> 085********7)
   const obfuscatePhone = (phone: string) => {
-    if (phone.length < 4 || phone === 'N/A') return phone;
-    const last3 = phone.slice(-3);
-    return '*'.repeat(phone.length - 3) + last3;
+    if (phone.length < 5 || phone === 'N/A') return phone;
+    const first3 = phone.slice(0, 3);
+    const last1 = phone.slice(-1);
+    return `${first3}${'*'.repeat(phone.length - 4)}${last1}`;
   };
 
   // Hide full name (e.g. Siti Nurhaliza -> S*** N********)
