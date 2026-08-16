@@ -63,7 +63,7 @@ export default function PickupRequestModal({
           <div className="p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-3 text-amber-800">
             <Info className="shrink-0 mt-0.5" size={18} />
             <div className="text-sm leading-relaxed">
-              Ensure all items are securely packed before requesting a pickup. Once requested, the courier will be dispatched to your registered facility address.
+              Pastikan semua barang telah dipacking dengan aman sebelum meminta pickup. Setelah diproses, kurir akan langsung menuju ke alamat gudang terdaftar Anda.
             </div>
           </div>
           
