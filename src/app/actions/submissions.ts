@@ -120,7 +120,7 @@ export async function processSubmission(
         .select()
         .single();
         
-      if (insertErr || !newProduct) throw new Error('Failed to create product in active inventory: ' + insertErr.message);
+      if (insertErr || !newProduct) throw new Error('Failed to create product in active inventory: ' + (insertErr?.message || 'Unknown error'));
 
       // Step B: Insert Costing
       const { error: costErr } = await supabaseAdmin
