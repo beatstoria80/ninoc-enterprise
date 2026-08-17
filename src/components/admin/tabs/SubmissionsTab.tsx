@@ -64,7 +64,51 @@ export function SubmissionsTab() {
     }
   }, [selectedSupplierId]);
 
+  // === AUDIT LOGGING: Privacy Censoring Utility ===
+  // Automatically detects and censors sensitive fields (phone, address)
+  // before writing to admin_audit_logs. Required by PT Tairflask IT Audit.
+  const SENSITIVE_KEYS = /phone|hp|telp|mobile|alamat|address|jalan|kecamatan|kelurahan|kode_pos|postal/i;
+
+  const sanitizeAuditData = (data: Record<string, any>): Record<string, any> => {
+    const sanitized: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (SENSITIVE_KEYS.test(key)) {
+        sanitized[key] = '[CENSORED]';
+      } else if (value && typeof value === 'object' && !Array.isArray(value)) {
+        sanitized[key] = sanitizeAuditData(value);
+      } else {
+        sanitized[key] = value;
+      }
+    }
+    return sanitized;
+  };
+
+  const writeAuditLog = async (
+    adminEmail: string,
+    actionType: string,
+    tableAffected: string,
+    recordId: string,
+    oldData: Record<string, any> | null,
+    newData: Record<string, any>
+  ) => {
+    await supabase.from('admin_audit_logs').insert([{
+      admin_email: adminEmail,
+      action_type: actionType,
+      table_affected: tableAffected,
+      record_id: recordId,
+      old_data: oldData ? sanitizeAuditData(oldData) : null,
+      new_data: sanitizeAuditData(newData),
+      ip_address: typeof window !== 'undefined' ? window.location.hostname : 'server',
+      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
+    }]);
+  };
+
   const handleAction = async (sub: any, action: 'approve' | 'reject') => {
+    // Step 1: Get current admin identity for audit trail
+    const { data: { user: adminUser } } = await supabase.auth.getUser();
+    const adminEmail = adminUser?.email || 'unknown_admin';
+    const actionTimestamp = new Date().toISOString();
+
     if (action === 'reject') {
       const reason = prompt('Reason for rejection:');
       if (!reason) return;
@@ -73,11 +117,43 @@ export function SubmissionsTab() {
         .from('supplier_product_submissions')
         .update({ status: 'rejected', rejection_reason: reason })
         .eq('id', sub.id);
+
+      // === AUDIT LOG: REJECT ===
+      await writeAuditLog(
+        adminEmail,
+        'REJECT_ALLOCATION',
+        'supplier_product_submissions',
+        sub.id,
+        {
+          submission_id: sub.id,
+          product_name: sub.product_name,
+          base_hpp: sub.base_hpp,
+          supplier_name: sub.suppliers?.name || 'N/A',
+          supplier_id: sub.supplier_id,
+          category: sub.categories?.name || 'Uncategorized',
+          previous_status: 'pending'
+        },
+        {
+          status: 'rejected',
+          rejection_reason: reason,
+          rejected_by: adminEmail,
+          rejected_at: actionTimestamp,
+          product_name: sub.product_name,
+          supplier_name: sub.suppliers?.name || 'N/A',
+          supplier_id: sub.supplier_id,
+          base_hpp: sub.base_hpp,
+          category: sub.categories?.name || 'Uncategorized',
+          description: sub.description || '',
+          images: sub.images || []
+        }
+      );
     } else {
       const ninocMarkup = prompt('Enter NINOC Markup Amount (Rp) to add to Base HPP:');
       if (!ninocMarkup || isNaN(Number(ninocMarkup))) return;
       
-      const sellingPrice = sub.base_hpp + Number(ninocMarkup);
+      const markupAmount = Number(ninocMarkup);
+      const sellingPrice = sub.base_hpp + markupAmount;
+      const marginPct = sub.base_hpp > 0 ? ((markupAmount / sub.base_hpp) * 100).toFixed(2) : '0';
       
       const { data: newProduct, error } = await supabase
         .from('products')
@@ -96,13 +172,54 @@ export function SubmissionsTab() {
         await supabase.from('product_costings').insert([{
           product_id: newProduct.id,
           supplier_base_price: sub.base_hpp,
-          ninoc_markup: Number(ninocMarkup)
+          ninoc_markup: markupAmount
         }]);
         
         await supabase
           .from('supplier_product_submissions')
           .update({ status: 'approved' })
           .eq('id', sub.id);
+
+        // === AUDIT LOG: APPROVE ===
+        await writeAuditLog(
+          adminEmail,
+          'APPROVE_ALLOCATION',
+          'products',
+          newProduct.id,
+          {
+            submission_id: sub.id,
+            product_name: sub.product_name,
+            base_hpp: sub.base_hpp,
+            supplier_name: sub.suppliers?.name || 'N/A',
+            supplier_id: sub.supplier_id,
+            category: sub.categories?.name || 'Uncategorized',
+            previous_status: 'pending'
+          },
+          {
+            status: 'approved',
+            approved_by: adminEmail,
+            approved_at: actionTimestamp,
+            product_id: newProduct.id,
+            product_slug: newProduct.slug,
+            product_name: sub.product_name,
+            supplier_name: sub.suppliers?.name || 'N/A',
+            supplier_id: sub.supplier_id,
+            category: sub.categories?.name || 'Uncategorized',
+            description: sub.description || '',
+            images: sub.images || [],
+            pricing: {
+              base_hpp_idr: sub.base_hpp,
+              ninoc_markup_idr: markupAmount,
+              ninoc_margin_pct: `${marginPct}%`,
+              final_selling_price_idr: sellingPrice
+            },
+            costing_record: {
+              product_id: newProduct.id,
+              supplier_base_price: sub.base_hpp,
+              ninoc_markup: markupAmount
+            }
+          }
+        );
       } else {
         alert('Failed to create product: ' + error?.message);
         return;
