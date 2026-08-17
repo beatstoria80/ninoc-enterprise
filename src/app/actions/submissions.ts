@@ -199,3 +199,53 @@ async function writeServerAuditLog(entry: any) {
     user_agent: 'SERVER_ACTION'
   }]);
 }
+
+export async function getPendingSubmissions() {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('supplier_product_submissions')
+      .select('*, suppliers(name), categories(name)')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err: any) {
+    console.error('getPendingSubmissions Error:', err);
+    return { success: false, message: err.message };
+  }
+}
+
+export async function getSuppliersList() {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('suppliers')
+      .select('id, name, pillar, status')
+      .order('name');
+      
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err: any) {
+    console.error('getSuppliersList Error:', err);
+    return { success: false, message: err.message };
+  }
+}
+
+export async function getSupplierInventory(supplierId: string) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('products')
+      .select(`
+        id, name, price, stock, image_url, category, is_perishable, created_at,
+        product_variants (id, size, color, stock_quantity, sku)
+      `)
+      .eq('supplier_id', supplierId)
+      .order('created_at', { ascending: false });
+      
+    if (error) throw error;
+    return { success: true, data };
+  } catch (err: any) {
+    console.error('getSupplierInventory Error:', err);
+    return { success: false, message: err.message };
+  }
+}

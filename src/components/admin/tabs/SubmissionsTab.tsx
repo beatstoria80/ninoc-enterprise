@@ -5,7 +5,7 @@ import { FashionInventoryTable } from '@/components/supplier/inventory/FashionIn
 import { FnBInventoryTable } from '@/components/supplier/inventory/FnBInventoryTable';
 import { writeAuditLog } from '@/lib/utils/auditLogger';
 import type { Submission, SupplierBasic, SupplierProduct } from '@/lib/types/allocation';
-import { processSubmission } from '@/app/actions/submissions';
+import { processSubmission, getPendingSubmissions, getSuppliersList, getSupplierInventory } from '@/app/actions/submissions';
 import { cn } from '@/lib/utils';
 
 // ─── Helpers ───────────────────────────────────────────────
@@ -52,47 +52,36 @@ export function SubmissionsTab() {
   const fetchSubmissions = useCallback(async () => {
     setLoading(true);
     setFetchError(null);
-    const { data, error } = await supabase
-      .from('supplier_product_submissions')
-      .select('*, suppliers(name), categories(name)')
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
+    const res = await getPendingSubmissions();
 
-    if (error) {
-      console.error('[SubmissionsTab] fetchSubmissions error:', error);
-      setFetchError('Gagal memuat pengajuan: ' + error.message);
+    if (!res.success) {
+      console.error('[SubmissionsTab] fetchSubmissions error:', res.message);
+      setFetchError('Gagal memuat pengajuan: ' + res.message);
     } else {
-      setSubmissions((data as Submission[]) || []);
+      setSubmissions((res.data as Submission[]) || []);
     }
     setLoading(false);
   }, []);
 
   const fetchSuppliers = useCallback(async () => {
-    const { data, error } = await supabase.from('suppliers').select('id, name, pillar, status').order('name');
-    if (error) {
-      console.error('[SubmissionsTab] fetchSuppliers error:', error);
+    const res = await getSuppliersList();
+    if (!res.success) {
+      console.error('[SubmissionsTab] fetchSuppliers error:', res.message);
     } else {
-      setSuppliers((data as SupplierBasic[]) || []);
+      setSuppliers((res.data as SupplierBasic[]) || []);
     }
   }, []);
 
   const fetchSupplierInventory = useCallback(async (supplierId: string) => {
     setLoadingInventory(true);
     setInventoryError(null);
-    const { data, error } = await supabase
-      .from('products')
-      .select(`
-        id, name, price, stock, image_url, category, is_perishable, created_at,
-        product_variants (id, size, color, stock_quantity, sku)
-      `)
-      .eq('supplier_id', supplierId)
-      .order('created_at', { ascending: false });
+    const res = await getSupplierInventory(supplierId);
 
-    if (error) {
-      console.error('[SubmissionsTab] fetchSupplierInventory error:', error);
-      setInventoryError('Gagal memuat inventaris: ' + error.message);
+    if (!res.success) {
+      console.error('[SubmissionsTab] fetchSupplierInventory error:', res.message);
+      setInventoryError('Gagal memuat inventaris: ' + res.message);
     } else {
-      setSupplierProducts((data as SupplierProduct[]) || []);
+      setSupplierProducts((res.data as SupplierProduct[]) || []);
     }
     setLoadingInventory(false);
   }, []);
