@@ -198,6 +198,12 @@ export function SubmissionsTab() {
               style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}
             >
               <div className="space-y-2 flex-1">
+                {/* PROMINENT SUPPLIER BADGE */}
+                <div className="flex items-center gap-2 px-3 py-1 bg-indigo-50 text-indigo-700 border border-indigo-100 rounded-full w-fit mb-2 shadow-sm">
+                  <Building size={14} className="text-indigo-500" />
+                  <span className="text-xs font-bold uppercase tracking-wider">{sub.suppliers?.name || 'Unknown Supplier'}</span>
+                </div>
+
                 <div className="flex items-center gap-3">
                   <h3 className="font-bold text-ink text-lg">{sub.product_name}</h3>
                   <span className="px-2 py-0.5 bg-ink/5 text-[10px] uppercase tracking-widest font-medium rounded text-ink/80">
@@ -207,11 +213,7 @@ export function SubmissionsTab() {
                 <p className="text-xs text-ink/90 max-w-2xl">{sub.description}</p>
 
                 <div className="flex items-center gap-3 pt-2">
-                  <div className="flex items-center gap-2 text-xs text-ink/80">
-                    <Building size={14} />
-                    <span>{sub.suppliers?.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-ink">
+                  <div className="flex items-center gap-2 text-xs font-bold text-ink bg-gray-50 px-2 py-1 rounded border border-gray-100">
                     <span>Base HPP:</span>
                     <span className="text-emerald-600">Rp {sub.base_hpp.toLocaleString('id-ID')}</span>
                   </div>
