@@ -100,7 +100,7 @@ async function getAccessToken(): Promise<string> {
   return token.token;
 }
 
-async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []) {
+async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = [], supplierId?: string) {
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -127,9 +127,15 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
 
     const startDateObj = new Date(now.getTime() - daysBack * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: productsData, error: productsError } = await supabaseAdmin
+    let productQuery = supabaseAdmin
       .from('products')
-      .select('id, name, category, price, image_url, slug, variants(stock_quantity)');
+      .select('id, name, category, price, image_url, slug, supplier_id, variants(stock_quantity)');
+
+    if (supplierId && supplierId !== 'all') {
+      productQuery = productQuery.eq('supplier_id', supplierId);
+    }
+
+    const { data: productsData, error: productsError } = await productQuery;
 
     if (productsError) {
       console.error('Error fetching products for ecommerce analytics:', productsError);
@@ -243,10 +249,10 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
   }
 }
 
-export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<WebAnalyticsData> {
+export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId?: string): Promise<WebAnalyticsData> {
   try {
     if (!isConfigured()) {
-      const ecommerceData = await getEcommerceAnalytics(timeFilter, []);
+      const ecommerceData = await getEcommerceAnalytics(timeFilter, [], supplierId);
       return { configured: false, ga4: null, gsc: null, ecommerce: ecommerceData };
     }
 
@@ -676,7 +682,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d'): Promise<W
       };
     }
 
-    const ecommerceData = await getEcommerceAnalytics(timeFilter, allGa4Pages);
+    const ecommerceData = await getEcommerceAnalytics(timeFilter, allGa4Pages, supplierId);
 
     return {
       configured: true,

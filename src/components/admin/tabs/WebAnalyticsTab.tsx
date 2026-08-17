@@ -5,6 +5,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor, Package, ShoppingBag, DollarSign, Award, Zap, Tag, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { getWebAnalyticsData, type WebAnalyticsData } from '@/actions/webAnalytics';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 export function WebAnalyticsTab() {
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,8 @@ export function WebAnalyticsTab() {
   const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
   const [ecommerceTab, setEcommerceTab] = useState<'categories' | 'products'>('categories');
   const [productSearchQuery, setProductSearchQuery] = useState('');
+  const [suppliers, setSuppliers] = useState<{id: string, name: string}[]>([]);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string>('all');
 
   const getTimeLabel = () => {
     switch (timeFilter) {
@@ -81,11 +84,12 @@ export function WebAnalyticsTab() {
     );
   };
 
-  const loadData = async (filterOverride?: string | React.MouseEvent) => {
+  const loadData = async (filterOverride?: string | React.MouseEvent, supplierIdOverride?: string) => {
     const filter = typeof filterOverride === 'string' ? filterOverride : timeFilter;
+    const sId = typeof supplierIdOverride === 'string' ? supplierIdOverride : selectedSupplierId;
     try {
       setLoading(true);
-      const res = await getWebAnalyticsData(filter);
+      const res = await getWebAnalyticsData(filter, sId);
       setData(res);
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -95,9 +99,17 @@ export function WebAnalyticsTab() {
   };
 
   useEffect(() => {
+    const fetchSuppliers = async () => {
+      const { data } = await supabase.from('suppliers').select('id, name').order('name');
+      if (data) setSuppliers(data);
+    };
+    fetchSuppliers();
+  }, []);
+
+  useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadData(timeFilter);
-  }, [timeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+    loadData(timeFilter, selectedSupplierId);
+  }, [timeFilter, selectedSupplierId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
@@ -188,12 +200,26 @@ export function WebAnalyticsTab() {
             </button>
           </div>
 
-          <button 
-            onClick={() => loadData(timeFilter)} 
-            className="bg-white border border-ink/15 text-ink/80 hover:text-ink hover:border-ink/30 px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
-          >
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Sinkronisasi
-          </button>
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedSupplierId}
+              onChange={(e) => setSelectedSupplierId(e.target.value)}
+              disabled={loading}
+              className="bg-white border border-ink/15 text-ink/80 hover:border-ink/30 px-3 py-2 rounded-lg text-xs font-bold transition-all shadow-sm outline-none focus:ring-2 focus:ring-purple-600/20 focus:border-purple-600 disabled:opacity-50"
+            >
+              <option value="all">Semua Supplier</option>
+              {suppliers.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+            
+            <button 
+              onClick={() => loadData(timeFilter, selectedSupplierId)} 
+              className="bg-white border border-ink/15 text-ink/80 hover:text-ink hover:border-ink/30 px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
+            >
+              <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Sinkronisasi
+            </button>
+          </div>
         </div>
       </div>
 
