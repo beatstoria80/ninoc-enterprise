@@ -1,48 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { PackageSearch, Check, X, Building, LayoutList, CheckSquare } from 'lucide-react';
+import { PackageSearch, Check, X, Building, LayoutList, CheckSquare, Loader2, AlertCircle } from 'lucide-react';
 import { FashionInventoryTable } from '@/components/supplier/inventory/FashionInventoryTable';
 import { FnBInventoryTable } from '@/components/supplier/inventory/FnBInventoryTable';
+import { writeAuditLog } from '@/lib/utils/auditLogger';
+import type { Submission, SupplierBasic, SupplierProduct } from '@/lib/types/allocation';
 
+// ─── Helpers ───────────────────────────────────────────────
+function buildSubmissionSnapshot(sub: Submission) {
+  return {
+    submission_id: sub.id,
+    product_name: sub.product_name,
+    base_hpp: sub.base_hpp,
+    supplier_name: sub.suppliers?.name || 'N/A',
+    supplier_id: sub.supplier_id,
+    category: sub.categories?.name || 'Uncategorized',
+    description: sub.description || '',
+    images: sub.images || [],
+  };
+}
+
+// ─── Main Component ────────────────────────────────────────
 export function SubmissionsTab() {
   const [viewMode, setViewMode] = useState<'curation' | 'inventory'>('curation');
 
   // Curation state
-  const [submissions, setSubmissions] = useState<any[]>([]);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
 
   // Inventory state
-  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<SupplierBasic[]>([]);
   const [selectedSupplierId, setSelectedSupplierId] = useState<string>('');
-  const [supplierProducts, setSupplierProducts] = useState<any[]>([]);
+  const [supplierProducts, setSupplierProducts] = useState<SupplierProduct[]>([]);
   const [loadingInventory, setLoadingInventory] = useState(false);
+  const [inventoryError, setInventoryError] = useState<string | null>(null);
 
-  const fetchSubmissions = async () => {
+  // ─── Data Fetching ──────────────────────────────────────
+  const fetchSubmissions = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
+    setFetchError(null);
+    const { data, error } = await supabase
       .from('supplier_product_submissions')
       .select('*, suppliers(name), categories(name)')
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
-    
-    if (data) setSubmissions(data);
+
+    if (error) {
+      console.error('[SubmissionsTab] fetchSubmissions error:', error);
+      setFetchError('Gagal memuat pengajuan: ' + error.message);
+    } else {
+      setSubmissions((data as Submission[]) || []);
+    }
     setLoading(false);
-  };
-
-  const fetchSuppliers = async () => {
-    const { data } = await supabase.from('suppliers').select('*').order('name');
-    if (data) setSuppliers(data);
-  };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchSubmissions();
-    fetchSuppliers();
   }, []);
 
-  const fetchSupplierInventory = async (supplierId: string) => {
+  const fetchSuppliers = useCallback(async () => {
+    const { data, error } = await supabase.from('suppliers').select('id, name, pillar, status').order('name');
+    if (error) {
+      console.error('[SubmissionsTab] fetchSuppliers error:', error);
+    } else {
+      setSuppliers((data as SupplierBasic[]) || []);
+    }
+  }, []);
+
+  const fetchSupplierInventory = useCallback(async (supplierId: string) => {
     setLoadingInventory(true);
-    const { data } = await supabase
+    setInventoryError(null);
+    const { data, error } = await supabase
       .from('products')
       .select(`
         id, name, price, stock, image_url, category, is_perishable, created_at,
@@ -50,10 +75,21 @@ export function SubmissionsTab() {
       `)
       .eq('supplier_id', supplierId)
       .order('created_at', { ascending: false });
-    
-    if (data) setSupplierProducts(data);
+
+    if (error) {
+      console.error('[SubmissionsTab] fetchSupplierInventory error:', error);
+      setInventoryError('Gagal memuat inventaris: ' + error.message);
+    } else {
+      setSupplierProducts((data as SupplierProduct[]) || []);
+    }
     setLoadingInventory(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    fetchSubmissions();
+    fetchSuppliers();
+  }, [fetchSubmissions, fetchSuppliers]);
 
   useEffect(() => {
     if (selectedSupplierId) {
@@ -61,100 +97,53 @@ export function SubmissionsTab() {
       fetchSupplierInventory(selectedSupplierId);
     } else {
       setSupplierProducts([]);
+      setInventoryError(null);
     }
-  }, [selectedSupplierId]);
+  }, [selectedSupplierId, fetchSupplierInventory]);
 
-  // === AUDIT LOGGING: Privacy Censoring Utility ===
-  // Automatically detects and censors sensitive fields (phone, address)
-  // before writing to admin_audit_logs. Required by PT Tairflask IT Audit.
-  const SENSITIVE_KEYS = /phone|hp|telp|mobile|alamat|address|jalan|kecamatan|kelurahan|kode_pos|postal/i;
-
-  const sanitizeAuditData = (data: Record<string, any>): Record<string, any> => {
-    const sanitized: Record<string, any> = {};
-    for (const [key, value] of Object.entries(data)) {
-      if (SENSITIVE_KEYS.test(key)) {
-        sanitized[key] = '[CENSORED]';
-      } else if (value && typeof value === 'object' && !Array.isArray(value)) {
-        sanitized[key] = sanitizeAuditData(value);
-      } else {
-        sanitized[key] = value;
-      }
-    }
-    return sanitized;
-  };
-
-  const writeAuditLog = async (
-    adminEmail: string,
-    actionType: string,
-    tableAffected: string,
-    recordId: string,
-    oldData: Record<string, any> | null,
-    newData: Record<string, any>
-  ) => {
-    await supabase.from('admin_audit_logs').insert([{
-      admin_email: adminEmail,
-      action_type: actionType,
-      table_affected: tableAffected,
-      record_id: recordId,
-      old_data: oldData ? sanitizeAuditData(oldData) : null,
-      new_data: sanitizeAuditData(newData),
-      ip_address: typeof window !== 'undefined' ? window.location.hostname : 'server',
-      user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
-    }]);
-  };
-
-  const handleAction = async (sub: any, action: 'approve' | 'reject') => {
-    // Step 1: Get current admin identity for audit trail
-    const { data: { user: adminUser } } = await supabase.auth.getUser();
-    const adminEmail = adminUser?.email || 'unknown_admin';
+  // ─── Curation Actions ───────────────────────────────────
+  const handleAction = async (sub: Submission, action: 'approve' | 'reject') => {
+    const { data: { user: currentAdmin } } = await supabase.auth.getUser();
+    const adminEmail = currentAdmin?.email || 'unknown_admin';
     const actionTimestamp = new Date().toISOString();
+    const oldSnapshot = { ...buildSubmissionSnapshot(sub), previous_status: 'pending' };
 
     if (action === 'reject') {
       const reason = prompt('Reason for rejection:');
       if (!reason) return;
-      
-      await supabase
+
+      const { error } = await supabase
         .from('supplier_product_submissions')
         .update({ status: 'rejected', rejection_reason: reason })
         .eq('id', sub.id);
 
-      // === AUDIT LOG: REJECT ===
-      await writeAuditLog(
+      if (error) {
+        alert('Gagal menolak pengajuan: ' + error.message);
+        return;
+      }
+
+      await writeAuditLog({
         adminEmail,
-        'REJECT_ALLOCATION',
-        'supplier_product_submissions',
-        sub.id,
-        {
-          submission_id: sub.id,
-          product_name: sub.product_name,
-          base_hpp: sub.base_hpp,
-          supplier_name: sub.suppliers?.name || 'N/A',
-          supplier_id: sub.supplier_id,
-          category: sub.categories?.name || 'Uncategorized',
-          previous_status: 'pending'
-        },
-        {
+        actionType: 'REJECT_ALLOCATION',
+        tableAffected: 'supplier_product_submissions',
+        recordId: sub.id,
+        oldData: oldSnapshot,
+        newData: {
+          ...buildSubmissionSnapshot(sub),
           status: 'rejected',
           rejection_reason: reason,
           rejected_by: adminEmail,
           rejected_at: actionTimestamp,
-          product_name: sub.product_name,
-          supplier_name: sub.suppliers?.name || 'N/A',
-          supplier_id: sub.supplier_id,
-          base_hpp: sub.base_hpp,
-          category: sub.categories?.name || 'Uncategorized',
-          description: sub.description || '',
-          images: sub.images || []
-        }
-      );
+        },
+      });
     } else {
       const ninocMarkup = prompt('Enter NINOC Markup Amount (Rp) to add to Base HPP:');
       if (!ninocMarkup || isNaN(Number(ninocMarkup))) return;
-      
+
       const markupAmount = Number(ninocMarkup);
       const sellingPrice = sub.base_hpp + markupAmount;
       const marginPct = sub.base_hpp > 0 ? ((markupAmount / sub.base_hpp) * 100).toFixed(2) : '0';
-      
+
       const { data: newProduct, error } = await supabase
         .from('products')
         .insert([{
@@ -167,87 +156,76 @@ export function SubmissionsTab() {
         }])
         .select()
         .single();
-        
-      if (!error && newProduct) {
-        await supabase.from('product_costings').insert([{
-          product_id: newProduct.id,
-          supplier_base_price: sub.base_hpp,
-          ninoc_markup: markupAmount
-        }]);
-        
-        await supabase
-          .from('supplier_product_submissions')
-          .update({ status: 'approved' })
-          .eq('id', sub.id);
 
-        // === AUDIT LOG: APPROVE ===
-        await writeAuditLog(
-          adminEmail,
-          'APPROVE_ALLOCATION',
-          'products',
-          newProduct.id,
-          {
-            submission_id: sub.id,
-            product_name: sub.product_name,
-            base_hpp: sub.base_hpp,
-            supplier_name: sub.suppliers?.name || 'N/A',
-            supplier_id: sub.supplier_id,
-            category: sub.categories?.name || 'Uncategorized',
-            previous_status: 'pending'
-          },
-          {
-            status: 'approved',
-            approved_by: adminEmail,
-            approved_at: actionTimestamp,
-            product_id: newProduct.id,
-            product_slug: newProduct.slug,
-            product_name: sub.product_name,
-            supplier_name: sub.suppliers?.name || 'N/A',
-            supplier_id: sub.supplier_id,
-            category: sub.categories?.name || 'Uncategorized',
-            description: sub.description || '',
-            images: sub.images || [],
-            pricing: {
-              base_hpp_idr: sub.base_hpp,
-              ninoc_markup_idr: markupAmount,
-              ninoc_margin_pct: `${marginPct}%`,
-              final_selling_price_idr: sellingPrice
-            },
-            costing_record: {
-              product_id: newProduct.id,
-              supplier_base_price: sub.base_hpp,
-              ninoc_markup: markupAmount
-            }
-          }
-        );
-      } else {
-        alert('Failed to create product: ' + error?.message);
+      if (error || !newProduct) {
+        alert('Gagal membuat produk: ' + (error?.message || 'Unknown error'));
         return;
       }
+
+      await supabase.from('product_costings').insert([{
+        product_id: newProduct.id,
+        supplier_base_price: sub.base_hpp,
+        ninoc_markup: markupAmount
+      }]);
+
+      await supabase
+        .from('supplier_product_submissions')
+        .update({ status: 'approved' })
+        .eq('id', sub.id);
+
+      await writeAuditLog({
+        adminEmail,
+        actionType: 'APPROVE_ALLOCATION',
+        tableAffected: 'products',
+        recordId: newProduct.id,
+        oldData: oldSnapshot,
+        newData: {
+          ...buildSubmissionSnapshot(sub),
+          status: 'approved',
+          approved_by: adminEmail,
+          approved_at: actionTimestamp,
+          product_id: newProduct.id,
+          product_slug: newProduct.slug,
+          pricing: {
+            base_hpp_idr: sub.base_hpp,
+            ninoc_markup_idr: markupAmount,
+            ninoc_margin_pct: `${marginPct}%`,
+            final_selling_price_idr: sellingPrice,
+          },
+          costing_record: {
+            product_id: newProduct.id,
+            supplier_base_price: sub.base_hpp,
+            ninoc_markup: markupAmount,
+          },
+        },
+      });
     }
-    
+
     fetchSubmissions();
   };
 
+  // ─── Derived State ──────────────────────────────────────
   const selectedSupplier = suppliers.find(s => s.id === selectedSupplierId);
   const isFnB = selectedSupplier?.pillar === 'FNB';
 
+  // ─── Render ─────────────────────────────────────────────
   return (
     <div className="space-y-4">
+      {/* Header + View Toggle */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-display font-medium text-ink">Supplier Allocations & Curation</h2>
           <p className="text-xs text-ink/80">Manage incoming B2B goods and monitor supplier active inventory.</p>
         </div>
-        
+
         <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-          <button 
+          <button
             onClick={() => setViewMode('curation')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'curation' ? 'bg-white shadow-sm text-ink' : 'text-gray-500 hover:text-ink'}`}
           >
             <CheckSquare size={16} /> Pending Requests
           </button>
-          <button 
+          <button
             onClick={() => setViewMode('inventory')}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'inventory' ? 'bg-white shadow-sm text-ink' : 'text-gray-500 hover:text-ink'}`}
           >
@@ -256,11 +234,30 @@ export function SubmissionsTab() {
         </div>
       </div>
 
+      {/* ─── Curation View ───────────────────────────────── */}
       {viewMode === 'curation' && (
         <div className="grid grid-cols-1 gap-2">
-          {submissions.map((sub, idx) => (
-            <div 
-              key={sub.id} 
+          {/* Loading State */}
+          {loading && (
+            <div className="bg-white border border-ink/5 rounded-xl p-12 text-center text-ink/60">
+              <Loader2 className="mx-auto mb-3 animate-spin" size={24} />
+              <p className="text-xs">Memuat pengajuan...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {!loading && fetchError && (
+            <div className="bg-rose-50 border border-rose-200 rounded-xl p-6 text-center">
+              <AlertCircle className="mx-auto mb-2 text-rose-500" size={24} />
+              <p className="text-sm text-rose-700">{fetchError}</p>
+              <button onClick={fetchSubmissions} className="mt-3 text-xs font-medium text-rose-600 hover:underline">Coba Lagi</button>
+            </div>
+          )}
+
+          {/* Submission Cards */}
+          {!loading && !fetchError && submissions.map((sub, idx) => (
+            <div
+              key={sub.id}
               className="stagger-fade-in bg-white border border-ink/5 p-3 rounded-xl shadow-sm flex flex-col md:flex-row gap-3 md:items-center justify-between"
               style={{ animationDelay: `${idx * 50}ms`, animationFillMode: 'both' }}
             >
@@ -272,7 +269,7 @@ export function SubmissionsTab() {
                   </span>
                 </div>
                 <p className="text-xs text-ink/90 max-w-2xl">{sub.description}</p>
-                
+
                 <div className="flex items-center gap-3 pt-2">
                   <div className="flex items-center gap-2 text-xs text-ink/80">
                     <Building size={14} />
@@ -286,13 +283,13 @@ export function SubmissionsTab() {
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
-                <button 
+                <button
                   onClick={() => handleAction(sub, 'reject')}
                   className="px-2 py-1 border border-rose/20 text-rose text-xs font-medium rounded hover:bg-rose/5 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2"
                 >
                   <X size={14} /> Reject
                 </button>
-                <button 
+                <button
                   onClick={() => handleAction(sub, 'approve')}
                   className="px-2 py-1 bg-ink text-white text-xs font-medium rounded hover:bg-emerald-600 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 shadow-sm"
                 >
@@ -301,8 +298,9 @@ export function SubmissionsTab() {
               </div>
             </div>
           ))}
-          
-          {!loading && submissions.length === 0 && (
+
+          {/* Empty State */}
+          {!loading && !fetchError && submissions.length === 0 && (
             <div className="bg-white border border-ink/5 rounded-xl p-12 text-center text-ink/80">
               <PackageSearch className="mx-auto mb-4 opacity-50" size={32} />
               <h3 className="text-ink font-medium mb-1">No Pending Submissions</h3>
@@ -312,11 +310,12 @@ export function SubmissionsTab() {
         </div>
       )}
 
+      {/* ─── Inventory View ──────────────────────────────── */}
       {viewMode === 'inventory' && (
         <div className="space-y-4">
           <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
             <label className="block text-sm font-medium text-gray-700 mb-1">Select Supplier to Monitor</label>
-            <select 
+            <select
               value={selectedSupplierId}
               onChange={(e) => setSelectedSupplierId(e.target.value)}
               className="w-full sm:w-1/2 px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-ink/20 focus:border-ink"
@@ -330,9 +329,20 @@ export function SubmissionsTab() {
 
           {selectedSupplierId && (
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              {loadingInventory ? (
-                <div className="p-8 text-center text-gray-500 text-sm">Loading inventory...</div>
-              ) : (
+              {loadingInventory && (
+                <div className="p-8 text-center text-gray-500 text-sm flex items-center justify-center gap-2">
+                  <Loader2 className="animate-spin" size={16} /> Loading inventory...
+                </div>
+              )}
+
+              {!loadingInventory && inventoryError && (
+                <div className="p-6 text-center">
+                  <AlertCircle className="mx-auto mb-2 text-rose-500" size={24} />
+                  <p className="text-sm text-rose-700">{inventoryError}</p>
+                </div>
+              )}
+
+              {!loadingInventory && !inventoryError && (
                 isFnB ? (
                   <FnBInventoryTable products={supplierProducts} />
                 ) : (

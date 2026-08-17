@@ -14,7 +14,6 @@ export default function RequestAllocationModalClient({ supplierId }: { supplierI
     product_name: '',
     description: '',
     base_hpp: '',
-    categoryId: '',
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -28,8 +27,6 @@ export default function RequestAllocationModalClient({ supplierId }: { supplierI
     try {
       let uploadedImageUrl = '';
       if (imageFile) {
-        // We will assume 'product-images' bucket or similar exists. We'll use standard storage upload.
-        // Wait, uploadSupabaseFile is likely in '@/lib/utils/uploadHelpers'
         const fileExt = imageFile.name.split('.').pop();
         const fileName = `${supplierId}-${Date.now()}.${fileExt}`;
         const { data: uploadData, error: uploadError } = await supabase.storage
@@ -61,7 +58,7 @@ export default function RequestAllocationModalClient({ supplierId }: { supplierI
       setTimeout(() => {
         setIsOpen(false);
         setSuccessMsg('');
-        setFormData({ product_name: '', description: '', base_hpp: '', categoryId: '' });
+        setFormData({ product_name: '', description: '', base_hpp: '' });
         setImageFile(null);
       }, 2000);
     } catch (err: any) {
