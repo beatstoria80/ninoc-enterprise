@@ -3,6 +3,7 @@ import { getSupplierProductsWithVariants } from '@/lib/services/inventory';
 import { Search, Filter } from 'lucide-react';
 import { FashionInventoryTable } from '@/components/supplier/inventory/FashionInventoryTable';
 import { FnBInventoryTable } from '@/components/supplier/inventory/FnBInventoryTable';
+import RequestAllocationModalClient from './RequestAllocationModalClient';
 import { redirect } from 'next/navigation';
 
 export default async function SupplierInventoryPage() {
@@ -27,9 +28,7 @@ export default async function SupplierInventoryPage() {
           <h1 className="text-2xl font-bold font-display text-gray-900">Allocations & Inventory</h1>
           <p className="text-gray-500 text-sm mt-1">Manage your Virtual Allocated Stock for {pillar === 'FNB' ? 'F&B/Pantry' : 'Fashion/Objects'}.</p>
         </div>
-        <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors">
-          Request Allocation
-        </button>
+        <RequestAllocationModalClient supplierId={supplierId} />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
