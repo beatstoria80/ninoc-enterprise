@@ -151,23 +151,28 @@ async function getEcommerceAnalytics(timeFilter: string, ga4TopPages: any[] = []
       };
     }
 
-    const { data: ordersData } = await supabaseAdmin
-      .from('orders')
-      .select('id, status, payment_status, total_price, created_at')
-      .gte('created_at', startDateObj);
-
-    const validOrders = (ordersData || []).filter(o => 
-      o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered' || o.payment_status === 'success' || o.status === 'completed'
-    );
-    const validOrderIds = validOrders.map(o => o.id);
-
     let orderItems: any[] = [];
-    if (validOrderIds.length > 0) {
-      const { data: itemsData } = await supabaseAdmin
+    try {
+      // FIX: Use inner join to prevent N+1 and URL too long errors on validOrderIds
+      const { data: itemsData, error: itemsError } = await supabaseAdmin
         .from('order_items')
-        .select('order_id, product_id, product_name, quantity, price_at_purchase')
-        .in('order_id', validOrderIds);
-      if (itemsData) orderItems = itemsData;
+        .select(`
+          order_id, product_id, product_name, quantity, price_at_purchase,
+          orders!inner(id, status, payment_status, created_at)
+        `)
+        .gte('orders.created_at', startDateObj);
+
+      if (itemsError) throw itemsError;
+
+      if (itemsData) {
+        orderItems = itemsData.filter((item: any) => {
+          const o = item.orders;
+          if (!o) return false;
+          return o.status === 'paid' || o.status === 'shipped' || o.status === 'delivered' || o.payment_status === 'success' || o.status === 'completed';
+        });
+      }
+    } catch (err) {
+      console.warn('Error fetching order items with inner join:', err);
     }
 
     let totalUnitsSold = 0;
@@ -264,225 +269,120 @@ export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId
     let gaStartDate = '28daysAgo';
     let gscDaysBack = 28;
     if (timeFilter === '24h') {
-      gaStartDate = '1daysAgo';
-      gscDaysBack = 2; // GSC requires minimum 2 days latency window
+      gaStartDate = '1daysAgo'; gscDaysBack = 2;
     } else if (timeFilter === '7d') {
-      gaStartDate = '7daysAgo';
-      gscDaysBack = 7;
+      gaStartDate = '7daysAgo'; gscDaysBack = 7;
     } else if (timeFilter === '28d') {
-      gaStartDate = '28daysAgo';
-      gscDaysBack = 28;
+      gaStartDate = '28daysAgo'; gscDaysBack = 28;
     } else if (timeFilter === '90d') {
-      gaStartDate = '90daysAgo';
-      gscDaysBack = 90;
+      gaStartDate = '90daysAgo'; gscDaysBack = 90;
     } else if (timeFilter === 'all') {
-      gaStartDate = '365daysAgo';
-      gscDaysBack = 365;
+      gaStartDate = '365daysAgo'; gscDaysBack = 365;
     }
 
-    // Fetch GA4 Data via REST API
-    if (process.env.GA4_PROPERTY_ID) {
-      const propertyId = process.env.GA4_PROPERTY_ID;
-      
-      // Totals
-      const gaRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
-          metrics: [
-            { name: 'activeUsers' },
-            { name: 'screenPageViews' },
-            { name: 'sessions' },
-            { name: 'averageSessionDuration' }
-          ]
-        })
-      });
-      const gaData = await gaRes.json();
-      if (gaData.error) {
-        throw new Error(`GA4 API Error: ${gaData.error.message || gaData.error.status}`);
+    // --- Helper for GA4 ---
+    const fetchGa = async (endpoint: string, bodyObj: any) => {
+      try {
+        const res = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${process.env.GA4_PROPERTY_ID}:${endpoint}`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(bodyObj)
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error.message || data.error.status);
+        return data;
+      } catch (e: any) {
+        console.warn('GA4 fetch error:', e.message);
+        return null;
       }
+    };
 
-      // Trend
-      const gaTrendRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+    if (process.env.GA4_PROPERTY_ID) {
+      const [gaTotal, gaTrend, gaRt, gaPages, gaCities, gaDev, gaChan] = await Promise.all([
+        fetchGa('runReport', {
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
+          metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }, { name: 'sessions' }, { name: 'averageSessionDuration' }]
+        }),
+        fetchGa('runReport', {
           dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
           dimensions: [{ name: 'date' }],
           metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
           orderBys: [{ dimension: { dimensionName: 'date' }, desc: false }]
+        }),
+        fetchGa('runRealtimeReport', { metrics: [{ name: 'activeUsers' }] }),
+        fetchGa('runReport', {
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
+          dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
+          metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+          orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+          limit: 500
+        }),
+        fetchGa('runReport', {
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
+          dimensions: [{ name: 'city' }, { name: 'country' }],
+          metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
+          orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+          limit: 6
+        }),
+        fetchGa('runReport', {
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
+          dimensions: [{ name: 'deviceCategory' }],
+          metrics: [{ name: 'activeUsers' }],
+          orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
+          limit: 4
+        }),
+        fetchGa('runReport', {
+          dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
+          dimensions: [{ name: 'sessionDefaultChannelGroup' }],
+          metrics: [{ name: 'sessions' }, { name: 'activeUsers' }],
+          orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+          limit: 5
         })
-      });
-      const gaTrendData = await gaTrendRes.json();
-      if (gaTrendData.error) {
-        throw new Error(`GA4 Trend API Error: ${gaTrendData.error.message || gaTrendData.error.status}`);
-      }
+      ]);
 
-      const trend = (gaTrendData.rows || []).map((row: any) => ({
-        date: row.dimensionValues?.[0]?.value ? 
-              `${row.dimensionValues[0].value.substring(0,4)}-${row.dimensionValues[0].value.substring(4,6)}-${row.dimensionValues[0].value.substring(6,8)}` : '',
+      const trend = (gaTrend?.rows || []).map((row: any) => ({
+        date: row.dimensionValues?.[0]?.value ? `${row.dimensionValues[0].value.substring(0,4)}-${row.dimensionValues[0].value.substring(4,6)}-${row.dimensionValues[0].value.substring(6,8)}` : '',
         visitors: parseInt(row.metricValues?.[0]?.value || '0', 10),
         pageviews: parseInt(row.metricValues?.[1]?.value || '0', 10),
       }));
 
-      // Realtime (last 30 minutes)
-      let realtimeVisitors = 0;
-      try {
-        const gaRtRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runRealtimeReport`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            metrics: [{ name: 'activeUsers' }]
-          })
-        });
-        const gaRtData = await gaRtRes.json();
-        if (gaRtData.error) {
-          throw new Error(`GA4 Realtime API Error: ${gaRtData.error.message || gaRtData.error.status}`);
-        }
-        realtimeVisitors = parseInt(gaRtData.rows?.[0]?.metricValues?.[0]?.value || '0', 10);
-      } catch (e: any) {
-        throw new Error(e.message || "Failed to fetch realtime data");
-      }
+      const topPages = (gaPages?.rows || []).map((row: any) => ({
+        path: row.dimensionValues?.[0]?.value || '/',
+        title: row.dimensionValues?.[1]?.value || 'Page',
+        views: parseInt(row.metricValues?.[0]?.value || '0', 10),
+        users: parseInt(row.metricValues?.[1]?.value || '0', 10),
+      }));
+      allGa4Pages = topPages;
 
-      // Top Pages
-      let topPages: { path: string; title: string; views: number; users: number }[] = [];
-      try {
-        const gaPagesRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
-            dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }],
-            metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
-            orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
-            limit: 500
-          })
-        });
-        const gaPagesData = await gaPagesRes.json();
-        if (!gaPagesData.error && gaPagesData.rows) {
-          topPages = gaPagesData.rows.map((row: any) => ({
-            path: row.dimensionValues?.[0]?.value || '/',
-            title: row.dimensionValues?.[1]?.value || 'Page',
-            views: parseInt(row.metricValues?.[0]?.value || '0', 10),
-            users: parseInt(row.metricValues?.[1]?.value || '0', 10),
-          }));
-          allGa4Pages = topPages;
-        }
-      } catch (e) {
-        console.warn('Failed to fetch GA4 top pages', e);
-      }
+      const topCities = (gaCities?.rows || []).map((row: any) => ({
+        city: row.dimensionValues?.[0]?.value || 'Unknown',
+        country: row.dimensionValues?.[1]?.value || 'ID',
+        users: parseInt(row.metricValues?.[0]?.value || '0', 10),
+        views: parseInt(row.metricValues?.[1]?.value || '0', 10),
+      }));
 
-      // Top Cities (Wilayah Demografi)
-      let topCities: { city: string; country: string; users: number; views: number }[] = [];
-      try {
-        const gaCitiesRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
-            dimensions: [{ name: 'city' }, { name: 'country' }],
-            metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }],
-            orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
-            limit: 6
-          })
-        });
-        const gaCitiesData = await gaCitiesRes.json();
-        if (!gaCitiesData.error && gaCitiesData.rows) {
-          topCities = gaCitiesData.rows.map((row: any) => ({
-            city: row.dimensionValues?.[0]?.value || 'Unknown',
-            country: row.dimensionValues?.[1]?.value || 'ID',
-            users: parseInt(row.metricValues?.[0]?.value || '0', 10),
-            views: parseInt(row.metricValues?.[1]?.value || '0', 10),
-          }));
-        }
-      } catch (e) {
-        console.warn('Failed to fetch GA4 top cities', e);
-      }
+      const totalDevUsers = (gaDev?.rows || []).reduce((sum: number, r: any) => sum + parseInt(r.metricValues?.[0]?.value || '0', 10), 0) || 1;
+      const devices = (gaDev?.rows || []).map((row: any) => {
+        const u = parseInt(row.metricValues?.[0]?.value || '0', 10);
+        return {
+          device: row.dimensionValues?.[0]?.value || 'desktop',
+          users: u,
+          percentage: Math.round((u / totalDevUsers) * 100),
+        };
+      });
 
-      // Devices (Perangkat)
-      let devices: { device: string; users: number; percentage: number }[] = [];
-      try {
-        const gaDevRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
-            dimensions: [{ name: 'deviceCategory' }],
-            metrics: [{ name: 'activeUsers' }],
-            orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }],
-            limit: 4
-          })
-        });
-        const gaDevData = await gaDevRes.json();
-        if (!gaDevData.error && gaDevData.rows) {
-          const totalDevUsers = gaDevData.rows.reduce((sum: number, r: any) => sum + parseInt(r.metricValues?.[0]?.value || '0', 10), 0) || 1;
-          devices = gaDevData.rows.map((row: any) => {
-            const u = parseInt(row.metricValues?.[0]?.value || '0', 10);
-            return {
-              device: row.dimensionValues?.[0]?.value || 'desktop',
-              users: u,
-              percentage: Math.round((u / totalDevUsers) * 100),
-            };
-          });
-        }
-      } catch (e) {
-        console.warn('Failed to fetch GA4 devices', e);
-      }
-
-      // Traffic Channels (Sumber Akuisisi)
-      let channels: { channel: string; sessions: number; users: number }[] = [];
-      try {
-        const gaChanRes = await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${propertyId}:runReport`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            dateRanges: [{ startDate: gaStartDate, endDate: 'today' }],
-            dimensions: [{ name: 'sessionDefaultChannelGroup' }],
-            metrics: [{ name: 'sessions' }, { name: 'activeUsers' }],
-            orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
-            limit: 5
-          })
-        });
-        const gaChanData = await gaChanRes.json();
-        if (!gaChanData.error && gaChanData.rows) {
-          channels = gaChanData.rows.map((row: any) => ({
-            channel: row.dimensionValues?.[0]?.value || 'Direct',
-            sessions: parseInt(row.metricValues?.[0]?.value || '0', 10),
-            users: parseInt(row.metricValues?.[1]?.value || '0', 10),
-          }));
-        }
-      } catch (e) {
-        console.warn('Failed to fetch GA4 channels', e);
-      }
+      const channels = (gaChan?.rows || []).map((row: any) => ({
+        channel: row.dimensionValues?.[0]?.value || 'Direct',
+        sessions: parseInt(row.metricValues?.[0]?.value || '0', 10),
+        users: parseInt(row.metricValues?.[1]?.value || '0', 10),
+      }));
 
       ga4Data = {
-        realtimeVisitors,
-        visitors: parseInt(gaData.rows?.[0]?.metricValues?.[0]?.value || '0', 10),
-        pageviews: parseInt(gaData.rows?.[0]?.metricValues?.[1]?.value || '0', 10),
-        sessions: parseInt(gaData.rows?.[0]?.metricValues?.[2]?.value || '0', 10),
-        avgSessionDuration: parseFloat(gaData.rows?.[0]?.metricValues?.[3]?.value || '0').toFixed(2) + 's',
+        realtimeVisitors: parseInt(gaRt?.rows?.[0]?.metricValues?.[0]?.value || '0', 10),
+        visitors: parseInt(gaTotal?.rows?.[0]?.metricValues?.[0]?.value || '0', 10),
+        pageviews: parseInt(gaTotal?.rows?.[0]?.metricValues?.[1]?.value || '0', 10),
+        sessions: parseInt(gaTotal?.rows?.[0]?.metricValues?.[2]?.value || '0', 10),
+        avgSessionDuration: parseFloat(gaTotal?.rows?.[0]?.metricValues?.[3]?.value || '0').toFixed(2) + 's',
         trend,
         topPages: topPages.slice(0, 10),
         topCities,
@@ -491,177 +391,81 @@ export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId
       };
     }
 
-    // Fetch GSC Data via REST API
+    // --- Helper for GSC ---
     if (process.env.GSC_SITE_URL) {
       const siteUrl = process.env.GSC_SITE_URL;
       const today = new Date();
       const thirtyDaysAgo = new Date(today.getTime() - gscDaysBack * 24 * 60 * 60 * 1000);
       const formatDate = (d: Date) => d.toISOString().split('T')[0];
+      const startStr = formatDate(thirtyDaysAgo);
+      const endStr = formatDate(today);
 
-      // Totals
-      const gscTotalRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startDate: formatDate(thirtyDaysAgo),
-          endDate: formatDate(today)
-        })
-      });
-      const gscTotalData = await gscTotalRes.json();
-      if (gscTotalData.error) {
-        throw new Error(`GSC API Error: ${gscTotalData.error.message || gscTotalData.error.status}`);
-      }
-
-      // Top queries
-      const gscQueriesRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          startDate: formatDate(thirtyDaysAgo),
-          endDate: formatDate(today),
-          dimensions: ['query'],
-          rowLimit: 10
-        })
-      });
-      const gscQueriesData = await gscQueriesRes.json();
-      if (gscQueriesData.error) {
-        throw new Error(`GSC Queries API Error: ${gscQueriesData.error.message || gscQueriesData.error.status}`);
-      }
-
-      // GSC Daily Trend
-      let trend: { date: string; clicks: number; impressions: number; ctr: number; position: number }[] = [];
-      try {
-        const gscTrendRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            startDate: formatDate(thirtyDaysAgo),
-            endDate: formatDate(today),
-            dimensions: ['date']
-          })
-        });
-        const gscTrendData = await gscTrendRes.json();
-        if (!gscTrendData.error && gscTrendData.rows) {
-          trend = gscTrendData.rows.map((row: any) => ({
-            date: row.keys?.[0] || '',
-            clicks: row.clicks || 0,
-            impressions: row.impressions || 0,
-            ctr: (row.ctr || 0) * 100,
-            position: row.position || 0,
-          })).sort((a: any, b: any) => a.date.localeCompare(b.date));
-        }
-      } catch (e) {
-        console.warn('Failed to fetch GSC trend', e);
-      }
-
-      // GSC Top Landing Pages
-      let topPages: { page: string; clicks: number; impressions: number; ctr: number; position: number }[] = [];
-      try {
-        const gscPagesRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            startDate: formatDate(thirtyDaysAgo),
-            endDate: formatDate(today),
-            dimensions: ['page'],
-            rowLimit: 8
-          })
-        });
-        const gscPagesData = await gscPagesRes.json();
-        if (!gscPagesData.error && gscPagesData.rows) {
-          topPages = gscPagesData.rows.map((row: any) => {
-            let pageUrl = row.keys?.[0] || '/';
-            if (pageUrl.startsWith('http')) {
-              try {
-                const u = new URL(pageUrl);
-                pageUrl = u.pathname + u.search;
-              } catch {}
-            }
-            return {
-              page: pageUrl,
-              clicks: row.clicks || 0,
-              impressions: row.impressions || 0,
-              ctr: (row.ctr || 0) * 100,
-              position: row.position || 0,
-            };
+      const fetchGsc = async (bodyObj: any) => {
+        try {
+          const res = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyObj)
           });
+          const data = await res.json();
+          if (data.error) throw new Error(data.error.message || data.error.status);
+          return data;
+        } catch (e: any) {
+          console.warn('GSC fetch error:', e.message);
+          return null;
         }
-      } catch (e) {
-        console.warn('Failed to fetch GSC top pages', e);
-      }
+      };
 
-      // GSC Top Countries
-      let topCountries: { country: string; clicks: number; impressions: number; ctr: number }[] = [];
-      try {
-        const gscCountriesRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            startDate: formatDate(thirtyDaysAgo),
-            endDate: formatDate(today),
-            dimensions: ['country'],
-            rowLimit: 6
-          })
-        });
-        const gscCountriesData = await gscCountriesRes.json();
-        if (!gscCountriesData.error && gscCountriesData.rows) {
-          topCountries = gscCountriesData.rows.map((row: any) => ({
-            country: (row.keys?.[0] || 'id').toUpperCase(),
-            clicks: row.clicks || 0,
-            impressions: row.impressions || 0,
-            ctr: (row.ctr || 0) * 100,
-          }));
+      const [gscTotal, gscQueries, gscTrend, gscPages, gscCountries, gscDev] = await Promise.all([
+        fetchGsc({ startDate: startStr, endDate: endStr }),
+        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['query'], rowLimit: 10 }),
+        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['date'] }),
+        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['page'], rowLimit: 8 }),
+        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['country'], rowLimit: 6 }),
+        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['device'], rowLimit: 4 })
+      ]);
+
+      const trend = (gscTrend?.rows || []).map((row: any) => ({
+        date: row.keys?.[0] || '',
+        clicks: row.clicks || 0,
+        impressions: row.impressions || 0,
+        ctr: (row.ctr || 0) * 100,
+        position: row.position || 0,
+      })).sort((a: any, b: any) => a.date.localeCompare(b.date));
+
+      const topPages = (gscPages?.rows || []).map((row: any) => {
+        let pageUrl = row.keys?.[0] || '/';
+        if (pageUrl.startsWith('http')) {
+          try {
+            const u = new URL(pageUrl);
+            pageUrl = u.pathname + u.search;
+          } catch {}
         }
-      } catch (e) {
-        console.warn('Failed to fetch GSC top countries', e);
-      }
+        return {
+          page: pageUrl,
+          clicks: row.clicks || 0,
+          impressions: row.impressions || 0,
+          ctr: (row.ctr || 0) * 100,
+          position: row.position || 0,
+        };
+      });
 
-      // GSC Devices
-      let devices: { device: string; clicks: number; impressions: number; ctr: number }[] = [];
-      try {
-        const gscDevRes = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            startDate: formatDate(thirtyDaysAgo),
-            endDate: formatDate(today),
-            dimensions: ['device'],
-            rowLimit: 4
-          })
-        });
-        const gscDevData = await gscDevRes.json();
-        if (!gscDevData.error && gscDevData.rows) {
-          devices = gscDevData.rows.map((row: any) => ({
-            device: row.keys?.[0] || 'DESKTOP',
-            clicks: row.clicks || 0,
-            impressions: row.impressions || 0,
-            ctr: (row.ctr || 0) * 100,
-          }));
-        }
-      } catch (e) {
-        console.warn('Failed to fetch GSC devices', e);
-      }
+      const topCountries = (gscCountries?.rows || []).map((row: any) => ({
+        country: (row.keys?.[0] || 'id').toUpperCase(),
+        clicks: row.clicks || 0,
+        impressions: row.impressions || 0,
+        ctr: (row.ctr || 0) * 100,
+      }));
 
-      const totals = gscTotalData.rows?.[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
-      const topQueries = (gscQueriesData.rows || []).map((row: any) => ({
+      const devices = (gscDev?.rows || []).map((row: any) => ({
+        device: row.keys?.[0] || 'DESKTOP',
+        clicks: row.clicks || 0,
+        impressions: row.impressions || 0,
+        ctr: (row.ctr || 0) * 100,
+      }));
+
+      const totals = gscTotal?.rows?.[0] || { clicks: 0, impressions: 0, ctr: 0, position: 0 };
+      const topQueries = (gscQueries?.rows || []).map((row: any) => ({
         query: row.keys?.[0] || 'Unknown',
         clicks: row.clicks || 0,
         impressions: row.impressions || 0,
@@ -693,13 +497,13 @@ export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId
 
   } catch (error) {
     console.error('Error fetching Web Analytics data:', error);
-    const ecommerceData = await getEcommerceAnalytics(timeFilter, []);
+    const ecommerceData = await getEcommerceAnalytics(timeFilter, [], supplierId);
     return {
       configured: true,
       ga4: null,
       gsc: null,
       ecommerce: ecommerceData,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: 'Google Analytics/Search Console API error. Please check logs.',
     };
   }
 }

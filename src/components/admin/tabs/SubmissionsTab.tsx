@@ -6,6 +6,7 @@ import { FnBInventoryTable } from '@/components/supplier/inventory/FnBInventoryT
 import { writeAuditLog } from '@/lib/utils/auditLogger';
 import type { Submission, SupplierBasic, SupplierProduct } from '@/lib/types/allocation';
 import { processSubmission } from '@/app/actions/submissions';
+import { cn } from '@/lib/utils';
 
 // ─── Helpers ───────────────────────────────────────────────
 function buildSubmissionSnapshot(sub: Submission) {
@@ -25,6 +26,15 @@ function buildSubmissionSnapshot(sub: Submission) {
 export function SubmissionsTab() {
   const [viewMode, setViewMode] = useState<'curation' | 'inventory'>('curation');
   const [processingId, setProcessingId] = useState<string | null>(null);
+
+  // Modal State
+  const [modalState, setModalState] = useState<{ isOpen: boolean; sub: Submission | null; action: 'approve' | 'reject' | null }>({
+    isOpen: false,
+    sub: null,
+    action: null
+  });
+  const [modalInput, setModalInput] = useState('');
+  const [modalError, setModalError] = useState('');
 
   // Curation state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -104,19 +114,29 @@ export function SubmissionsTab() {
   }, [selectedSupplierId, fetchSupplierInventory]);
 
   // ─── Curation Actions ───────────────────────────────────
-  const handleAction = async (sub: Submission, action: 'approve' | 'reject') => {
+  const openActionModal = (sub: Submission, action: 'approve' | 'reject') => {
+    setModalState({ isOpen: true, sub, action });
+    setModalInput('');
+    setModalError('');
+  };
+
+  const confirmAction = async () => {
+    const { sub, action } = modalState;
+    if (!sub || !action) return;
+
     let payload = {};
     if (action === 'reject') {
-      const reason = prompt('Reason for rejection:');
-      if (!reason) return;
-      payload = { reason };
+      if (!modalInput.trim()) return setModalError('Alasan penolakan harus diisi.');
+      payload = { reason: modalInput };
     } else {
-      const ninocMarkup = prompt('Enter NINOC Markup Amount (Rp) to add to Base HPP:');
-      if (!ninocMarkup || isNaN(Number(ninocMarkup))) return;
-      payload = { markupAmount: Number(ninocMarkup) };
+      const markup = Number(modalInput);
+      if (isNaN(markup) || markup <= 0) return setModalError('Markup harus berupa angka lebih dari 0.');
+      payload = { markupAmount: markup };
     }
 
+    setModalState({ isOpen: false, sub: null, action: null });
     setProcessingId(sub.id);
+    
     try {
       const res = await processSubmission(sub.id, action, payload);
       if (!res.success) {
@@ -210,20 +230,21 @@ export function SubmissionsTab() {
               </div>
 
               <div className="flex items-center gap-3 shrink-0">
-                <button
-                  onClick={() => handleAction(sub, 'reject')}
-                  disabled={processingId === sub.id}
-                  className="px-2 py-1 border border-rose/20 text-rose text-xs font-medium rounded hover:bg-rose/5 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {processingId === sub.id ? <Loader2 size={14} className="animate-spin" /> : <X size={14} />} Reject
-                </button>
-                <button
-                  onClick={() => handleAction(sub, 'approve')}
-                  disabled={processingId === sub.id}
-                  className="px-2 py-1 bg-ink text-white text-xs font-medium rounded hover:bg-emerald-600 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {processingId === sub.id ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />} Approve & Markup
-                </button>
+                    <button 
+                      onClick={() => openActionModal(sub, 'reject')}
+                      disabled={processingId === sub.id}
+                      className="flex-1 bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                    >
+                      <X size={16} /> Reject
+                    </button>
+                    <button 
+                      onClick={() => openActionModal(sub, 'approve')}
+                      disabled={processingId === sub.id}
+                      className="flex-1 bg-ink text-white hover:bg-ink/90 px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                    >
+                      {processingId === sub.id ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                      Approve
+                    </button>
               </div>
             </div>
           ))}
@@ -280,6 +301,70 @@ export function SubmissionsTab() {
               )}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Action Modal */}
+      {modalState.isOpen && modalState.sub && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-5 border-b border-gray-100">
+              <h3 className="font-display font-bold text-lg text-ink">
+                {modalState.action === 'approve' ? 'Approve Allocation' : 'Reject Allocation'}
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">{modalState.sub.product_name}</p>
+            </div>
+            
+            <div className="p-5 space-y-4">
+              {modalState.action === 'approve' ? (
+                <div>
+                  <label className="block text-xs font-bold text-ink mb-1.5 uppercase tracking-wider">Markup Amount (Rp)</label>
+                  <input
+                    type="number"
+                    value={modalInput}
+                    onChange={e => setModalInput(e.target.value)}
+                    placeholder="Contoh: 50000"
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-ink focus:border-ink outline-none"
+                    autoFocus
+                  />
+                  <p className="text-[11px] text-gray-500 mt-2">Harga Jual = Base HPP + Markup NINOC</p>
+                </div>
+              ) : (
+                <div>
+                  <label className="block text-xs font-bold text-ink mb-1.5 uppercase tracking-wider">Reason for Rejection</label>
+                  <textarea
+                    value={modalInput}
+                    onChange={e => setModalInput(e.target.value)}
+                    placeholder="Alasan detail..."
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-ink focus:border-ink outline-none min-h-[100px]"
+                    autoFocus
+                  />
+                </div>
+              )}
+
+              {modalError && (
+                <p className="text-xs font-medium text-rose-500 bg-rose-50 p-2 rounded">{modalError}</p>
+              )}
+            </div>
+
+            <div className="p-5 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+              <button 
+                onClick={() => setModalState({ isOpen: false, sub: null, action: null })}
+                className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-ink hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button 
+                onClick={confirmAction}
+                className={cn(
+                  "px-4 py-2 text-sm font-bold text-white rounded-lg transition-colors",
+                  modalState.action === 'approve' ? "bg-emerald-600 hover:bg-emerald-700" : "bg-rose-600 hover:bg-rose-700"
+                )}
+              >
+                Konfirmasi
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

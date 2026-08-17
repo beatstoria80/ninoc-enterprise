@@ -104,6 +104,7 @@ export async function processSubmission(
       const marginPct = sub.base_hpp > 0 ? ((markupAmount / sub.base_hpp) * 100).toFixed(2) : '0';
       const slug = sub.product_name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
+      // IMPLEMENTATION OF COMPENSATING SAGA PATTERN (MANUAL ROLLBACK) TO PREVENT ORPHANED DATA
       // Step A: Insert Product
       const { data: newProduct, error: insertErr } = await supabaseAdmin
         .from('products')
@@ -130,7 +131,10 @@ export async function processSubmission(
           ninoc_markup: markupAmount
         }]);
         
-      if (costErr) throw new Error('Failed to insert product costings: ' + costErr.message);
+      if (costErr) {
+        await supabaseAdmin.from('products').delete().eq('id', newProduct.id); // Rollback
+        throw new Error('Failed to insert product costings: ' + costErr.message);
+      }
 
       // Step C: Update Submission Status
       const { error: updateErr } = await supabaseAdmin
@@ -138,7 +142,11 @@ export async function processSubmission(
         .update({ status: 'approved' })
         .eq('id', sub.id);
         
-      if (updateErr) throw new Error('Failed to update submission status to approved.');
+      if (updateErr) {
+        await supabaseAdmin.from('product_costings').delete().eq('product_id', newProduct.id); // Rollback
+        await supabaseAdmin.from('products').delete().eq('id', newProduct.id); // Rollback
+        throw new Error('Failed to update submission status to approved.');
+      }
 
       // Step D: Write Audit Log
       await writeServerAuditLog({
