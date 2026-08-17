@@ -5,6 +5,7 @@ import { FashionInventoryTable } from '@/components/supplier/inventory/FashionIn
 import { FnBInventoryTable } from '@/components/supplier/inventory/FnBInventoryTable';
 import { writeAuditLog } from '@/lib/utils/auditLogger';
 import type { Submission, SupplierBasic, SupplierProduct } from '@/lib/types/allocation';
+import { processSubmission } from '@/app/actions/submissions';
 
 // ─── Helpers ───────────────────────────────────────────────
 function buildSubmissionSnapshot(sub: Submission) {
@@ -23,6 +24,7 @@ function buildSubmissionSnapshot(sub: Submission) {
 // ─── Main Component ────────────────────────────────────────
 export function SubmissionsTab() {
   const [viewMode, setViewMode] = useState<'curation' | 'inventory'>('curation');
+  const [processingId, setProcessingId] = useState<string | null>(null);
 
   // Curation state
   const [submissions, setSubmissions] = useState<Submission[]>([]);
@@ -103,105 +105,30 @@ export function SubmissionsTab() {
 
   // ─── Curation Actions ───────────────────────────────────
   const handleAction = async (sub: Submission, action: 'approve' | 'reject') => {
-    const { data: { user: currentAdmin } } = await supabase.auth.getUser();
-    const adminEmail = currentAdmin?.email || 'unknown_admin';
-    const actionTimestamp = new Date().toISOString();
-    const oldSnapshot = { ...buildSubmissionSnapshot(sub), previous_status: 'pending' };
-
+    let payload = {};
     if (action === 'reject') {
       const reason = prompt('Reason for rejection:');
       if (!reason) return;
-
-      const { error } = await supabase
-        .from('supplier_product_submissions')
-        .update({ status: 'rejected', rejection_reason: reason })
-        .eq('id', sub.id);
-
-      if (error) {
-        alert('Gagal menolak pengajuan: ' + error.message);
-        return;
-      }
-
-      await writeAuditLog({
-        adminEmail,
-        actionType: 'REJECT_ALLOCATION',
-        tableAffected: 'supplier_product_submissions',
-        recordId: sub.id,
-        oldData: oldSnapshot,
-        newData: {
-          ...buildSubmissionSnapshot(sub),
-          status: 'rejected',
-          rejection_reason: reason,
-          rejected_by: adminEmail,
-          rejected_at: actionTimestamp,
-        },
-      });
+      payload = { reason };
     } else {
       const ninocMarkup = prompt('Enter NINOC Markup Amount (Rp) to add to Base HPP:');
       if (!ninocMarkup || isNaN(Number(ninocMarkup))) return;
-
-      const markupAmount = Number(ninocMarkup);
-      const sellingPrice = sub.base_hpp + markupAmount;
-      const marginPct = sub.base_hpp > 0 ? ((markupAmount / sub.base_hpp) * 100).toFixed(2) : '0';
-
-      const { data: newProduct, error } = await supabase
-        .from('products')
-        .insert([{
-          name: sub.product_name,
-          slug: sub.product_name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-          description: sub.description,
-          price: sellingPrice,
-          category_id: sub.category_id,
-          supplier_id: sub.supplier_id
-        }])
-        .select()
-        .single();
-
-      if (error || !newProduct) {
-        alert('Gagal membuat produk: ' + (error?.message || 'Unknown error'));
-        return;
-      }
-
-      await supabase.from('product_costings').insert([{
-        product_id: newProduct.id,
-        supplier_base_price: sub.base_hpp,
-        ninoc_markup: markupAmount
-      }]);
-
-      await supabase
-        .from('supplier_product_submissions')
-        .update({ status: 'approved' })
-        .eq('id', sub.id);
-
-      await writeAuditLog({
-        adminEmail,
-        actionType: 'APPROVE_ALLOCATION',
-        tableAffected: 'products',
-        recordId: newProduct.id,
-        oldData: oldSnapshot,
-        newData: {
-          ...buildSubmissionSnapshot(sub),
-          status: 'approved',
-          approved_by: adminEmail,
-          approved_at: actionTimestamp,
-          product_id: newProduct.id,
-          product_slug: newProduct.slug,
-          pricing: {
-            base_hpp_idr: sub.base_hpp,
-            ninoc_markup_idr: markupAmount,
-            ninoc_margin_pct: `${marginPct}%`,
-            final_selling_price_idr: sellingPrice,
-          },
-          costing_record: {
-            product_id: newProduct.id,
-            supplier_base_price: sub.base_hpp,
-            ninoc_markup: markupAmount,
-          },
-        },
-      });
+      payload = { markupAmount: Number(ninocMarkup) };
     }
 
-    fetchSubmissions();
+    setProcessingId(sub.id);
+    try {
+      const res = await processSubmission(sub.id, action, payload);
+      if (!res.success) {
+        alert('Gagal memproses pengajuan: ' + res.message);
+      } else {
+        fetchSubmissions();
+      }
+    } catch (err: any) {
+      alert('Terjadi kesalahan jaringan: ' + err.message);
+    } finally {
+      setProcessingId(null);
+    }
   };
 
   // ─── Derived State ──────────────────────────────────────
@@ -285,15 +212,17 @@ export function SubmissionsTab() {
               <div className="flex items-center gap-3 shrink-0">
                 <button
                   onClick={() => handleAction(sub, 'reject')}
-                  className="px-2 py-1 border border-rose/20 text-rose text-xs font-medium rounded hover:bg-rose/5 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2"
+                  disabled={processingId === sub.id}
+                  className="px-2 py-1 border border-rose/20 text-rose text-xs font-medium rounded hover:bg-rose/5 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <X size={14} /> Reject
+                  {processingId === sub.id ? <Loader2 size={14} className="animate-spin" /> : <X size={14} />} Reject
                 </button>
                 <button
                   onClick={() => handleAction(sub, 'approve')}
-                  className="px-2 py-1 bg-ink text-white text-xs font-medium rounded hover:bg-emerald-600 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 shadow-sm"
+                  disabled={processingId === sub.id}
+                  className="px-2 py-1 bg-ink text-white text-xs font-medium rounded hover:bg-emerald-600 active:scale-[0.97] transition-all duration-150 ease-out flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <Check size={14} /> Approve & Markup
+                  {processingId === sub.id ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />} Approve & Markup
                 </button>
               </div>
             </div>
