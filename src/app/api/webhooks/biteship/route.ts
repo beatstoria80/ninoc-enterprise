@@ -4,6 +4,8 @@ import { sendShippingWA, sendDeliveredWA, formatPhoneNumber } from '@/lib/whatsa
 import { sendEmailShipping, sendEmailDelivered } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
+import { WebhookLogRepository } from '@/repositories/WebhookLogRepository';
+import { withErrorHandler, apiSuccess, apiError } from '@/lib/apiResponse';
 
 // ============================================================
 // BITESHIP WEBHOOK HANDLER (PRODUCTION VERSION)
@@ -54,12 +56,11 @@ function verifySignature(payload: string, signature: string, secret: string): bo
   return crypto.timingSafeEqual(Buffer.from(computed), Buffer.from(signature));
 }
 
-export async function POST(req: Request) {
-  try {
+export const POST = withErrorHandler(async (req: Request) => {
     const rawBody = await req.text();
 
     if (!rawBody || rawBody.trim() === '') {
-      return NextResponse.json({ status: 'OK', message: 'Handshake successful' });
+      return apiSuccess({ message: 'Handshake successful' });
     }
 
     let payload: BiteshipWebhookPayload;
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
       payload = JSON.parse(rawBody);
     } catch {
       console.warn('[Biteship Webhook] Non-JSON payload received');
-      return NextResponse.json({ status: 'OK', message: 'Payload accepted' });
+      return apiSuccess({ message: 'Payload accepted' });
     }
 
     const webhookSecret = process.env.BITESHIP_WEBHOOK_SECRET || '';
@@ -76,20 +77,21 @@ export async function POST(req: Request) {
     // STRICT FAIL-CLOSED: Tolak proses webhook jika rahasia tidak dikonfigurasi di environment
     if (!webhookSecret) {
       console.error('[Biteship Webhook] CRITICAL: Webhook secret is not configured!');
-      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+      return apiError('Server configuration error', 500);
     }
 
     if (!signature) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiError('Unauthorized', 401);
     }
 
     const isValid = verifySignature(rawBody, signature, webhookSecret);
     if (!isValid) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return apiError('Unauthorized', 401);
     }
 
     console.log(`[Biteship Webhook] Event: ${payload.event}, Order: ${payload.order_id}`);
     const supabaseAdmin = getSupabaseAdmin();
+    const webhookLogRepo = new WebhookLogRepository(supabaseAdmin);
 
     switch (payload.event) {
       case 'order.status': {
@@ -180,7 +182,7 @@ export async function POST(req: Request) {
           }
         }
 
-        await supabaseAdmin.from('tracking_logs').insert({
+        await webhookLogRepo.logBiteshipEvent({
           order_id: payload.order_id,
           biteship_status: payload.status,
           internal_status: internalStatus,
@@ -206,7 +208,7 @@ export async function POST(req: Request) {
 
       case 'order.price': {
         if (payload.order_id) {
-          await supabaseAdmin.from('tracking_logs').insert({
+          await webhookLogRepo.logBiteshipEvent({
             order_id: payload.order_id,
             biteship_status: 'price_update',
             internal_status: 'info',
@@ -217,14 +219,8 @@ export async function POST(req: Request) {
       }
     }
 
-    return NextResponse.json({ status: 'OK', event: payload.event });
-
-  } catch (err) {
-    const error = err as Error;
-    console.error('[Biteship Webhook] Error:', error.message);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
-}
+    return apiSuccess({ event: payload.event });
+});
 
 export async function GET() {
   return NextResponse.json({

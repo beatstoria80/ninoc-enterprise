@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { CheckoutService } from '@/domain/checkout/CheckoutService';
+import { withErrorHandler, apiSuccess, apiError } from '@/lib/apiResponse';
 
-export async function POST(req: Request) {
-  try {
+export const POST = withErrorHandler(async (req: Request) => {
     const { items, customerDetails, shippingDetails, promo } = await req.json();
 
     // 1. Extract HTTP/Request specifics
@@ -29,14 +29,9 @@ export async function POST(req: Request) {
       affiliateCookieValue
     );
 
-    return NextResponse.json(payload, { status });
-  } catch (err) {
-    const error = err as Error;
-    console.error('[Checkout API] Critical Error:', error?.message, error?.stack);
-    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true';
-    const errorMessage = isProduction
-      ? 'An error occurred during checkout. Please try again.'
-      : `Checkout error: ${error?.message || 'Unknown error'}`;
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
-  }
-}
+    if (status >= 400) {
+        return apiError(payload.error || 'Checkout failed', status, payload);
+    }
+
+    return apiSuccess(payload, status);
+});
