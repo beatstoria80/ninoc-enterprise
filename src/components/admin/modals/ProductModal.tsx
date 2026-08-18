@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Trash2, Edit2, Plus, ArrowRightLeft, Download, ToggleRight, ToggleLeft, Save, Search, PanelRightClose } from "lucide-react";
 import Image from "next/image";
 import { isFnBDepartment, isObjectsDepartment } from "@/lib/departmentDomain";
-import { compressImage } from "@/lib/utils/imageUtils";
+import { compressImage, forceDownloadImage } from "@/lib/utils/imageUtils";
 
 
 import { clsx, type ClassValue } from "clsx";
@@ -1688,17 +1688,15 @@ export function ProductModal(props: any) {
                                             </label>
                                             {colorImage && (
                                               <>
-                                                <a
-                                                  href={colorImage}
-                                                  target="_blank"
-                                                  rel="noopener noreferrer"
-                                                  download
+                                                <button
+                                                  type="button"
+                                                  onClick={() => forceDownloadImage(colorImage, `variant-${imgType}-image.jpg`)}
                                                   className="px-2 py-1 bg-ink/5 hover:bg-ink/10 text-ink text-[10px] uppercase tracking-wider font-semibold rounded transition-colors whitespace-nowrap flex items-center gap-1"
                                                   title="Download image"
                                                 >
                                                   <Download size={12} />
                                                   Download
-                                                </a>
+                                                </button>
                                                 <button
                                                   type="button"
                                                   onClick={() => {

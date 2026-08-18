@@ -47,18 +47,7 @@ export const compressImage = async (file: File): Promise<File> => {
 
 export const forceDownloadImage = async (url: string, filename: string = 'product-image.jpg') => {
   try {
-    const isSupabase = url.includes('supabase.co/storage');
-    if (isSupabase) {
-      const downloadUrl = url.includes('?') ? `${url}&download=` : `${url}?download=`;
-      const a = document.createElement('a');
-      a.href = downloadUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      return;
-    }
-    
+    // 1. First attempt: Fetch as Blob for guaranteed same-origin download (if CORS allows)
     const res = await fetch(url);
     if (!res.ok) throw new Error('Network response was not ok');
     const blob = await res.blob();
@@ -71,7 +60,23 @@ export const forceDownloadImage = async (url: string, filename: string = 'produc
     a.remove();
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
-    console.error('Download failed, opening in new tab', error);
+    console.warn('Blob download failed (likely CORS), falling back to Supabase direct download or new tab', error);
+    
+    // 2. Fallback for Supabase Storage
+    const isSupabase = url.includes('supabase.co/storage');
+    if (isSupabase) {
+      const downloadUrl = url.includes('?') ? `${url}&download=${filename}` : `${url}?download=${filename}`;
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.target = '_blank'; // Prevent navigating away if download header fails
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      return;
+    }
+
+    // 3. Last resort
     window.open(url, '_blank');
   }
 };
