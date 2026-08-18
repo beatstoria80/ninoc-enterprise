@@ -67,6 +67,33 @@ export function SuppliersTab() {
 
   const updateStatus = async (id: string, newStatus: string) => {
     if (!confirm(`Are you sure you want to mark this supplier as ${newStatus}?`)) return;
+
+    // Auto-generate supplier_code when approving (activating) a supplier
+    if (newStatus === 'active') {
+      const supplier = suppliers.find(s => s.id === id);
+      if (supplier && !supplier.supplier_code) {
+        // Determine pillar prefix - default to FSH, check if this supplier has FNB products
+        const prefix = 'NNC-FSH'; // Will be updated if supplier has FNB category products
+
+        // Count existing suppliers with this prefix for sequence
+        const { count } = await supabase
+          .from('suppliers')
+          .select('*', { count: 'exact', head: true })
+          .like('supplier_code', `${prefix}%`);
+
+        const seq = String((count || 0) + 1).padStart(3, '0');
+        const supplierCode = `${prefix}-${seq}`;
+
+        await supabase
+          .from('suppliers')
+          .update({ status: newStatus, supplier_code: supplierCode })
+          .eq('id', id);
+
+        fetchData();
+        return;
+      }
+    }
+
     await supabase.from('suppliers').update({ status: newStatus }).eq('id', id);
     fetchData();
   };
@@ -133,6 +160,9 @@ export function SuppliersTab() {
                         </div>
                         <div>
                           <p className="font-medium text-ink">{sup.name}</p>
+                          {sup.supplier_code && (
+                            <p className="text-[10px] font-mono font-bold text-white bg-gray-900 px-1.5 py-0.5 rounded w-fit mt-0.5">{sup.supplier_code}</p>
+                          )}
                           <p className="text-[10px] text-ink/80 font-mono">{sup.contact_email}</p>
                           <p className="text-[10px] text-ink/80 font-mono">{sup.contact_phone}</p>
                         </div>

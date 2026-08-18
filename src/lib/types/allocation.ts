@@ -5,6 +5,21 @@
  * Used by SubmissionsTab (Admin) and RequestAllocationModal (Supplier).
  */
 
+export interface VariantSubmission {
+  size: string;
+  color: string;
+  initial_stock: number;
+}
+
+export interface SupplierDetail {
+  name: string;
+  supplier_code: string | null;
+  pillar?: string;
+  status?: string;
+  contact_email?: string;
+  contact_phone?: string;
+}
+
 export interface Submission {
   id: string;
   supplier_id: string;
@@ -17,11 +32,16 @@ export interface Submission {
   status: 'pending' | 'approved' | 'rejected';
   rejection_reason: string | null;
   images: string[];
+  variants_data: VariantSubmission[];
+  weight_grams: number;
+  material: string | null;
+  brand: string | null;
   created_at: string;
   updated_at: string;
   // Joined relations
-  suppliers?: { name: string } | null;
+  suppliers?: SupplierDetail | null;
   categories?: { name: string } | null;
+  sub_categories?: { name: string } | null;
 }
 
 export interface SupplierBasic {

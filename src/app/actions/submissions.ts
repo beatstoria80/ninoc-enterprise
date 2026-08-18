@@ -41,7 +41,7 @@ export async function processSubmission(
   // NEVER trust the client to provide base_hpp, category, or supplier details.
   const { data: sub, error: subError } = await supabaseAdmin
     .from('supplier_product_submissions')
-    .select('*, suppliers(name), categories(name)')
+    .select('*, suppliers(name, supplier_code, pillar), categories(name), sub_categories(name)')
     .eq('id', submissionId)
     .single();
 
@@ -104,6 +104,27 @@ export async function processSubmission(
       const marginPct = sub.base_hpp > 0 ? ((markupAmount / sub.base_hpp) * 100).toFixed(2) : '0';
       const slug = sub.product_name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
+      // Resolve supplier_code for SKU generation
+      const supplierCode = sub.suppliers?.supplier_code || 'NNC-UNK-000';
+      const catCode = sub.categories?.name
+        ? sub.categories.name.replace(/[^A-Za-z]/g, '').substring(0, 3).toUpperCase()
+        : 'GEN';
+      const baseName = sub.product_name.replace(/[^A-Za-z0-9]/g, '').substring(0, 4).toUpperCase();
+      // Deterministic hash from product name for consistent SKU
+      let nameHash = 0;
+      for (let i = 0; i < sub.product_name.length; i++) {
+        nameHash = sub.product_name.charCodeAt(i) + ((nameHash << 5) - nameHash);
+      }
+      const uniqueNum = Math.abs(nameHash % 900) + 100;
+      const productCode = `${baseName}${uniqueNum}`;
+
+      // Parse variants_data from submission
+      const variantsData: { size: string; color: string; initial_stock: number }[] =
+        Array.isArray(sub.variants_data) ? sub.variants_data : [];
+
+      // Calculate total initial stock from variants
+      const totalStock = variantsData.reduce((sum: number, v: any) => sum + (v.initial_stock || 0), 0);
+
       // IMPLEMENTATION OF COMPENSATING SAGA PATTERN (MANUAL ROLLBACK) TO PREVENT ORPHANED DATA
       // Step A: Insert Product
       const { data: newProduct, error: insertErr } = await supabaseAdmin
@@ -115,12 +136,39 @@ export async function processSubmission(
           price: sellingPrice,
           category_id: sub.category_id,
           supplier_id: sub.supplier_id,
-          image_url: sub.images && sub.images.length > 0 ? sub.images[0] : null
+          image_url: sub.images && sub.images.length > 0 ? sub.images[0] : null,
+          stock: totalStock,
+          weight_grams: sub.weight_grams || 0,
         }])
         .select()
         .single();
         
       if (insertErr || !newProduct) throw new Error('Failed to create product in active inventory: ' + (insertErr?.message || 'Unknown error'));
+
+      // Step A.1: Insert product_variants with auto-generated SKUs
+      if (variantsData.length > 0) {
+        const variantRows = variantsData.map((v: any) => {
+          const colorCode = (v.color || 'NON').replace(/[^A-Za-z]/g, '').substring(0, 3).toUpperCase();
+          const sizeCode = (v.size || 'OS').toUpperCase();
+          const sku = `${supplierCode}-${catCode}-${productCode}-${colorCode}-${sizeCode}`;
+          return {
+            product_id: newProduct.id,
+            size: v.size || null,
+            color: v.color || null,
+            stock_quantity: v.initial_stock || 0,
+            sku,
+          };
+        });
+
+        const { error: variantErr } = await supabaseAdmin
+          .from('product_variants')
+          .insert(variantRows);
+
+        if (variantErr) {
+          await supabaseAdmin.from('products').delete().eq('id', newProduct.id); // Rollback
+          throw new Error('Failed to insert product variants: ' + variantErr.message);
+        }
+      }
 
       // Step B: Insert Costing
       const { error: costErr } = await supabaseAdmin
@@ -132,6 +180,7 @@ export async function processSubmission(
         }]);
         
       if (costErr) {
+        await supabaseAdmin.from('product_variants').delete().eq('product_id', newProduct.id); // Rollback
         await supabaseAdmin.from('products').delete().eq('id', newProduct.id); // Rollback
         throw new Error('Failed to insert product costings: ' + costErr.message);
       }
@@ -143,12 +192,19 @@ export async function processSubmission(
         .eq('id', sub.id);
         
       if (updateErr) {
+        await supabaseAdmin.from('product_variants').delete().eq('product_id', newProduct.id); // Rollback
         await supabaseAdmin.from('product_costings').delete().eq('product_id', newProduct.id); // Rollback
         await supabaseAdmin.from('products').delete().eq('id', newProduct.id); // Rollback
         throw new Error('Failed to update submission status to approved.');
       }
 
       // Step D: Write Audit Log
+      const generatedSkus = variantsData.map((v: any) => {
+        const colorCode = (v.color || 'NON').replace(/[^A-Za-z]/g, '').substring(0, 3).toUpperCase();
+        const sizeCode = (v.size || 'OS').toUpperCase();
+        return `${supplierCode}-${catCode}-${productCode}-${colorCode}-${sizeCode}`;
+      });
+
       await writeServerAuditLog({
         adminEmail,
         actionType: 'APPROVE_ALLOCATION',
@@ -162,6 +218,8 @@ export async function processSubmission(
           approved_at: actionTimestamp,
           product_id: newProduct.id,
           product_slug: newProduct.slug,
+          supplier_code: supplierCode,
+          generated_skus: generatedSkus,
           pricing: {
             base_hpp_idr: sub.base_hpp,
             ninoc_markup_idr: markupAmount,
@@ -173,6 +231,8 @@ export async function processSubmission(
             supplier_base_price: sub.base_hpp,
             ninoc_markup: markupAmount,
           },
+          variants_count: variantsData.length,
+          total_initial_stock: totalStock,
         }
       });
     }
@@ -204,7 +264,12 @@ export async function getPendingSubmissions() {
   try {
     const { data, error } = await supabaseAdmin
       .from('supplier_product_submissions')
-      .select('*, suppliers(name), categories(name)')
+      .select(`
+        *,
+        suppliers(name, supplier_code, pillar, status, contact_email, contact_phone),
+        categories(name),
+        sub_categories(name)
+      `)
       .eq('status', 'pending')
       .order('created_at', { ascending: false });
     
