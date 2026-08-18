@@ -15,8 +15,15 @@ import { getAppUrl } from '@/lib/utils';
  * 
  * Can also be triggered manually: GET /api/cron/sync-payments
  */
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    // 1. Verify cron secret (if running in Vercel)
+    const authHeader = req.headers.get('authorization');
+    if (!process.env.CRON_SECRET) {
+      console.warn('[Sync Payments] CRON_SECRET is not set in environment variables! Allowing execution but this is unsafe.');
+    } else if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     // 1. Fetch all pending orders that have a snap_token (meaning they were sent to Midtrans)
     const { data: pendingOrders, error: fetchError } = await adminClient
       .from('orders')

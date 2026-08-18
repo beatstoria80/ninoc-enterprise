@@ -15,10 +15,13 @@ export async function GET(req: Request) {
   try {
     // 1. Verify cron secret (if running in Vercel)
     const authHeader = req.headers.get('authorization');
-    if (process.env.CRON_SECRET) {
-      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
+    if (!process.env.CRON_SECRET) {
+      console.error('[Cron] CRON_SECRET is missing! Rejecting execution for safety.');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+    
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     console.log('[Cron] Starting Payment Reminder (Abandoned Cart) scan...');
