@@ -41,7 +41,7 @@ export async function processSubmission(
   // NEVER trust the client to provide base_hpp, category, or supplier details.
   const { data: sub, error: subError } = await supabaseAdmin
     .from('supplier_product_submissions')
-    .select('*, suppliers(name, supplier_code, pillar), categories(name), sub_categories(name)')
+    .select('*, suppliers(name, supplier_code, pillar, assigned_hub_id), categories(name), sub_categories(name)')
     .eq('id', submissionId)
     .single();
 
@@ -137,8 +137,11 @@ export async function processSubmission(
           category_id: sub.category_id,
           supplier_id: sub.supplier_id,
           image_url: sub.images && sub.images.length > 0 ? sub.images[0] : null,
-          stock: totalStock,
           weight_grams: sub.weight_grams || 0,
+          
+          // 🔥 NEW: Map missing critical schema fields to prevent silent data loss
+          is_perishable: sub.suppliers?.pillar === 'FNB', // Auto-flag FnB as perishable
+          warehouse_id: sub.suppliers?.assigned_hub_id || null, // Route to supplier's assigned hub
         }])
         .select()
         .single();
@@ -301,7 +304,7 @@ export async function getSupplierInventory(supplierId: string) {
     const { data, error } = await supabaseAdmin
       .from('products')
       .select(`
-        id, name, price, stock, image_url, category, is_perishable, created_at,
+        id, name, price, image_url, category, is_perishable, created_at,
         product_variants (id, size, color, stock_quantity, sku)
       `)
       .eq('supplier_id', supplierId)
