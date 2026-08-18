@@ -175,10 +175,10 @@ export default function AdminDashboard() {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Fetch products with variants
+      // Fetch products with variants and supplier info
       const { data: prodData } = await supabase
         .from('products')
-        .select('*, variants(*)')
+        .select('*, variants(*), suppliers(name)')
         .order('created_at', { ascending: false });
       if (prodData) setProducts(prodData);
 

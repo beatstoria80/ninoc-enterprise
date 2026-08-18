@@ -65,6 +65,8 @@ export interface Product {
   warehouses?: Warehouse | null;
   created_at: string;
   variant_label?: string | null;
+  supplier_id?: string | null;
+  suppliers?: { name: string } | null;
   variants?: Variant[];
 }
 

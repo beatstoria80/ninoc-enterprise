@@ -21,26 +21,59 @@ export function AllProductsView({
   toggleFeatured: (p: Product) => void;
   deleteProduct: (id: string) => void;
 }) {
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (product.sub_category && product.sub_category.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const [selectedSupplier, setSelectedSupplier] = React.useState<string>('all');
+
+  const uniqueSuppliers = Array.from(new Set(products.filter(p => p.suppliers?.name).map(p => p.suppliers!.name)));
+
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (product.sub_category && product.sub_category.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    let matchesSupplier = true;
+    if (selectedSupplier === 'in-house') {
+      matchesSupplier = !product.supplier_id;
+    } else if (selectedSupplier !== 'all') {
+      matchesSupplier = product.suppliers?.name === selectedSupplier;
+    }
+
+    return matchesSearch && matchesSupplier;
+  });
 
   const { allViews } = useCatalogViews();
 
   return (
     <div className="flex flex-col h-full space-y-3">
-      {/* Search */}
-      <div className="shrink-0 relative">
-        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50"
-        />
+      {/* Search and Filters */}
+      <div className="shrink-0 flex items-center gap-3">
+        <div className="relative flex-1">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-9 pr-4 py-2 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50"
+          />
+        </div>
+        <div className="relative w-48 shrink-0">
+          <select 
+            value={selectedSupplier}
+            onChange={(e) => setSelectedSupplier(e.target.value)}
+            className="w-full px-3 py-2 bg-white border border-gray-200 rounded text-xs focus:outline-none focus:border-rose/50 appearance-none text-ink cursor-pointer"
+          >
+            <option value="all">All Suppliers (Mixed)</option>
+            <option value="in-house">⭐ Original Ninoc SKU</option>
+            {uniqueSuppliers.map(sup => (
+              <option key={sup} value={sup}>Supplier: {sup}</option>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L5 5L9 1" stroke="#9CA3AF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+        </div>
       </div>
 
       {/* Products Grid */}
@@ -88,13 +121,25 @@ export function AllProductsView({
                   </button>
                 </div>
                 <div className="absolute top-3 left-3 flex flex-col gap-1">
+                  {/* Supplier/In-House Badge */}
+                  {!product.supplier_id ? (
+                    <div className="w-fit px-2 py-1 bg-ink text-white text-[9px] uppercase tracking-wider rounded shadow-sm flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                      In-House
+                    </div>
+                  ) : (
+                    <div className="w-fit px-2 py-1 bg-emerald-600 text-white text-[9px] uppercase tracking-wider rounded shadow-sm max-w-[120px] truncate">
+                      B2B: {product.suppliers?.name || 'Supplier'}
+                    </div>
+                  )}
+
                   {product.is_featured && (
                     <div className="w-fit px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-wider rounded shadow-sm">
                       Featured
                     </div>
                   )}
                   {product.affiliate_eligible && (
-                    <div className="w-fit px-2 py-1 bg-emerald-500 text-white text-[9px] uppercase tracking-wider rounded shadow-sm">
+                    <div className="w-fit px-2 py-1 bg-blue-500 text-white text-[9px] uppercase tracking-wider rounded shadow-sm">
                       Affiliate
                     </div>
                   )}
