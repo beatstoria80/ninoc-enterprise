@@ -1,69 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Check, X, Factory, Clock, AlertCircle, FileText, ShieldCheck, MapPin, ChevronDown, Package, Truck, AlertTriangle, DollarSign } from 'lucide-react';
-
-interface SupplierStats {
-  totalOrders: number;
-  totalItemsSold: number;
-  totalRevenue: number;
-  returCount: number;
-  cancelledCount: number;
-}
+import { useSupplierStats } from '@/hooks/admin/useSupplierStats';
 
 export function SuppliersTab() {
-  const [suppliers, setSuppliers] = useState<any[]>([]);
-  const [warehouses, setWarehouses] = useState<any[]>([]);
-  const [supplierStats, setSupplierStats] = useState<Record<string, SupplierStats>>({});
-  const [loading, setLoading] = useState(true);
+  const { suppliers, warehouses, supplierStats, loading, refetch } = useSupplierStats();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const fetchData = async () => {
-    setLoading(true);
-    const [supRes, whRes, itemsRes, returRes] = await Promise.all([
-      supabase.from('suppliers').select('*').order('created_at', { ascending: false }),
-      supabase.from('warehouses').select('id, name, code').eq('is_active', true),
-      supabase.from('order_items').select('id, supplier_id, quantity, price, orders!inner(status)'),
-      supabase.from('retur_requests').select('id, order:orders!inner(order_items!inner(supplier_id))')
-    ]);
-    if (supRes.data) setSuppliers(supRes.data);
-    if (whRes.data) setWarehouses(whRes.data);
-
-    // Compute stats per supplier
-    const stats: Record<string, SupplierStats> = {};
-    if (itemsRes.data) {
-      itemsRes.data.forEach((item: any) => {
-        const sid = item.supplier_id;
-        if (!sid) return;
-        if (!stats[sid]) stats[sid] = { totalOrders: 0, totalItemsSold: 0, totalRevenue: 0, returCount: 0, cancelledCount: 0 };
-        const orderStatus = (item.orders as any)?.status;
-        if (orderStatus === 'cancelled') {
-          stats[sid].cancelledCount += item.quantity || 1;
-        } else if (orderStatus !== 'refunded') {
-          stats[sid].totalItemsSold += item.quantity || 1;
-          stats[sid].totalRevenue += (item.price || 0) * (item.quantity || 1);
-        }
-        stats[sid].totalOrders += 1;
-      });
-    }
-    if (returRes.data) {
-      returRes.data.forEach((ret: any) => {
-        const items = ret.order?.order_items || [];
-        items.forEach((item: any) => {
-          const sid = item.supplier_id;
-          if (!sid) return;
-          if (!stats[sid]) stats[sid] = { totalOrders: 0, totalItemsSold: 0, totalRevenue: 0, returCount: 0, cancelledCount: 0 };
-          stats[sid].returCount += 1;
-        });
-      });
-    }
-    setSupplierStats(stats);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchData();
-  }, []);
 
   const updateStatus = async (id: string, newStatus: string) => {
     if (!confirm(`Are you sure you want to mark this supplier as ${newStatus}?`)) return;
@@ -89,18 +31,18 @@ export function SuppliersTab() {
           .update({ status: newStatus, supplier_code: supplierCode })
           .eq('id', id);
 
-        fetchData();
+        refetch();
         return;
       }
     }
 
     await supabase.from('suppliers').update({ status: newStatus }).eq('id', id);
-    fetchData();
+    refetch();
   };
 
   const updateWarehouse = async (id: string, hubId: string) => {
     await supabase.from('suppliers').update({ assigned_hub_id: hubId || null }).eq('id', id);
-    fetchData();
+    refetch();
   };
 
   const viewDocument = async (path: string) => {
