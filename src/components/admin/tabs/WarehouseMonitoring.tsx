@@ -104,41 +104,49 @@ export function WarehouseMonitoring({ hubId, onBack }: HubMonitoringProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-4 rounded-xl border border-ink/10 shadow-sm flex flex-col">
-          <div className="flex items-center gap-2 text-amber-500 mb-2">
-            <Package size={16} />
-            <span className="text-[10px] uppercase tracking-wider font-bold">Active Orders</span>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div className="bg-white p-3 rounded-xl border border-ink/10 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5 text-amber-500">
+              <Package size={14} />
+              <span className="text-[9px] uppercase tracking-wider font-bold">Active Orders</span>
+            </div>
+            <span className="text-xl font-display font-medium text-ink">{pending}</span>
           </div>
-          <span className="text-3xl font-display font-medium text-ink">{pending}</span>
-          <span className="text-[10px] text-ink/50 mt-1">Waiting to be processed</span>
+          <span className="text-[9px] text-ink/50">Waiting to be processed</span>
         </div>
         
-        <div className="bg-white p-4 rounded-xl border border-ink/10 shadow-sm flex flex-col">
-          <div className="flex items-center gap-2 text-blue-500 mb-2">
-            <Truck size={16} />
-            <span className="text-[10px] uppercase tracking-wider font-bold">In-Transit</span>
+        <div className="bg-white p-3 rounded-xl border border-ink/10 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5 text-blue-500">
+              <Truck size={14} />
+              <span className="text-[9px] uppercase tracking-wider font-bold">In-Transit</span>
+            </div>
+            <span className="text-xl font-display font-medium text-ink">{inTransit}</span>
           </div>
-          <span className="text-3xl font-display font-medium text-ink">{inTransit}</span>
-          <span className="text-[10px] text-ink/50 mt-1">Currently shipping via Biteship</span>
+          <span className="text-[9px] text-ink/50">Shipping via Biteship</span>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-ink/10 shadow-sm flex flex-col">
-          <div className="flex items-center gap-2 text-emerald-500 mb-2">
-            <CheckCircle size={16} />
-            <span className="text-[10px] uppercase tracking-wider font-bold">Completed</span>
+        <div className="bg-white p-3 rounded-xl border border-ink/10 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5 text-emerald-500">
+              <CheckCircle size={14} />
+              <span className="text-[9px] uppercase tracking-wider font-bold">Completed</span>
+            </div>
+            <span className="text-xl font-display font-medium text-ink">{completed}</span>
           </div>
-          <span className="text-3xl font-display font-medium text-ink">{completed}</span>
-          <span className="text-[10px] text-ink/50 mt-1">Successfully delivered</span>
+          <span className="text-[9px] text-ink/50">Successfully delivered</span>
         </div>
 
-        <div className="bg-white p-4 rounded-xl border border-ink/10 shadow-sm flex flex-col">
-          <div className="flex items-center gap-2 text-rose mb-2">
-            <AlertTriangle size={16} />
-            <span className="text-[10px] uppercase tracking-wider font-bold">Disputes / Retur</span>
+        <div className="bg-white p-3 rounded-xl border border-ink/10 shadow-sm flex flex-col">
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-1.5 text-rose">
+              <AlertTriangle size={14} />
+              <span className="text-[9px] uppercase tracking-wider font-bold">Disputes / Retur</span>
+            </div>
+            <span className="text-xl font-display font-medium text-ink">{issues}</span>
           </div>
-          <span className="text-3xl font-display font-medium text-ink">{issues}</span>
-          <span className="text-[10px] text-ink/50 mt-1">Requires attention</span>
+          <span className="text-[9px] text-ink/50">Requires attention</span>
         </div>
       </div>
 
@@ -154,30 +162,31 @@ export function WarehouseMonitoring({ hubId, onBack }: HubMonitoringProps) {
           <table className="w-full text-left text-sm">
             <thead className="bg-ink text-white text-[10px] uppercase tracking-wider">
               <tr>
-                <th className="px-5 py-3 font-medium">Order ID</th>
-                <th className="px-5 py-3 font-medium">Date</th>
-                <th className="px-5 py-3 font-medium">Customer</th>
-                <th className="px-5 py-3 font-medium">Courier</th>
-                <th className="px-5 py-3 font-medium">AWB / Resi</th>
-                <th className="px-5 py-3 font-medium text-right">Status</th>
+                <th className="px-3 py-2 font-medium">Order ID</th>
+                <th className="px-3 py-2 font-medium">Date</th>
+                <th className="px-3 py-2 font-medium">Customer</th>
+                <th className="px-3 py-2 font-medium">Courier</th>
+                <th className="px-3 py-2 font-medium">AWB / Resi</th>
+                <th className="px-3 py-2 font-medium">Status</th>
+                <th className="px-3 py-2 font-medium text-right">Action</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5 text-xs text-ink/80">
               {orders.slice(0,10).map((o: any) => (
                 <tr key={o.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-5 py-3 font-mono font-medium text-ink">#{o.id.slice(0,8)}</td>
-                  <td className="px-5 py-3 text-ink/60">{format(new Date(o.created_at), 'dd MMM yy HH:mm')}</td>
-                  <td className="px-5 py-3 font-medium">{o.customer_name || 'Guest'}</td>
-                  <td className="px-5 py-3">
-                    <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-ink/5 font-bold uppercase text-[9px] tracking-wider">
+                  <td className="px-3 py-2 font-mono font-medium text-ink text-[11px]">#{o.id.slice(0,8)}</td>
+                  <td className="px-3 py-2 text-ink/60 text-[10px] whitespace-nowrap">{format(new Date(o.created_at), 'dd MMM yy HH:mm')}</td>
+                  <td className="px-3 py-2 font-medium text-[11px] truncate max-w-[120px]">{o.customer_name || 'Guest'}</td>
+                  <td className="px-3 py-2">
+                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-ink/5 font-bold uppercase text-[9px] tracking-wider whitespace-nowrap">
                       {o.shipping_courier || '-'} {o.shipping_service ? `(${o.shipping_service})` : ''}
                     </span>
                   </td>
-                  <td className="px-5 py-3 font-mono text-[10px]">
+                  <td className="px-3 py-2 font-mono text-[10px] whitespace-nowrap">
                     {o.biteship_waybill_id ? o.biteship_waybill_id : <span className="text-ink/30 italic">Not generated</span>}
                   </td>
-                  <td className="px-5 py-3 text-right">
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider
+                  <td className="px-3 py-2">
+                    <span className={`inline-flex px-1.5 py-0.5 rounded-sm text-[9px] font-bold uppercase tracking-wider whitespace-nowrap
                       ${o.status === 'paid' ? 'bg-amber-100 text-amber-700' : 
                         o.status === 'shipped' ? 'bg-blue-100 text-blue-700' : 
                         o.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' : 
@@ -185,6 +194,17 @@ export function WarehouseMonitoring({ hubId, onBack }: HubMonitoringProps) {
                     `}>
                       {o.status}
                     </span>
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    {o.status === 'paid' ? (
+                      <button className="bg-ink hover:bg-rose text-white px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap">
+                        Process Order
+                      </button>
+                    ) : (
+                      <button className="bg-ink/5 hover:bg-ink text-ink hover:text-white px-2 py-1 rounded text-[9px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap">
+                        Details
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

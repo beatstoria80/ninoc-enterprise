@@ -4,6 +4,7 @@ import { getCurrentSupplier } from '@/lib/services/supplier';
 import { SupplierForm } from './SupplierForm';
 import { SupplierAccountForm } from './SupplierAccountForm';
 import { SupplierBankForm } from './SupplierBankForm';
+import { SupplierSecurityForm } from './SupplierSecurityForm';
 import Link from 'next/link';
 
 export default async function SupplierSettingsPage(props: { searchParams: Promise<{ tab?: string }> }) {
@@ -132,10 +133,12 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
           )}
 
           {tab === 'security' && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden p-8 text-center flex flex-col items-center justify-center min-h-[400px]">
-              <ShieldCheck size={48} className="text-gray-300 mb-4" />
-              <h2 className="text-xl font-bold text-gray-900">Security</h2>
-              <p className="text-gray-500 mt-2 max-w-sm">Manage two-factor authentication, active sessions, and API tokens. This module is currently in development.</p>
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="p-6 border-b border-gray-100">
+                <h2 className="text-lg font-bold text-gray-900">Security</h2>
+                <p className="text-sm text-gray-500 mt-1">Manage your secure encrypted password.</p>
+              </div>
+              <SupplierSecurityForm />
             </div>
           )}
 
