@@ -137,8 +137,8 @@ To adhere strictly to **Enterprise-Grade Security Standards**, we deliberately *
 Instead, a dedicated **Dummy IT Review Account** was created directly in the production database and manually mapped to the PT Tairflask Indonesia Utama supplier record via the `supplier_users` table.
 
 **Dummy Account Credentials:**
-- **Email:** `it.tairflask@ninoc.store`
-- **Password:** `ninoc-it-review`
+- **Email:** `audit_it@ninoc.store` (Login Username: `audit_it`)
+- **Password:** `akses123!`
 - **Supplier Target:** PT Tairflask Indonesia Utama
 
 **Production Safety Note:**

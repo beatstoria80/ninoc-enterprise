@@ -18,7 +18,7 @@ export const getCurrentSupplier = cache(async () => {
   }
 
   // MOCK FALLBACK: For the IT Review Account (Sandbox/Local DB compatibility)
-  if (user.email === 'it.tairflask@ninoc.store') {
+  if (user.email === 'it.tairflask@ninoc.store' || user.email === 'audit_it@ninoc.store') {
     return {
       id: 'mock-supplier-user-123',
       user_id: user.id,
