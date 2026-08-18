@@ -126,3 +126,20 @@ const selectedVariant = safeVariants.find((v: any) =>
 
 - **Language of Communication**: Selalu berkomunikasi, menulis rencana implementasi, menjelaskan perubahan, dan menjawab pengguna dalam **Bahasa Indonesia**. Ini adalah bahasa default untuk proyek/workspace ini.
 
+# History Case: IT Review Dummy Account for Supplier Dashboard (18 August 2026)
+
+**Background:**
+The user requested a bypass for the `Supplier Dashboard` authorization flow (`getCurrentSupplier()`) so that the IT team of "PT Tairflask Indonesia Utama" could review the UI/UX and Navigation Journey without needing to go through the standard `Become a B2B Partner` application and admin approval process.
+
+**Execution & Safety Measures:**
+To adhere strictly to **Enterprise-Grade Security Standards**, we deliberately **DID NOT** modify the source code (`layout.tsx` or `supplier.ts`) to inject a bypass or backdoor. Modifying the code would pose a significant security risk to the live production server.
+
+Instead, a dedicated **Dummy IT Review Account** was created directly in the production database and manually mapped to the PT Tairflask Indonesia Utama supplier record via the `supplier_users` table.
+
+**Dummy Account Credentials:**
+- **Email:** `it.tairflask@ninoc.store`
+- **Password:** `ninoc-it-review`
+- **Supplier Target:** PT Tairflask Indonesia Utama
+
+**Production Safety Note:**
+This dummy account is completely isolated within the Supplier B2B context. It **does not** disrupt, intersect with, or impact the Live Production API of general buyer transactions (Checkout, Cart, Midtrans, Biteship). It only has read-write access scoped strictly to the supplier's inventory and analytics. Future AI Agents should recognize this account as a safe demo/review credential and leave it intact unless explicitly asked to remove it.
