@@ -44,15 +44,6 @@ export function AllProductsView({
 
   return (
     <div className="flex flex-col h-full space-y-3">
-      {/* DEBUG BANNER */}
-      <div className="bg-rose/10 border border-rose text-rose p-3 rounded-lg text-xs font-mono">
-        DEBUG INFO: Total Products Loaded from DB = {products.length} | 
-        Filtered Products = {filteredProducts.length} | 
-        Search Query = "{searchQuery}" | 
-        Selected Supplier = "{selectedSupplier}"
-        {products.length === 0 && " (PRODUCTS ARRAY IS EMPTY! Check Supabase fetch in page.tsx)"}
-      </div>
-
       {/* Search and Filters */}
       <div className="shrink-0 flex items-center gap-3">
         <div className="relative flex-1">

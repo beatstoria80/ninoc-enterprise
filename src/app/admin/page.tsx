@@ -176,10 +176,24 @@ export default function AdminDashboard() {
     setIsLoading(true);
     try {
       // Fetch products with variants and supplier info
-      const { data: prodData } = await supabase
+      // Try with suppliers(name) join first; if RLS blocks the suppliers table,
+      // fall back to fetching without it so products still load.
+      let prodData: any[] | null = null;
+      const { data: prodWithSuppliers, error: prodError } = await supabase
         .from('products')
         .select('*, variants(*), suppliers(name)')
         .order('created_at', { ascending: false });
+      
+      if (prodError) {
+        console.warn('[Admin] suppliers join failed (likely RLS), falling back without suppliers:', prodError.message);
+        const { data: prodFallback } = await supabase
+          .from('products')
+          .select('*, variants(*)')
+          .order('created_at', { ascending: false });
+        prodData = prodFallback;
+      } else {
+        prodData = prodWithSuppliers;
+      }
       if (prodData) setProducts(prodData);
 
       // Fetch orders with items (PAGINATED: limit to 100 to prevent browser OOM)
