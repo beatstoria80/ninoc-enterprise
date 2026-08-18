@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Plus, Save, Building, Trash2, Edit2 } from 'lucide-react';
+import { MapPin, Plus, Save, Building, Trash2, Edit2, Activity } from 'lucide-react';
+import { WarehouseMonitoring } from './WarehouseMonitoring';
 
 export function WarehouseTab() {
   const [warehouses, setWarehouses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedHubId, setSelectedHubId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -39,6 +41,10 @@ export function WarehouseTab() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchWarehouses();
   }, []);
+
+  if (selectedHubId) {
+    return <WarehouseMonitoring hubId={selectedHubId} onBack={() => setSelectedHubId(null)} />;
+  }
 
   const handleEdit = (wh: any) => {
     setFormData({
@@ -198,55 +204,64 @@ export function WarehouseTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {warehouses.map(wh => (
-          <div key={wh.id} className="bg-white p-4 rounded-xl border border-ink/10 shadow-sm relative overflow-hidden group hover:border-ink/20 transition-colors">
-            <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
-              <Building size={80} />
+          <div key={wh.id} className="bg-white rounded-xl border border-ink/10 shadow-sm relative overflow-hidden group hover:border-ink/20 transition-all hover:shadow-md flex flex-col">
+            <div className="p-4 flex-1">
+              <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+                <Building size={80} />
+              </div>
+              
+              <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 z-20 transition-opacity">
+                <button 
+                  onClick={() => handleEdit(wh)}
+                  className="p-1.5 bg-ink/10 text-ink rounded hover:bg-ink hover:text-white transition-colors"
+                  title="Edit Hub"
+                >
+                  <Edit2 size={14} />
+                </button>
+                <button 
+                  onClick={() => handleDelete(wh.id)}
+                  className="p-1.5 bg-rose/10 text-rose rounded hover:bg-rose hover:text-white transition-colors"
+                  title="Delete Hub"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+
+              <div className="flex flex-col mb-4 relative z-10">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-mono text-ink/60 bg-ink/5 px-2 py-0.5 rounded">{wh.code}</span>
+                  {wh.is_primary && (
+                    <span className="inline-flex px-2 py-0.5 bg-rose/10 text-rose text-[9px] uppercase tracking-wider font-bold rounded-full">
+                      Main Hub
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 mt-1 shrink-0 bg-ink rounded-lg flex items-center justify-center text-white">
+                    <MapPin size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-ink text-sm">{wh.name}</h3>
+                    <p className="text-[11px] font-medium text-ink/80 flex items-center gap-1 mt-0.5">
+                      PIC: {wh.contact_name} ({wh.contact_phone})
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-1 text-xs text-ink/70 relative z-10 pt-3 border-t border-ink/5">
+                <p className="line-clamp-2">{wh.street_address}</p>
+                <p>{[wh.district, wh.city, wh.province].filter(Boolean).join(', ')}</p>
+                <p className="font-mono text-ink/90 font-medium">ZIP: {wh.postal_code}</p>
+              </div>
             </div>
             
-            <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 z-20 transition-opacity">
-              <button 
-                onClick={() => handleEdit(wh)}
-                className="p-1.5 bg-ink/10 text-ink rounded hover:bg-ink hover:text-white transition-colors"
-                title="Edit Hub"
-              >
-                <Edit2 size={14} />
-              </button>
-              <button 
-                onClick={() => handleDelete(wh.id)}
-                className="p-1.5 bg-rose/10 text-rose rounded hover:bg-rose hover:text-white transition-colors"
-                title="Delete Hub"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-
-            <div className="flex flex-col mb-4 relative z-10">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-mono text-ink/60 bg-ink/5 px-2 py-0.5 rounded">{wh.code}</span>
-                {wh.is_primary && (
-                  <span className="inline-flex px-2 py-0.5 bg-rose/10 text-rose text-[9px] uppercase tracking-wider font-bold rounded-full">
-                    Main Hub
-                  </span>
-                )}
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="w-10 h-10 mt-1 shrink-0 bg-ink rounded-lg flex items-center justify-center text-white">
-                  <MapPin size={20} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-ink text-sm">{wh.name}</h3>
-                  <p className="text-[11px] font-medium text-ink/80 flex items-center gap-1 mt-0.5">
-                    PIC: {wh.contact_name} ({wh.contact_phone})
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-1 text-xs text-ink/70 relative z-10 pt-3 border-t border-ink/5">
-              <p className="line-clamp-2">{wh.street_address}</p>
-              <p>{[wh.district, wh.city, wh.province].filter(Boolean).join(', ')}</p>
-              <p className="font-mono text-ink/90 font-medium">ZIP: {wh.postal_code}</p>
-            </div>
+            <button 
+              onClick={() => setSelectedHubId(wh.id)}
+              className="w-full bg-ink/5 hover:bg-ink hover:text-white text-ink text-[10px] uppercase tracking-wider font-bold py-3 px-4 flex items-center justify-center gap-2 transition-colors border-t border-ink/10"
+            >
+              <Activity size={14} /> View Logistics Activity
+            </button>
           </div>
         ))}
         {warehouses.length === 0 && !isAdding && (
