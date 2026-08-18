@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
-import { withErrorHandler, apiSuccess, apiBadRequest } from '@/lib/apiResponse';
+import { withErrorHandler, apiSuccess, apiBadRequest, apiError } from '@/lib/apiResponse';
+import { createClient } from '@/utils/supabase/server';
+
+async function checkAuth() {
+  const supabaseServer = await createClient();
+  const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+  if (authError || !user) throw new Error('UNAUTHORIZED');
+}
 
 export const GET = withErrorHandler(async () => {
+  await checkAuth();
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase
     .from('categories')
@@ -20,6 +28,7 @@ export const GET = withErrorHandler(async () => {
 });
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
+  await checkAuth();
   const body = await req.json();
   const { name, slug, seo_keywords, seo_title_template, parent_id } = body;
 
@@ -45,6 +54,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
 });
 
 export const PUT = withErrorHandler(async (req: NextRequest) => {
+  await checkAuth();
   const body = await req.json();
   const { id, name, slug, seo_keywords, seo_title_template, parent_id } = body;
 
@@ -72,6 +82,7 @@ export const PUT = withErrorHandler(async (req: NextRequest) => {
 });
 
 export const DELETE = withErrorHandler(async (req: NextRequest) => {
+  await checkAuth();
   const { searchParams } = new URL(req.url);
   const id = searchParams.get('id');
 

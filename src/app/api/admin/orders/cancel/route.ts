@@ -3,11 +3,19 @@ import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { notifyAllChannels } from '@/lib/notifications';
 import { sendEmailOrderCancelled } from '@/lib/email';
 import { sendCancelledWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { createClient } from '@/utils/supabase/server';
 
 const supabaseAdmin = getSupabaseAdmin();
 
 export async function POST(req: Request) {
   try {
+    const supabaseServer = await createClient();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
+    }
+
     const body = await req.json();
     const { order_id, reason = 'Cancelled by Admin' } = body;
 

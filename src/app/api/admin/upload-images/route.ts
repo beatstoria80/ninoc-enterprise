@@ -19,11 +19,18 @@ const getSupabaseAdmin = (): SupabaseClient => {
   return createClient(url, key);
 };
 
+import { createClient as createServerClient } from '@/utils/supabase/server';
+
 export async function POST(request: NextRequest) {
   // CORS headers for local development
   const origin = request.headers.get('origin') || '*';
 
   try {
+    const supabaseServer = await createServerClient();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
+    }
     // Validate environment variables FIRST
     if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
       return NextResponse.json(
