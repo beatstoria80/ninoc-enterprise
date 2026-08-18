@@ -21,40 +21,25 @@ export function WarehouseMonitoring({ hubId, onBack }: HubMonitoringProps) {
       if (hub) setHubData(hub);
 
       // Get orders from this hub
-      // order_items -> products -> supplier_id -> suppliers -> assigned_hub_id
-      // Since it's complex, we can query order_items and then join
-      const { data: orderItems } = await supabase
-        .from('order_items')
+      // In a real scenario we'd filter by supplier's assigned_hub_id, 
+      // but for now let's just fetch recent orders to simulate the view
+      const { data: orderData } = await supabase
+        .from('orders')
         .select(`
           id,
-          quantity,
-          price,
-          product_name,
-          order_id,
-          orders (
-            id,
-            status,
-            created_at,
-            shipping_courier,
-            shipping_service,
-            biteship_waybill_id,
-            shipping_cost,
-            customer_name
-          )
+          status,
+          created_at,
+          shipping_courier,
+          shipping_service,
+          biteship_waybill_id,
+          shipping_cost,
+          customer_name
         `)
-        // In a real scenario we'd filter by supplier's assigned_hub_id, 
-        // but for now let's just fetch recent orders to simulate the view
+        .order('created_at', { ascending: false })
         .limit(100);
       
-      // Filter out orders (simulated filter)
-      if (orderItems) {
-        const uniqueOrders = new Map();
-        orderItems.forEach((item: any) => {
-          if (item.orders) {
-            uniqueOrders.set(item.orders.id, item.orders);
-          }
-        });
-        setOrders(Array.from(uniqueOrders.values()).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()));
+      if (orderData) {
+        setOrders(orderData);
       }
       setLoading(false);
     }
