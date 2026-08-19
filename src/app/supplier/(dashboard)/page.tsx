@@ -56,131 +56,118 @@ export default async function SupplierDashboard() {
   }
   
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 bg-gradient-to-r from-ink to-ink/80 p-8 rounded-2xl text-white shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-        <div className="relative z-10">
-          <p className="text-sm font-medium text-white/60 mb-1 uppercase tracking-widest">Overview</p>
-          <h1 className="text-3xl font-bold font-display">Welcome back, {supplierName}</h1>
-          <p className="text-white/70 mt-2 max-w-lg">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6 mb-6 mt-2">
+        <div>
+          <p className="text-[10px] font-bold text-gray-500 mb-1 uppercase tracking-widest">Overview</p>
+          <h1 className="text-2xl font-bold font-display text-gray-900">Welcome back, {supplierName}</h1>
+          <p className="text-sm text-gray-500 mt-1 max-w-2xl">
             Monitor your logistics, allocations, and financial performance seamlessly. NINOC enterprise systems handle the heavy lifting.
           </p>
         </div>
-        <div className="relative z-10 flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-          <span className="text-xs font-medium text-white">System Active</span>
+        <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 border border-gray-200">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-gray-600">System Active</span>
         </div>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-gray-200 border-y border-gray-200 bg-white mb-6">
+        <div className="py-6 px-4 md:px-6 hover:bg-gray-50/50 transition-colors relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <DollarSign size={80} />
           </div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 shadow-sm">
-              <DollarSign size={24} />
+          <div className="flex flex-col gap-2 relative z-10">
+            <div className="text-[10px] font-bold text-gray-500 tracking-widest uppercase flex items-center gap-2">
+              <DollarSign size={14} /> Pending Payouts
             </div>
-            <div>
-              <p className="text-sm text-gray-500 font-medium">Pending Payouts</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">
-                Rp {pendingPayouts.toLocaleString('id-ID')}
-              </h3>
-            </div>
+            <h3 className="text-2xl font-medium text-gray-900">
+              Rp {pendingPayouts.toLocaleString('id-ID')}
+            </h3>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+        <div className="py-6 px-4 md:px-6 hover:bg-gray-50/50 transition-colors relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <TrendingUp size={80} />
           </div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shadow-sm">
-              <TrendingUp size={24} />
+          <div className="flex flex-col gap-2 relative z-10">
+            <div className="text-[10px] font-bold text-gray-500 tracking-widest uppercase flex items-center gap-2">
+              <TrendingUp size={14} /> Items Sold (30d)
             </div>
-            <div>
-              <p className="text-sm text-gray-500 font-medium">Items Sold (30d)</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">{itemsSold}</h3>
-            </div>
+            <h3 className="text-2xl font-medium text-gray-900">{itemsSold}</h3>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+        <div className="py-6 px-4 md:px-6 hover:bg-gray-50/50 transition-colors relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <Package size={80} />
           </div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 shadow-sm">
-              <Package size={24} />
+          <div className="flex flex-col gap-2 relative z-10">
+            <div className="text-[10px] font-bold text-gray-500 tracking-widest uppercase flex items-center gap-2">
+              <Package size={14} /> Active Allocations
             </div>
-            <div>
-              <p className="text-sm text-gray-500 font-medium">Active Allocations</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">{activeAllocations}</h3>
-            </div>
+            <h3 className="text-2xl font-medium text-gray-900">{activeAllocations}</h3>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group relative overflow-hidden">
+        <div className="py-6 px-4 md:px-6 hover:bg-gray-50/50 transition-colors relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
             <Activity size={80} />
           </div>
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 shadow-sm">
-              <Activity size={24} />
+          <div className="flex flex-col gap-2 relative z-10">
+            <div className="text-[10px] font-bold text-gray-500 tracking-widest uppercase flex items-center gap-2">
+              <Activity size={14} /> Fulfillment Rate
             </div>
-            <div>
-              <p className="text-sm text-gray-500 font-medium">Fulfillment Rate</p>
-              <h3 className="text-2xl font-bold text-gray-900 mt-1">100%</h3>
-            </div>
+            <h3 className="text-2xl font-medium text-gray-900">100%</h3>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Sales Performance</h3>
-            <span className="text-xs font-medium px-3 py-1 bg-gray-100 rounded-full text-gray-600">Managed by Ninoc</span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white border border-gray-200 p-6 flex flex-col">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-900">Sales Performance</h3>
+            <span className="text-[9px] uppercase tracking-widest font-medium px-2 py-1 bg-gray-100 text-gray-600">Managed by Ninoc</span>
           </div>
-          <div className="flex-1 flex flex-col pt-4 min-h-[300px]">
+          <div className="flex-1 flex flex-col min-h-[300px]">
             <SupplierSalesChart data={validItems || []} />
           </div>
         </div>
         
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex flex-col">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold text-gray-900">Recent Logistics</h3>
-            <button className="text-blue-600 hover:text-blue-700 p-1">
-              <ArrowUpRight size={18} />
+        <div className="bg-white border border-gray-200 p-6 flex flex-col">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+            <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-900">Recent Logistics</h3>
+            <button className="text-gray-400 hover:text-gray-900 transition-colors">
+              <ArrowUpRight size={14} />
             </button>
           </div>
           <div className="flex-1">
             {recentMovements.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-0 divide-y divide-gray-100">
                 {recentMovements.map((m, i) => (
-                  <div key={i} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0 group">
+                  <div key={i} className="flex items-center justify-between py-3 group">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-50 group-hover:bg-gray-100 transition-colors rounded-lg flex items-center justify-center">
-                        <Package size={16} className="text-gray-500" />
+                      <div className="w-8 h-8 bg-gray-50 group-hover:bg-gray-100 transition-colors flex items-center justify-center border border-gray-100">
+                        <Package size={12} className="text-gray-500" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{m.name}</p>
-                        <p className="text-xs text-gray-500">{m.desc}</p>
+                        <p className="text-xs font-medium text-gray-900 truncate max-w-[120px]">{m.name}</p>
+                        <p className="text-[10px] text-gray-500">{m.desc}</p>
                       </div>
                     </div>
-                    <span className="text-sm font-bold text-emerald-600">+ Rp {m.amount.toLocaleString('id-ID')}</span>
+                    <span className="text-xs font-mono font-medium text-gray-900">+ Rp{m.amount.toLocaleString('id-ID')}</span>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="h-full flex flex-col items-center justify-center py-12">
-                <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                  <Truck size={24} className="text-gray-300" />
+                <div className="w-12 h-12 bg-gray-50 border border-gray-100 flex items-center justify-center mb-3">
+                  <Truck size={16} className="text-gray-300" />
                 </div>
-                <p className="text-sm font-medium text-gray-500 text-center">No recent movements</p>
-                <p className="text-xs text-gray-400 text-center mt-1">Pending incoming shipments</p>
+                <p className="text-xs font-medium text-gray-500 text-center">No recent movements</p>
+                <p className="text-[10px] text-gray-400 text-center mt-1">Pending incoming shipments</p>
               </div>
             )}
           </div>
