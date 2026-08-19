@@ -162,10 +162,11 @@ export async function POST(req: Request) {
           }
         }
 
-        // PRIORITIZE AREA ID OVER POSTAL CODE FOR CHEAPER, MORE ACCURATE RATES
+        // Start with Both if Maps API found it
         if (final_dest_id) {
           bodyPayload.destination_area_id = final_dest_id;
-        } else if (destination_postal_code) {
+        }
+        if (destination_postal_code) {
           bodyPayload.destination_postal_code = destination_postal_code;
         }
 
@@ -175,6 +176,30 @@ export async function POST(req: Request) {
           bodyPayload.origin_latitude = settings?.warehouse_latitude || -6.9147;
           bodyPayload.origin_longitude = settings?.warehouse_longitude || 107.6098;
         }
+
+        // Helper to fetch rates with resilient fallback
+        const fetchRatesResilient = async (payload: any) => {
+          let res = await fetch('https://api.biteship.com/v1/rates/couriers', {
+            method: 'POST',
+            headers: { 'Authorization': apiKey, 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          let json = await res.json();
+          
+          // Biteship mapping bug fallback: if area_id causes "No courier available" but postal code exists
+          if ((!res.ok || json.success === false) && payload.destination_area_id && payload.destination_postal_code) {
+            console.warn('[Biteship Rates] Fallback triggered. Area ID failed. Retrying with Postal Code only.');
+            const fallbackPayload = { ...payload };
+            delete fallbackPayload.destination_area_id;
+            res = await fetch('https://api.biteship.com/v1/rates/couriers', {
+              method: 'POST',
+              headers: { 'Authorization': apiKey, 'Content-Type': 'application/json' },
+              body: JSON.stringify(fallbackPayload),
+            });
+            json = await res.json();
+          }
+          return { response: res, data: json };
+        };
 
         if (split_shipping && items && items.length > 0) {
           // MULTI-WAREHOUSE / SPLIT SHIPPING LOGIC
@@ -192,12 +217,7 @@ export async function POST(req: Request) {
             const groupItems = group as any[];
             const payload: any = { ...bodyPayload, items: groupItems, origin_postal_code: originCode };
             
-            const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
-              method: 'POST',
-              headers: { 'Authorization': apiKey, 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload),
-            });
-            const data = await response.json();
+            const { response, data } = await fetchRatesResilient(payload);
             
             let finalPricing = [];
             let isFnbRestricted = false;
@@ -232,16 +252,7 @@ export async function POST(req: Request) {
           const defaultOrigin = await getOriginPostalCode();
           bodyPayload.origin_postal_code = origin_postal_code || defaultOrigin;
 
-          const response = await fetch('https://api.biteship.com/v1/rates/couriers', {
-            method: 'POST',
-            headers: {
-              'Authorization': apiKey,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(bodyPayload),
-          });
-
-          const data = await response.json();
+          const { response, data } = await fetchRatesResilient(bodyPayload);
 
           // If success, return real data
           if (response.ok && data.success !== false) {
