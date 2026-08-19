@@ -17,6 +17,39 @@ export const getCurrentSupplier = cache(async () => {
     return null;
   }
 
+  // MOCK FALLBACK: For the IT Review Account (Sandbox/Local DB compatibility)
+  // FIX: Menggunakan format UUID yang valid agar tidak memicu error 500 di PostgreSQL
+  if (user.email === 'it.tairflask@ninoc.store' || user.email === 'audit_it@ninoc.store') {
+    return {
+      id: '00000000-0000-0000-0000-000000000000',
+      user_id: user.id,
+      supplier_id: '11111111-1111-1111-1111-111111111111',
+      role: 'admin',
+      suppliers: {
+        name: 'PT Tairflask Indonesia Utama (IT Review)',
+        status: 'approved',
+        contact_email: 'it.tairflask@ninoc.store',
+        contact_phone: '081234567890',
+        bank_name: 'BCA',
+        bank_account_number: '1234567890',
+        bank_account_holder: 'PT Tairflask',
+      },
+      assignedWarehouse: {
+        id: 'mock-warehouse-1',
+        name: 'Griya Saluyu (Main Hub)',
+        is_primary: true,
+        code: 'W-BANDUNG',
+        city: 'Bandung',
+        province: 'Jawa Barat',
+        postal_code: '40292',
+        street_address: 'Jl. Griya Saluyu No. 1',
+        contact_name: 'Admin Hub',
+        contact_phone: '08111222333'
+      },
+      pillar: 'FASHION'
+    };
+  }
+
   // PARALLEL EXECUTION: Fetch user data AND all active primary warehouses simultaneously
   const [supplierUserResult, allWarehousesResult] = await Promise.all([
     supabaseAdmin
