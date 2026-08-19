@@ -233,9 +233,9 @@ export default function RequestAllocationModalClient({ supplierId }: { supplierI
     <>
       <button 
         onClick={() => setIsOpen(true)}
-        className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center gap-2"
+        className="bg-black text-white px-4 py-2 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-800 transition-colors flex items-center gap-1.5 rounded-sm"
       >
-        <Plus size={16} /> Request Allocation
+        <Plus size={14} /> Request Allocation
       </button>
 
       {isOpen && (
