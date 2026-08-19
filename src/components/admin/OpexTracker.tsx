@@ -21,6 +21,7 @@ const CATEGORIES = [
   { value: 'utilities', label: 'Listrik, Air, Internet', icon: '💡' },
   { value: 'software', label: 'Software / Server', icon: '💻' },
   { value: 'equipment', label: 'Peralatan Gudang', icon: '🔧' },
+  { value: 'payment_gateway', label: 'Biaya Payment Gateway (Midtrans)', icon: '💳' },
   { value: 'other', label: 'Lainnya', icon: '📋' },
 ];
 

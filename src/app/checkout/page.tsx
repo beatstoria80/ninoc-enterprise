@@ -699,7 +699,7 @@ export default function CheckoutPage() {
 
   const subtotal = totalPrice;
   const tax = 0; // VAT removed as prices are nett
-  const platformFee = 2500; // Standard platform/gateway fee
+  const platformFee = 0; // Absorbed by NINOC as OPEX
   const finalTotal = Math.max(0, subtotal + shippingCost + platformFee - (promoApplied?.discountAmount || 0));
 
   const applyPromo = async () => {
@@ -993,7 +993,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between items-center text-xs md:text-[9px] font-medium uppercase tracking-widest text-ink/60">
                   <span>{dict.checkout.platformFee}</span>
-                  <span>+ IDR {platformFee.toLocaleString('id-ID')}</span>
+                  <span className="text-emerald-600 font-bold">+ IDR 0 (GRATIS)</span>
                 </div>
               </div>
               
@@ -1426,7 +1426,7 @@ export default function CheckoutPage() {
 
                   <div className="flex justify-between text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-ink">
                     <span>{dict.checkout.platformFee}</span>
-                    <span className="italic text-ink">+ IDR {platformFee.toLocaleString('id-ID')}</span>
+                    <span className="italic text-emerald-600 font-bold">+ IDR 0 (GRATIS)</span>
                   </div>
                 </div>
 

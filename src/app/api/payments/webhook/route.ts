@@ -274,6 +274,37 @@ export async function POST(req: Request) {
               actionLink: `/profile/orders/${orderId}`,
             }).catch(err => console.error('[Payment Webhook Async] Push Notification Error:', err));
           }
+
+          // E. Record Midtrans Gateway Fee as OPEX (NINOC Absorbs Platform Fee)
+          const paymentType = notificationJson.payment_type || '';
+          const grossAmount = Number(notificationJson.gross_amount || existingOrder.total_price || 0);
+          let midtransFee = 0;
+
+          if (paymentType === 'qris' || paymentType === 'gopay') {
+            midtransFee = grossAmount * 0.007; // 0.7%
+          } else if (paymentType === 'bank_transfer' || paymentType === 'echannel' || paymentType === 'cstore') {
+            midtransFee = 4440; // Flat Rp 4000 + 11% PPN
+          } else if (paymentType === 'credit_card') {
+            midtransFee = (grossAmount * 0.029) + 2000;
+          } else {
+            midtransFee = 4440; // Fallback
+          }
+
+          if (midtransFee > 0) {
+            const roundedFee = Math.round(midtransFee);
+            const { error: opexError } = await supabaseAdmin.from('operational_expenses').insert({
+              category: 'payment_gateway',
+              description: `Fee Midtrans Order #${existingOrder.order_number || orderId} (${paymentType.toUpperCase()})`,
+              amount: roundedFee,
+              expense_date: new Date().toISOString().slice(0, 10),
+              created_by: 'system@ninoc.store'
+            });
+            if (opexError) {
+              console.error(`[Payment Webhook Async] Failed to insert OPEX for Order ${orderId}:`, opexError);
+            } else {
+              console.log(`[Payment Webhook Async] Logged Midtrans OPEX Rp ${roundedFee} for Order ${orderId}`);
+            }
+          }
         }
       } catch (asyncErr) {
         console.error(`[Payment Webhook Async] Unhandled error in asynchronous background processing for Order ${orderId}:`, asyncErr);
