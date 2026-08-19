@@ -45,9 +45,34 @@ export async function GET(request: Request) {
     }
   }
 
+  let finalNext = requestUrl.searchParams.get('next');
+
+  // Smart Routing Logic based on Session Data
+  if (!finalNext && code) {
+    const cookieStore = await cookies();
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() { return cookieStore.getAll(); },
+          setAll() {}
+        }
+      }
+    );
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.email) {
+      if (user.email === 'admin@ninoc.store') {
+        finalNext = '/admin';
+      } else if (user.email.endsWith('@ninoc.store')) {
+        finalNext = '/supplier';
+      }
+    }
+  }
+
   // Support dynamic redirect via 'next' query param (useful for password resets)
-  const next = requestUrl.searchParams.get('next') || '/onboarding';
-  const redirectUrl = next.startsWith('/') ? `${origin}${next}` : `${origin}/onboarding`;
+  const fallbackNext = finalNext || '/onboarding';
+  const redirectUrl = fallbackNext.startsWith('/') ? `${origin}${fallbackNext}` : `${origin}/onboarding`;
 
   return NextResponse.redirect(redirectUrl);
 }
