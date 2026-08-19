@@ -1,8 +1,7 @@
 import { getCurrentSupplier } from '@/lib/services/supplier';
-import { getSupplierInventoryStats } from '@/lib/services/inventory';
+import { getSupplierInventoryStats, getSupplierDashboardMetrics } from '@/lib/services/inventory';
 import { Package, LineChart, TrendingUp, DollarSign, UtensilsCrossed, ArrowUpRight, Activity, Truck } from 'lucide-react';
 import { redirect } from 'next/navigation';
-import { createClient } from '@/utils/supabase/server';
 import { SupplierSalesChart } from '@/components/supplier/SupplierSalesChart';
 
 export default async function SupplierDashboard() {
@@ -28,28 +27,11 @@ export default async function SupplierDashboard() {
       const stats = await getSupplierInventoryStats(supplierId);
       activeAllocations = stats.activeAllocations;
       
-      const supabase = await createClient();
-      const { data: soldItems } = await supabase
-        .from('order_items')
-        .select('id, quantity, price, created_at, products(name), orders!inner(status)')
-        .eq('supplier_id', supplierId)
-        .order('created_at', { ascending: false });
-
-      if (soldItems) {
-        validItems = soldItems.filter((item) => {
-          const status = (item.orders as any)?.status;
-          return status !== 'cancelled' && status !== 'refunded';
-        });
-
-        itemsSold = validItems.reduce((acc, curr) => acc + (curr.quantity || 1), 0);
-        pendingPayouts = validItems.reduce((acc, curr) => acc + ((curr.price || 0) * (curr.quantity || 1)), 0);
-        
-        recentMovements = validItems.slice(0, 5).map(item => ({
-          name: (item.products as any)?.name || 'Unknown Product',
-          desc: `Sold on ${new Date(item.created_at).toLocaleDateString()}`,
-          amount: (item.price || 0) * (item.quantity || 1)
-        }));
-      }
+      const metrics = await getSupplierDashboardMetrics(supplierId);
+      itemsSold = metrics.itemsSold;
+      pendingPayouts = metrics.pendingPayouts;
+      recentMovements = metrics.recentMovements;
+      validItems = metrics.validItems;
     } catch (e) {
       console.error(e);
     }

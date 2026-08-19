@@ -62,6 +62,7 @@ export const getCurrentSupplier = cache(async () => {
       .from('warehouses')
       .select('*')
       .eq('is_active', true)
+      .in('code', ['WH-BANDUNG-FB', 'WH-BANDUNG-01'])
   ]);
 
   const { data: supplierUser, error } = supplierUserResult;
