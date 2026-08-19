@@ -75,4 +75,38 @@ export class FlashSaleService {
     
     return match;
   }
+
+  /**
+   * Checks the total historical quantity purchased by a user for a specific Flash Sale item.
+   * Scans all non-failed orders matching the user's ID, email, or phone.
+   */
+  static async checkUserPurchaseLimit(
+    supabase: SupabaseClient,
+    flashSaleItemId: string,
+    userId: string | undefined,
+    email: string | undefined,
+    phone: string | undefined
+  ): Promise<number> {
+    if (!userId && !email && !phone) return 0;
+
+    const userConditions = [];
+    if (userId) userConditions.push(`user_id.eq.${userId}`);
+    if (email) userConditions.push(`customer_email.eq.${email}`);
+    if (phone) userConditions.push(`customer_phone.eq.${phone}`);
+    const orQuery = userConditions.join(',');
+
+    const { data, error } = await supabase
+      .from('order_items')
+      .select('quantity, orders!inner(status, user_id, customer_email, customer_phone)')
+      .eq('flash_sale_item_id', flashSaleItemId)
+      .in('orders.status', ['pending', 'paid', 'shipped', 'delivered', 'processing'])
+      .or(orQuery, { foreignTable: 'orders' });
+
+    if (error) {
+      console.error('[FlashSaleService] Historical limit check failed:', error);
+      return 0;
+    }
+
+    return data?.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0) || 0;
+  }
 }

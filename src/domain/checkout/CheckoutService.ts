@@ -262,6 +262,32 @@ export class CheckoutService {
     
     if (flashSaleOrderItems.length > 0) {
       for (const item of flashSaleOrderItems) {
+        
+        // [NEW] Enforce Historical Purchase Limit
+        if (item.flash_sale_max_qty) {
+          const pastPurchasedQty = await FlashSaleService.checkUserPurchaseLimit(
+            this.supabaseAdmin,
+            item.flash_sale_item_id,
+            customerDetails.user_id,
+            customerDetails.email,
+            customerDetails.phone
+          );
+          
+          if (pastPurchasedQty + item.quantity > item.flash_sale_max_qty) {
+            // Rollback any successfully reserved items before failing
+            for (const res of reservedFlashSaleItems) {
+              await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+                p_flash_sale_item_id: res.id,
+                p_qty: -res.qty
+              });
+            }
+            return { 
+              status: 409, 
+              payload: { error: `Anda telah mencapai batas maksimal pembelian (Maks ${item.flash_sale_max_qty} pcs) untuk produk promosi ${item.product_name} pada transaksi Anda sebelumnya.` } 
+            };
+          }
+        }
+
         const { data: reserved, error: rpcErr } = await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
           p_flash_sale_item_id: item.flash_sale_item_id,
           p_qty: item.quantity

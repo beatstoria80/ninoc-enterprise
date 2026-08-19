@@ -159,7 +159,8 @@ export class PricingEngine {
         supplier_hpp: finalHpp,
         ninoc_markup: ninocMarkup,
         flash_sale_id: flashSaleId,
-        flash_sale_item_id: flashSaleItemId
+        flash_sale_item_id: flashSaleItemId,
+        flash_sale_max_qty: flashSaleMatch ? flashSaleMatch.max_qty_per_user : null
       });
     }
 
