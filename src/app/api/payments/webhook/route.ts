@@ -108,11 +108,13 @@ export async function POST(req: Request) {
     }
 
     // 4. Atomic Status Update in Database
+    const paymentType = notificationJson.payment_type || '';
     const { error: updateError } = await supabaseAdmin
       .from('orders')
       .update({
         status: orderUpdateStatus,
         payment_status: orderUpdateStatus === 'paid' ? 'success' : orderUpdateStatus === 'cancelled' ? 'failed' : 'pending',
+        payment_method: paymentType,
         midtrans_id: transactionId,
       })
       .eq('id', orderId);
@@ -320,7 +322,6 @@ export async function POST(req: Request) {
           }
 
           // E. Record Midtrans Gateway Fee as OPEX (NINOC Absorbs Platform Fee)
-          const paymentType = notificationJson.payment_type || '';
           const grossAmount = Number(notificationJson.gross_amount || existingOrder.total_price || 0);
           let midtransFee = 0;
 

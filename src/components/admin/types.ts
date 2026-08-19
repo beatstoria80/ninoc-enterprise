@@ -87,6 +87,7 @@ export interface Order {
   status: OrderStatus;
   payment_status: PaymentStatus;
   midtrans_id: string | null;
+  payment_method?: string | null;
   snap_token: string | null;
   shipping_address: ShippingAddress | null;
   courier: string | null;

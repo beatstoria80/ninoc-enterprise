@@ -1153,13 +1153,20 @@ export function OrdersTab({
                           </span>
                         </td>
                         <td className="px-1.5 py-1">
-                          <span className={cn(
-                            "text-[10px] uppercase tracking-wider font-medium",
-                            order.payment_status === 'success' ? "text-emerald-600" :
-                            order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
-                          )}>
-                            {order.payment_status}
-                          </span>
+                          <div className="flex flex-col gap-0.5">
+                            <span className={cn(
+                              "text-[10px] uppercase tracking-wider font-medium",
+                              order.payment_status === 'success' ? "text-emerald-600" :
+                              order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
+                            )}>
+                              {order.payment_status}
+                            </span>
+                            {order.payment_method && (
+                              <span className="text-[9px] text-ink/70 font-medium uppercase tracking-wider">
+                                {order.payment_method.replace(/_/g, ' ')}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-1.5 py-1">
                           <span className="text-[11px] font-medium text-ink/90 uppercase">{order.courier || '—'}</span>
@@ -1332,7 +1339,7 @@ export function OrdersTab({
                                               "text-[9px] uppercase tracking-wider font-medium",
                                               order.payment_status === 'success' ? "text-emerald-600" :
                                               order.payment_status === 'pending' ? "text-amber-600" : "text-red-600"
-                                            )}>{order.payment_status}</span>
+                                            )}>{order.payment_status} {order.payment_method ? `• ${order.payment_method.replace(/_/g, ' ')}` : ''}</span>
                                           </div>
                                         </div>
                                         <div className="h-px bg-ink/5" />

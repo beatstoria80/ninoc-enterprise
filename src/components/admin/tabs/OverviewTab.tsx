@@ -119,6 +119,10 @@ export function OverviewTab({
                   <p className="text-xs md:text-xs uppercase tracking-widest text-ink/80 mb-0.5">Customer</p>
                   <p className="text-xs font-medium text-ink leading-none">{order.shipping_address?.name || 'Guest'}</p>
                 </div>
+                <div className="hidden sm:block">
+                  <p className="text-xs md:text-xs uppercase tracking-widest text-ink/80 mb-0.5">Method</p>
+                  <p className="text-xs font-medium text-ink leading-none uppercase">{order.payment_method?.replace(/_/g, ' ') || '-'}</p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <div className="text-right">

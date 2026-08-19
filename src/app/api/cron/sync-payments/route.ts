@@ -55,6 +55,7 @@ export async function GET(req: Request) {
         const transactionStatus = statusResponse.transaction_status;
         const fraudStatus = statusResponse.fraud_status;
         const transactionId = statusResponse.transaction_id;
+        const paymentType = statusResponse.payment_type || '';
 
         console.log(`[Sync Payments] Order ${order.id}: Midtrans status=${transactionStatus}, fraud=${fraudStatus}`);
 
@@ -77,12 +78,12 @@ export async function GET(req: Request) {
           continue;
         }
 
-        // 4. Update order status
         const { error: updateError } = await adminClient
           .from('orders')
           .update({
             status: newStatus,
             payment_status: newStatus === 'paid' ? 'success' : newStatus === 'cancelled' ? 'failed' : 'pending',
+            payment_method: paymentType,
             midtrans_id: transactionId,
           })
           .eq('id', order.id);
