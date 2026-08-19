@@ -1,5 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useState, useMemo } from 'react';
 import { useHydratedCart, useCartUI, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { 
   hasSizes, 
@@ -10,6 +9,8 @@ import {
   findVariant,
   Product
 } from '@/lib/domain/product';
+import { useRelatedProducts } from './useRelatedProducts';
+import { useProductRealtime } from './useProductRealtime';
 
 export function useProductSelection(initialProduct: any, initialReviews: any[]) {
   const [product, setProduct] = useState(initialProduct || null);
@@ -17,113 +18,24 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [quantity, setQuantity] = useState(1);
-  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
 
   const { addItem, items: cartItems } = useHydratedCart();
   const setConflictInfo = useCartUI(state => state.setConflictInfo);
 
   // Derived state: hasProductSizes, availableSizes
   const hasProductSizes = useMemo(() => hasSizes(product), [product]);
-  
   const availableSizes = useMemo(() => getAvailableSizes(product), [product]);
 
-  const effectiveSize = useMemo(() => {
-    return resolveEffectiveSize(product, selectedSize);
-  }, [product, selectedSize]);
+  const effectiveSize = useMemo(() => resolveEffectiveSize(product, selectedSize), [product, selectedSize]);
+  const effectiveColor = useMemo(() => resolveEffectiveColor(product, effectiveSize, selectedColor), [product, effectiveSize, selectedColor]);
 
-  const effectiveColor = useMemo(() => {
-    return resolveEffectiveColor(product, effectiveSize, selectedColor);
-  }, [product, effectiveSize, selectedColor]);
-
-  // Destructure primitives to prevent infinite Realtime re-renders while satisfying linter
   const productId = product?.id;
   const productCategory = product?.category;
   const productSubCategory = product?.sub_category;
 
-  // Realtime Stock & Related Products
-  useEffect(() => {
-    if (!productId) return;
-    
-    let channel: ReturnType<typeof supabase.channel> | null = null;
-    
-    const fetchRelated = async () => {
-      try {
-        // 1. Prioritaskan produk dengan sub_category yang persis sama (misal: sesama Unisex)
-        let { data: exactMatches } = await supabase
-          .from('products')
-          .select('*')
-          .eq('sub_category', productSubCategory || productCategory)
-          .neq('id', productId)
-          .limit(14);
-          
-        let related = exactMatches || [];
-
-        // 2. Jika produk kurang dari 10, isi kekurangannya dengan produk dari kategori utama (misal: sesama pakaian)
-        if (related.length < 10) {
-          const { data: categoryMatches } = await supabase
-            .from('products')
-            .select('*')
-            .eq('category', productCategory)
-            .neq('id', productId)
-            .limit(14);
-            
-          if (categoryMatches) {
-            const existingIds = new Set(related.map(p => p.id));
-            const extra = categoryMatches.filter(p => !existingIds.has(p.id));
-            related = [...related, ...extra].slice(0, 14);
-          }
-        }
-
-        // 3. Jika masih kurang dari 10, ambil produk acak dari seluruh katalog agar rak tidak kosong
-        if (related.length < 10) {
-          const { data: allOther } = await supabase
-            .from('products')
-            .select('*')
-            .neq('id', productId)
-            .limit(16);
-
-          if (allOther) {
-            const existingIds = new Set(related.map(p => p.id));
-            const extra = allOther.filter(p => !existingIds.has(p.id));
-            related = [...related, ...extra].slice(0, 14);
-          }
-        }
-
-        setRelatedProducts(related);
-      } catch (e) {
-        console.error('Failed to fetch related', e);
-      }
-    };
-    
-    fetchRelated();
-    
-    try {
-      channel = supabase
-        .channel(`variants-stock-${productId}`)
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'variants',
-          filter: `product_id=eq.${productId}`
-        }, async () => {
-          const { data } = await supabase
-            .from('products')
-            .select('*, variants(*)')
-            .eq('id', productId)
-            .single();
-          if (data) setProduct(data);
-        })
-        .subscribe();
-    } catch {
-      console.warn('Realtime subscription unavailable');
-    }
-
-    return () => {
-      if (channel) {
-        try { supabase.removeChannel(channel); } catch {}
-      }
-    };
-  }, [productId, productCategory, productSubCategory]);
+  // Use Atomic Hooks for side effects (Clean Architecture)
+  const relatedProducts = useRelatedProducts(productId, productCategory, productSubCategory);
+  useProductRealtime(productId, setProduct);
 
   const availableStock = useMemo(() => {
     const selectedVariant = findVariant(product, effectiveSize, effectiveColor);

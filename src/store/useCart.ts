@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { useState, useEffect } from 'react';
 import { SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/lib/constants/pricing';
+import { CartDomainService } from '@/domain/cart/CartDomainService';
 
 // Re-export for backward compatibility — existing consumers import from '@/store/useCart'
 export { SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT };
@@ -48,40 +49,9 @@ export const useCart = create<CartStore>()(
       addItem: (product, size, color, sizeSurcharge = 0, qty = 1, maxStock = 999) => {
         const currentItems = get().items;
         
-        // Single Order Warehouse Conflict Check
-        // CRITICAL BUG FIX: Ensure we do not block items that technically share the same physical location
-        // but have mismatched metadata (e.g. one has warehouse_id, the other only has origin_postal_code).
-        if (currentItems.length > 0) {
-          const firstItem = currentItems[0];
-          
-          const existingWarehouseId = firstItem.warehouse_id;
-          const existingPostal = firstItem.origin_postal_code;
-          
-          const newWarehouseId = product.warehouse_id;
-          const newPostal = product.origin_postal_code;
-
-          let isConflict = false;
-          
-          if (existingWarehouseId || newWarehouseId) {
-            // Strict enforcement: if AT LEAST ONE item has a warehouse_id, they MUST match.
-            // This blocks mixing a Warehouse Item (Tumbler) with a Generic Item (Kaos).
-            if (existingWarehouseId !== newWarehouseId) {
-              isConflict = true;
-            }
-          } else {
-            // Fallback: neither item has a warehouse_id.
-            // If both have postal codes and they differ, block it.
-            if (existingPostal && newPostal && existingPostal !== newPostal) {
-              isConflict = true;
-            }
-          }
-
-          if (isConflict) {
-            return { 
-              success: false, 
-              error: 'Anda tidak dapat menggabungkan produk dari lokasi fasilitas/gudang yang berbeda dalam satu pesanan. Selesaikan atau kosongkan pesanan sebelumnya.' 
-            };
-          }
+        const validation = CartDomainService.validateWarehouseConflict(currentItems, product);
+        if (!validation.isValid) {
+          return { success: false, error: validation.error };
         }
 
         const existingItem = currentItems.find(item => item.id === product.id && item.size === size && item.color === color);
