@@ -80,7 +80,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                   <h2 className="text-lg font-bold text-gray-900">Company Information</h2>
                   <p className="text-sm text-gray-500 mt-1">{dict.companyDesc}</p>
                 </div>
-                <SupplierForm supplierData={supplierData} />
+                <SupplierForm supplierData={supplierData} lang={lang} />
               </div>
 
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
@@ -145,7 +145,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                 <h2 className="text-lg font-bold text-gray-900">Account Details</h2>
                 <p className="text-sm text-gray-500 mt-1">{dict.accountDesc}</p>
               </div>
-              <SupplierAccountForm supplierUser={supplierUser} />
+              <SupplierAccountForm supplierUser={supplierUser} lang={lang} />
             </div>
           )}
 
@@ -155,7 +155,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                 <h2 className="text-lg font-bold text-gray-900">Bank & Payouts</h2>
                 <p className="text-sm text-gray-500 mt-1">{dict.bankDesc}</p>
               </div>
-              <SupplierBankForm supplierData={supplierData} />
+              <SupplierBankForm supplierData={supplierData} lang={lang} />
             </div>
           )}
 
@@ -165,7 +165,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                 <h2 className="text-lg font-bold text-gray-900">Security</h2>
                 <p className="text-sm text-gray-500 mt-1">{dict.securityDesc}</p>
               </div>
-              <SupplierSecurityForm />
+              <SupplierSecurityForm lang={lang} />
             </div>
           )}
 

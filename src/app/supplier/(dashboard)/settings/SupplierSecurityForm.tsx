@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { ShieldCheck, CheckCircle2, AlertCircle } from 'lucide-react';
 
-export function SupplierSecurityForm() {
+export function SupplierSecurityForm({ lang = 'en' }: { lang?: 'en' | 'id' }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -21,13 +21,13 @@ export function SupplierSecurityForm() {
     const confirmPassword = formData.get('confirmPassword') as string;
 
     if (newPassword !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError(lang === 'id' ? 'Kata sandi tidak cocok.' : 'Passwords do not match.');
       setLoading(false);
       return;
     }
 
     if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setError(lang === 'id' ? 'Kata sandi minimal 6 karakter.' : 'Password must be at least 6 characters long.');
       setLoading(false);
       return;
     }
@@ -45,7 +45,7 @@ export function SupplierSecurityForm() {
       setSuccess(true);
       (e.target as HTMLFormElement).reset();
     } catch (err: any) {
-      setError(err.message || 'Failed to update password.');
+      setError(err.message || (lang === 'id' ? 'Gagal memperbarui kata sandi.' : 'Failed to update password.'));
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ export function SupplierSecurityForm() {
       <div className="mb-6 bg-blue-50 text-blue-800 p-4 rounded-xl text-sm border border-blue-100 flex gap-3 items-start">
         <ShieldCheck className="shrink-0 text-blue-500 mt-0.5" size={18} />
         <p>
-          <strong>Ninoc Guarantee:</strong> Your password is mathematically encrypted (hashed) by Supabase Auth before touching any database. Ninoc engineers, administrators, and staff <strong>cannot</strong> see, decrypt, or access your raw password.
+          <strong>{lang === 'id' ? 'Jaminan Ninoc:' : 'Ninoc Guarantee:'}</strong> {lang === 'id' ? 'Kata sandi Anda dienkripsi secara matematis (hashed) oleh Supabase Auth sebelum menyentuh database apa pun. Insinyur, administrator, dan staf Ninoc ' : 'Your password is mathematically encrypted (hashed) by Supabase Auth before touching any database. Ninoc engineers, administrators, and staff '} <strong>{lang === 'id' ? 'tidak bisa' : 'cannot'}</strong> {lang === 'id' ? ' melihat, mendekripsi, atau mengakses kata sandi mentah Anda.' : ' see, decrypt, or access your raw password.'}
         </p>
       </div>
 
@@ -71,12 +71,12 @@ export function SupplierSecurityForm() {
         {success && (
           <div className="p-3 bg-green-50 text-green-700 text-sm rounded-lg border border-green-200 flex items-center gap-2">
             <CheckCircle2 size={16} />
-            Password updated securely!
+            {lang === 'id' ? 'Kata sandi berhasil diperbarui!' : 'Password updated securely!'}
           </div>
         )}
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">New Password</label>
+          <label className="text-sm font-medium text-gray-700">{lang === 'id' ? 'Kata Sandi Baru' : 'New Password'}</label>
           <input 
             type="password" 
             name="password"
@@ -87,7 +87,7 @@ export function SupplierSecurityForm() {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Confirm New Password</label>
+          <label className="text-sm font-medium text-gray-700">{lang === 'id' ? 'Konfirmasi Kata Sandi Baru' : 'Confirm New Password'}</label>
           <input 
             type="password" 
             name="confirmPassword"
@@ -102,7 +102,7 @@ export function SupplierSecurityForm() {
           disabled={loading}
           className="px-6 py-2.5 bg-ink text-white text-sm font-medium rounded-xl hover:bg-rose transition-colors disabled:opacity-70"
         >
-          {loading ? 'Encrypting & Saving...' : 'Update Password'}
+          {loading ? (lang === 'id' ? 'Mengenkripsi & Menyimpan...' : 'Encrypting & Saving...') : (lang === 'id' ? 'Perbarui Kata Sandi' : 'Update Password')}
         </button>
       </form>
     </div>
