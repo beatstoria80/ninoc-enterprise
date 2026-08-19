@@ -25,8 +25,8 @@ export default async function SupplierInventoryPage() {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-6 mb-6 mt-2">
         <div>
-          <h1 className="text-2xl font-bold font-display text-gray-900">Allocations & Inventory</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage your Virtual Allocated Stock for {pillar === 'FNB' ? 'F&B/Pantry' : 'Fashion/Objects'}.</p>
+          <h1 className="text-2xl font-bold font-display text-gray-900">Virtual Inventory Allocations</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage your Virtual Dropship Stock for {pillar === 'FNB' ? 'F&B/Pantry' : 'Fashion/Objects'}. No physical storage required at Hub.</p>
         </div>
         <RequestAllocationModalClient supplierId={supplierId} />
       </div>

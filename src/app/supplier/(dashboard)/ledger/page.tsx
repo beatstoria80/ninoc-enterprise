@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { Banknote, TrendingUp, DollarSign, Download, ArrowUpRight, Calendar, ArrowDownRight, Clock } from 'lucide-react';
+import { Banknote, TrendingUp, DollarSign, Download, ArrowUpRight, Calendar, ArrowDownRight, Clock, Box } from 'lucide-react';
 
 export default async function SupplierLedgerPage() {
   const supabase = await createClient();
@@ -22,37 +22,74 @@ export default async function SupplierLedgerPage() {
   let recentTransactions: any[] = [];
 
   if (supplierId) {
+    // 1. Fetch Balances View
+    const { data: balances } = await supabase
+      .from('supplier_balances')
+      .select('*')
+      .eq('supplier_id', supplierId)
+      .single();
+
+    if (balances) {
+      availableForPayout = Number(balances.available_balance || 0);
+    }
+
+    // 2. Fetch Detailed Ledger
     const { data: ledgers } = await supabase
       .from('supplier_ledgers')
       .select('*')
       .eq('supplier_id', supplierId)
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(30);
 
     if (ledgers) {
-      recentTransactions = ledgers.map((l: any) => ({
-        id: l.id,
-        type: l.status === 'withdrawn' ? 'payout' : 'sale',
-        desc: l.status === 'withdrawn' ? `Payout / Withdrawal` : `Sale (Order: ${l.order_id})`,
-        amount: l.status === 'withdrawn' ? -Number(l.hpp_amount) : Number(l.hpp_amount),
-        date: new Date(l.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-        status: l.status
-      }));
+      recentTransactions = ledgers.map((l: any) => {
+        let type = 'sale';
+        let desc = l.description || 'Virtual Inventory Revenue';
+        if (l.transaction_type === 'WITHDRAWAL') { type = 'payout'; desc = 'Payout / Withdrawal'; }
+        if (l.transaction_type === 'CAMPAIGN_FEE' || l.transaction_type === 'STORAGE_FEE') { type = 'fee'; }
+        
+        // Fallback for legacy rows
+        if (!l.transaction_type) {
+           if (l.status === 'withdrawn') { type = 'payout'; desc = 'Payout / Withdrawal'; }
+           else { type = 'sale'; desc = `Sale (Order: ${l.order_id})`; }
+        }
+
+        const amt = l.amount || l.hpp_amount || 0;
+
+        return {
+          id: l.id,
+          type,
+          desc,
+          amount: type === 'payout' || type === 'fee' ? -Number(amt) : Number(amt),
+          date: new Date(l.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          status: l.status
+        };
+      });
 
       payoutHistory = ledgers
-        .filter((l: any) => l.status === 'withdrawn' || l.status === 'processing_payout')
+        .filter((l: any) => l.transaction_type === 'WITHDRAWAL' || l.status === 'withdrawn' || l.status === 'processing_payout')
         .map((l: any) => ({
            id: l.id,
            date: l.created_at,
-           amount: Number(l.hpp_amount),
+           amount: Number(l.amount || l.hpp_amount),
            status: l.status,
            method: 'Bank Transfer'
         }));
 
       ledgers.forEach((l: any) => {
-        if (l.status === 'cleared') availableForPayout += Number(l.hpp_amount);
-        if (l.status === 'pending') pendingClearing += Number(l.hpp_amount);
-        if (l.status === 'cleared' || l.status === 'withdrawn') netSalesThisMonth += Number(l.hpp_amount);
+        const amt = Number(l.amount || l.hpp_amount || 0);
+        const isRevenue = l.transaction_type === 'SALES_REVENUE' || (!l.transaction_type && l.status !== 'withdrawn');
+        const isFee = l.transaction_type === 'CAMPAIGN_FEE' || l.transaction_type === 'STORAGE_FEE';
+
+        if (l.status === 'pending') {
+          if (isRevenue) pendingClearing += amt;
+          if (isFee) pendingClearing -= amt;
+        }
+        
+        // Simplified net sales (just total positive revenue cleared/withdrawn)
+        if (isRevenue && (l.status === 'cleared' || l.status === 'withdrawn')) {
+          netSalesThisMonth += amt;
+        }
       });
     }
   }
@@ -61,8 +98,8 @@ export default async function SupplierLedgerPage() {
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-display text-gray-900">Sales & Payouts</h1>
-          <p className="text-gray-500 text-sm mt-1">Track your earnings, platform fees, and withdrawal history.</p>
+          <h1 className="text-2xl font-bold font-display text-gray-900">Virtual Inventory Finance</h1>
+          <p className="text-gray-500 text-sm mt-1">Track your dropship revenues, campaign fees, and withdrawals.</p>
         </div>
         <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center gap-2">
           <Download size={16} />
@@ -91,9 +128,9 @@ export default async function SupplierLedgerPage() {
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
-              <TrendingUp size={20} />
+              <Box size={20} />
             </div>
-            <p className="text-gray-500 text-sm font-medium">Net Sales (This Month)</p>
+            <p className="text-gray-500 text-sm font-medium">Gross Revenue (This Month)</p>
           </div>
           <h3 className="text-3xl font-bold text-gray-900">Rp {netSalesThisMonth.toLocaleString('id-ID')}</h3>
         </div>
@@ -103,10 +140,10 @@ export default async function SupplierLedgerPage() {
             <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
               <Clock size={20} />
             </div>
-            <p className="text-gray-500 text-sm font-medium">Pending Clearing</p>
+            <p className="text-gray-500 text-sm font-medium">Pending Escrow</p>
           </div>
           <h3 className="text-3xl font-bold text-gray-900">Rp {pendingClearing.toLocaleString('id-ID')}</h3>
-          <p className="mt-2 text-sm text-gray-400">Funds locked until buyer confirms receipt.</p>
+          <p className="mt-2 text-sm text-gray-400">Funds locked until dropship buyer confirms receipt.</p>
         </div>
       </div>
 
@@ -163,7 +200,7 @@ export default async function SupplierLedgerPage() {
 
         <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 className="text-lg font-bold text-gray-900">Recent Transactions</h3>
+            <h3 className="text-lg font-bold text-gray-900">Double-Entry Ledger (Virtual Inventory)</h3>
             <button className="p-2 text-gray-400 hover:text-ink hover:bg-gray-50 rounded-lg">
               <Calendar size={18} />
             </button>
@@ -177,7 +214,7 @@ export default async function SupplierLedgerPage() {
                   <div className="flex items-center gap-4">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                       tx.type === 'sale' ? 'bg-emerald-50 text-emerald-600' : 
-                      tx.type === 'fee' ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'
+                      tx.type === 'fee' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'
                     }`}>
                       {tx.type === 'sale' ? <ArrowDownRight size={18} /> : <ArrowUpRight size={18} />}
                     </div>
@@ -187,7 +224,7 @@ export default async function SupplierLedgerPage() {
                     </div>
                   </div>
                   <span className={`text-sm font-bold ${tx.amount > 0 ? 'text-emerald-600' : 'text-gray-900'}`}>
-                    {tx.amount > 0 ? '+' : ''}Rp {Math.abs(tx.amount).toLocaleString('id-ID')}
+                    {tx.amount > 0 ? '+' : ''}Rp {tx.amount.toLocaleString('id-ID')}
                   </span>
                 </div>
               ))}

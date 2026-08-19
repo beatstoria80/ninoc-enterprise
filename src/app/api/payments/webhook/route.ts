@@ -170,28 +170,72 @@ export async function POST(req: Request) {
             .select('id, supplier_id, supplier_hpp, price_at_purchase, quantity, products ( supplier_id, affiliate_eligible )')
             .eq('order_id', orderId);
 
-          // B. Supplier Ledgers Distribution (Idempotent check with product supplier fallback)
+          // B. Supplier Ledgers Distribution (Double-Entry Virtual Inventory)
           if (orderItems && orderItems.length > 0) {
-            const ledgerEntries = orderItems
-              .filter((item: any) => (item.supplier_id || item.products?.supplier_id) && Number(item.supplier_hpp) > 0)
-              .map((item: any) => ({
-                supplier_id: item.supplier_id || item.products?.supplier_id,
-                order_id: orderId,
-                order_item_id: item.id,
-                hpp_amount: item.supplier_hpp,
-                status: 'pending'
-              }));
+            const { data: existingLedger } = await supabaseAdmin
+              .from('supplier_ledgers')
+              .select('id')
+              .eq('order_id', orderId)
+              .limit(1);
 
-            if (ledgerEntries.length > 0) {
-              const { data: existingLedger } = await supabaseAdmin
-                .from('supplier_ledgers')
-                .select('id')
-                .eq('order_id', orderId)
-                .limit(1);
+            if (!existingLedger || existingLedger.length === 0) {
+              const ledgerEntries: any[] = [];
+              
+              // 1. Fetch Active Campaigns
+              const supplierIds = [...new Set(orderItems.map((i: any) => i.supplier_id || i.products?.supplier_id).filter(Boolean))];
+              let activeCampaigns: any[] = [];
+              if (supplierIds.length > 0) {
+                const { data: campaigns } = await supabaseAdmin
+                  .from('supplier_campaign_agreements')
+                  .select('*')
+                  .in('supplier_id', supplierIds)
+                  .eq('is_active', true);
+                if (campaigns) activeCampaigns = campaigns;
+              }
 
-              if (!existingLedger || existingLedger.length === 0) {
+              orderItems.forEach((item: any) => {
+                const sId = item.supplier_id || item.products?.supplier_id;
+                const hpp = Number(item.supplier_hpp);
+                if (sId && hpp > 0) {
+                  // Revenue Entry (Total HPP)
+                  ledgerEntries.push({
+                    supplier_id: sId,
+                    order_id: orderId,
+                    order_item_id: item.id,
+                    transaction_type: 'SALES_REVENUE',
+                    amount: hpp * item.quantity,
+                    description: `Virtual Inventory Revenue (Order ${orderId})`,
+                    status: 'pending'
+                  });
+
+                  // Check if this supplier has an active campaign deduction
+                  const campaign = activeCampaigns.find(c => c.supplier_id === sId);
+                  if (campaign) {
+                    let deduction = 0;
+                    if (Number(campaign.cogs_deduction_amount) > 0) {
+                      deduction = Number(campaign.cogs_deduction_amount) * item.quantity;
+                    } else if (Number(campaign.cogs_deduction_percentage) > 0) {
+                      deduction = (hpp * (Number(campaign.cogs_deduction_percentage) / 100)) * item.quantity;
+                    }
+
+                    if (deduction > 0) {
+                      ledgerEntries.push({
+                        supplier_id: sId,
+                        order_id: orderId,
+                        order_item_id: item.id,
+                        transaction_type: 'CAMPAIGN_FEE',
+                        amount: deduction,
+                        description: `Campaign Deduction: ${campaign.campaign_name}`,
+                        status: 'pending'
+                      });
+                    }
+                  }
+                }
+              });
+
+              if (ledgerEntries.length > 0) {
                 await supabaseAdmin.from('supplier_ledgers').insert(ledgerEntries);
-                console.log(`[Payment Webhook Async] Created ${ledgerEntries.length} supplier ledger entries for Order ${orderId}`);
+                console.log(`[Payment Webhook Async] Created ${ledgerEntries.length} virtual inventory ledger entries for Order ${orderId}`);
               }
             }
           }
