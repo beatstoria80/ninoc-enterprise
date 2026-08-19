@@ -150,7 +150,8 @@ export class OrderRepository {
     firstName: string,
     lastName: string,
     dbOrderItems: any[],
-    shipments: any[] // Array of { warehouse_id, origin_postal_code, courier_name, courier_service, shipping_cost }
+    shipments: any[], // Array of { warehouse_id, origin_postal_code, courier_name, courier_service, shipping_cost }
+    promoCode?: string
   ): Promise<{ success: boolean; error?: string }> {
     
     const aggregatedCourier = shipments.length > 0 
@@ -169,6 +170,7 @@ export class OrderRepository {
       city: (customer.city || '').toUpperCase(),
       shipping_method: aggregatedCourier,
       shipping_cost: totalShippingCost,
+      ...(promoCode ? { promo_code: promoCode } : {})
     };
 
     const customerName = customer.name || `${firstName} ${lastName}`.trim() || null;

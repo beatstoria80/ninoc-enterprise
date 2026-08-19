@@ -147,7 +147,24 @@ export async function POST(req: Request) {
 
         // --- FINANCIAL DISTRIBUTION & NOTIFICATIONS (When order becomes PAID) ---
         if (orderUpdateStatus === 'paid' && previousStatus !== 'paid') {
-          // A. Fetch order items for supplier ledgers & affiliate commissions
+          // A. Secure Voucher Consumption (Financial integrity)
+          const appliedPromo = (existingOrder.shipping_address as any)?.promo_code;
+          if (appliedPromo) {
+            console.log(`[Payment Webhook Async] Consuming voucher quota securely for promo: ${appliedPromo}`);
+            const { data: voucher } = await supabaseAdmin
+              .from('vouchers')
+              .select('id, usage_count')
+              .eq('code', appliedPromo)
+              .single();
+            if (voucher) {
+              await supabaseAdmin
+                .from('vouchers')
+                .update({ usage_count: (voucher.usage_count || 0) + 1 })
+                .eq('id', voucher.id);
+            }
+          }
+
+          // B. Fetch order items for supplier ledgers & affiliate commissions
           const { data: orderItems } = await supabaseAdmin
             .from('order_items')
             .select('id, supplier_id, supplier_hpp, price_at_purchase, quantity, products ( supplier_id, affiliate_eligible )')

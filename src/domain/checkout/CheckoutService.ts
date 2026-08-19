@@ -68,11 +68,9 @@ export class CheckoutService {
       }
       // free_shipping handled by frontend display only
 
-      // Increment usage count atomically
-      await this.supabaseAdmin
-        .from('vouchers')
-        .update({ usage_count: (voucher.usage_count || 0) + 1 })
-        .eq('id', voucher.id);
+      // Validation only: Do NOT increment usage_count here to prevent race conditions
+      // and financial loss if the user abandons checkout.
+      // Usage increment will be securely handled in the payment webhook upon successful payment.
 
       return { code: upperCode, discountAmount };
     }
@@ -257,7 +255,8 @@ export class CheckoutService {
       firstName,
       lastName,
       pricing.dbOrderItems,
-      shipments
+      shipments,
+      validatedPromo?.code
     );
 
     if (!orderCreation.success) {
