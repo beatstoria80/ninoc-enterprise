@@ -45,11 +45,17 @@ SET amount = hpp_amount,
 WHERE amount IS NULL;
 
 -- Re-enable the immutable security trigger
+CREATE OR REPLACE FUNCTION public.block_update_delete()
+RETURNS trigger AS $$
+BEGIN
+    RAISE EXCEPTION 'This table is immutable. Modifications are locked for fraud prevention. Create a reversal entry instead.';
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE TRIGGER trg_block_supplier_ledgers_update
     BEFORE UPDATE OR DELETE ON public.supplier_ledgers
     FOR EACH ROW
     EXECUTE FUNCTION public.block_update_delete();
-
 
 -- 3. Create Supplier Balances View
 -- This view acts as a real-time snapshot of a supplier's balance without needing complex tables.
