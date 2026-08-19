@@ -5,11 +5,35 @@ import { SupplierForm } from './SupplierForm';
 import { SupplierAccountForm } from './SupplierAccountForm';
 import { SupplierBankForm } from './SupplierBankForm';
 import { SupplierSecurityForm } from './SupplierSecurityForm';
+import { LanguageSwitcher } from '@/components/supplier/LanguageSwitcher';
 import Link from 'next/link';
 
-export default async function SupplierSettingsPage(props: { searchParams: Promise<{ tab?: string }> }) {
+const DICTIONARY = {
+  en: {
+    settingsDesc: 'Manage your brand profile, banking details, and integration preferences.',
+    companyDesc: 'Update your factory or brand details shown to Ninoc enterprise.',
+    hubDesc: 'Your assigned Ninoc central warehouse for inbound and outbound logistics.',
+    noHubDesc: 'Our team is currently reviewing your application. A central fulfillment hub will be assigned shortly based on your product category.',
+    accountDesc: 'Manage your login credentials and role assignments.',
+    bankDesc: 'Configure your banking details for automated HPP payouts and settlements.',
+    securityDesc: 'Manage your secure encrypted password.'
+  },
+  id: {
+    settingsDesc: 'Kelola profil merek, detail perbankan, dan preferensi integrasi Anda.',
+    companyDesc: 'Perbarui detail pabrik atau merek Anda yang ditampilkan ke NINOC Enterprise.',
+    hubDesc: 'Gudang pusat NINOC yang ditugaskan kepada Anda untuk logistik masuk dan keluar.',
+    noHubDesc: 'Tim kami sedang meninjau aplikasi Anda. Gudang pusat akan segera ditugaskan berdasarkan kategori produk Anda.',
+    accountDesc: 'Kelola kredensial masuk dan penetapan peran akun Anda.',
+    bankDesc: 'Konfigurasikan detail perbankan Anda untuk pembayaran HPP dan pencairan otomatis.',
+    securityDesc: 'Kelola kata sandi terenkripsi Anda secara aman.'
+  }
+};
+
+export default async function SupplierSettingsPage(props: { searchParams: Promise<{ tab?: string; lang?: string }> }) {
   const searchParams = await props.searchParams;
   const tab = searchParams.tab || 'company';
+  const lang = (searchParams.lang === 'id' ? 'id' : 'en') as 'en' | 'id';
+  const dict = DICTIONARY[lang];
   
   const supplierUser = await getCurrentSupplier();
   
@@ -20,9 +44,12 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-2xl font-bold font-display text-gray-900">Settings Hub</h1>
-        <p className="text-gray-500 text-sm mt-1">Manage your brand profile, banking details, and integration preferences.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold font-display text-gray-900">Settings Hub</h1>
+          <p className="text-gray-500 text-sm mt-1">{dict.settingsDesc}</p>
+        </div>
+        <LanguageSwitcher currentLang={lang} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -51,7 +78,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <h2 className="text-lg font-bold text-gray-900">Company Information</h2>
-                  <p className="text-sm text-gray-500 mt-1">Update your factory or brand details shown to Ninoc enterprise.</p>
+                  <p className="text-sm text-gray-500 mt-1">{dict.companyDesc}</p>
                 </div>
                 <SupplierForm supplierData={supplierData} />
               </div>
@@ -60,7 +87,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-gray-900">Fulfillment & Warehouse Hub</h2>
-                    <p className="text-sm text-gray-500 mt-1">Your assigned Ninoc central warehouse for inbound and outbound logistics.</p>
+                    <p className="text-sm text-gray-500 mt-1">{dict.hubDesc}</p>
                   </div>
                   {supplierUser.assignedWarehouse ? (
                     <div className="px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full border border-green-200 flex items-center gap-1.5">
@@ -103,7 +130,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                       </div>
                       <h3 className="text-sm font-bold text-gray-900">No Warehouse Assigned</h3>
                       <p className="text-sm text-gray-500 mt-1 max-w-sm">
-                        Our team is currently reviewing your application. A central fulfillment hub will be assigned shortly based on your product category.
+                        {dict.noHubDesc}
                       </p>
                     </div>
                   )}
@@ -116,7 +143,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">Account Details</h2>
-                <p className="text-sm text-gray-500 mt-1">Manage your login credentials and role assignments.</p>
+                <p className="text-sm text-gray-500 mt-1">{dict.accountDesc}</p>
               </div>
               <SupplierAccountForm supplierUser={supplierUser} />
             </div>
@@ -126,7 +153,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">Bank & Payouts</h2>
-                <p className="text-sm text-gray-500 mt-1">Configure your banking details for automated HPP payouts and settlements.</p>
+                <p className="text-sm text-gray-500 mt-1">{dict.bankDesc}</p>
               </div>
               <SupplierBankForm supplierData={supplierData} />
             </div>
@@ -136,7 +163,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">Security</h2>
-                <p className="text-sm text-gray-500 mt-1">Manage your secure encrypted password.</p>
+                <p className="text-sm text-gray-500 mt-1">{dict.securityDesc}</p>
               </div>
               <SupplierSecurityForm />
             </div>
