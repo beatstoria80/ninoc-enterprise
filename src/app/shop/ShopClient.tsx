@@ -163,7 +163,10 @@ function getProductPillar(productCategory: string): string {
   return 'Apparel';
 }
 
-function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType, dict: any }) {
+import { FlashSaleBadge } from '@/components/shop/FlashSaleBadge';
+import { FlashSaleItem, FlashSaleService } from '@/lib/domain/flashSale';
+
+function MobileShopView({ filterSystem, dict, activeFlashSales }: { filterSystem: FilterSystemType, dict: any, activeFlashSales: any[] }) {
   const displayCategories = ['All', 'Apparel', 'Objects', 'Pantry'];
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const pathname = usePathname();
@@ -228,9 +231,15 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
                           sizes="50vw"
                           draggable={false}
                         />
-                        <div className="absolute top-1 left-1 bg-ink text-white px-1 py-0.5 text-[6px] font-medium uppercase tracking-[0.2em] shadow-sm pointer-events-none">
-                          {product.badge_text || 'STUDIO'}
-                        </div>
+                        {FlashSaleService.evaluateFlashSalePricing(product.id, null, activeFlashSales) ? (
+                          <FlashSaleBadge />
+                        ) : (
+                          <div className="absolute top-2 left-2 bg-ink text-white px-2 py-1 text-[8px] font-medium uppercase tracking-[0.25em] shadow-sm">
+                            {product.badge_text || 'STUDIO'}
+                          </div>
+                        )}
+                        
+                        <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                       </div>
 
                       <div className="space-y-1.5 flex flex-col flex-grow justify-between">
@@ -303,7 +312,8 @@ function MobileShopView({ filterSystem, dict }: { filterSystem: FilterSystemType
   );
 }
 
-function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemType, dict: any }) {
+function DesktopShopView({ filterSystem, dict, activeFlashSales }: { filterSystem: FilterSystemType, dict: any, activeFlashSales: any[] }) {
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const pathname = usePathname();
   const isId = !pathname?.startsWith('/en');
   const { allViews } = useCatalogViews();
@@ -350,9 +360,15 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
                         draggable={false}
                       />
 
-                      <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm pointer-events-none">
-                        {product.badge_text || 'STUDIO EDITION'}
-                      </div>
+                      {FlashSaleService.evaluateFlashSalePricing(product.id, null, activeFlashSales) ? (
+                        <div className="absolute top-0 left-0">
+                           <FlashSaleBadge />
+                        </div>
+                      ) : (
+                        <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm pointer-events-none">
+                          {product.badge_text || 'STUDIO EDITION'}
+                        </div>
+                      )}
 
                       {product.price_tag && (
                         <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
@@ -436,7 +452,7 @@ function DesktopShopView({ filterSystem, dict }: { filterSystem: FilterSystemTyp
   );
 }
 
-function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
+function ShopContent({ initialProducts, activeFlashSales }: { initialProducts: Product[], activeFlashSales: any[] }) {
   const searchParams = useSearchParams();
   const filterParam = searchParams.get('filter');
 
@@ -445,10 +461,10 @@ function ShopContent({ initialProducts }: { initialProducts: Product[] }) {
 
   const { isMobile } = useDevice();
 
-  return <ShopClientInner key={initialCategory} initialCategory={initialCategory} isMobile={isMobile} initialProducts={initialProducts} />;
+  return <ShopClientInner key={initialCategory} initialCategory={initialCategory} isMobile={isMobile} initialProducts={initialProducts} activeFlashSales={activeFlashSales} />;
 }
 
-function ShopClientInner({ initialCategory, isMobile, initialProducts }: { initialCategory: string; isMobile: boolean | null; initialProducts: Product[] }) {
+function ShopClientInner({ initialCategory, isMobile, initialProducts, activeFlashSales }: { initialCategory: string; isMobile: boolean | null; initialProducts: Product[]; activeFlashSales: any[] }) {
   const pathname = usePathname();
   const lang: Locale = pathname?.startsWith('/en') ? 'EN' : 'ID';
   const dict = getDictionaryByLocale(lang);
@@ -456,13 +472,13 @@ function ShopClientInner({ initialCategory, isMobile, initialProducts }: { initi
   const filterSystem = useShopFilters(initialProducts, initialCategory);
 
   if (isMobile) {
-    return <MobileShopView filterSystem={filterSystem} dict={dict} />;
+    return <MobileShopView filterSystem={filterSystem} dict={dict} activeFlashSales={activeFlashSales} />;
   }
 
-  return <DesktopShopView filterSystem={filterSystem} dict={dict} />;
+  return <DesktopShopView filterSystem={filterSystem} dict={dict} activeFlashSales={activeFlashSales} />;
 }
 
-export default function ShopClient({ initialProducts = [] }: { initialProducts?: Product[] }) {
+export default function ShopClient({ initialProducts = [], activeFlashSales = [] }: { initialProducts?: Product[]; activeFlashSales?: any[] }) {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-cr flex items-center justify-center">
@@ -472,7 +488,7 @@ export default function ShopClient({ initialProducts = [] }: { initialProducts?:
         </div>
       </div>
     }>
-      <ShopContent initialProducts={initialProducts} />
+      <ShopContent initialProducts={initialProducts} activeFlashSales={activeFlashSales} />
     </Suspense>
   );
 }

@@ -6,6 +6,7 @@ import { getSnapApiSingleton } from '@/lib/midtrans';
 import { getAppUrl } from '@/lib/utils';
 import { StockValidator, StockValidationResult } from './StockValidator';
 import { sendCheckoutPendingWA, formatPhoneNumber } from '@/lib/whatsapp';
+import { FlashSaleService } from '@/lib/domain/flashSale';
 import { after } from 'next/server';
 
 export interface CheckoutProcessResponse {
@@ -164,8 +165,17 @@ export class CheckoutService {
     }, 0);
     const validatedPromo = await this.revalidatePromoFromDB(promo as any, itemSubtotal);
 
+    // Fetch Active Flash Sales
+    const activeFlashSales = await FlashSaleService.getActiveFlashSales(this.supabaseAdmin);
+
     // 4.1 Calculate Prices & Build Breakdown via O(1) Pricing Engine
-    const pricing = PricingEngine.calculateOrderBreakdown(validation.sanitizedItems!, dbProducts, shippingDetails as any, validatedPromo as any);
+    const pricing = PricingEngine.calculateOrderBreakdown(
+      validation.sanitizedItems!, 
+      dbProducts, 
+      shippingDetails as any, 
+      validatedPromo as any,
+      activeFlashSales
+    );
     if (pricing.error) {
       return { status: 400, payload: { error: pricing.error } };
     }
@@ -246,6 +256,31 @@ export class CheckoutService {
 
     const shipments = (shippingDetails as any)?.shipments || (Array.isArray(shippingDetails) ? shippingDetails : []);
 
+    // 7.5 Flash Sale Inventory Lock
+    const flashSaleOrderItems = pricing.dbOrderItems.filter((i: any) => i.flash_sale_item_id);
+    let reservedFlashSaleItems: { id: string; qty: number }[] = [];
+    
+    if (flashSaleOrderItems.length > 0) {
+      for (const item of flashSaleOrderItems) {
+        const { data: reserved, error: rpcErr } = await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+          p_flash_sale_item_id: item.flash_sale_item_id,
+          p_qty: item.quantity
+        });
+        
+        if (rpcErr || !reserved) {
+          // Rollback any successfully reserved items before failing
+          for (const res of reservedFlashSaleItems) {
+            await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+              p_flash_sale_item_id: res.id,
+              p_qty: -res.qty
+            });
+          }
+          return { status: 409, payload: { error: `Maaf, stok Flash Sale untuk produk ${item.product_name} baru saja habis diborong orang lain.` } };
+        }
+        reservedFlashSaleItems.push({ id: item.flash_sale_item_id, qty: item.quantity });
+      }
+    }
+
     const orderCreation = await orderRepo.createOrderWithInventoryLock(
       orderId,
       pricing.grossAmount,
@@ -260,6 +295,15 @@ export class CheckoutService {
     );
 
     if (!orderCreation.success) {
+      // Rollback Flash Sale locks if main order fails
+      if (reservedFlashSaleItems.length > 0) {
+        for (const res of reservedFlashSaleItems) {
+          await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+            p_flash_sale_item_id: res.id,
+            p_qty: -res.qty
+          });
+        }
+      }
       return { status: 409, payload: { error: orderCreation.error } };
     }
 

@@ -1,4 +1,5 @@
 import { CheckoutItem, ShippingDetails, PromoDetails } from './CheckoutValidator';
+import { FlashSaleItem, FlashSaleService } from '@/lib/domain/flashSale';
 import {
   SURCHARGE_SIZES,
   SIZE_SURCHARGE_AMOUNT,
@@ -62,7 +63,8 @@ export class PricingEngine {
     items: CheckoutItem[],
     dbProducts: DatabaseProduct[],
     shipping: ShippingDetails,
-    promo?: PromoDetails
+    promo?: PromoDetails,
+    activeFlashSales: FlashSaleItem[] = []
   ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
     const productMap = new Map<string, DatabaseProduct>();
     const variantMap = new Map<string, { id: string; color: string | null }>();
@@ -96,21 +98,45 @@ export class PricingEngine {
       const isSurchargeSize = itemSizeUpper ? this.policy.surchargeSizes.has(itemSizeUpper) : false;
       const surcharge = isSurchargeSize ? this.policy.sizeSurchargeAmount : 0;
       const itemPrice = Number(dbProduct.price) + surcharge;
+
+      // True O(1) Variant Lookup — strictly resolve exact or size-only match
+      const exactKey = `${item.id}#${itemSizeUpper}#${itemColorUpper}`;
+      const sizeKey = `${item.id}#${itemSizeUpper}#`;
+      const matchedVariant = variantMap.get(exactKey) || (itemSizeUpper ? variantMap.get(sizeKey) : undefined);
       
-      calculatedGrossAmount += itemPrice * item.quantity;
+      const variantId = matchedVariant?.id || null;
+      const variantColor = matchedVariant?.color || item.color || null;
+
+      // Apply Flash Sale Pricing if eligible
+      const flashSaleMatch = FlashSaleService.evaluateFlashSalePricing(item.id, variantId, activeFlashSales);
+      let finalItemPrice = itemPrice;
+      let flashSaleId = null;
+      let flashSaleItemId = null;
+
+      if (flashSaleMatch) {
+        // Enforce max qty limit per user
+        if (item.quantity > flashSaleMatch.max_qty_per_user) {
+           return { grossAmount: 0, midtransItems: [], dbOrderItems: [], error: `Batas pembelian untuk produk ${dbProduct.name} saat Flash Sale adalah ${flashSaleMatch.max_qty_per_user} pcs.` };
+        }
+        finalItemPrice = Number(flashSaleMatch.flash_sale_price) + surcharge; // Apply base flash price, preserve surcharge
+        flashSaleId = flashSaleMatch.flash_sale_id;
+        flashSaleItemId = flashSaleMatch.id;
+      }
+      
+      calculatedGrossAmount += finalItemPrice * item.quantity;
 
       const costing = Array.isArray(dbProduct.product_costings) ? dbProduct.product_costings[0] : dbProduct.product_costings;
       const supplierBasePrice = costing?.supplier_base_price || 0;
       const supplierSurchargeCost = costing?.supplier_surcharge_cost || 0;
       const finalHpp = supplierBasePrice + (isSurchargeSize ? supplierSurchargeCost : 0);
-      const ninocMarkup = costing?.ninoc_markup || (itemPrice - finalHpp);
+      const ninocMarkup = costing?.ninoc_markup || (finalItemPrice - finalHpp);
 
-      const suffix = surcharge > 0 ? ' (XXL+)' : '';
+      const suffix = surcharge > 0 ? ' (XXL+)' : (flashSaleMatch ? ' [FLASH SALE]' : '');
       const itemName = `${dbProduct.name}${suffix}`.substring(0, this.policy.maxItemNameLength);
 
       midtransItems.push({
         id: item.id,
-        price: itemPrice,
+        price: finalItemPrice,
         quantity: item.quantity,
         name: itemName,
         size: item.size || null,
@@ -120,28 +146,20 @@ export class PricingEngine {
         ninoc_markup: ninocMarkup,
       });
 
-      // True O(1) Variant Lookup — strictly resolve exact or size-only match
-      const exactKey = `${item.id}#${itemSizeUpper}#${itemColorUpper}`;
-      const sizeKey = `${item.id}#${itemSizeUpper}#`;
-      const matchedVariant = variantMap.get(exactKey) || (itemSizeUpper ? variantMap.get(sizeKey) : undefined);
-      
-      // Do NOT fallback to dbProduct.variants[0].id if variant is unmatched or unselected.
-      // Passing null allows PostgreSQL to match accurately by size/color or fallback safely to product stock.
-      const variantId = matchedVariant?.id || null;
-      const variantColor = matchedVariant?.color || item.color || null;
-
       dbOrderItems.push({
         id: crypto.randomUUID(),
         product_id: item.id,
         variant_id: variantId,
         product_name: item.name,
         quantity: item.quantity,
-        price_at_purchase: itemPrice,
+        price_at_purchase: finalItemPrice,
         size: item.size || null,
         color: variantColor,
         supplier_id: dbProduct.supplier_id || null,
         supplier_hpp: finalHpp,
         ninoc_markup: ninocMarkup,
+        flash_sale_id: flashSaleId,
+        flash_sale_item_id: flashSaleItemId
       });
     }
 
@@ -212,9 +230,10 @@ export class PricingEngine {
     items: CheckoutItem[],
     dbProducts: DatabaseProduct[],
     shipping: ShippingDetails,
-    promo?: PromoDetails
+    promo?: PromoDetails,
+    activeFlashSales: FlashSaleItem[] = []
   ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
     const engine = new PricingEngine();
-    return engine.calculateOrderBreakdownInstance(items, dbProducts, shipping, promo);
+    return engine.calculateOrderBreakdownInstance(items, dbProducts, shipping, promo, activeFlashSales);
   }
 }

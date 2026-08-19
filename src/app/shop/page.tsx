@@ -36,9 +36,32 @@ export default async function ShopPage() {
   const { data } = await supabase.from('products').select('*, variants(*)');
   const products = data || [];
 
+  const { data: salesData } = await supabase
+    .from('flash_sales')
+    .select('id, title, start_time, end_time, is_active')
+    .eq('is_active', true)
+    .lte('start_time', new Date().toISOString())
+    .gt('end_time', new Date().toISOString());
+
+  let activeFlashSales: any[] = [];
+  if (salesData && salesData.length > 0) {
+    const saleIds = salesData.map((s: any) => s.id);
+    const { data: itemsData } = await supabase
+      .from('flash_sale_items')
+      .select('*')
+      .in('flash_sale_id', saleIds);
+      
+    if (itemsData) {
+      activeFlashSales = itemsData.map((item: any) => ({
+        ...item,
+        flash_sales: salesData.find((s: any) => s.id === item.flash_sale_id)
+      }));
+    }
+  }
+
   return (
     <Suspense fallback={<LoadingShop />}>
-      <ShopClient initialProducts={products} />
+      <ShopClient initialProducts={products} activeFlashSales={activeFlashSales} />
     </Suspense>
   );
 }
