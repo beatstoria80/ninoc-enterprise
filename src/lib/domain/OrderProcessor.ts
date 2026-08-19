@@ -44,7 +44,21 @@ export class OrderProcessor {
     const supabaseAdmin = getSupabaseAdmin();
 
     try {
-      // A. Secure Voucher Consumption (Financial integrity)
+      // A. Atomic Lock / Idempotency Check using wa_invoice_sent as a proxy for "side effects processed"
+      const { data: lockOrder, error: lockError } = await supabaseAdmin
+        .from('orders')
+        .update({ wa_invoice_sent: true, wa_invoice_sent_at: new Date().toISOString() })
+        .eq('id', orderId)
+        .eq('wa_invoice_sent', false)
+        .select('id')
+        .single();
+        
+      if (lockError || !lockOrder) {
+         console.log(`[OrderProcessor] Side effects for Order ${orderId} already processed (Atomic Lock failed). Skipping.`);
+         return;
+      }
+
+      // B. Secure Voucher Consumption (Financial integrity)
       const appliedPromo = (existingOrder.shipping_address as any)?.promo_code;
       if (appliedPromo) {
         console.log(`[OrderProcessor] Consuming voucher quota securely for promo: ${appliedPromo}`);
@@ -181,30 +195,23 @@ export class OrderProcessor {
       const formattedPhone = formatPhoneNumber(phone);
       const customerEmail = shippingAddress?.email;
 
-      if (!existingOrder.wa_invoice_sent) {
-        await supabaseAdmin
-          .from('orders')
-          .update({ wa_invoice_sent: true, wa_invoice_sent_at: new Date().toISOString() })
-          .eq('id', orderId);
+      if (formattedPhone) {
+        const formattedPrice = `Rp ${Number(existingOrder.total_price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+        const appUrl = getAppUrl();
+        const trackId = existingOrder.order_number || orderId;
+        const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
 
-        if (formattedPhone) {
-          const formattedPrice = `Rp ${Number(existingOrder.total_price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
-          const appUrl = getAppUrl();
-          const trackId = existingOrder.order_number || orderId;
-          const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
+        sendInvoiceWA({
+          phone: formattedPhone,
+          customer_name: customerName,
+          order_id: orderId,
+          total_price: formattedPrice,
+          payment_url: paymentUrl,
+        }).catch(err => console.error('[OrderProcessor] WA Invoice Error:', err));
+      }
 
-          sendInvoiceWA({
-            phone: formattedPhone,
-            customer_name: customerName,
-            order_id: orderId,
-            total_price: formattedPrice,
-            payment_url: paymentUrl,
-          }).catch(err => console.error('[OrderProcessor] WA Invoice Error:', err));
-        }
-
-        if (customerEmail) {
-          sendEmailInvoice(existingOrder, customerEmail).catch(err => console.error('[OrderProcessor] Email Invoice Error:', err));
-        }
+      if (customerEmail) {
+        sendEmailInvoice(existingOrder, customerEmail).catch(err => console.error('[OrderProcessor] Email Invoice Error:', err));
       }
 
       if (existingOrder.user_id) {
