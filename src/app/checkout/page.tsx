@@ -1101,12 +1101,12 @@ export default function CheckoutPage() {
                   <input id="last_name" required type="text" value={formData.last_name} onChange={(e) => setFormData({...formData, last_name: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/50 outline-none" placeholder="Doe" />
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
-                  <label htmlFor="email" className={labelClass}>{userId ? 'Email (Akun Member)' : 'Email (Opsional)'}</label>
-                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} readOnly={!!userId} className={cn("w-full bg-transparent text-xs font-semibold tracking-wider text-ink placeholder:text-ink/50 outline-none", userId && "text-ink/60 cursor-not-allowed")} placeholder="your@email.com" />
+                  <label htmlFor="email" className={labelClass}>{userId ? 'Email (Penerima Resi)' : 'Email (Opsional)'}</label>
+                  <input id="email" type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} className="w-full bg-transparent text-xs font-semibold tracking-wider text-ink placeholder:text-ink/50 outline-none" placeholder="your@email.com" />
                   {!userId && emailCheckStatus === 'checking' && <p className="text-[9px] md:text-[10px] text-ink/50 mt-1 animate-pulse">Memeriksa email...</p>}
                   {!userId && emailCheckStatus === 'registered' && <p className="text-[9px] text-rose font-medium mt-1">Email ini telah terdaftar. <Link href="/login" className="underline hover:text-rose/80">Login</Link> untuk menggunakan akun ini.</p>}
                   {!userId && emailCheckStatus === 'unregistered' && formData.email.length > 0 && <p className="text-[9px] text-emerald-600 font-medium mt-1">Email tersedia untuk Guest.</p>}
-                  {userId && <p className="text-[9px] text-emerald-600 font-medium mt-1 flex items-center gap-1"><CheckCircle size={9} /> Data terisi otomatis dari akun Anda</p>}
+                  {userId && <p className="text-[9px] text-emerald-600 font-medium mt-1 flex items-center gap-1"><CheckCircle size={9} /> Email default dari akun Anda (bisa diubah)</p>}
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
