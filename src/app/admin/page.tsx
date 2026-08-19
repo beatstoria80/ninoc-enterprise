@@ -44,6 +44,7 @@ const WABroadcastTab = dynamic(() => import('@/components/admin/tabs/WABroadcast
 const EmailBroadcastTab = dynamic(() => import('@/components/admin/tabs/EmailBroadcastTab').then(mod => mod.EmailBroadcastTab), { ssr: false });
 const AffiliatesTab = dynamic(() => import('@/components/admin/tabs/AffiliatesTab'), { ssr: false });
 const MarketingTab = dynamic(() => import('@/components/admin/tabs/MarketingTab').then(mod => mod.MarketingTab), { ssr: false });
+const FlashSaleTab = dynamic(() => import('@/components/admin/tabs/FlashSaleTab').then(mod => mod.FlashSaleTab), { ssr: false });
 const BannersTab = dynamic(() => import('@/components/admin/tabs/BannersTab').then(mod => mod.BannersTab), { ssr: false });
 const GoogleAdsTab = dynamic(() => import('@/components/admin/tabs/GoogleAdsTab').then(mod => mod.GoogleAdsTab), { ssr: false });
 const WebAnalyticsTab = dynamic(() => import('@/components/admin/tabs/WebAnalyticsTab').then(mod => mod.WebAnalyticsTab), { ssr: false });
@@ -893,11 +894,12 @@ export default function AdminDashboard() {
       ]
     },
     { 
-      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'google_ads', 'web_analytics', 'banners'],
+      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'banners'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'banners', label: 'Banners UI/UX' },
         { id: 'marketing', label: 'Marketing & ROAS' },
+        { id: 'flash_sales', label: 'Flash Sale Manager' },
         { id: 'google_ads', label: 'Google Ads Manager' },
         { id: 'web_analytics', label: 'Web Analytics (GA4/GSC)' }
       ]
@@ -1394,8 +1396,8 @@ export default function AdminDashboard() {
                ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'].includes(activeTab) ? 'Inventory & WMS / ' :
                ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance & Accounting / ' :
                ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'].includes(activeTab) ? 'CRM & Support / ' :
-               ['marketing', 'google_ads', 'web_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
                ['submissions', 'suppliers'].includes(activeTab) ? 'Partner Hub / ' :
+               ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1412,6 +1414,7 @@ export default function AdminDashboard() {
                activeTab === 'customers' ? 'Membership Database' :
                activeTab === 'affiliates' ? 'Affiliates Network' :
                activeTab === 'marketing' ? 'Marketing & ROAS' :
+               activeTab === 'flash_sales' ? 'Flash Sale Manager' :
                activeTab === 'banners' ? 'Banners UI/UX' :
                activeTab === 'google_ads' ? 'Google Ads Manager' :
                activeTab === 'web_analytics' ? 'Web Analytics (GA4/GSC)' :
@@ -1762,6 +1765,7 @@ export default function AdminDashboard() {
           {activeTab === 'affiliates' && <AffiliatesTab />}
 
           {activeTab === 'marketing' && <MarketingTab />}
+          {activeTab === 'flash_sales' && <FlashSaleTab />}
           {activeTab === 'banners' && <BannersTab />}
 
           {activeTab === 'settings' && <SettingsTab />}
