@@ -8,29 +8,36 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { isFnBDepartment } from '@/lib/departmentDomain';
 import { getBiteshipActivationSettings } from '@/lib/settings';
 
-import { unstable_cache } from 'next/cache';
+// In-memory TTL cache for primary crossdock origin warehouse (5 minutes TTL)
+// This is a valid Serverless optimization pattern for warm containers.
+let cachedOriginHub: { postalCode: number; expiresAt: number } | null = null;
 
-const getOriginPostalCode = unstable_cache(
-  async (): Promise<number> => {
-    let defaultOrigin = 40292; // Fallback Griya Saluyu (Bandung)
-    try {
-      const { data: hubData } = await supabaseAdmin
-        .from('warehouses')
-        .select('postal_code')
-        .eq('is_crossdock_hub', true)
-        .limit(1)
-        .single();
-      if (hubData?.postal_code) {
-        defaultOrigin = parseInt(hubData.postal_code, 10);
-      }
-    } catch (e) {
-      console.warn('[Biteship Rates] Failed to fetch Ninoc Hub from DB, using fallback.', e);
+async function getOriginPostalCode(): Promise<number> {
+  const now = Date.now();
+  if (cachedOriginHub && cachedOriginHub.expiresAt > now) {
+    return cachedOriginHub.postalCode;
+  }
+
+  let defaultOrigin = 40292; // Fallback Griya Saluyu (Bandung)
+  try {
+    const { data: hubData } = await supabaseAdmin
+      .from('warehouses')
+      .select('postal_code')
+      .eq('is_crossdock_hub', true)
+      .limit(1)
+      .single();
+    if (hubData?.postal_code) {
+      defaultOrigin = parseInt(hubData.postal_code, 10);
     }
-    return defaultOrigin;
-  },
-  ['origin-postal-code'],
-  { revalidate: 300 } // Cache for 5 minutes (300 seconds)
-);
+    cachedOriginHub = {
+      postalCode: defaultOrigin,
+      expiresAt: now + 5 * 60 * 1000,
+    };
+  } catch (e) {
+    console.warn('[Biteship Rates] Failed to fetch Ninoc Hub from DB, using fallback.', e);
+  }
+  return defaultOrigin;
+}
 
 function applyGeographicRestrictions(pricing: any[], destName: string = '') {
   if (!pricing || !Array.isArray(pricing)) return pricing;
