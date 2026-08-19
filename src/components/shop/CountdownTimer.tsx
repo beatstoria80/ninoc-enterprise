@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface CountdownTimerProps {
   endTime: string;
 }
 
-export function CountdownTimer({ endTime }: CountdownTimerProps) {
+export const CountdownTimer = React.memo(function CountdownTimer({ endTime }: CountdownTimerProps) {
   const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number } | null>(null);
 
   useEffect(() => {
@@ -44,4 +44,4 @@ export function CountdownTimer({ endTime }: CountdownTimerProps) {
       </div>
     </div>
   );
-}
+});
