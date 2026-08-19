@@ -22,7 +22,10 @@ export interface CheckoutProcessResponse {
 }
 
 export class CheckoutService {
-  constructor(private readonly supabaseAdmin: SupabaseClient) {}
+  constructor(
+    private readonly supabaseAdmin: SupabaseClient,
+    private readonly orderRepo: OrderRepository = new OrderRepository(supabaseAdmin)
+  ) {}
 
   /**
    * SECURITY: Re-validates promo/voucher discount from database.
@@ -45,18 +48,9 @@ export class CheckoutService {
       .single();
 
     if (voucher) {
-      // Validate expiry
-      if (voucher.valid_until && new Date(voucher.valid_until) < new Date()) {
-        return undefined; // expired — silently ignore
-      }
-      // Validate usage limit
-      if (voucher.max_usage && voucher.usage_count !== undefined && voucher.usage_count >= voucher.max_usage) {
-        return undefined;
-      }
-      // Validate minimum order
-      if (voucher.min_order_amount && subtotal < voucher.min_order_amount) {
-        return undefined;
-      }
+      if (voucher.valid_until && new Date(voucher.valid_until) < new Date()) return undefined;
+      if (voucher.max_usage && voucher.usage_count !== undefined && voucher.usage_count >= voucher.max_usage) return undefined;
+      if (voucher.min_order_amount && subtotal < voucher.min_order_amount) return undefined;
 
       let discountAmount = 0;
       if (voucher.type === 'percentage') {
@@ -67,12 +61,6 @@ export class CheckoutService {
       } else if (voucher.type === 'fixed_amount') {
         discountAmount = Number(voucher.value);
       }
-      // free_shipping handled by frontend display only
-
-      // Validation only: Do NOT increment usage_count here to prevent race conditions
-      // and financial loss if the user abandons checkout.
-      // Usage increment will be securely handled in the payment webhook upon successful payment.
-
       return { code: upperCode, discountAmount };
     }
 
@@ -94,250 +82,114 @@ export class CheckoutService {
       return { code: upperCode, discountAmount };
     }
 
-    // Code not found — no discount
     return undefined;
   }
 
-  public async processCheckout(
-    items: CheckoutItem[] | any[],
-    customerDetails: CustomerDetails,
-    shippingDetails: Record<string, unknown>,
-    promo: unknown,
-    clientIp: string,
-    affiliateCookieValue: string | undefined
-  ): Promise<CheckoutProcessResponse> {
-    // 1. Validate & Sanitize Input
-    const validation = CheckoutValidator.validateRequest(items as CheckoutItem[], customerDetails, clientIp);
-    if (!validation.isValid) {
-      return {
-        status: 400,
-        payload: (validation.errorResponse?.json as { error?: string }) || { error: 'Invalid request input' },
-      };
-    }
+  private validateWarehouseIntegrity(items: any[]): string | null {
+    if (items.length <= 1) return null;
 
-    customerDetails.phone = validation.sanitizedPhone!;
-    const firstName = (customerDetails.first_name || '').toUpperCase();
-    const lastName = (customerDetails.last_name || '').toUpperCase();
+    const existingWarehouseId = items[0].warehouse_id;
+    const existingPostal = items[0].origin_postal_code;
 
-    // 2. Data Access Layer Initialization
-    const orderRepo = new OrderRepository(this.supabaseAdmin);
+    for (let i = 1; i < items.length; i++) {
+      const newWarehouseId = items[i].warehouse_id;
+      const newPostal = items[i].origin_postal_code;
 
-    // 3. Fetch Product Costings & Variants
-    const productIds = Array.from(new Set((validation.sanitizedItems || []).map((i: any) => i.id as string)));
-    const { data: dbProducts, error: dbError } = await orderRepo.getProductsByIds(productIds);
+      let isConflict = false;
+      if (existingWarehouseId || newWarehouseId) {
+        if (existingWarehouseId !== newWarehouseId) isConflict = true;
+      } else {
+        if (existingPostal && newPostal && existingPostal !== newPostal) isConflict = true;
+      }
 
-    if (dbError) {
-      console.error('[CheckoutService] Database error during product verification:', dbError);
-      return {
-        status: 500,
-        payload: { error: 'Gangguan koneksi database saat memverifikasi produk. Tim teknis sedang menangani.' },
-      };
-    }
-
-    if (!dbProducts || dbProducts.length === 0) {
-      console.warn(`[CheckoutService] Product verification failed: requested IDs [${productIds.join(', ')}] not found.`);
-      return {
-        status: 400,
-        payload: {
-          error:
-            'Produk di dalam keranjang Anda sudah tidak tersedia atau telah diperbarui di katalog LIVE. Silakan hapus item di keranjang dan pilih ulang dari halaman Shop.',
-        },
-      };
-    }
-
-    if (dbProducts.length !== productIds.length) {
-      const foundIds = new Set(dbProducts.map((p: any) => p.id));
-      const missingIds = productIds.filter((id) => !foundIds.has(id));
-      console.warn(`[CheckoutService] Partial product mismatch. Missing IDs: [${missingIds.join(', ')}]`);
-      return {
-        status: 400,
-        payload: {
-          error:
-            'Beberapa produk di dalam keranjang Anda sudah tidak tersedia di katalog LIVE. Silakan perbarui keranjang Anda dan coba kembali.',
-        },
-      };
-    }
-
-    // 4. SECURITY: Re-validate promo discount from database (NEVER trust frontend discountAmount)
-    const itemSubtotal = (validation.sanitizedItems || []).reduce((sum: number, item: any) => {
-      const dbProd = dbProducts.find((p: any) => p.id === item.id);
-      return sum + (Number(dbProd?.price || item.price || 0) * (item.quantity || 1));
-    }, 0);
-    const validatedPromo = await this.revalidatePromoFromDB(promo as any, itemSubtotal);
-
-    // Fetch Active Flash Sales
-    const activeFlashSales = await FlashSaleService.getActiveFlashSales(this.supabaseAdmin);
-
-    // 4.1 Calculate Prices & Build Breakdown via O(1) Pricing Engine
-    const pricing = PricingEngine.calculateOrderBreakdown(
-      validation.sanitizedItems!, 
-      dbProducts, 
-      shippingDetails as any, 
-      validatedPromo as any,
-      activeFlashSales
-    );
-    if (pricing.error) {
-      return { status: 400, payload: { error: pricing.error } };
-    }
-
-    // 4.5 Pre-validate stock availability strictly and case-insensitively
-    const stockValidation: StockValidationResult = StockValidator.validateStock(validation.sanitizedItems!, dbProducts);
-    if (!stockValidation.isValid) {
-      return {
-        status: 409,
-        payload: {
-          error: stockValidation.error,
-          out_of_stock_item: stockValidation.outOfStockItemId,
-        },
-      };
-    }
-
-    // 4.6 Backend Warehouse Integrity Validation
-    // Prevents API-bypass attacks that mix items from different warehouses in a single order.
-    // Perfectly mirrors the single-order warehouse validation rules enforced in useCart.ts
-    const sanitizedItems = validation.sanitizedItems!;
-    if (sanitizedItems.length > 1) {
-      const firstItem = sanitizedItems[0] as any;
-      const existingWarehouseId = firstItem.warehouse_id;
-      const existingPostal = firstItem.origin_postal_code;
-
-      for (let i = 1; i < sanitizedItems.length; i++) {
-        const currentItem = sanitizedItems[i] as any;
-        const newWarehouseId = currentItem.warehouse_id;
-        const newPostal = currentItem.origin_postal_code;
-
-        let isConflict = false;
-        if (existingWarehouseId || newWarehouseId) {
-          if (existingWarehouseId !== newWarehouseId) {
-            isConflict = true;
-          }
-        } else {
-          if (existingPostal && newPostal && existingPostal !== newPostal) {
-            isConflict = true;
-          }
-        }
-
-        if (isConflict) {
-          console.warn(`[CheckoutService] Warehouse conflict detected between items:`, firstItem.name, 'vs', currentItem.name);
-          return {
-            status: 400,
-            payload: {
-              error: 'Tidak dapat menggabungkan produk dari lokasi gudang/fasilitas yang berbeda dalam satu pesanan. Silakan checkout terpisah.',
-            },
-          };
-        }
+      if (isConflict) {
+        console.warn(`[CheckoutService] Warehouse conflict detected between items:`, items[0].name, 'vs', items[i].name);
+        return 'Tidak dapat menggabungkan produk dari lokasi gudang/fasilitas yang berbeda dalam satu pesanan. Silakan checkout terpisah.';
       }
     }
+    return null;
+  }
 
-    // 5. Resolve Affiliate Tracking
-    let affiliateId: string | null = null;
+  private async resolveAffiliateTracking(customerDetails: CustomerDetails, affiliateCookieValue?: string): Promise<string | null> {
+    const targetRefCode = customerDetails.referral_code || affiliateCookieValue;
+    if (!targetRefCode) return null;
+
     try {
-      const targetRefCode = customerDetails.referral_code || affiliateCookieValue;
-      if (targetRefCode) {
-        const { data: affData } = await this.supabaseAdmin
-          .from('affiliates')
-          .select('id, user_id')
-          .eq('code', targetRefCode.toUpperCase())
-          .maybeSingle();
-        if (affData && affData.user_id !== customerDetails.user_id) {
-          affiliateId = affData.id;
-        }
+      const { data: affData } = await this.supabaseAdmin
+        .from('affiliates')
+        .select('id, user_id')
+        .eq('code', targetRefCode.toUpperCase())
+        .maybeSingle();
+      if (affData && affData.user_id !== customerDetails.user_id) {
+        return affData.id;
       }
     } catch (e) {
       console.error('[CheckoutService] Affiliate lookup error:', e);
     }
+    return null;
+  }
 
-    // 7. Generate Identifiers & Create Order with Row-Level Lock
-    const orderId = `NINOC-${Date.now()}`;
-    const now = new Date();
-    const datePart = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
-    const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-    const orderNumber = `NC-${datePart}-${randPart}`;
-
-    const shipments = (shippingDetails as any)?.shipments || (Array.isArray(shippingDetails) ? shippingDetails : []);
-
-    // 7.5 Flash Sale Inventory Lock
-    const flashSaleOrderItems = pricing.dbOrderItems.filter((i: any) => i.flash_sale_item_id);
-    let reservedFlashSaleItems: { id: string; qty: number }[] = [];
+  private async applyFlashSaleLocks(flashSaleOrderItems: any[], customerDetails: CustomerDetails): Promise<{ success: boolean; reservedItems: any[]; error?: string }> {
+    const reservedFlashSaleItems: { id: string; qty: number }[] = [];
     
-    if (flashSaleOrderItems.length > 0) {
-      for (const item of flashSaleOrderItems) {
+    if (flashSaleOrderItems.length === 0) return { success: true, reservedItems: [] };
+
+    for (const item of flashSaleOrderItems) {
+      if (item.flash_sale_max_qty) {
+        const pastPurchasedQty = await FlashSaleService.checkUserPurchaseLimit(
+          this.supabaseAdmin,
+          item.flash_sale_item_id,
+          customerDetails.user_id,
+          customerDetails.email,
+          customerDetails.phone
+        );
         
-        // [NEW] Enforce Historical Purchase Limit
-        if (item.flash_sale_max_qty) {
-          const pastPurchasedQty = await FlashSaleService.checkUserPurchaseLimit(
-            this.supabaseAdmin,
-            item.flash_sale_item_id,
-            customerDetails.user_id,
-            customerDetails.email,
-            customerDetails.phone
-          );
-          
-          if (pastPurchasedQty + item.quantity > item.flash_sale_max_qty) {
-            // Rollback any successfully reserved items before failing
-            for (const res of reservedFlashSaleItems) {
-              await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
-                p_flash_sale_item_id: res.id,
-                p_qty: -res.qty
-              });
-            }
-            return { 
-              status: 409, 
-              payload: { error: `Anda telah mencapai batas maksimal pembelian (Maks ${item.flash_sale_max_qty} pcs) untuk produk promosi ${item.product_name} pada transaksi Anda sebelumnya.` } 
-            };
-          }
-        }
-
-        const { data: reserved, error: rpcErr } = await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
-          p_flash_sale_item_id: item.flash_sale_item_id,
-          p_qty: item.quantity
-        });
-        
-        if (rpcErr || !reserved) {
-          // Rollback any successfully reserved items before failing
-          for (const res of reservedFlashSaleItems) {
-            await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
-              p_flash_sale_item_id: res.id,
-              p_qty: -res.qty
-            });
-          }
-          return { status: 409, payload: { error: `Maaf, stok Flash Sale untuk produk ${item.product_name} baru saja habis diborong orang lain.` } };
-        }
-        reservedFlashSaleItems.push({ id: item.flash_sale_item_id, qty: item.quantity });
-      }
-    }
-
-    const orderCreation = await orderRepo.createOrderWithInventoryLock(
-      orderId,
-      pricing.grossAmount,
-      affiliateId,
-      customerDetails,
-      shippingDetails,
-      firstName,
-      lastName,
-      pricing.dbOrderItems,
-      shipments,
-      validatedPromo?.code
-    );
-
-    if (!orderCreation.success) {
-      // Rollback Flash Sale locks if main order fails
-      if (reservedFlashSaleItems.length > 0) {
-        for (const res of reservedFlashSaleItems) {
-          await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
-            p_flash_sale_item_id: res.id,
-            p_qty: -res.qty
-          });
+        if (pastPurchasedQty + item.quantity > item.flash_sale_max_qty) {
+          await this.rollbackFlashSaleLocks(reservedFlashSaleItems);
+          return { success: false, reservedItems: [], error: `Anda telah mencapai batas maksimal pembelian (Maks ${item.flash_sale_max_qty} pcs) untuk produk promosi ${item.product_name} pada transaksi Anda sebelumnya.` };
         }
       }
-      return { status: 409, payload: { error: orderCreation.error } };
+
+      const { data: reserved, error: rpcErr } = await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+        p_flash_sale_item_id: item.flash_sale_item_id,
+        p_qty: item.quantity
+      });
+      
+      if (rpcErr || !reserved) {
+        await this.rollbackFlashSaleLocks(reservedFlashSaleItems);
+        return { success: false, reservedItems: [], error: `Maaf, stok Flash Sale untuk produk ${item.product_name} baru saja habis diborong orang lain.` };
+      }
+      reservedFlashSaleItems.push({ id: item.flash_sale_item_id, qty: item.quantity });
     }
 
-    // 8. Generate Midtrans Snap Token (uses cached singleton instance)
+    return { success: true, reservedItems: reservedFlashSaleItems };
+  }
+
+  public async rollbackFlashSaleLocks(reservedItems: { id: string; qty: number }[]) {
+    for (const res of reservedItems) {
+      await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+        p_flash_sale_item_id: res.id,
+        p_qty: -res.qty
+      });
+    }
+  }
+
+  private async processPaymentGateway(orderId: string, grossAmount: number, customerDetails: CustomerDetails, domainItems: any[], shippingDetails: any, flashSaleOrderItems: any[]) {
     const appUrl = getAppUrl();
     const snap = getSnapApiSingleton();
+    const firstName = (customerDetails.first_name || '').toUpperCase();
+    const lastName = (customerDetails.last_name || '').toUpperCase();
+
+    // Map domainItems strictly to Midtrans Schema to prevent data leaks (supplier_hpp, markup, etc)
+    const midtransItems = domainItems.map(item => ({
+      id: item.id,
+      price: item.price,
+      quantity: item.quantity,
+      name: item.name
+    }));
+
     const parameter = {
-      transaction_details: { order_id: orderId, gross_amount: pricing.grossAmount },
+      transaction_details: { order_id: orderId, gross_amount: grossAmount },
       customer_details: {
         first_name: firstName,
         last_name: lastName,
@@ -360,7 +212,7 @@ export class CheckoutService {
           postal_code: customerDetails.postal_code || '',
         },
       },
-      item_details: pricing.midtransItems,
+      item_details: midtransItems,
       credit_card: { secure: true },
       custom_expiry: (flashSaleOrderItems && flashSaleOrderItems.length > 0)
         ? { expiry_duration: 15, unit: 'minute' }
@@ -374,38 +226,128 @@ export class CheckoutService {
     };
 
     const transaction = await snap.createTransaction(parameter);
-    const snapToken = transaction.token as string;
-    await orderRepo.updateSnapToken(orderId, snapToken);
+    await this.orderRepo.updateSnapToken(orderId, transaction.token as string);
+    return transaction;
+  }
 
-    // 9. Fire Non-Blocking Background Tasks (address sync + WA notification)
+  private dispatchAsyncTasks(customerDetails: CustomerDetails, orderId: string) {
+    const firstName = (customerDetails.first_name || '').toUpperCase();
+    const lastName = (customerDetails.last_name || '').toUpperCase();
+
     after(() => {
-      // 9a. Upsert customer address in background — removed from critical path to save ~200ms
       if (customerDetails.user_id) {
-        orderRepo.upsertCustomerAddress(customerDetails.user_id, customerDetails, firstName, lastName)
+        this.orderRepo.upsertCustomerAddress(customerDetails.user_id, customerDetails, firstName, lastName)
           .catch((err) => console.error('[CheckoutService Async] Address upsert error:', err));
       }
 
-      // 9b. WhatsApp Checkout Pending notification
       try {
         const formattedPhone = customerDetails.phone ? formatPhoneNumber(customerDetails.phone) : '';
         if (formattedPhone) {
-          const estDelivery = '2-5 hari kerja';
           sendCheckoutPendingWA({
             phone: formattedPhone,
             customer_name: firstName,
             order_id: orderId,
-            estimated_delivery: estDelivery,
+            estimated_delivery: '2-5 hari kerja',
           }).catch((err) => console.error('[CheckoutService Async] WA Notification Error:', err));
         }
       } catch (err) {
         console.error('[CheckoutService Async] Failed to queue WA Notification:', err);
       }
     });
+  }
+
+  public async processCheckout(
+    items: CheckoutItem[] | any[],
+    customerDetails: CustomerDetails,
+    shippingDetails: Record<string, unknown>,
+    promo: unknown,
+    clientIp: string,
+    affiliateCookieValue: string | undefined
+  ): Promise<CheckoutProcessResponse> {
+    
+    // 1. Validate & Sanitize Input
+    const validation = CheckoutValidator.validateRequest(items as CheckoutItem[], customerDetails, clientIp);
+    if (!validation.isValid) {
+      return { status: 400, payload: (validation.errorResponse?.json as { error?: string }) || { error: 'Invalid request input' } };
+    }
+
+    customerDetails.phone = validation.sanitizedPhone!;
+    const sanitizedItems = validation.sanitizedItems!;
+
+    // 2. Fetch Products
+    const productIds = Array.from(new Set(sanitizedItems.map((i: any) => i.id as string)));
+    const { data: dbProducts, error: dbError } = await this.orderRepo.getProductsByIds(productIds);
+
+    if (dbError) {
+      return { status: 500, payload: { error: 'Gangguan koneksi database saat memverifikasi produk. Tim teknis sedang menangani.' } };
+    }
+    if (!dbProducts || dbProducts.length !== productIds.length) {
+      return { status: 400, payload: { error: 'Beberapa produk di dalam keranjang Anda sudah tidak tersedia di katalog LIVE. Silakan perbarui keranjang Anda.' } };
+    }
+
+    // 3. Pricing & Validation
+    const itemSubtotal = sanitizedItems.reduce((sum: number, item: any) => {
+      const dbProd = dbProducts.find((p: any) => p.id === item.id);
+      return sum + (Number(dbProd?.price || item.price || 0) * (item.quantity || 1));
+    }, 0);
+    
+    const validatedPromo = await this.revalidatePromoFromDB(promo as any, itemSubtotal);
+    const activeFlashSales = await FlashSaleService.getActiveFlashSales(this.supabaseAdmin);
+
+    const pricing = PricingEngine.calculateOrderBreakdown(
+      sanitizedItems, dbProducts, shippingDetails as any, validatedPromo as any, activeFlashSales
+    );
+    if (pricing.error) return { status: 400, payload: { error: pricing.error } };
+
+    const stockValidation = StockValidator.validateStock(sanitizedItems, dbProducts);
+    if (!stockValidation.isValid) {
+      return { status: 409, payload: { error: stockValidation.error, out_of_stock_item: stockValidation.outOfStockItemId } };
+    }
+
+    const warehouseError = this.validateWarehouseIntegrity(sanitizedItems);
+    if (warehouseError) return { status: 400, payload: { error: warehouseError } };
+
+    const affiliateId = await this.resolveAffiliateTracking(customerDetails, affiliateCookieValue);
+
+    // 4. Identifiers & Locks
+    const orderId = `NINOC-${Date.now()}`;
+    const datePart = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    const randPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const orderNumber = `NC-${datePart}-${randPart}`;
+    const shipments = (shippingDetails as any)?.shipments || (Array.isArray(shippingDetails) ? shippingDetails : []);
+
+    const flashSaleOrderItems = pricing.dbOrderItems.filter((i: any) => i.flash_sale_item_id);
+    const lockResult = await this.applyFlashSaleLocks(flashSaleOrderItems, customerDetails);
+    
+    if (!lockResult.success) {
+      return { status: 409, payload: { error: lockResult.error } };
+    }
+
+    // 5. Create Order
+    const firstName = (customerDetails.first_name || '').toUpperCase();
+    const lastName = (customerDetails.last_name || '').toUpperCase();
+    
+    const orderCreation = await this.orderRepo.createOrderWithInventoryLock(
+      orderId, pricing.grossAmount, affiliateId, customerDetails, shippingDetails,
+      firstName, lastName, pricing.dbOrderItems, shipments, validatedPromo?.code
+    );
+
+    if (!orderCreation.success) {
+      await this.rollbackFlashSaleLocks(lockResult.reservedItems);
+      return { status: 409, payload: { error: orderCreation.error } };
+    }
+
+    // 6. Payment & Async Tasks
+    const transaction = await this.processPaymentGateway(
+      orderId, pricing.grossAmount, customerDetails, pricing.domainItems, shippingDetails, flashSaleOrderItems
+    );
+
+    this.dispatchAsyncTasks(customerDetails, orderId);
 
     return {
       status: 200,
       payload: {
-        token: snapToken,
+        token: transaction.token as string,
         redirect_url: transaction.redirect_url as string,
         orderId,
         orderNumber,

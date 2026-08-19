@@ -65,7 +65,7 @@ export class PricingEngine {
     shipping: ShippingDetails,
     promo?: PromoDetails,
     activeFlashSales: FlashSaleItem[] = []
-  ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
+  ): { grossAmount: number; domainItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
     const productMap = new Map<string, DatabaseProduct>();
     const variantMap = new Map<string, { id: string; color: string | null }>();
 
@@ -84,13 +84,13 @@ export class PricingEngine {
     }
 
     let calculatedGrossAmount = 0;
-    const midtransItems: ProcessedOrderItem[] = [];
+    const domainItems: ProcessedOrderItem[] = [];
     const dbOrderItems: any[] = [];
 
     for (const item of items) {
       const dbProduct = productMap.get(item.id);
       if (!dbProduct) {
-        return { grossAmount: 0, midtransItems: [], dbOrderItems: [], error: `Product not found: ${item.id}` };
+        return { grossAmount: 0, domainItems: [], dbOrderItems: [], error: `Product not found: ${item.id}` };
       }
 
       const itemSizeUpper = item.size ? item.size.toUpperCase().trim() : '';
@@ -116,7 +116,7 @@ export class PricingEngine {
       if (flashSaleMatch) {
         // Enforce max qty limit per user
         if (item.quantity > flashSaleMatch.max_qty_per_user) {
-           return { grossAmount: 0, midtransItems: [], dbOrderItems: [], error: `Batas pembelian untuk produk ${dbProduct.name} saat Flash Sale adalah ${flashSaleMatch.max_qty_per_user} pcs.` };
+           return { grossAmount: 0, domainItems: [], dbOrderItems: [], error: `Batas pembelian untuk produk ${dbProduct.name} saat Flash Sale adalah ${flashSaleMatch.max_qty_per_user} pcs.` };
         }
         finalItemPrice = Number(flashSaleMatch.flash_sale_price) + surcharge; // Apply base flash price, preserve surcharge
         flashSaleId = flashSaleMatch.flash_sale_id;
@@ -134,7 +134,7 @@ export class PricingEngine {
       const suffix = surcharge > 0 ? ' (XXL+)' : (flashSaleMatch ? ' [FLASH SALE]' : '');
       const itemName = `${dbProduct.name}${suffix}`.substring(0, this.policy.maxItemNameLength);
 
-      midtransItems.push({
+      domainItems.push({
         id: item.id,
         price: finalItemPrice,
         quantity: item.quantity,
@@ -178,7 +178,7 @@ export class PricingEngine {
       let totalShippingCost = 0;
       shipments.forEach((s: any, idx: number) => {
         const cost = Number(s.shipping_cost || s.cost || 0);
-        midtransItems.push({
+        domainItems.push({
           id: `SHIPPING_${idx}`,
           price: cost,
           quantity: 1,
@@ -189,7 +189,7 @@ export class PricingEngine {
       calculatedGrossAmount += totalShippingCost;
     } else {
       // Legacy single shipping
-      midtransItems.push({
+      domainItems.push({
         id: 'SHIPPING',
         price: shipping.cost || 0,
         quantity: 1,
@@ -200,7 +200,7 @@ export class PricingEngine {
 
     // Add Platform Fee
     if (this.policy.platformFee > 0) {
-      midtransItems.push({
+      domainItems.push({
         id: 'PLATFORM_FEE',
         price: this.policy.platformFee,
         quantity: 1,
@@ -211,7 +211,7 @@ export class PricingEngine {
 
     // Apply Promo Code
     if (promo && promo.discountAmount > 0) {
-      midtransItems.push({
+      domainItems.push({
         id: 'PROMO',
         price: -promo.discountAmount,
         quantity: 1,
@@ -221,10 +221,10 @@ export class PricingEngine {
     }
 
     if (calculatedGrossAmount <= 0) {
-      return { grossAmount: 0, midtransItems: [], dbOrderItems: [], error: 'Invalid total price' };
+      return { grossAmount: 0, domainItems: [], dbOrderItems: [], error: 'Invalid total price' };
     }
 
-    return { grossAmount: calculatedGrossAmount, midtransItems, dbOrderItems };
+    return { grossAmount: calculatedGrossAmount, domainItems, dbOrderItems };
   }
 
   public static calculateOrderBreakdown(
@@ -233,7 +233,7 @@ export class PricingEngine {
     shipping: ShippingDetails,
     promo?: PromoDetails,
     activeFlashSales: FlashSaleItem[] = []
-  ): { grossAmount: number; midtransItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
+  ): { grossAmount: number; domainItems: ProcessedOrderItem[]; dbOrderItems: any[]; error?: string } {
     const engine = new PricingEngine();
     return engine.calculateOrderBreakdownInstance(items, dbProducts, shipping, promo, activeFlashSales);
   }
