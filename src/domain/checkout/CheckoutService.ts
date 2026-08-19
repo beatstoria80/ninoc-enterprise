@@ -336,7 +336,9 @@ export class CheckoutService {
       },
       item_details: pricing.midtransItems,
       credit_card: { secure: true },
-      custom_expiry: { expiry_duration: 24, unit: 'hour' },
+      custom_expiry: (flashSaleOrderItems && flashSaleOrderItems.length > 0)
+        ? { expiry_duration: 15, unit: 'minute' }
+        : { expiry_duration: 24, unit: 'hour' },
       callbacks: {
         finish: `${appUrl}/payment/success?order_id=${orderId}&courier=${(shippingDetails.method as string) || ''}`,
         unfinish: `${appUrl}/shop`,
