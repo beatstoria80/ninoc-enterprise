@@ -109,7 +109,7 @@ import { NextRequest } from 'next/server';
 
 /**
  * HOC for Admin-only API Routes.
- * Checks authentication AND validates strict admin privileges.
+ * Checks authentication AND validates strict admin privileges against the Whitelist Database.
  */
 export function withAdminAuth(
   handler: (req: NextRequest, ...args: any[]) => Promise<NextResponse>
@@ -122,7 +122,14 @@ export function withAdminAuth(
       return apiUnauthorized('Unauthorized access. Authentication required.');
     }
 
-    if (user.email !== 'admin@ninoc.store') {
+    // Check Whitelist Database (Option B)
+    const { data: adminData } = await supabaseServer
+      .from('admin_users')
+      .select('id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!adminData) {
       return apiForbidden('Forbidden. Admin privileges required.');
     }
 

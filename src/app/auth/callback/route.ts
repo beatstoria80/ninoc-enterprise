@@ -61,10 +61,17 @@ export async function GET(request: Request) {
       }
     );
     const { data: { user } } = await supabase.auth.getUser();
-    if (user?.email) {
-      if (user.email === 'admin@ninoc.store') {
+    if (user?.id) {
+      // Check Whitelist Database (Option B)
+      const { data: adminData } = await supabase
+        .from('admin_users')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (adminData) {
         finalNext = '/admin';
-      } else if (user.email.endsWith('@ninoc.store')) {
+      } else if (user.email?.endsWith('@ninoc.store')) {
         finalNext = '/supplier';
       }
     }
