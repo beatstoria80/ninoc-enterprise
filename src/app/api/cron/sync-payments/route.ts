@@ -6,7 +6,7 @@ import { supabaseAdmin as adminClient } from '@/lib/supabaseAdmin';
 import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
 import { getAppUrl } from '@/lib/utils';
-
+import { OrderProcessor } from '@/lib/domain/OrderProcessor';
 /**
  * CRON: Sync Pending Payments with Midtrans
  * 
@@ -98,63 +98,28 @@ export async function GET(req: Request) {
 
         console.log(`[Sync Payments] ✅ Order ${order.id} synced: pending → ${newStatus}`);
 
-        // 5. If paid, trigger notifications (same logic as webhook)
+        // 5. Trigger side effects using unified domain service
         if (newStatus === 'paid') {
           const { data: fullOrder } = await adminClient
             .from('orders')
-            .select(`
-              id, order_number, shipping_address, total_price, wa_invoice_sent,
-              order_items ( id, product_name, size, quantity, price_at_purchase, supplier_id, supplier_hpp )
-            `)
+            .select('id, order_number, status, midtrans_id, wa_invoice_sent, user_id, shipping_address, total_price, affiliate_id')
             .eq('id', order.id)
             .single();
 
           if (fullOrder) {
-            // Send WhatsApp Invoice
-            if (!fullOrder.wa_invoice_sent) {
-              const shippingAddress = fullOrder.shipping_address as Record<string, string> | null;
-              const phone = shippingAddress?.phone || '';
-              const customerName = shippingAddress?.name || 'Pelanggan';
-              const formattedPhone = formatPhoneNumber(phone);
-
-              if (formattedPhone) {
-                const formattedPrice = `Rp ${Number(fullOrder.total_price).toLocaleString('id-ID')}`;
-                const appUrl = getAppUrl();
-                const trackId = fullOrder.order_number || fullOrder.id;
-                const paymentUrl = `${appUrl}/track?order_number=${trackId}&phone=${encodeURIComponent(formattedPhone)}`;
-
-                const waResult = await sendInvoiceWA({
-                  phone: formattedPhone,
-                  customer_name: customerName,
-                  order_id: fullOrder.id,
-                  total_price: formattedPrice,
-                  payment_url: paymentUrl,
-                });
-
-                if (waResult.success) {
-                  await adminClient
-                    .from('orders')
-                    .update({ wa_invoice_sent: true, wa_invoice_sent_at: new Date().toISOString() })
-                    .eq('id', order.id);
-                  console.log(`[Sync Payments] WA invoice sent for order ${order.id}`);
-                }
-              }
-            }
-
-            // Send Email Invoice
-            const customerEmail = (fullOrder.shipping_address as Record<string, string> | null)?.email;
-            if (customerEmail) {
-              console.log(`[Sync Payments] Sending email invoice to ${customerEmail}`);
-              await sendEmailInvoice(fullOrder, customerEmail);
-            }
+            // Midtrans status API doesn't return gross_amount consistently, fallback to order total
+            const grossAmount = statusResponse.gross_amount ? Number(statusResponse.gross_amount) : Number(fullOrder.total_price || 0);
+            await OrderProcessor.processSuccessfulOrder(order.id, fullOrder, paymentType, grossAmount);
           }
-        }
+        } else if (newStatus === 'cancelled') {
+          const { data: fullOrder } = await adminClient
+            .from('orders')
+            .select('id, order_number, status, midtrans_id, wa_invoice_sent, user_id, shipping_address, total_price, affiliate_id')
+            .eq('id', order.id)
+            .single();
 
-        // 6. Restock if cancelled
-        if (newStatus === 'cancelled') {
-          const { error: restockError } = await adminClient.rpc('restock_inventory', { p_order_id: order.id });
-          if (!restockError) {
-            console.log(`[Sync Payments] Restocked inventory for cancelled order ${order.id}`);
+          if (fullOrder) {
+            await OrderProcessor.processCancelledOrder(order.id, fullOrder);
           }
         }
 
