@@ -119,8 +119,11 @@ export async function sendPasswordResetEmail() {
       return { error: 'Could not fetch user email.' };
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+    // Must route through auth/callback so Supabase SSR can exchange the PKCE code for a session
+    // Then the callback will redirect to the Security tab where the user can enter the new password
     const { error } = await supabaseAdmin.auth.resetPasswordForEmail(user.email, {
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store'}/supplier/settings?tab=account`,
+      redirectTo: `${baseUrl}/auth/callback?next=/supplier/settings?tab=security`,
     });
 
     if (error) {

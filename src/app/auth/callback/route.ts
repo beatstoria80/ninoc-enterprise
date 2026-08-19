@@ -45,6 +45,9 @@ export async function GET(request: Request) {
     }
   }
 
-  // Redirect to onboarding form (it will auto-redirect to profile if already completed)
-  return NextResponse.redirect(`${origin}/onboarding`);
+  // Support dynamic redirect via 'next' query param (useful for password resets)
+  const next = requestUrl.searchParams.get('next') || '/onboarding';
+  const redirectUrl = next.startsWith('/') ? `${origin}${next}` : `${origin}/onboarding`;
+
+  return NextResponse.redirect(redirectUrl);
 }
