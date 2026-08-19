@@ -103,3 +103,29 @@ export function withErrorHandler<R extends Request = Request>(
     }
   };
 }
+
+import { createClient } from '@/utils/supabase/server';
+import { NextRequest } from 'next/server';
+
+/**
+ * HOC for Admin-only API Routes.
+ * Checks authentication AND validates strict admin privileges.
+ */
+export function withAdminAuth(
+  handler: (req: NextRequest, ...args: any[]) => Promise<NextResponse>
+) {
+  return withErrorHandler(async (req: NextRequest, ...args: any[]): Promise<NextResponse> => {
+    const supabaseServer = await createClient();
+    const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
+
+    if (authError || !user) {
+      return apiUnauthorized('Unauthorized access. Authentication required.');
+    }
+
+    if (user.email !== 'admin@ninoc.store') {
+      return apiForbidden('Forbidden. Admin privileges required.');
+    }
+
+    return await handler(req, ...args);
+  });
+}

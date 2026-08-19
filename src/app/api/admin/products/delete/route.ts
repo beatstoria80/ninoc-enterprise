@@ -1,13 +1,8 @@
 import { NextRequest } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
-import { withErrorHandler, apiSuccess, apiBadRequest } from '@/lib/apiResponse';
-import { createClient } from '@/utils/supabase/server';
+import { withAdminAuth, apiSuccess, apiBadRequest } from '@/lib/apiResponse';
 
-export const POST = withErrorHandler(async (req: NextRequest) => {
-  const supabaseServer = await createClient();
-  const { data: { user }, error: authError } = await supabaseServer.auth.getUser();
-  if (authError || !user) throw new Error('UNAUTHORIZED');
-
+export const POST = withAdminAuth(async (req: NextRequest) => {
   const { id } = await req.json();
 
   if (!id) {
