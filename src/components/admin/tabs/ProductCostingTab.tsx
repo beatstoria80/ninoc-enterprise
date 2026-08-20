@@ -57,6 +57,8 @@ export function ProductCostingTab() {
         supplier_surcharge_cost: Number(editingCostings[id].supplier_surcharge_cost !== undefined ? editingCostings[id].supplier_surcharge_cost : costings.find(c => c.id === id).supplier_surcharge_cost || 0),
         packaging_cost: Number(editingCostings[id].packaging_cost !== undefined ? editingCostings[id].packaging_cost : costings.find(c => c.id === id).packaging_cost),
         operational_pct: Number(editingCostings[id].operational_pct !== undefined ? editingCostings[id].operational_pct : costings.find(c => c.id === id).operational_pct),
+        midtrans_fee: Number(editingCostings[id].midtrans_fee !== undefined ? editingCostings[id].midtrans_fee : costings.find(c => c.id === id).midtrans_fee || 0),
+        biteship_fee: Number(editingCostings[id].biteship_fee !== undefined ? editingCostings[id].biteship_fee : costings.find(c => c.id === id).biteship_fee || 0),
         target_margin_pct: Number(editingCostings[id].target_margin_pct !== undefined ? editingCostings[id].target_margin_pct : costings.find(c => c.id === id).target_margin_pct),
         target_roas: Number(editingCostings[id].target_roas !== undefined ? editingCostings[id].target_roas : costings.find(c => c.id === id).target_roas),
         return_cost: Number(editingCostings[id].return_cost !== undefined ? editingCostings[id].return_cost : costings.find(c => c.id === id).return_cost),
@@ -135,8 +137,10 @@ export function ProductCostingTab() {
                 <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[140px] bg-[#F4F4F5]">HPP Pabrik (IDR)</th>
                 <th className="px-3 py-3 text-xs font-medium text-indigo-700 uppercase tracking-wide border-r border-ink/5 min-w-[160px] bg-[#EEF2FF]">HPP Surcharge (XXL - 5XL)</th>
                 <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-[#F4F4F5]">Packaging (IDR)</th>
-                <th className="px-3 py-3 text-xs font-medium text-rose uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-[#FFF1F2]">Biaya Retur (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[120px] bg-[#FFF1F2]">Biaya Retur (IDR)</th>
                 <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[130px] bg-[#F4F4F5]">Operational (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-blue-600 uppercase tracking-wide border-r border-ink/5 min-w-[130px] bg-[#EFF6FF]">Midtrans Fee (IDR)</th>
+                <th className="px-3 py-3 text-xs font-medium text-blue-600 uppercase tracking-wide border-r border-ink/5 min-w-[130px] bg-[#EFF6FF]">Biteship Fee (IDR)</th>
                 <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/5 min-w-[130px] bg-[#F4F4F5]">Target Margin (%)</th>
                 <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide border-r border-ink/10 min-w-[130px] bg-[#F4F4F5]">Target ROAS (x)</th>
                 <th className="px-3 py-3 text-xs font-medium text-ink/80 uppercase tracking-wide bg-[#EAEAEC] border-r border-ink/5 min-w-[120px]">Total COGS</th>
@@ -154,11 +158,13 @@ export function ProductCostingTab() {
                 const pkg = Number(currentData.packaging_cost) || 0;
                 const ret = Number(currentData.return_cost) || 0;
                 const opsPct = Number(currentData.operational_pct) || 0; 
+                const midtransFee = Number(currentData.midtrans_fee) || 0;
+                const biteshipFee = Number(currentData.biteship_fee) || 0;
                 const marginPct = Number(currentData.target_margin_pct) || 40;
                 const roasPct = Number(currentData.target_roas) || 3;
 
                 const opsCost = opsPct; 
-                const totalCogs = hpp + pkg + opsCost; 
+                const totalCogs = hpp + pkg + opsCost + midtransFee + biteshipFee; 
                 const maxCpa = roasPct > 0 ? sp / roasPct : 0;
                 const estNetProfit = sp - totalCogs - maxCpa;
                 const targetNetProfit = (marginPct / 100) * sp;
@@ -223,6 +229,26 @@ export function ProductCostingTab() {
                         className="w-full text-xs font-mono px-2 py-1.5 border border-ink/10 rounded-sm focus:outline-none focus:border-ink/50 focus:ring-1 focus:ring-ink/20 transition-all bg-ink/[0.02] hover:bg-white"
                         value={currentData.operational_pct ?? ''}
                         onChange={(e) => handleCostingChange(p.id, 'operational_pct', e.target.value)}
+                        placeholder="0"
+                      />
+                    </td>
+                    <td className="px-3 py-2 border-r border-ink/5 bg-blue-50/20">
+                      <input 
+                        type="number"
+                        min="0"
+                        className="w-full text-xs font-mono px-2 py-1.5 border border-blue-200 rounded-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all bg-white text-blue-700 font-semibold"
+                        value={currentData.midtrans_fee ?? ''}
+                        onChange={(e) => handleCostingChange(p.id, 'midtrans_fee', e.target.value)}
+                        placeholder="0"
+                      />
+                    </td>
+                    <td className="px-3 py-2 border-r border-ink/5 bg-blue-50/20">
+                      <input 
+                        type="number"
+                        min="0"
+                        className="w-full text-xs font-mono px-2 py-1.5 border border-blue-200 rounded-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200 transition-all bg-white text-blue-700 font-semibold"
+                        value={currentData.biteship_fee ?? ''}
+                        onChange={(e) => handleCostingChange(p.id, 'biteship_fee', e.target.value)}
                         placeholder="0"
                       />
                     </td>

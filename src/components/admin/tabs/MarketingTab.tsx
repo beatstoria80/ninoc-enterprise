@@ -64,7 +64,9 @@ export function MarketingTab() {
           const baseCost = Number(c.supplier_cost) || 0;
           const pkgCost = Number(c.packaging_cost) || 0;
           const opCost = Number(c.operational_pct) || 0; // treating as IDR
-          const unitCogs = baseCost + pkgCost + opCost;
+          const midtransFee = Number(c.midtrans_fee) || 0;
+          const biteshipFee = Number(c.biteship_fee) || 0;
+          const unitCogs = baseCost + pkgCost + opCost + midtransFee + biteshipFee;
           
           totalInventoryValue += (productStock * unitCogs);
 
@@ -84,7 +86,9 @@ export function MarketingTab() {
         mergedCostings.forEach(c => {
           const baseCost = Number(c.supplier_cost) + Number(c.packaging_cost);
           const opCost = Number(c.operational_pct) || 0; // Fixed: Treat as flat IDR instead of percentage
-          costMap[c.id] = baseCost + opCost; // COGS per unit
+          const midtransFee = Number(c.midtrans_fee) || 0;
+          const biteshipFee = Number(c.biteship_fee) || 0;
+          costMap[c.id] = baseCost + opCost + midtransFee + biteshipFee; // COGS per unit
         });
 
         // 2. Fetch Marketing Data
