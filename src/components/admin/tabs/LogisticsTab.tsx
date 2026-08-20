@@ -6,7 +6,16 @@ import { format } from 'date-fns';
 import CourierLogo from '@/components/CourierLogo';
 import { Order } from '../types';
 import { supabase } from '@/lib/supabase';
-import MapTracker from '@/components/MapTracker';
+import dynamic from 'next/dynamic';
+
+const MapTracker = dynamic(() => import('@/components/MapTracker'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full min-h-[200px] bg-ink/5 animate-pulse flex items-center justify-center text-[9px] uppercase tracking-widest text-ink/40 font-semibold">
+      Initializing Map...
+    </div>
+  )
+});
 
 export function LogisticsTab({
   orders,
@@ -719,7 +728,7 @@ export function LogisticsTab({
 
                 {/* Map */}
                 <p className="text-[11px] font-medium text-gray-900 mb-2 flex items-center gap-1.5"><MapPin size={10} className="text-rose"/> Live Tracking Map</p>
-                <div className="relative w-full h-full bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0 flex-1">
+                <div className="relative w-full min-h-[280px] h-[320px] bg-[#f8f9fa] rounded-2xl border border-gray-200 overflow-hidden shrink-0">
                   <MapTracker 
                     destinationCity={logisticsSelectedOrder.shipping_address?.city || ''} 
                     status={logisticsSelectedOrder.status} 
