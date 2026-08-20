@@ -132,7 +132,14 @@ export async function POST(req: Request) {
 
   } catch (error: any) {
     console.error('[Broadcast Email] Error:', error);
-    return NextResponse.json({ error: error.message || 'Failed to send broadcast email' }, { status: 500 });
+    
+    // Intercept Gmail App Password Error
+    let errorMessage = error.message || 'Gagal mengirim email broadcast.';
+    if (errorMessage.includes('Application-specific password required') || errorMessage.includes('534-5.7.9')) {
+      errorMessage = 'Akses ditolak oleh Google. Karena akun menggunakan Autentikasi 2 Langkah (2FA), Anda tidak bisa menggunakan kata sandi biasa. Silakan buat "App Password" (Sandi Aplikasi) di setelan Google Akun Anda, lalu perbarui .env (SMTP_PASSWORD) dengan sandi aplikasi tersebut.';
+    }
+
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
 
