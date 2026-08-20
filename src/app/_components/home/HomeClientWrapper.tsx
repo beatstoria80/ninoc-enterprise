@@ -323,9 +323,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
                 >
                   <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-8 h-8 md:w-10 md:h-10 object-contain" priority unoptimized />
-                  <span className="hidden sm:inline-block text-[9px] md:text-[10px] font-mono tracking-widest uppercase text-ink/70 border-l border-ink/15 pl-2.5">
-                    ENTERPRISE
-                  </span>
                 </motion.div>
               </div>
 

@@ -612,7 +612,6 @@ export default function GlobalHeader() {
                     priority 
                     unoptimized
                   />
-                  <span className="text-[7px] md:text-[8px] uppercase tracking-widest font-sans font-medium not-italic border border-current px-1 py-0.5 rounded-sm opacity-50">BETA</span>
                 </motion.div>
               </Link>
 
