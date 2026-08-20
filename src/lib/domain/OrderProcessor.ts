@@ -3,6 +3,7 @@ import { sendInvoiceWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { sendEmailInvoice } from '@/lib/email';
 import { notifyAllChannels } from '@/lib/notifications';
 import { getAppUrl } from '@/lib/utils';
+import { sendPurchaseEventCAPI } from '@/lib/meta-capi';
 
 export class OrderProcessor {
   /**
@@ -222,6 +223,22 @@ export class OrderProcessor {
           actionLink: `/profile/orders/${orderId}`,
         }).catch(err => console.error('[OrderProcessor] Push Notification Error:', err));
       }
+
+      // Meta Conversions API (CAPI) Integration
+      sendPurchaseEventCAPI({
+        orderId: orderId,
+        value: Number(existingOrder.total_price),
+        currency: 'IDR',
+        email: customerEmail,
+        phone: formattedPhone || phone,
+        items: Array.isArray(existingOrder.items) 
+          ? existingOrder.items.map((item: any) => ({
+              id: item.product_id || 'UNKNOWN',
+              quantity: item.quantity || 1,
+              item_price: item.price || 0,
+            }))
+          : [],
+      });
 
       // F. Record Midtrans Gateway Fee as OPEX (NINOC Absorbs Platform Fee)
       let midtransFee = 0;

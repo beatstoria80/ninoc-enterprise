@@ -13,6 +13,7 @@ import { Suspense } from "react";
 import ClientOverlays from "@/components/ClientOverlays";
 import PushNotificationManager from "@/components/PushNotificationManager";
 import GlobalDragScroll from "@/components/GlobalDragScroll";
+import MetaPixel from "@/components/MetaPixel";
 
 const inter = {
   variable: "--font-sans",
@@ -284,6 +285,9 @@ export default async function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col minimal-scroll" suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <MetaPixel />
+        </Suspense>
         <NextTopLoader color="#e8527a" showSpinner={false} height={3} />
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
