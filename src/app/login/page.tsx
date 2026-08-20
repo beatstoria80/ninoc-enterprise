@@ -42,7 +42,7 @@ export default function LoginPage() {
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          router.push('/admin');
+          window.location.href = '/admin';
           return;
         }
       }
@@ -76,7 +76,7 @@ export default function LoginPage() {
       const nextUrl = new URLSearchParams(window.location.search).get('next');
       
       if (data?.user?.user_metadata?.role === 'admin' || loginEmail === 'admin@ninoc.store') {
-        router.push('/admin');
+        window.location.href = '/admin';
       } else if (isSupplierLogin || loginEmail === 'supplier_test@ninoc.store' || loginEmail === 'it.tairflask@ninoc.store' || loginEmail === 'audit_it@ninoc.store' || nextUrl === '/supplier') {
         window.location.href = '/supplier';
       } else if (nextUrl) {
