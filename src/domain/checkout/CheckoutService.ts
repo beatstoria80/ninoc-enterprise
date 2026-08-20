@@ -8,6 +8,7 @@ import { StockValidator, StockValidationResult } from './StockValidator';
 import { sendCheckoutPendingWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { FlashSaleService } from '@/lib/domain/flashSale';
 import { after } from 'next/server';
+import { WarehouseValidator } from '@/domain/cart/WarehouseValidator';
 
 export interface CheckoutProcessResponse {
   status: number;
@@ -85,30 +86,7 @@ export class CheckoutService {
     return undefined;
   }
 
-  private validateWarehouseIntegrity(items: any[]): string | null {
-    if (items.length <= 1) return null;
-
-    const existingWarehouseId = items[0].warehouse_id;
-    const existingPostal = items[0].origin_postal_code;
-
-    for (let i = 1; i < items.length; i++) {
-      const newWarehouseId = items[i].warehouse_id;
-      const newPostal = items[i].origin_postal_code;
-
-      let isConflict = false;
-      if (existingWarehouseId || newWarehouseId) {
-        if (existingWarehouseId !== newWarehouseId) isConflict = true;
-      } else {
-        if (existingPostal && newPostal && existingPostal !== newPostal) isConflict = true;
-      }
-
-      if (isConflict) {
-        console.warn(`[CheckoutService] Warehouse conflict detected between items:`, items[0].name, 'vs', items[i].name);
-        return 'Tidak dapat menggabungkan produk dari lokasi gudang/fasilitas yang berbeda dalam satu pesanan. Silakan checkout terpisah.';
-      }
-    }
-    return null;
-  }
+  // Removed validateWarehouseIntegrity in favor of centralized WarehouseValidator
 
   private async resolveAffiliateTracking(customerDetails: CustomerDetails, affiliateCookieValue?: string): Promise<string | null> {
     const targetRefCode = customerDetails.referral_code || affiliateCookieValue;
@@ -304,8 +282,8 @@ export class CheckoutService {
       return { status: 409, payload: { error: stockValidation.error, out_of_stock_item: stockValidation.outOfStockItemId } };
     }
 
-    const warehouseError = this.validateWarehouseIntegrity(sanitizedItems);
-    if (warehouseError) return { status: 400, payload: { error: warehouseError } };
+    const warehouseValidation = WarehouseValidator.validateWarehouseConflict(sanitizedItems);
+    if (!warehouseValidation.isValid) return { status: 400, payload: { error: warehouseValidation.error } };
 
     const affiliateId = await this.resolveAffiliateTracking(customerDetails, affiliateCookieValue);
 
