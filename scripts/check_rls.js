@@ -4,14 +4,13 @@ async function run() {
   const client = new Client({ connectionString: dbUrl });
   await client.connect();
   try {
-    const res = await client.query(`
-      SELECT policyname, permissive, roles, cmd, qual, with_check 
-      FROM pg_policies 
-      WHERE tablename = 'orders';
-    `);
-    console.log(JSON.stringify(res.rows, null, 2));
+    const resUsers = await client.query("SELECT id, email, raw_user_meta_data FROM auth.users WHERE email ILIKE 'admin@ninoc.store';");
+    console.log('Auth Users:', resUsers.rows);
+
+    const resRoles = await client.query("SELECT * FROM public.admin_roles;");
+    console.log('Admin Roles:', resRoles.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error(err);
   } finally {
     await client.end();
   }

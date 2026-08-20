@@ -68,19 +68,18 @@ export async function POST(req: Request) {
       })
       .eq('id', po_item_id);
 
-    // 2. Update stock for variants (ONLY FOR qty_good)
+    // 2. Update stock for variants & record inventory_movements (ONLY FOR qty_good)
     if (qty_good > 0) {
-      const { data: variant } = await adminClient
-        .from('variants')
-        .select('stock_quantity')
-        .eq('id', variant_id)
-        .single();
-        
-      const currentStock = variant?.stock_quantity || 0;
-      await adminClient
-        .from('variants')
-        .update({ stock_quantity: currentStock + qty_good })
-        .eq('id', variant_id);
+      const { error: rpcError } = await adminClient.rpc('inbound_qc_receive', {
+        p_variant_id: variant_id,
+        p_qty_good: qty_good,
+        p_po_id: po_id,
+        p_po_item_id: po_item_id
+      });
+      if (rpcError) {
+        console.error('RPC inbound_qc_receive error:', rpcError);
+        return NextResponse.json({ error: 'Gagal memperbarui stok secara atomik' }, { status: 500 });
+      }
     }
 
     // 3. Log to inbound_qc_logs

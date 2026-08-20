@@ -139,44 +139,16 @@ export async function POST(req: Request) {
       throw updateError;
     }
 
-    // 5. Revert Stock (Call Supabase RPC and manual variant stock backup)
+    // 5. Revert Stock via Atomic RPC
     try {
       const { error: rpcError } = await supabaseAdmin.rpc('restock_inventory', { p_order_id: order.id });
       if (rpcError) {
-        console.warn('RPC restock_inventory failed or not found, falling back to manual variant stock update:', rpcError);
-        if (order.order_items && order.order_items.length > 0) {
-          for (const item of order.order_items) {
-            const qty = item.quantity || 1;
-            if (item.variant_id) {
-              const { data: variant } = await supabaseAdmin
-                .from('variants')
-                .select('stock_quantity')
-                .eq('id', item.variant_id)
-                .single();
-              if (variant && typeof variant.stock_quantity === 'number') {
-                await supabaseAdmin
-                  .from('variants')
-                  .update({ stock_quantity: variant.stock_quantity + qty })
-                  .eq('id', item.variant_id);
-              }
-            } else if (item.product_id) {
-              const { data: variants } = await supabaseAdmin
-                .from('variants')
-                .select('id, stock_quantity')
-                .eq('product_id', item.product_id)
-                .limit(1);
-              if (variants && variants.length > 0 && typeof variants[0].stock_quantity === 'number') {
-                await supabaseAdmin
-                  .from('variants')
-                  .update({ stock_quantity: variants[0].stock_quantity + qty })
-                  .eq('id', variants[0].id);
-              }
-            }
-          }
-        }
+        console.error('[Admin Cancel API] RPC restock_inventory failed:', rpcError);
+      } else {
+        console.log(`[Admin Cancel API] Restocked inventory for cancelled Order ${order.id}`);
       }
     } catch (err) {
-      console.error('Error during stock reversion:', err);
+      console.error('[Admin Cancel API] Error during stock reversion:', err);
     }
 
     // 6. Multi-Channel Customer & Admin Feedback Engine (Critical Safety & Refund Feedback)

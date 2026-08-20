@@ -46,6 +46,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
           }
 
           await adminClient.from('inventory_movements').insert({
+            warehouse_id: '81f77276-ea57-470b-98c5-e8677c1e0093', // Gudang Utama NINOC
+            variant_id: item.variant_id || null, // Fallback null if missing, but table might require it
             movement_type: 'return',
             quantity_change: item.quantity,
             reference_id: `RETUR-${id}`,
@@ -54,6 +56,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
         } else if (item.condition === 'defective') {
           await adminClient.from('inventory_movements').insert({
+            warehouse_id: '81f77276-ea57-470b-98c5-e8677c1e0093', // Gudang Utama NINOC
+            variant_id: item.variant_id || null,
             movement_type: 'adjustment_loss',
             quantity_change: 0,
             reference_id: `RETUR-${id}`,
