@@ -27,7 +27,7 @@ export function SupplierLogoutButton() {
     <button 
       onClick={handleLogout}
       disabled={isLoading}
-      className="flex items-center gap-3 px-4 py-3 w-full text-sm text-rose/80 hover:text-rose hover:bg-white/5 rounded-md transition-all duration-200"
+      className="flex items-center gap-3 px-4 py-3 w-full text-sm font-medium text-white/60 hover:text-white hover:bg-white/10 rounded-md transition-all duration-200"
     >
       <LogOut size={18} className={isLoading ? "animate-pulse" : ""} />
       <span>{isLoading ? 'Signing out...' : 'Sign Out'}</span>
