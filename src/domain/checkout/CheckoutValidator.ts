@@ -40,6 +40,9 @@ export interface CheckoutItem {
   size?: string;
   color?: string;
   size_surcharge?: number;
+  variant_id?: string;
+  flash_sale_item_id?: string;
+  flash_sale_max_qty?: number;
 }
 
 export class CheckoutValidator {
@@ -55,17 +58,34 @@ export class CheckoutValidator {
     customer: CustomerDetails,
     ip: string
   ): { isValid: boolean; errorResponse?: NextResponse; sanitizedPhone?: string; fullName?: string; sanitizedItems?: CheckoutItem[] } {
-    // 1. Cart validation
+    // 1. Cart validation & Aggregation (Fixes Cart Split Exploit)
     if (!Array.isArray(items) || items.length === 0) {
       return { isValid: false, errorResponse: NextResponse.json({ error: 'Keranjang belanja kosong' }, { status: 400 }) };
     }
 
+    const aggregatedMap = new Map<string, CheckoutItem>();
+
     for (const item of items) {
+      // Create a unique composite key for this cart line
+      const key = `${item.id}-${item.size || ''}-${item.color || ''}-${item.variant_id || ''}-${item.flash_sale_item_id || ''}`;
+      
+      if (aggregatedMap.has(key)) {
+        const existing = aggregatedMap.get(key)!;
+        existing.quantity += item.quantity;
+      } else {
+        // Deep clone to prevent mutating the original request
+        aggregatedMap.set(key, { ...item });
+      }
+    }
+
+    const aggregatedItems = Array.from(aggregatedMap.values());
+
+    for (const item of aggregatedItems) {
       if (item.quantity > this.MAX_QTY_PER_ITEM) {
         return {
           isValid: false,
           errorResponse: NextResponse.json(
-            { error: `Quantity for item ${item.name} exceeds the maximum limit of ${this.MAX_QTY_PER_ITEM}.` },
+            { error: `Jumlah pesanan untuk item ${item.name} melebihi batas maksimal ${this.MAX_QTY_PER_ITEM} unit.` },
             { status: 400 }
           ),
         };
@@ -116,6 +136,6 @@ export class CheckoutValidator {
       };
     }
 
-    return { isValid: true, sanitizedPhone, fullName, sanitizedItems: items };
+    return { isValid: true, sanitizedPhone, fullName, sanitizedItems: aggregatedItems };
   }
 }

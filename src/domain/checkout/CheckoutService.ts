@@ -109,6 +109,7 @@ export class CheckoutService {
 
   private async applyFlashSaleLocks(flashSaleOrderItems: any[], customerDetails: CustomerDetails): Promise<{ success: boolean; reservedItems: any[]; error?: string }> {
     const reservedFlashSaleItems: { id: string; qty: number }[] = [];
+    const sessionTracker = new Map<string, number>();
     
     if (flashSaleOrderItems.length === 0) return { success: true, reservedItems: [] };
 
@@ -122,10 +123,15 @@ export class CheckoutService {
           customerDetails.phone
         );
         
-        if (pastPurchasedQty + item.quantity > item.flash_sale_max_qty) {
+        const currentSessionQty = sessionTracker.get(item.flash_sale_item_id) || 0;
+        const totalRequestedQty = pastPurchasedQty + currentSessionQty + item.quantity;
+        
+        if (totalRequestedQty > item.flash_sale_max_qty) {
           await this.rollbackFlashSaleLocks(reservedFlashSaleItems);
-          return { success: false, reservedItems: [], error: `Anda telah mencapai batas maksimal pembelian (Maks ${item.flash_sale_max_qty} pcs) untuk produk promosi ${item.product_name} pada transaksi Anda sebelumnya.` };
+          return { success: false, reservedItems: [], error: `Anda telah mencapai batas maksimal pembelian (Maks ${item.flash_sale_max_qty} pcs) untuk produk promosi ${item.product_name}.` };
         }
+        
+        sessionTracker.set(item.flash_sale_item_id, currentSessionQty + item.quantity);
       }
 
       const { data: reserved, error: rpcErr } = await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
