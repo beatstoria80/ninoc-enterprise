@@ -49,6 +49,7 @@ const BannersTab = dynamic(() => import('@/components/admin/tabs/BannersTab').th
 const GoogleAdsTab = dynamic(() => import('@/components/admin/tabs/GoogleAdsTab').then(mod => mod.GoogleAdsTab), { ssr: false });
 const WebAnalyticsTab = dynamic(() => import('@/components/admin/tabs/WebAnalyticsTab').then(mod => mod.WebAnalyticsTab), { ssr: false });
 const SuppliersTab = dynamic(() => import('@/components/admin/tabs/SuppliersTab').then(mod => mod.SuppliersTab), { ssr: false });
+const PayoutRequestsTab = dynamic(() => import('@/components/admin/tabs/PayoutRequestsTab').then(mod => mod.PayoutRequestsTab), { ssr: false });
 const WarehouseTab = dynamic(() => import('@/components/admin/tabs/WarehouseTab').then(mod => mod.WarehouseTab), { ssr: false });
 const POTab = dynamic(() => import('@/components/admin/tabs/POTab').then(mod => mod.POTab), { ssr: false });
 const DOTab = dynamic(() => import('@/components/admin/tabs/DOTab').then(mod => mod.DOTab), { ssr: false });
@@ -861,11 +862,12 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       ]
     },
     { 
-      id: 'supply', icon: Factory, label: 'Partner & Supplier Hub', activeKeys: ['submissions', 'suppliers'],
+      id: 'supply', icon: Factory, label: 'Partner & Supplier Hub', activeKeys: ['submissions', 'suppliers', 'supplier_withdrawals'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'suppliers', label: 'Partner Review' },
-        { id: 'submissions', label: 'Product Submissions' }
+        { id: 'submissions', label: 'Product Submissions' },
+        { id: 'supplier_withdrawals', label: 'Payout Requests' }
       ]
     },
     { 
@@ -1371,7 +1373,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'].includes(activeTab) ? 'Inventory & WMS / ' :
                ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance & Accounting / ' :
                ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'].includes(activeTab) ? 'CRM & Support / ' :
-               ['submissions', 'suppliers'].includes(activeTab) ? 'Partner Hub / ' :
+               ['submissions', 'suppliers', 'supplier_withdrawals'].includes(activeTab) ? 'Partner Hub / ' :
                ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
                'Dashboard / '}
             </span>
@@ -1385,6 +1387,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                activeTab === 'returns' ? 'Retur & Reimbursement' :
                activeTab === 'submissions' ? 'Product Submissions' :
                activeTab === 'suppliers' ? 'Partner Review' :
+               activeTab === 'supplier_withdrawals' ? 'Payout Requests' :
                activeTab === 'warehouse' ? 'Ninoc Warehouse Hub' :
                activeTab === 'customers' ? 'Membership Database' :
                activeTab === 'affiliates' ? 'Affiliates Network' :
@@ -1672,6 +1675,10 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
           {activeTab === 'suppliers' && (
             <SuppliersTab />
+          )}
+
+          {activeTab === 'supplier_withdrawals' && (
+            <PayoutRequestsTab />
           )}
 
           {activeTab === 'warehouse' && (

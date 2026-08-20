@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { Banknote, TrendingUp, DollarSign, Download, ArrowUpRight, Calendar, ArrowDownRight, Clock, Box } from 'lucide-react';
+import { PayoutRequestButton } from '@/components/supplier/PayoutRequestButton';
 
 export default async function SupplierLedgerPage() {
   const supabase = await createClient();
@@ -9,11 +10,12 @@ export default async function SupplierLedgerPage() {
 
   const { data: supplierUser } = await supabase
     .from('supplier_users')
-    .select('supplier_id')
+    .select('supplier_id, suppliers(bank_name, bank_account_number, bank_account_holder)')
     .eq('user_id', session.user.id)
     .single();
     
   const supplierId = supplierUser?.supplier_id;
+  const bankDetails = (supplierUser?.suppliers as any) || { bank_name: '', bank_account_number: '', bank_account_holder: '' };
 
   let availableForPayout = 0;
   let netSalesThisMonth = 0;
@@ -66,15 +68,23 @@ export default async function SupplierLedgerPage() {
         };
       });
 
-      payoutHistory = ledgers
-        .filter((l: any) => l.transaction_type === 'WITHDRAWAL' || l.status === 'withdrawn' || l.status === 'processing_payout')
-        .map((l: any) => ({
-           id: l.id,
-           date: l.created_at,
-           amount: Number(l.amount || l.hpp_amount),
-           status: l.status,
-           method: 'Bank Transfer'
+      // 3. Fetch Payout History (Withdrawal Requests)
+      const { data: withdrawals } = await supabase
+        .from('supplier_withdrawals')
+        .select('*')
+        .eq('supplier_id', supplierId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (withdrawals) {
+        payoutHistory = withdrawals.map((w: any) => ({
+          id: w.id,
+          date: w.created_at,
+          amount: Number(w.amount),
+          status: w.status,
+          method: `${w.bank_name} (${w.account_number.slice(-4)})`
         }));
+      }
 
       ledgers.forEach((l: any) => {
         const amt = Number(l.amount || l.hpp_amount || 0);
@@ -116,11 +126,13 @@ export default async function SupplierLedgerPage() {
             <p className="text-emerald-100 text-sm font-medium">Available for Payout</p>
             <h2 className="text-4xl font-bold mt-2">Rp {availableForPayout.toLocaleString('id-ID')}</h2>
             <div className="mt-6 flex items-center gap-2">
-              <button 
-                disabled={availableForPayout <= 0}
-                className="bg-white text-emerald-700 px-4 py-2 rounded-lg text-sm font-bold shadow-sm hover:bg-emerald-50 transition-colors w-full disabled:opacity-50 disabled:cursor-not-allowed">
-                Request Payout
-              </button>
+              <PayoutRequestButton 
+                availableBalance={availableForPayout} 
+                supplierId={supplierId}
+                initialBankName={bankDetails.bank_name || ''}
+                initialAccountNumber={bankDetails.bank_account_number || ''}
+                initialAccountName={bankDetails.bank_account_holder || ''}
+              />
             </div>
           </div>
         </div>
