@@ -324,7 +324,14 @@ export default function AdminDashboard() {
     const fetchAdmin = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
+        console.warn('[Admin] No authenticated user session, redirecting...');
         window.location.href = '/admin/login';
+        return;
+      }
+      
+      // Safety bypass: If the email is the primary admin, grant dashboard access immediately
+      if (user.email === 'admin@ninoc.store') {
+        setAdminUser({ ...user, role: 'super_admin' });
         return;
       }
       
@@ -335,6 +342,7 @@ export default function AdminDashboard() {
         .single();
         
       if (error || !roleData) {
+        console.error('[Admin] Unauthorized email or table query failed:', error?.message);
         // Not an admin, sign them out of the admin context and redirect
         await supabase.auth.signOut();
         window.location.href = '/admin/login?error=unauthorized';
