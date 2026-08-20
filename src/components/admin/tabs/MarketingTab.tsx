@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Ticket, Shield, Users, ArrowUpRight, ArrowDownRight, PackageOpen, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getMarketingAnalyticsData, type GoogleAdsData } from '@/actions/marketingAnalytics';
+import { getMarketingAnalyticsData } from '@/actions/marketingAnalytics';
+import { type GoogleAdsData, type GoogleAdsCampaign } from '@/actions/googleAds';
 
 export function MarketingTab() {
   const [loading, setLoading] = useState(true);
@@ -244,7 +245,7 @@ export function MarketingTab() {
                 {metrics.googleAds.campaigns.length === 0 ? (
                   <tr><td colSpan={4} className="px-2 py-4 text-center text-xs text-ink/80">Belum ada data iklan berjalan</td></tr>
                 ) : (
-                  metrics.googleAds.campaigns.sort((a, b) => b.spend - a.spend).slice(0, 5).map((c, i) => (
+                  metrics.googleAds.campaigns.sort((a: GoogleAdsCampaign, b: GoogleAdsCampaign) => b.spend - a.spend).slice(0, 5).map((c: GoogleAdsCampaign, i: number) => (
                     <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
                       <td className="px-1.5 py-1">
                         <p className="text-xs font-semibold text-ink truncate max-w-[120px]" title={c.name}>{c.name}</p>

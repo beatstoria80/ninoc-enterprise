@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Facebook, Instagram, Share2, MousePointer2 } from 'lucide-react';
+import { Activity, Users, MousePointer, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, MonitorSmartphone } from 'lucide-react';
 import { getMetaAnalyticsData, type MetaAnalyticsData } from '@/actions/metaAnalytics';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -74,7 +74,7 @@ export function MetaAnalyticsTab() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex items-center justify-center p-1.5 bg-blue-50 text-blue-600 rounded-md">
-              <Facebook className="w-5 h-5" />
+              <Globe className="w-5 h-5" />
             </span>
             <h1 className="text-xl font-bold tracking-tight text-ink">
               Meta Ads Analytics
@@ -157,7 +157,7 @@ export function MetaAnalyticsTab() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
-                <MousePointer2 size={14} className="text-blue-500" /> Link Clicks
+                <MousePointer size={14} className="text-blue-500" /> Link Clicks
               </p>
             </div>
             <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.overview.totalClicks.toLocaleString()}</p>
@@ -228,7 +228,7 @@ export function MetaAnalyticsTab() {
             <div>
               <p className="text-[10px] font-bold text-ink/50 uppercase mb-2">Umur & Jenis Kelamin</p>
               <div className="space-y-2">
-                {data.demographics.ageGender.map((seg, i) => (
+                {data.demographics.ageGender.map((seg: any, i: number) => (
                   <div key={i} className="flex items-center gap-2">
                     <span className="text-[11px] font-semibold w-16 truncate">{seg.segment}</span>
                     <div className="flex-1 bg-ink/5 h-2 rounded-full overflow-hidden">
@@ -257,7 +257,7 @@ export function MetaAnalyticsTab() {
       <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-ink/10 flex items-center justify-between bg-ink/[0.015]">
           <h3 className="text-xs font-bold uppercase tracking-widest text-ink flex items-center gap-1.5">
-            <Share2 size={14} className="text-blue-600" /> Performa Kampanye Iklan
+            <Activity size={14} className="text-blue-600" /> Performa Kampanye Iklan
           </h3>
         </div>
         <div className="overflow-x-auto">
@@ -272,8 +272,8 @@ export function MetaAnalyticsTab() {
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
-              {data.campaigns.map((c) => (
-                <tr key={c.id} className="hover:bg-blue-50/20 transition-colors">
+              {data.campaigns.map((c: any) => (
+                <tr key={c.id} className="hover:bg-ink/[0.01] transition-colors">
                   <td className="px-4 py-3">
                     <p className="text-xs font-semibold text-ink">{c.name}</p>
                     <div className="flex items-center gap-2 mt-1">
