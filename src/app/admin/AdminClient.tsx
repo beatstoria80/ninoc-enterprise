@@ -48,6 +48,7 @@ const FlashSaleTab = dynamic(() => import('@/components/admin/tabs/FlashSaleTab'
 const BannersTab = dynamic(() => import('@/components/admin/tabs/BannersTab').then(mod => mod.BannersTab), { ssr: false });
 const GoogleAdsTab = dynamic(() => import('@/components/admin/tabs/GoogleAdsTab').then(mod => mod.GoogleAdsTab), { ssr: false });
 const WebAnalyticsTab = dynamic(() => import('@/components/admin/tabs/WebAnalyticsTab').then(mod => mod.WebAnalyticsTab), { ssr: false });
+const MetaAnalyticsTab = dynamic(() => import('@/components/admin/tabs/MetaAnalyticsTab').then(mod => mod.MetaAnalyticsTab), { ssr: false });
 const SuppliersTab = dynamic(() => import('@/components/admin/tabs/SuppliersTab').then(mod => mod.SuppliersTab), { ssr: false });
 const PayoutRequestsTab = dynamic(() => import('@/components/admin/tabs/PayoutRequestsTab').then(mod => mod.PayoutRequestsTab), { ssr: false });
 const WarehouseTab = dynamic(() => import('@/components/admin/tabs/WarehouseTab').then(mod => mod.WarehouseTab), { ssr: false });
@@ -871,13 +872,14 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       ]
     },
     { 
-      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'banners'],
+      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'banners', label: 'Banners UI/UX' },
         { id: 'marketing', label: 'Marketing & ROAS' },
         { id: 'flash_sales', label: 'Flash Sale Manager' },
         { id: 'google_ads', label: 'Google Ads Manager' },
+        { id: 'meta_analytics', label: 'Meta Ads Analytics' },
         { id: 'web_analytics', label: 'Web Analytics (GA4/GSC)' }
       ]
     },
@@ -1374,7 +1376,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance & Accounting / ' :
                ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'].includes(activeTab) ? 'CRM & Support / ' :
                ['submissions', 'suppliers', 'supplier_withdrawals'].includes(activeTab) ? 'Partner Hub / ' :
-               ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
+               ['marketing', 'flash_sales', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
                'Dashboard / '}
             </span>
             <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
@@ -1395,6 +1397,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                activeTab === 'flash_sales' ? 'Flash Sale Manager' :
                activeTab === 'banners' ? 'Banners UI/UX' :
                activeTab === 'google_ads' ? 'Google Ads Manager' :
+               activeTab === 'meta_analytics' ? 'Meta Ads Analytics' :
                activeTab === 'web_analytics' ? 'Web Analytics (GA4/GSC)' :
                activeTab === 'inventory' ? 'Stock Management' :
                activeTab === 'po' ? 'Purchase Orders' :
@@ -1726,6 +1729,10 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
           {activeTab === 'web_analytics' && (
             <WebAnalyticsTab />
+          )}
+
+          {activeTab === 'meta_analytics' && (
+            <MetaAnalyticsTab />
           )}
 
           {activeTab === 'placeholders' && <PlaceholderTab />}
