@@ -27,29 +27,8 @@ export async function GET(req: NextRequest) {
 
     const totalOrders = count || 0;
     const PAGE_SIZE = 1000;
-    const chunkPromises = [];
+    const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
 
-    // Create parallel fetch promises (max 1000 per request per PostgREST limits)
-    for (let i = 0; i < Math.ceil(totalOrders / PAGE_SIZE); i++) {
-      const from = i * PAGE_SIZE;
-      const to = (i + 1) * PAGE_SIZE - 1;
-      
-      const fetchPromise = supabase
-        .from('orders')
-        .select('total_price, created_at') // ONLY fetch needed columns to minimize memory
-        .in('status', ['paid', 'delivered', 'shipped'])
-        .in('payment_status', ['success', 'settlement'])
-        .range(from, to);
-        
-      chunkPromises.push(fetchPromise);
-    }
-
-    // Await all chunks in parallel (significantly faster than sequential while-loop)
-    // For extreme scaling (>50k orders), a batching mechanism like p-limit should be used.
-    // Given Vercel limits, parallel execution here solves the immediate timeout issue.
-    const chunkResults = await Promise.all(chunkPromises);
-
-    // 3. SERVER-SIDE AGGREGATION
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -59,14 +38,26 @@ export async function GET(req: NextRequest) {
     let monthRevenue = 0;
     let processedCount = 0;
 
-    for (const result of chunkResults) {
-      if (result.error) {
-        console.error('[Finance Summary] Chunk Fetch Error:', result.error);
+    // 3. SERVER-SIDE AGGREGATION (Sequential chunking to protect DB connection pool and Node.js Memory)
+    // By processing and accumulating sequentially, we prevent OOM crashes and Supabase connection pool exhaustion
+    for (let i = 0; i < totalPages; i++) {
+      const from = i * PAGE_SIZE;
+      const to = (i + 1) * PAGE_SIZE - 1;
+      
+      const { data, error } = await supabase
+        .from('orders')
+        .select('total_price, created_at') // ONLY fetch needed columns to minimize memory
+        .in('status', ['paid', 'delivered', 'shipped'])
+        .in('payment_status', ['success', 'settlement'])
+        .range(from, to);
+        
+      if (error) {
+        console.error(`[Finance Summary] Chunk ${i} Fetch Error:`, error);
         continue;
       }
-      
-      if (result.data) {
-        for (const o of result.data) {
+
+      if (data) {
+        for (const o of data) {
           const price = Number(o.total_price) || 0;
           const createdAt = new Date(o.created_at);
           
