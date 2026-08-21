@@ -167,7 +167,7 @@ export function MetaAnalyticsTab() {
       )}
 
       {viewMode === 'ads' && data && (
-        <>
+        <React.Fragment>
           {/* KPI RIBBON */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Spend */}
@@ -355,11 +355,11 @@ export function MetaAnalyticsTab() {
             </tbody>
           </table>
         </div>
-        </>
+        </React.Fragment>
       )}
 
       {viewMode === 'organic' && organicData && (
-        <>
+        <React.Fragment>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Followers */}
             <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 transition-all group flex flex-col justify-between">
@@ -453,7 +453,7 @@ export function MetaAnalyticsTab() {
               </ResponsiveContainer>
             </div>
           </div>
-        </>
+        </React.Fragment>
       )}
     </div>
   );
