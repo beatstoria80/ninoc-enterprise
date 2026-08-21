@@ -41,7 +41,7 @@ function MetaCheckoutHandler() {
           // Fetch product from Supabase
           const { data: product, error: fetchError } = await supabase
             .from('products')
-            .select('id, name, base_price, main_image, category_id')
+            .select('id, name, price, image_url, category, department_id')
             .eq('id', productId)
             .single();
 
@@ -50,27 +50,14 @@ function MetaCheckoutHandler() {
             continue; // Skip invalid products but continue processing others
           }
 
-          // Fetch department for CartItem requirements
-          let department_id = null;
-          if (product.category_id) {
-             const { data: categoryData } = await supabase
-               .from('categories')
-               .select('department_id')
-               .eq('id', product.category_id)
-               .single();
-               
-             if (categoryData) {
-               department_id = categoryData.department_id;
-             }
-          }
-
           // Add to Zustand Cart
           useCart.getState().addItem({
             id: product.id,
             name: product.name,
-            price: product.base_price,
-            image_url: product.main_image,
-            department_id: department_id,
+            price: product.price,
+            image_url: product.image_url,
+            department_id: product.department_id || null,
+            category: product.category,
             weight_grams: 100, // Safe fallback
           }, undefined, undefined, 0, quantity);
         }
