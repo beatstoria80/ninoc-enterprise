@@ -355,7 +355,8 @@ export function MetaAnalyticsTab() {
             </tbody>
           </table>
         </div>
-        </React.Fragment>
+      </div>
+      </React.Fragment>
       )}
 
       {viewMode === 'organic' && organicData && (
