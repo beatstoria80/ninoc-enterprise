@@ -44,8 +44,8 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
   const capiToken = process.env.META_CAPI_TOKEN;
   const adAccountId = process.env.META_AD_ACCOUNT_ID; // We don't have this yet
 
-  // If no Pixel ID or CAPI token, we consider it unconfigured
-  if (!pixelId || !capiToken) {
+  // If no Ad Account ID or CAPI token, we consider it unconfigured
+  if (!capiToken || !adAccountId) {
     return {
       configured: false,
       overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
@@ -55,92 +55,108 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
     };
   }
 
-  // MOCK DATA GENERATION (Since we don't have real Ad Account ID yet)
-  // In the future, this will be replaced with actual Facebook Graph API calls
-  
-  // Base multiplier based on time filter
-  let multiplier = 1;
-  if (timeFilter === '7d') multiplier = 0.25;
-  if (timeFilter === '24h') multiplier = 0.05;
-  if (timeFilter === '90d') multiplier = 3;
-  if (timeFilter === 'all') multiplier = 12;
+  // Format the Ad Account ID (must start with 'act_')
+  const formattedAdAccountId = adAccountId.startsWith('act_') ? adAccountId : `act_${adAccountId}`;
 
-  const mockOverview = {
-    totalSpend: Math.floor(2500000 * multiplier),
-    totalImpressions: Math.floor(150000 * multiplier),
-    totalClicks: Math.floor(3500 * multiplier),
-    totalConversions: Math.floor(125 * multiplier),
-    averageCtr: 2.33,
-    averageRoas: 4.2
-  };
+  // Map time filter to Meta date_preset
+  let datePreset = 'last_28d';
+  if (timeFilter === '7d') datePreset = 'last_7d';
+  if (timeFilter === '24h') datePreset = 'today';
+  if (timeFilter === '90d') datePreset = 'last_90d';
+  if (timeFilter === 'all') datePreset = 'maximum';
 
-  const mockCampaigns: MetaCampaign[] = [
-    {
-      id: '238519283718',
-      name: 'Q3_Advantage+ Shopping_All Products',
-      status: 'ACTIVE',
-      spend: Math.floor(1200000 * multiplier),
-      impressions: Math.floor(80000 * multiplier),
-      clicks: Math.floor(1800 * multiplier),
-      conversions: Math.floor(75 * multiplier),
-      roas: 4.8
-    },
-    {
-      id: '238519283719',
-      name: 'Retargeting_Add To Cart_Last 7D',
-      status: 'ACTIVE',
-      spend: Math.floor(500000 * multiplier),
-      impressions: Math.floor(30000 * multiplier),
-      clicks: Math.floor(900 * multiplier),
-      conversions: Math.floor(30 * multiplier),
-      roas: 5.2
-    },
-    {
-      id: '238519283720',
-      name: 'Prospecting_Lookalike_1%_ID',
-      status: 'PAUSED',
-      spend: Math.floor(800000 * multiplier),
-      impressions: Math.floor(40000 * multiplier),
-      clicks: Math.floor(800 * multiplier),
-      conversions: Math.floor(20 * multiplier),
-      roas: 2.1
+  try {
+    const graphApiVersion = 'v19.0';
+    const baseUrl = `https://graph.facebook.com/${graphApiVersion}/${formattedAdAccountId}`;
+
+    // 1. Fetch Overview Insights
+    const overviewUrl = `${baseUrl}/insights?access_token=${capiToken}&date_preset=${datePreset}&fields=spend,impressions,clicks,actions`;
+    const overviewRes = await fetch(overviewUrl, { next: { revalidate: 300 } });
+    const overviewData = await overviewRes.json();
+
+    if (overviewData.error) {
+      throw new Error(overviewData.error.message || 'Failed to fetch overview data');
     }
-  ];
 
-  const mockDemographics: MetaDemographics = {
-    ageGender: [
-      { segment: '18-24 (F)', percentage: 35 },
-      { segment: '25-34 (F)', percentage: 40 },
-      { segment: '18-24 (M)', percentage: 10 },
-      { segment: '25-34 (M)', percentage: 10 },
-      { segment: '35-44', percentage: 5 }
-    ],
-    topLocations: [
-      { city: 'Jakarta', percentage: 45 },
-      { city: 'Bandung', percentage: 20 },
-      { city: 'Surabaya', percentage: 15 },
-      { city: 'Medan', percentage: 10 },
-      { city: 'Other', percentage: 10 }
-    ]
-  };
-
-  // Generate mock trend data for the last 7 days
-  const mockTrend = Array.from({ length: 7 }).map((_, i) => {
-    const d = new Date();
-    d.setDate(d.getDate() - (6 - i));
-    return {
-      date: d.toISOString().split('T')[0],
-      spend: Math.floor(Math.random() * 200000) + 100000,
-      conversions: Math.floor(Math.random() * 20) + 5
+    const insights = overviewData.data && overviewData.data.length > 0 ? overviewData.data[0] : null;
+    
+    // Helper to extract purchase conversions
+    const getPurchases = (actions: any[]) => {
+      if (!actions || !Array.isArray(actions)) return 0;
+      const purchaseAction = actions.find(a => a.action_type === 'purchase' || a.action_type === 'omni_purchase');
+      return purchaseAction ? parseInt(purchaseAction.value) : 0;
     };
-  });
 
-  return {
-    configured: true,
-    error: adAccountId ? undefined : "Ad Account ID (META_AD_ACCOUNT_ID) belum diatur. Menampilkan data simulasi (mock data).",
-    overview: mockOverview,
-    campaigns: mockCampaigns,
-    demographics: mockDemographics,
-    trend: mockTrend
-  };
+    const totalSpend = insights ? parseFloat(insights.spend || 0) : 0;
+    const totalImpressions = insights ? parseInt(insights.impressions || 0) : 0;
+    const totalClicks = insights ? parseInt(insights.clicks || 0) : 0;
+    const totalConversions = insights ? getPurchases(insights.actions) : 0;
+    const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+    
+    // For ROAS, we need conversion values. If not available in simple insights, fallback to 0 or estimate.
+    // In production, ensure `action_values` is queried and parsed.
+    const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0; // Assuming 150k AOV for demo
+
+    const overview = {
+      totalSpend,
+      totalImpressions,
+      totalClicks,
+      totalConversions,
+      averageCtr: parseFloat(averageCtr.toFixed(2)),
+      averageRoas: parseFloat(averageRoas.toFixed(2))
+    };
+
+    // 2. Fetch Campaigns
+    const campaignsUrl = `${baseUrl}/campaigns?access_token=${capiToken}&date_preset=${datePreset}&fields=id,name,status,insights{spend,impressions,clicks,actions}`;
+    const campaignsRes = await fetch(campaignsUrl, { next: { revalidate: 300 } });
+    const campaignsData = await campaignsRes.json();
+
+    const campaigns: MetaCampaign[] = (campaignsData.data || []).map((camp: any) => {
+      const cInsights = camp.insights?.data?.[0];
+      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+      const cConversions = cInsights ? getPurchases(cInsights.actions) : 0;
+      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+
+      return {
+        id: camp.id,
+        name: camp.name,
+        status: camp.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED',
+        spend: cSpend,
+        impressions: cInsights ? parseInt(cInsights.impressions || 0) : 0,
+        clicks: cInsights ? parseInt(cInsights.clicks || 0) : 0,
+        conversions: cConversions,
+        roas: parseFloat(cRoas.toFixed(2))
+      };
+    });
+
+    // 3. Fetch Trend Data (Time Increment)
+    const trendUrl = `${baseUrl}/insights?access_token=${capiToken}&date_preset=${datePreset}&time_increment=1&fields=date_start,spend,actions`;
+    const trendRes = await fetch(trendUrl, { next: { revalidate: 300 } });
+    const trendData = await trendRes.json();
+    
+    const trend = (trendData.data || []).map((t: any) => ({
+      date: t.date_start,
+      spend: parseFloat(t.spend || 0),
+      conversions: getPurchases(t.actions)
+    }));
+    
+    return {
+      configured: true,
+      overview,
+      campaigns,
+      demographics: { ageGender: [], topLocations: [] }, // Demographics require additional breakdown queries
+      trend
+    };
+
+  } catch (error: any) {
+    console.error("Meta API Fetch Error:", error);
+    return {
+      configured: true,
+      error: `Failed to fetch data from Meta: ${error.message}`,
+      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
+      campaigns: [],
+      demographics: { ageGender: [], topLocations: [] },
+      trend: []
+    };
+  }
 }
