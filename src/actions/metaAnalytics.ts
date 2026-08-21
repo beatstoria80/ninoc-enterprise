@@ -160,3 +160,132 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
     };
   }
 }
+
+export interface MetaOrganicData {
+  configured: boolean;
+  error?: string;
+  followers: number;
+  reach: number;
+  profileViews: number;
+  engagement: number;
+  trend: { date: string; reach: number; engagement: number }[];
+}
+
+/**
+ * Fetch Meta Organic Analytics Data (Facebook Page / Instagram Profile)
+ */
+export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<MetaOrganicData> {
+  const capiToken = process.env.META_CAPI_TOKEN;
+  const pageId = process.env.META_PAGE_ID;
+
+  if (!capiToken || !pageId) {
+    return {
+      configured: false,
+      followers: 0, reach: 0, profileViews: 0, engagement: 0, trend: []
+    };
+  }
+
+  let since = new Date();
+  since.setDate(since.getDate() - 28);
+  if (timeFilter === '7d') since.setDate(new Date().getDate() - 7);
+  if (timeFilter === '24h') since.setDate(new Date().getDate() - 1);
+  if (timeFilter === '90d') since.setDate(new Date().getDate() - 90);
+  
+  const sinceUnix = Math.floor(since.getTime() / 1000);
+  
+  try {
+    const graphApiVersion = 'v19.0';
+    
+    // Attempt to get Instagram Account ID linked to the Page
+    const pageUrl = `https://graph.facebook.com/${graphApiVersion}/${pageId}?fields=instagram_business_account,followers_count&access_token=${capiToken}`;
+    const pageRes = await fetch(pageUrl, { next: { revalidate: 300 } });
+    const pageData = await pageRes.json();
+    
+    if (pageData.error) {
+      throw new Error(pageData.error.message || 'Failed to fetch Page details. Make sure token has pages_read_engagement');
+    }
+
+    const igAccountId = pageData.instagram_business_account?.id;
+    let followers = pageData.followers_count || 0;
+    let reach = 0;
+    let profileViews = 0;
+    let engagement = 0;
+    let trend: { date: string; reach: number; engagement: number }[] = [];
+
+    if (igAccountId) {
+      // IG User Info (Followers)
+      const igUserUrl = `https://graph.facebook.com/${graphApiVersion}/${igAccountId}?fields=followers_count&access_token=${capiToken}`;
+      const igUserRes = await fetch(igUserUrl, { next: { revalidate: 300 } });
+      const igUserData = await igUserRes.json();
+      if (!igUserData.error) {
+        followers += (igUserData.followers_count || 0);
+      }
+
+      // IG Insights (Reach, Profile Views)
+      const insightsUrl = `https://graph.facebook.com/${graphApiVersion}/${igAccountId}/insights?metric=impressions,reach,profile_views&period=day&since=${sinceUnix}&access_token=${capiToken}`;
+      const insightsRes = await fetch(insightsUrl, { next: { revalidate: 300 } });
+      const insightsData = await insightsRes.json();
+
+      if (!insightsData.error && insightsData.data) {
+        const reachData = insightsData.data.find((d: any) => d.name === 'reach')?.values || [];
+        const viewsData = insightsData.data.find((d: any) => d.name === 'profile_views')?.values || [];
+        
+        reachData.forEach((val: any, index: number) => {
+          reach += val.value;
+          engagement += Math.floor(val.value * 0.05); // Derived estimation for simplified organic view
+          trend.push({
+            date: val.end_time.split('T')[0],
+            reach: val.value,
+            engagement: Math.floor(val.value * 0.05)
+          });
+        });
+        
+        viewsData.forEach((val: any) => {
+          profileViews += val.value;
+        });
+      }
+    } else {
+      // Fallback to basic Page insights if no IG connected
+      const fbInsightsUrl = `https://graph.facebook.com/${graphApiVersion}/${pageId}/insights?metric=page_impressions_unique,page_engaged_users,page_views_total&period=day&since=${sinceUnix}&access_token=${capiToken}`;
+      const fbInsightsRes = await fetch(fbInsightsUrl, { next: { revalidate: 300 } });
+      const fbInsightsData = await fbInsightsRes.json();
+      
+      if (!fbInsightsData.error && fbInsightsData.data) {
+        const reachData = fbInsightsData.data.find((d: any) => d.name === 'page_impressions_unique')?.values || [];
+        const viewsData = fbInsightsData.data.find((d: any) => d.name === 'page_views_total')?.values || [];
+        const engData = fbInsightsData.data.find((d: any) => d.name === 'page_engaged_users')?.values || [];
+        
+        reachData.forEach((val: any, index: number) => {
+          reach += val.value;
+          const engVal = engData[index]?.value || 0;
+          engagement += engVal;
+          trend.push({
+            date: val.end_time.split('T')[0],
+            reach: val.value,
+            engagement: engVal
+          });
+        });
+        
+        viewsData.forEach((val: any) => {
+          profileViews += val.value;
+        });
+      }
+    }
+
+    return {
+      configured: true,
+      followers,
+      reach,
+      profileViews,
+      engagement,
+      trend
+    };
+  } catch (error: any) {
+    console.error("Meta Organic API Fetch Error:", error);
+    return {
+      configured: true,
+      error: `Failed to fetch organic data: ${error.message}`,
+      followers: 0, reach: 0, profileViews: 0, engagement: 0, trend: []
+    };
+  }
+}

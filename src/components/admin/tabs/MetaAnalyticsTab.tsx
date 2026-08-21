@@ -3,13 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Users, MousePointer, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, MonitorSmartphone } from 'lucide-react';
-import { getMetaAnalyticsData, type MetaAnalyticsData } from '@/actions/metaAnalytics';
+import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData } from '@/actions/metaAnalytics';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
 export function MetaAnalyticsTab() {
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'ads' | 'organic'>('ads');
   const [data, setData] = useState<MetaAnalyticsData | null>(null);
+  const [organicData, setOrganicData] = useState<MetaOrganicData | null>(null);
   const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
 
   const getTimeLabel = () => {
@@ -23,12 +25,18 @@ export function MetaAnalyticsTab() {
     }
   };
 
-  const loadData = async (filterOverride?: string) => {
+  const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'organic') => {
     const filter = filterOverride || timeFilter;
+    const mode = modeOverride || viewMode;
     try {
       setLoading(true);
-      const res = await getMetaAnalyticsData(filter);
-      setData(res);
+      if (mode === 'ads') {
+        const res = await getMetaAnalyticsData(filter);
+        setData(res);
+      } else {
+        const orgRes = await getMetaOrganicData(filter);
+        setOrganicData(orgRes);
+      }
     } catch (error) {
       console.error('Error fetching Meta analytics:', error);
     } finally {
@@ -38,8 +46,8 @@ export function MetaAnalyticsTab() {
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadData(timeFilter);
-  }, [timeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+    loadData(timeFilter, viewMode);
+  }, [timeFilter, viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
@@ -51,15 +59,28 @@ export function MetaAnalyticsTab() {
     );
   }
 
-  if (!data) return null;
+  if (viewMode === 'ads' && !data) return null;
+  if (viewMode === 'organic' && !organicData) return null;
 
-  if (!data.configured) {
+  if (viewMode === 'ads' && data && !data.configured) {
     return (
       <div className="flex flex-col items-center justify-center py-20 bg-ink/[0.02] border border-dashed border-ink/20 rounded-xl p-8">
         <AlertTriangle className="w-12 h-12 text-rose mb-4" />
         <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Meta Ads Belum Terhubung</h2>
         <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
-          Kredensial <strong>Meta CAPI Token</strong> tidak ditemukan. Pastikan Anda telah menambahkan `META_CAPI_TOKEN` dan `NEXT_PUBLIC_META_PIXEL_ID` di environment variables.
+          Kredensial <strong>Meta CAPI Token</strong> tidak ditemukan. Pastikan Anda telah menambahkan `META_CAPI_TOKEN` dan `META_AD_ACCOUNT_ID` di environment variables.
+        </p>
+      </div>
+    );
+  }
+
+  if (viewMode === 'organic' && organicData && !organicData.configured) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-ink/[0.02] border border-dashed border-ink/20 rounded-xl p-8">
+        <AlertTriangle className="w-12 h-12 text-rose mb-4" />
+        <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Data Organik Belum Terhubung</h2>
+        <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
+          Kredensial <strong>Meta Page ID</strong> tidak ditemukan. Pastikan Anda telah menambahkan `META_PAGE_ID` di environment variables, dan token Anda memiliki izin <code>pages_read_engagement</code>.
         </p>
       </div>
     );
@@ -77,12 +98,27 @@ export function MetaAnalyticsTab() {
               <Globe className="w-5 h-5" />
             </span>
             <h1 className="text-xl font-bold tracking-tight text-ink">
-              Meta Ads Analytics
+              Meta Social & Ads Analytics
             </h1>
           </div>
           <p className="text-xs md:text-sm text-ink/70">
-            Pantau performa kampanye Facebook & Instagram Ads, ROAS, dan demografi audiens.
+            Pantau performa kampanye Ads Berbayar dan pertumbuhan Organik (Facebook & Instagram).
           </p>
+          
+          <div className="flex items-center gap-2 mt-4 bg-ink/[0.03] p-1 rounded-lg w-fit border border-ink/10">
+            <button 
+              onClick={() => setViewMode('ads')}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5", viewMode === 'ads' ? "bg-white shadow-sm text-blue-700" : "text-ink/60 hover:text-ink")}
+            >
+              <Target size={14} /> Paid Ads
+            </button>
+            <button 
+              onClick={() => setViewMode('organic')}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5", viewMode === 'organic' ? "bg-white shadow-sm text-emerald-700" : "text-ink/60 hover:text-ink")}
+            >
+              <Users size={14} /> Organic Social
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -110,7 +146,7 @@ export function MetaAnalyticsTab() {
         </div>
       </div>
 
-      {data.error && (
+      {viewMode === 'ads' && data?.error && (
         <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
           <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
@@ -120,7 +156,19 @@ export function MetaAnalyticsTab() {
         </div>
       )}
 
-      {/* KPI RIBBON */}
+      {viewMode === 'organic' && organicData?.error && (
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <p className="text-sm font-bold">Peringatan Izin API Organik</p>
+            <p className="text-xs text-amber-700 leading-relaxed">{organicData.error}</p>
+          </div>
+        </div>
+      )}
+
+      {viewMode === 'ads' && data && (
+        <>
+          {/* KPI RIBBON */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Spend */}
         <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-blue-300 transition-all group flex flex-col justify-between">
@@ -307,7 +355,105 @@ export function MetaAnalyticsTab() {
             </tbody>
           </table>
         </div>
-      </div>
+      )}
+
+      {viewMode === 'organic' && organicData && (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Followers */}
+            <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 transition-all group flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                    <Users size={14} className="text-emerald-500" /> Followers
+                  </p>
+                </div>
+                <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{organicData.followers.toLocaleString()}</p>
+              </div>
+              <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5">
+                Total Pengikut Halaman & IG
+              </p>
+            </div>
+
+            {/* Reach */}
+            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 border border-indigo-700 rounded-xl p-4 shadow-sm text-white group flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[11px] font-bold text-indigo-100 uppercase tracking-wider flex items-center gap-1.5">
+                    <Globe size={14} className="text-indigo-200" /> Organic Reach
+                  </p>
+                </div>
+                <p className="text-3xl font-mono font-extrabold tracking-tight mt-1">{organicData.reach.toLocaleString()}</p>
+              </div>
+              <p className="text-[10px] text-indigo-100 mt-2 font-medium border-t border-indigo-400/30 pt-1.5">
+                Jangkauan akun dalam {getTimeLabel()}
+              </p>
+            </div>
+
+            {/* Engagement */}
+            <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 transition-all group flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                    <Activity size={14} className="text-rose-500" /> Engagements
+                  </p>
+                </div>
+                <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{organicData.engagement.toLocaleString()}</p>
+              </div>
+              <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5">
+                Likes, comments, shares, saves
+              </p>
+            </div>
+
+            {/* Profile Views */}
+            <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm hover:border-emerald-300 transition-all group flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
+                    <Eye size={14} className="text-blue-500" /> Profile Views
+                  </p>
+                </div>
+                <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{organicData.profileViews.toLocaleString()}</p>
+              </div>
+              <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5">
+                Kunjungan profil sosial media
+              </p>
+            </div>
+          </div>
+
+          {/* Organic Trend Chart */}
+          <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm">
+            <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4">
+              <TrendingUp size={16} className="text-emerald-600" /> Tren Jangkauan Organik ({getTimeLabel()})
+            </h3>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={organicData.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="colorReach" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#6366f1" stopOpacity={0.0}/>
+                    </linearGradient>
+                    <linearGradient id="colorEngagement" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                  <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                  <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                  <RechartsTooltip 
+                    contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                  />
+                  <Area yAxisId="left" type="monotone" dataKey="reach" stroke="#6366f1" strokeWidth={2} fill="url(#colorReach)" name="Organic Reach" />
+                  <Area yAxisId="right" type="monotone" dataKey="engagement" stroke="#f43f5e" strokeWidth={2} fill="url(#colorEngagement)" name="Engagement" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
