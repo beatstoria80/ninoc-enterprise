@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/utils/supabase/server';
 import AdminClient from './AdminClient';
+import { AdminProviders } from '@/providers/admin/AdminProviders';
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -18,7 +19,11 @@ export default async function AdminPage() {
       email: user.email,
       role: 'super_admin'
     };
-    return <AdminClient initialUser={initialUser} />;
+    return (
+      <AdminProviders>
+        <AdminClient initialUser={initialUser} />
+      </AdminProviders>
+    );
   }
 
   // 2. Query admin_roles for authorization
@@ -40,5 +45,9 @@ export default async function AdminPage() {
     role: roleData.role
   };
 
-  return <AdminClient initialUser={initialUser} />;
+  return (
+    <AdminProviders>
+      <AdminClient initialUser={initialUser} />
+    </AdminProviders>
+  );
 }

@@ -53,9 +53,8 @@ export function MarketingTab() {
       }
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   if (loading) {
     return (

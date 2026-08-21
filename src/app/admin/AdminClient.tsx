@@ -62,6 +62,10 @@ import { ShippingLabel } from '@/components/admin/ShippingLabel';
 import { StatusBadge } from '@/components/admin/StatusBadge';
 import { SidebarItem } from '@/components/admin/SidebarItem';
 import { SeoHelper } from '@/components/admin/SeoHelper';
+import { useAdminProducts } from '@/providers/admin/AdminProductsProvider';
+import { useAdminOrders } from '@/providers/admin/AdminOrdersProvider';
+import { useAdminCustomers } from '@/providers/admin/AdminCustomersProvider';
+import { useAdminSupport } from '@/providers/admin/AdminSupportProvider';
 import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer } from '@/components/admin/types';
 import { isFnBDepartment, isObjectsDepartment } from '@/lib/departmentDomain';
 import { useProductForm } from '@/hooks/admin/useProductForm';
@@ -83,11 +87,14 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [adminUser, setAdminUser] = useState<{ id: string; email?: string; role?: string } | null>(initialUser);
-  // Data states
-  const [products, setProducts] = useState<Product[]>([]);
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [customers, setCustomers] = useState<Customer[]>([]);
-  const [pendingReturns, setPendingReturns] = useState(0);
+  
+  // Hooks for Data
+  const { products, toggleFeatured, deleteProduct } = useAdminProducts();
+  const { orders, setOrders, pendingOrdersCount } = useAdminOrders();
+  const { customers, fetchCustomers, pendingReturnsCount } = useAdminCustomers();
+  const { chatSessions, activeChatSession, setActiveChatSession, fetchChatSessions, sendMessage } = useAdminSupport();
+
+
   const [finance, setFinance] = useState<FinanceSummary>({
     totalRevenue: 0,
     todayRevenue: 0,
@@ -178,48 +185,18 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Fetch products with variants and supplier info
-      // Try with suppliers(name) join first; if RLS blocks the suppliers table,
-      // fall back to fetching without it so products still load.
-      let prodData: any[] | null = null;
-      const { data: prodWithSuppliers, error: prodError } = await supabase
-        .from('products')
-        .select('*, variants(*), suppliers(name)')
-        .order('created_at', { ascending: false });
-      
-      if (prodError) {
-        console.warn('[Admin] suppliers join failed (likely RLS), falling back without suppliers:', prodError.message);
-        const { data: prodFallback } = await supabase
-          .from('products')
-          .select('*, variants(*)')
-          .order('created_at', { ascending: false });
-        prodData = prodFallback;
-      } else {
-        prodData = prodWithSuppliers;
-      }
-      if (prodData) setProducts(prodData);
-
-      // Fetch orders with items (PAGINATED: limit to 100 to prevent browser OOM)
-      const { data: orderData } = await supabase
-        .from('orders')
-        .select('*, order_items(*)')
-        .order('created_at', { ascending: false })
-        .limit(100);
-      if (orderData) setOrders(orderData);
+      // Removed local product and order fetching. Now handled by context providers.
 
       // Fetch Server-Side Aggregated Finance Summary (Bypassing 1000-row PostgREST limits)
       try {
         const financeRes = await fetch('/api/admin/finance-summary').then(r => r.json());
         
         if (financeRes && financeRes.success) {
-          // Still calculate pending orders from local orderData since it's just a count of latest
-          const pendingOrders = orderData ? orderData.filter(o => o.status === 'pending') : [];
-          
           setFinance({
             totalRevenue: financeRes.totalRevenue || 0,
             todayRevenue: financeRes.todayRevenue || 0,
             monthRevenue: financeRes.monthRevenue || 0,
-            pendingPayments: pendingOrders.length,
+            pendingPayments: 0, // Now handled by order context if needed
             completedOrders: financeRes.totalOrdersAnalyzed || 0
           });
         }
@@ -227,19 +204,9 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         console.error('Failed to fetch server-side finance summary:', financeErr);
       }
 
-      // Fetch customers
-      const { data: customerData } = await supabase
-        .from('customer_profiles')
-        .select('*')
-        .order('customer_number', { ascending: true });
-      if (customerData) setCustomers(customerData);
+      // Customer fetch removed, handled by context.
 
-      // Fetch pending returns count
-      const { count: pendingReturnsCount } = await supabase
-        .from('retur_requests')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['pending', 'reviewed']);
-      if (pendingReturnsCount !== null) setPendingReturns(pendingReturnsCount);
+      // Removed pending returns fetch, handled by AdminCustomersProvider
 
       // Fetch categories, departments, and warehouses
       const catData = await fetch('/api/admin/categories').then(r => r.json()).catch(() => ([]));
@@ -312,9 +279,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   type BulkUploadResult = { name: string; url: string; error?: string };
 
-  // Chat states
-  const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
-  const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
+  // Chat states (provided by useAdminSupport)
   const [newMessage, setNewMessage] = useState('');
 
   // Logistics tab states
@@ -438,6 +403,8 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
     }
   };
 
+  // saveCustomer is now in useAdminCustomers (or we can keep it here if it's not in the provider yet)
+  // Let's keep saveCustomer here for now if AdminCustomersProvider doesn't have it.
   const saveCustomer = async () => {
     try {
       if (selectedCustomer) {
@@ -465,43 +432,16 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         if (error) throw error;
       }
       setIsCustomerModalOpen(false);
-      fetchData();
+      await fetchCustomers();
     } catch (error) {
       console.error('Failed to save customer:', error);
       alert('Failed to save customer');
     }
   };
 
-  const deleteProduct = async (id: string) => {
-    if (!confirm('Delete this product?')) return;
-    try {
-      const res = await fetch('/api/admin/products/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to delete product');
-      
-      showToast('Product deleted successfully', 'success');
-      setProducts(prev => prev.filter(p => p.id !== id));
-    } catch (error: any) {
-      console.error('Failed to delete product:', error);
-      showToast('Failed to delete product: ' + error.message, 'error');
-    }
-  };
+  // deleteProduct is now provided by useAdminProducts
 
-  const toggleFeatured = async (product: Product) => {
-    try {
-      await supabase
-        .from('products')
-        .update({ is_featured: !product.is_featured, updated_at: new Date().toISOString() })
-        .eq('id', product.id);
-      setProducts(prev => prev.map(p => p.id === product.id ? { ...p, is_featured: !product.is_featured } : p));
-    } catch (error) {
-      console.error('Failed to toggle featured:', error);
-    }
-  };
+  // toggleFeatured is now provided by useAdminProducts
 
   // Order management
   const openOrderDetail = (order: Order) => {
@@ -610,214 +550,31 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
     (p.variants?.reduce((s, v) => s + (v.stock_quantity || 0), 0) || 0) < 5
   ).length;
 
-  // Chat - fetch from support_tickets with messages
-  const fetchChatSessions = useCallback(async () => {
-    try {
-      const { data: ticketsData } = await supabase
-        .from('support_tickets')
-        .select('*')
-        .order('created_at', { ascending: false });
+  // Chat - fetch from support_tickets with messages removed (handled by AdminSupportProvider)
+  
+  // Real-time subscription for support messages removed (handled by AdminSupportProvider or no longer needed in AdminClient)
 
-      if (ticketsData) {
-        const ticketIds = ticketsData.map(t => t.id);
-        const { data: allMessages } = await supabase
-          .from('support_messages')
-          .select('*')
-          .in('ticket_id', ticketIds)
-          .order('created_at', { ascending: true });
+  // Real-time subscription for customer profiles (membership updates) removed (handled by AdminCustomersProvider)
 
-        let metaMap: Record<string, any> = {};
-        try {
-          const res = await fetch('/api/admin/support/ticket-meta');
-          const json = await res.json();
-          if (json?.data) metaMap = json.data;
-        } catch (e) {
-          console.error('Failed to fetch ticket metadata map:', e);
-        }
+  // Real-time subscription for retur requests to update badge count removed (handled by AdminCustomersProvider)
 
-        const sessions: ChatSession[] = ticketsData.map((t) => {
-          const ticketMessages = allMessages?.filter(m => m.ticket_id === t.id) || [];
-          const meta = metaMap[t.id] || {};
-          return {
-            id: t.id,
-            customer_name: t.subject || `Inquiry ${t.id.split('-')[0]}`,
-            customer_email: t.user_id ? 'Registered User' : 'Guest User',
-            category: t.category || 'general',
-            last_message: ticketMessages[ticketMessages.length - 1]?.message || 'No messages',
-            last_message_time: ticketMessages[ticketMessages.length - 1]?.created_at || t.created_at,
-            unread_count: ticketMessages.filter(m => !m.is_read && m.sender_role === 'customer').length,
-            status: t.status || 'open',
-            crm_status: meta.crm_status || t.crm_status || 'general',
-            priority: meta.priority || t.priority || 'medium',
-            assigned_admin: meta.assigned_admin || t.assigned_admin || null,
-            is_taken_over: meta.is_taken_over ?? (t.is_taken_over || false),
-            created_at: t.created_at,
-            messages: ticketMessages.map(m => ({
-              id: m.id,
-              sender: m.sender_role as 'customer' | 'admin',
-              message: m.message,
-              timestamp: m.created_at,
-              is_read: m.is_read ?? true,
-              is_auto_reply: m.is_auto_reply ?? false
-            }))
-          };
-        });
-        setChatSessions(sessions);
-      }
-    } catch (error) {
-      console.error('Failed to fetch chat sessions:', error);
-    }
-  }, []);
+  // Mark messages as read when session is active (handled by Provider, but let's call the provider method)
+  const { markMessagesAsRead, totalUnreadChats } = useAdminSupport();
 
-  // Real-time subscription for support messages
-  useEffect(() => {
-    const channel = supabase
-      .channel('admin_support_messages')
-      .on('postgres_changes', { 
-        event: 'INSERT', 
-        schema: 'public', 
-        table: 'support_messages' 
-      }, () => {
-        fetchChatSessions();
-      })
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'support_tickets'
-      }, () => {
-        fetchChatSessions();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [fetchChatSessions]);
-
-  // Real-time subscription for customer profiles (membership updates)
-  useEffect(() => {
-    const channel = supabase
-      .channel('admin_customer_profiles_changes')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'customer_profiles' 
-      }, (payload) => {
-        if (payload.eventType === 'INSERT') {
-          setCustomers(prev => [...prev, payload.new as any]);
-        } else if (payload.eventType === 'UPDATE') {
-          setCustomers(prev => prev.map(c => c.id === payload.new.id ? (payload.new as any) : c));
-        } else if (payload.eventType === 'DELETE') {
-          setCustomers(prev => prev.filter(c => c.id !== payload.old.id));
-        }
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  // Real-time subscription for retur requests to update badge count
-  useEffect(() => {
-    const fetchPendingReturnsCount = async () => {
-      const { count } = await supabase
-        .from('retur_requests')
-        .select('*', { count: 'exact', head: true })
-        .in('status', ['pending', 'reviewed']);
-      if (count !== null) setPendingReturns(count);
-    };
-
-    const channel = supabase
-      .channel('admin_retur_requests_changes')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'retur_requests' 
-      }, () => {
-        fetchPendingReturnsCount();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  // Mark messages as read when session is active
   useEffect(() => {
     if (activeChatSession && activeTab === 'messages') {
       const unreadCount = activeChatSession.messages.filter(m => !m.is_read && m.sender === 'customer').length;
       if (unreadCount > 0) {
-        supabase
-          .from('support_messages')
-          .update({ is_read: true })
-          .eq('ticket_id', activeChatSession.id)
-          .eq('sender_role', 'customer')
-          .then(() => {
-            fetchChatSessions();
-          });
+        markMessagesAsRead(activeChatSession.id);
       }
     }
-  }, [activeChatSession, activeTab, fetchChatSessions]);
+  }, [activeChatSession, activeTab, markMessagesAsRead]);
 
-  useEffect(() => {
-    queueMicrotask(() => {
-      fetchChatSessions();
-    });
-  }, [fetchChatSessions]);
-
-  const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
-
-  const sendMessage = async () => {
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeChatSession) return;
-
     const messageText = newMessage.trim();
-    const tempId = `temp-${Date.now()}`;
-    const optimisticMessage: ChatMessage = {
-      id: tempId,
-      sender: 'admin',
-      message: messageText,
-      timestamp: new Date().toISOString(),
-      is_read: false
-    };
-
-    // 1. OPTIMISTIC UI UPDATE (0ms Instant feedback):
     setNewMessage('');
-    setChatSessions(prev => prev.map(s =>
-      s.id === activeChatSession.id
-        ? { ...s, messages: [...s.messages, optimisticMessage], last_message: messageText, last_message_time: optimisticMessage.timestamp }
-        : s
-    ));
-    setActiveChatSession(prev => prev ? { ...prev, messages: [...prev.messages, optimisticMessage], last_message: messageText, last_message_time: optimisticMessage.timestamp } : null);
-
-    // 2. BACKGROUND ASYNC PERSISTENCE:
-    try {
-      const { data: savedMessage, error } = await supabase
-        .from('support_messages')
-        .insert({
-          ticket_id: activeChatSession.id,
-          sender_id: adminUser?.id || null,
-          sender_role: 'admin',
-          message: messageText,
-          is_read: false
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      if (savedMessage) {
-        setChatSessions(prev => prev.map(s =>
-          s.id === activeChatSession.id
-            ? { ...s, messages: s.messages.map(m => m.id === tempId ? { ...m, id: savedMessage.id, timestamp: savedMessage.created_at } : m) }
-            : s
-        ));
-        setActiveChatSession(prev => prev ? { ...prev, messages: prev.messages.map(m => m.id === tempId ? { ...m, id: savedMessage.id, timestamp: savedMessage.created_at } : m) } : null);
-      }
-    } catch (error) {
-      console.error('Failed to send message asynchronously:', error);
-    }
+    await sendMessage(messageText);
   };
 
   const allNavItems: any[] = [
@@ -833,12 +590,12 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       ]
     },
     { 
-      id: 'transaction', icon: ShoppingBag, label: 'Transactions & Logistics', activeKeys: ['orders', 'logistics', 'returns'], badge: (actionableOrders || 0) + (pendingReturns || 0) > 0 ? (actionableOrders || 0) + (pendingReturns || 0) : undefined,
+      id: 'transaction', icon: ShoppingBag, label: 'Transactions & Logistics', activeKeys: ['orders', 'logistics', 'returns'], badge: (pendingOrdersCount || 0) + (pendingReturnsCount || 0) > 0 ? (pendingOrdersCount || 0) + (pendingReturnsCount || 0) : undefined,
       roles: ['super_admin', 'outbound_logistics'],
       subItems: [
-        { id: 'orders', label: 'Online Orders', badge: actionableOrders > 0 ? actionableOrders : undefined },
+        { id: 'orders', label: 'Online Orders', badge: pendingOrdersCount > 0 ? pendingOrdersCount : undefined },
         { id: 'logistics', label: 'Shipping & Logistics' },
-        { id: 'returns', label: 'Retur & Reimbursement', badge: pendingReturns > 0 ? pendingReturns : undefined }
+        { id: 'returns', label: 'Retur & Reimbursement', badge: pendingReturnsCount > 0 ? pendingReturnsCount : undefined }
       ]
     },
     { 
@@ -1449,7 +1206,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
               title="Notifikasi Sistem"
             >
               <Bell size={16} />
-              {pendingOrders > 0 && (
+              {pendingOrdersCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
               )}
             </button>
@@ -1472,7 +1229,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                     </button>
                   </div>
                   <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
-                    {pendingOrders > 0 && (
+                    {pendingOrdersCount > 0 && (
                       <div 
                         onClick={() => { setActiveTab('orders'); setShowNotificationsModal(false); }}
                         className="p-3 bg-rose/5 hover:bg-rose/10 border border-rose/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
@@ -1482,7 +1239,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                         </div>
                         <div>
                           <p className="text-xs font-semibold text-ink">Pesanan Baru Tertunda</p>
-                          <p className="text-[11px] text-ink/70 mt-0.5">Terdapat <span className="font-bold text-rose">{pendingOrders}</span> pesanan menunggu untuk diproses dan dikirim.</p>
+                          <p className="text-[11px] text-ink/70 mt-0.5">Terdapat <span className="font-bold text-rose">{pendingOrdersCount}</span> pesanan menunggu untuk diproses dan dikirim.</p>
                         </div>
                       </div>
                     )}
@@ -1500,7 +1257,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                         </div>
                       </div>
                     )}
-                    {pendingOrders === 0 && lowStockProductsCount === 0 && (
+                    {pendingOrdersCount === 0 && lowStockProductsCount === 0 && (
                       <div className="py-8 text-center">
                         <div className="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
                           <CheckCircle size={20} />
@@ -1590,7 +1347,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
             <OverviewTab 
               finance={finance} 
               products={products} 
-              pendingOrders={pendingOrders} 
+              pendingOrders={pendingOrdersCount} 
               orders={orders} 
               setActiveTab={setActiveTab} 
               openOrderDetail={openOrderDetail} 
@@ -1718,7 +1475,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
               setActiveChatSession={setActiveChatSession}
               newMessage={newMessage}
               setNewMessage={setNewMessage}
-              sendMessage={sendMessage}
+              sendMessage={handleSendMessage}
               fetchChatSessions={fetchChatSessions}
             />
           )}
