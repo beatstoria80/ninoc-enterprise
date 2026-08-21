@@ -16,62 +16,64 @@ function MetaCheckoutHandler() {
   useEffect(() => {
     async function processMetaCheckout() {
       // Extract Meta parameters
-      const productId = searchParams.get('id') || searchParams.get('product_id');
-      const qtyStr = searchParams.get('quantity') || '1';
-      const quantity = parseInt(qtyStr, 10) || 1;
+      const productsParam = searchParams.get('products');
       const coupon = searchParams.get('coupon'); // Optional coupon from Meta
 
-      if (!productId) {
-        setError("Parameter ID produk tidak ditemukan di URL. (Missing product_id)");
+      if (!productsParam) {
+        setError("Parameter produk tidak ditemukan di URL. (Missing 'products' param)");
         return;
       }
 
       try {
-        // Fetch product from Supabase to validate and get details (price, name, etc)
-        const { data: product, error: fetchError } = await supabase
-          .from('products')
-          .select('id, name, base_price, main_image, category_id')
-          .eq('id', productId)
-          .single();
-
-        if (fetchError || !product) {
-          console.error("Product fetch error:", fetchError);
-          setError("Produk tidak ditemukan atau tidak tersedia.");
-          return;
-        }
-
-        // Fetch department and category to fulfill CartItem requirements
-        let department_id = null;
-        let is_perishable = false;
+        // Meta sends products as: "ID1:QTY1,ID2:QTY2"
+        const productEntries = productsParam.split(',');
         
-        if (product.category_id) {
-           const { data: categoryData } = await supabase
-             .from('categories')
-             .select('department_id')
-             .eq('id', product.category_id)
-             .single();
-             
-           if (categoryData) {
-             department_id = categoryData.department_id;
-             // Usually F&B (Food) is department 2 or checking for perishability logic
-             // But we will use the standard default or what's available
-           }
-        }
-
-        // Add to Zustand Cart
-        const cartItem = {
-          id: product.id,
-          name: product.name,
-          price: product.base_price,
-          quantity: quantity,
-          image_url: product.main_image,
-          department_id: department_id,
-          weight_grams: 100, // Safe fallback, actual can be fetched if exists
-        };
-
-        // Clear existing cart and add only this item to mimic "Buy Now" flow directly from IG
+        // Clear existing cart to mimic "Buy Now" flow directly from IG/FB
         useCart.getState().clearCart();
-        useCart.getState().addItem(cartItem);
+
+        for (const entry of productEntries) {
+          const parts = entry.split(':');
+          const productId = parts[0];
+          const quantity = parts.length > 1 ? parseInt(parts[1], 10) || 1 : 1;
+
+          if (!productId) continue;
+
+          // Fetch product from Supabase
+          const { data: product, error: fetchError } = await supabase
+            .from('products')
+            .select('id, name, base_price, main_image, category_id')
+            .eq('id', productId)
+            .single();
+
+          if (fetchError || !product) {
+            console.error(`Product fetch error for ${productId}:`, fetchError);
+            continue; // Skip invalid products but continue processing others
+          }
+
+          // Fetch department for CartItem requirements
+          let department_id = null;
+          if (product.category_id) {
+             const { data: categoryData } = await supabase
+               .from('categories')
+               .select('department_id')
+               .eq('id', product.category_id)
+               .single();
+               
+             if (categoryData) {
+               department_id = categoryData.department_id;
+             }
+          }
+
+          // Add to Zustand Cart
+          useCart.getState().addItem({
+            id: product.id,
+            name: product.name,
+            price: product.base_price,
+            image_url: product.main_image,
+            department_id: department_id,
+            weight_grams: 100, // Safe fallback
+          }, undefined, undefined, 0, quantity);
+        }
 
         // Redirect to checkout, preserving coupon if it exists
         const redirectUrl = coupon ? `/checkout?promo=${coupon}` : '/checkout';
