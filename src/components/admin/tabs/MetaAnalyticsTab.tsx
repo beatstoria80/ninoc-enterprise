@@ -355,6 +355,7 @@ export function MetaAnalyticsTab() {
             </tbody>
           </table>
         </div>
+        </>
       )}
 
       {viewMode === 'organic' && organicData && (
