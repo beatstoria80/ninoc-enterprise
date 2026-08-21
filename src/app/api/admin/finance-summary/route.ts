@@ -1,24 +1,51 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
 
+// Constants for DRY and Maintainability
+const VALID_ORDER_STATUSES = ['paid', 'delivered', 'shipped'];
+const VALID_PAYMENT_STATUSES = ['success', 'settlement'];
+const PAGE_SIZE = 1000;
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000; // GMT+7
+
 export async function GET(req: NextRequest) {
   try {
-    // 1. AUTHENTICATION CHECK
     const supabase = await createClient();
+    
+    // 1. AUTHENTICATION & ADMIN ROLE AUTHORIZATION
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized access. Authentication required.' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized. Please log in.' }, { status: 401 });
     }
 
-    // 2. FETCH AGGREGATED COUNT
-    // First, determine how many orders exist to chunk the parallel fetch
+    const { data: roleData } = await supabase
+      .from('admin_roles')
+      .select('role')
+      .eq('email', user.email)
+      .maybeSingle();
+
+    const isAdmin = !!roleData && ['super_admin', 'admin', 'finance'].includes(roleData.role);
+    
+    if (!isAdmin) {
+      console.warn(`[Security Alert] Non-admin user attempted to access finance summary: ${user.email}`);
+      return NextResponse.json({ error: 'Forbidden. Admin access required.' }, { status: 403 });
+    }
+
+    // 2. TIMEZONE HANDLING (WIB)
+    // Convert server UTC time to Indonesian Time (WIB) for accurate "Today" and "Month" boundaries
+    const nowUtc = new Date();
+    const nowWib = new Date(nowUtc.getTime() + WIB_OFFSET_MS);
+    
+    // Calculate boundaries in WIB, then convert back to UTC for database comparison
+    const todayWibStart = new Date(Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth(), nowWib.getUTCDate(), -7, 0, 0, 0));
+    const monthWibStart = new Date(Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth(), 1, -7, 0, 0, 0));
+
+    // 3. FETCH AGGREGATED COUNT
     const { count, error: countError } = await supabase
       .from('orders')
       .select('id', { count: 'exact', head: true })
-      .in('status', ['paid', 'delivered', 'shipped'])
-      .in('payment_status', ['success', 'settlement']);
+      .in('status', VALID_ORDER_STATUSES)
+      .in('payment_status', VALID_PAYMENT_STATUSES);
 
     if (countError) {
       console.error('[Finance Summary] Count Error:', countError);
@@ -26,34 +53,29 @@ export async function GET(req: NextRequest) {
     }
 
     const totalOrders = count || 0;
-    const PAGE_SIZE = 1000;
     const totalPages = Math.ceil(totalOrders / PAGE_SIZE);
 
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    
     let totalRevenue = 0;
     let todayRevenue = 0;
     let monthRevenue = 0;
     let processedCount = 0;
 
-    // 3. SERVER-SIDE AGGREGATION (Sequential chunking to protect DB connection pool and Node.js Memory)
-    // By processing and accumulating sequentially, we prevent OOM crashes and Supabase connection pool exhaustion
+    // 4. SEQUENTIAL AGGREGATION
+    // Kept sequential to protect the Node.js memory and DB connection pool
     for (let i = 0; i < totalPages; i++) {
       const from = i * PAGE_SIZE;
       const to = (i + 1) * PAGE_SIZE - 1;
       
       const { data, error } = await supabase
         .from('orders')
-        .select('total_price, created_at') // ONLY fetch needed columns to minimize memory
-        .in('status', ['paid', 'delivered', 'shipped'])
-        .in('payment_status', ['success', 'settlement'])
+        .select('total_price, created_at')
+        .in('status', VALID_ORDER_STATUSES)
+        .in('payment_status', VALID_PAYMENT_STATUSES)
         .range(from, to);
         
       if (error) {
         console.error(`[Finance Summary] Chunk ${i} Fetch Error:`, error);
-        continue;
+        continue; // Skip failing chunk but don't crash entire calculation
       }
 
       if (data) {
@@ -62,8 +84,8 @@ export async function GET(req: NextRequest) {
           const createdAt = new Date(o.created_at);
           
           totalRevenue += price;
-          if (createdAt >= today) todayRevenue += price;
-          if (createdAt >= monthStart) monthRevenue += price;
+          if (createdAt >= todayWibStart) todayRevenue += price;
+          if (createdAt >= monthWibStart) monthRevenue += price;
           processedCount++;
         }
       }
@@ -74,7 +96,11 @@ export async function GET(req: NextRequest) {
       totalRevenue,
       todayRevenue,
       monthRevenue,
-      totalOrdersAnalyzed: processedCount
+      totalOrdersAnalyzed: processedCount,
+      _metadata: {
+        last_updated: nowUtc.toISOString(),
+        timezone: 'Asia/Jakarta (WIB)'
+      }
     });
 
   } catch (err) {
