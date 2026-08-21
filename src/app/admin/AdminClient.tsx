@@ -69,6 +69,9 @@ import { useAdminSupport } from '@/providers/admin/AdminSupportProvider';
 import { OrderStatus, PaymentStatus, Product, Variant, Order, OrderItem, ShippingAddress, FinanceSummary, ProductCosting, SupplierCostLog, PromoImpact, ChatMessage, ChatSession, Customer } from '@/components/admin/types';
 import { isFnBDepartment, isObjectsDepartment } from '@/lib/departmentDomain';
 import { useProductForm } from '@/hooks/admin/useProductForm';
+import { printShippingLabel } from '@/lib/utils/printShippingLabel';
+import { useBulkUpload } from '@/hooks/admin/useBulkUpload';
+import { useFinanceData } from '@/hooks/admin/useFinanceData';
 
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -94,14 +97,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   const { customers, fetchCustomers, pendingReturnsCount } = useAdminCustomers();
   const { chatSessions, activeChatSession, setActiveChatSession, fetchChatSessions, sendMessage } = useAdminSupport();
 
-
-  const [finance, setFinance] = useState<FinanceSummary>({
-    totalRevenue: 0,
-    todayRevenue: 0,
-    monthRevenue: 0,
-    pendingPayments: 0,
-    completedOrders: 0
-  });
+  const { finance, productCostings, supplierLogs, activePromos, fetchFinanceSummary, fetchFinancialData } = useFinanceData();
 
   // Modal states
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -130,9 +126,6 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   // Financial system states
   const [financeTab, setFinanceTab] = useState<'overview' | 'ledger' | 'pl' | 'balance' | 'tax' | 'refunds'>('overview');
-  const [productCostings, setProductCostings] = useState<Record<string, ProductCosting>>({});
-  const [supplierLogs, setSupplierLogs] = useState<SupplierCostLog[]>([]);
-  const [activePromos, setActivePromos] = useState<PromoImpact[]>([]);
   const [editingCosting, setEditingCosting] = useState<ProductCosting | null>(null);
   const [isCostingModalOpen, setIsCostingModalOpen] = useState(false);
   const [selectedProductForCosting, setSelectedProductForCosting] = useState<Product | null>(null);
@@ -162,20 +155,6 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Fetch financial data
-  const fetchFinancialData = useCallback(async () => {
-    const { data: costData } = await supabase.from('product_costings').select('*');
-    if (costData) {
-      const map: Record<string, ProductCosting> = {};
-      costData.forEach((c: ProductCosting) => { map[c.product_id] = c; });
-      setProductCostings(map);
-    }
-    const { data: logData } = await supabase.from('supplier_cost_log').select('*, products(name)').order('changed_at', { ascending: false }).limit(10);
-    if (logData) setSupplierLogs(logData as SupplierCostLog[]);
-    const { data: promoData } = await supabase.from('promo_impact').select('*, products(name)').eq('is_active', true);
-    if (promoData) setActivePromos(promoData as PromoImpact[]);
-  }, []);
-
   // Form states
   const [dbCategories, setDbCategories] = useState<any[]>([]);
   const [dbDepartments, setDbDepartments] = useState<any[]>([]);
@@ -186,26 +165,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
     setIsLoading(true);
     try {
       // Removed local product and order fetching. Now handled by context providers.
-
-      // Fetch Server-Side Aggregated Finance Summary (Bypassing 1000-row PostgREST limits)
-      try {
-        const financeRes = await fetch('/api/admin/finance-summary').then(r => r.json());
-        
-        if (financeRes && financeRes.success) {
-          setFinance({
-            totalRevenue: financeRes.totalRevenue || 0,
-            todayRevenue: financeRes.todayRevenue || 0,
-            monthRevenue: financeRes.monthRevenue || 0,
-            pendingPayments: 0, // Now handled by order context if needed
-            completedOrders: financeRes.totalOrdersAnalyzed || 0
-          });
-        }
-      } catch (financeErr) {
-        console.error('Failed to fetch server-side finance summary:', financeErr);
-      }
-
       // Customer fetch removed, handled by context.
-
       // Removed pending returns fetch, handled by AdminCustomersProvider
 
       // Fetch categories, departments, and warehouses
@@ -271,13 +231,22 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Bulk image upload states
-  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
-  const [bulkUploading, setBulkUploading] = useState(false);
-  const [bulkResults, setBulkResults] = useState<{ name: string; url: string; error?: string }[] | null>(null);
-  const [bulkProductLink, setBulkProductLink] = useState(''); // product name to link images to
-  const [allUploadHistory, setAllUploadHistory] = useState<{ name: string; url: string; error?: string; timestamp: number }[]>([]);
-
-  type BulkUploadResult = { name: string; url: string; error?: string };
+  const {
+    bulkFiles,
+    setBulkFiles,
+    bulkUploading,
+    bulkResults,
+    bulkProductLink,
+    setBulkProductLink,
+    allUploadHistory,
+    handleBulkImageUpload,
+    openBulkUpload,
+    handleBulkFileSelect
+  } = useBulkUpload(
+    setActiveTab,
+    (url: string) => setProductForm(prev => ({ ...prev, image_url: url })),
+    (name: string) => setProductForm(prev => ({ ...prev, name, slug: name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') }))
+  );
 
   // Chat states (provided by useAdminSupport)
   const [newMessage, setNewMessage] = useState('');
@@ -302,106 +271,6 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
     });
   }, [fetchData, fetchFinancialData]);
 
-  // ===== BULK UPLOAD HANDLER =====
-  const handleBulkImageUpload = async () => {
-    if (bulkFiles.length === 0) return;
-
-    // Validate file sizes (max 10MB per file)
-    const maxSize = 10 * 1024 * 1024;
-    const oversizedFiles = bulkFiles.filter(f => f.size > maxSize);
-    if (oversizedFiles.length > 0) {
-      alert(`File too large: ${oversizedFiles.map(f => f.name).join(', ')}\nMax size: 10MB per file`);
-      return;
-    }
-
-    setBulkUploading(true);
-    setBulkResults(null);
-
-    try {
-      const formData = new FormData();
-      for (const file of bulkFiles) {
-        const compressedFile = await compressImage(file);
-        formData.append('files', compressedFile);
-      }
-      formData.append('bucket', 'products');
-
-      const res = await fetch('/api/admin/upload-images', {
-        method: 'POST',
-        body: formData
-      });
-
-      const text = await res.text();
-
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        alert('Server error: ' + text.slice(0, 200));
-        return;
-      }
-
-      if (!res.ok || data.error) {
-        alert('Upload failed: ' + (data.error || `HTTP ${res.status}`));
-        return;
-      }
-
-      // Save to history (accumulate all uploads)
-      const newResults = (data.results as BulkUploadResult[]).map(r => ({
-        ...r,
-        timestamp: Date.now()
-      }));
-      setAllUploadHistory(prev => [...prev, ...newResults]);
-      setBulkResults(data.results as BulkUploadResult[]);
-
-      // Show summary
-      if (data.summary) {
-        const { uploaded } = data.summary;
-        const total = data.results?.length || 0;
-        if (uploaded === 0) {
-          alert('Upload failed: All files failed.');
-        } else if (uploaded < total) {
-          alert(`Partially succeeded: ${uploaded}/${total} files uploaded.`);
-        } else {
-          alert(`Success: ${uploaded} files uploaded!`);
-        }
-      }
-
-      // Update product with first successful image
-      const firstSuccess = data.results?.find((r: BulkUploadResult) => r.url);
-      if (firstSuccess) {
-        setProductForm(prev => ({ ...prev, image_url: firstSuccess.url }));
-        if (bulkProductLink.trim()) {
-          setProductForm(prev => ({
-            ...prev,
-            name: bulkProductLink.trim(),
-            slug: bulkProductLink.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
-          }));
-        }
-        setActiveTab('products');
-      }
-    } catch (err) {
-      alert('Upload failed: ' + (err instanceof Error ? err.message : 'Unknown error'));
-    } finally {
-      setBulkUploading(false);
-    }
-  };
-
-  const openBulkUpload = () => {
-    setBulkFiles([]);
-    setBulkResults(null);
-    setBulkProductLink('');
-    setActiveTab('upload');
-  };
-
-  const handleBulkFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = Array.from(e.target.files || []);
-    if (selected.length > 1000) {
-      alert('Maximum 1000 files per batch. Please split your selection.');
-      setBulkFiles(selected.slice(0, 1000));
-    } else {
-      setBulkFiles(selected);
-    }
-  };
 
   // saveCustomer is now in useAdminCustomers (or we can keep it here if it's not in the provider yet)
   // Let's keep saveCustomer here for now if AdminCustomersProvider doesn't have it.
@@ -664,341 +533,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   });
 
   const executePrint = async (order: Order, isAuthorizedReprint: boolean) => {
-    // Fraud Prevention: Log Print Event
-    const newCount = (order.print_count || 0) + 1;
-    const printedBy = adminUser?.email || 'Unknown';
-    const reasonText = isAuthorizedReprint ? ` - REASON: ${reprintReason}` : '';
-    const newPrintedBy = isAuthorizedReprint ? `${printedBy}${reasonText}` : printedBy;
-    
-    try {
-      await supabase
-        .from('orders')
-        .update({ 
-          print_count: newCount, 
-          last_printed_by: newPrintedBy,
-          last_printed_at: new Date().toISOString()
-        })
-        .eq('id', order.id);
-        
-      // Optimistic update
-      setSelectedOrder({ ...order, print_count: newCount, last_printed_by: newPrintedBy });
-    } catch (e) {
-      console.error('Failed to update print count', e);
-    }
-
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) {
-      alert('Jendela cetak diblokir oleh browser. Mohon izinkan pop-up (Pop-up Blocker) untuk website ini lalu coba lagi.');
-      return;
-    }
-    
-    const items = order?.order_items || [];
-    const enrichedItems = items.map((item: any) => {
-      const product = products.find((p: any) => p.id === item.product_id);
-      const variant = product?.variants?.find((v: any) => v.id === item.variant_id);
-      return { 
-        ...item, 
-        sku: variant?.sku || item.sku || 'N/A',
-        color: variant?.color || item.color,
-        size: variant?.size || item.size
-      };
-    });
-    const totalItems = items.reduce((s: number, i: { quantity: number }) => s + i.quantity, 0) || 0;
-    
-    // Check if it's a duplicate print for the HTML view
-    // If it's an authorized reprint, we still show a small watermark to indicate it's a copy
-    const watermarkHtml = newCount > 1 ? `
-      <div style="position: absolute; top: 50px; left: 50%; transform: translateX(-50%) rotate(-30deg); font-size: 32px; font-weight: 900; color: rgba(0,0,0,0.1); border: 4px solid rgba(0,0,0,0.1); padding: 5px 10px; text-transform: uppercase; letter-spacing: 5px; z-index: 10; pointer-events: none; white-space: nowrap;">
-        ${isAuthorizedReprint ? 'AUTHORIZED REPRINT' : 'REPRINT'}
-        <div style="font-size: 10px; text-align: center; margin-top: 5px; letter-spacing: 1px;">
-          OLEH: ${printedBy}
-        </div>
-      </div>
-    ` : '';
-
-    const maskPhone = (phone: string | undefined) => {
-      if (!phone || phone.length < 8) return phone || '-';
-      return phone.slice(0, 4) + '-****-' + phone.slice(-4);
-    };
-
-    const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>Label Pengiriman - NINOC Archive</title>
-            <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-            <style>
-              @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
-              @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap');
-              
-              body { 
-                font-family: 'Courier Prime', monospace; 
-                margin: 0; 
-                padding: 0; 
-                background: white; 
-                color: #000;
-              }
-              
-              /* Thermal Label Standard Size */
-              .label { 
-                background: white; 
-                width: 100%; 
-                height: 100%;
-                padding: 0;
-                margin: 0; 
-                box-sizing: border-box;
-                position: relative;
-              }
-
-              .label-inner {
-                border: 2px solid #000;
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-direction: column;
-              }
-
-              /* Header Section */
-              .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 4mm;
-                border-bottom: 2px solid #000;
-              }
-              .brand {
-                font-family: 'Inter', sans-serif;
-                font-size: 14px;
-                font-weight: 900;
-                font-style: italic;
-                letter-spacing: -0.5px;
-              }
-              .brand span {
-                font-size: 8px;
-                font-weight: 600;
-                margin-left: 4px;
-                font-style: normal;
-                letter-spacing: 1px;
-              }
-              .courier-box {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-              }
-              .courier-badge {
-                background: #000;
-                color: #fff;
-                font-family: 'Inter', sans-serif;
-                font-weight: 800;
-                font-size: 10px;
-                padding: 2px 4px;
-                letter-spacing: 0.5px;
-              }
-
-              /* Barcode Section */
-              .barcode-section {
-                padding: 4mm;
-                text-align: center;
-                border-bottom: 2px solid #000;
-              }
-              .barcode-section img {
-                width: 100%;
-                height: 50px;
-                display: block;
-                margin: 0 auto;
-              }
-              .awb-text {
-                font-family: 'Courier Prime', monospace;
-                font-weight: 700;
-                font-size: 14px;
-                margin-top: 4px;
-                letter-spacing: 2px;
-              }
-
-              /* Address Grid */
-              .address-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                border-bottom: 2px solid #000;
-              }
-              .address-box {
-                padding: 4mm;
-              }
-              .address-box.left {
-                border-right: 2px solid #000;
-              }
-              .box-title {
-                font-family: 'Inter', sans-serif;
-                font-size: 8px;
-                font-weight: 700;
-                letter-spacing: 1px;
-                margin-bottom: 4px;
-                text-decoration: underline;
-              }
-              .person-name {
-                font-weight: 700;
-                font-size: 12px;
-                margin-bottom: 2px;
-                font-family: 'Inter', sans-serif;
-                text-transform: uppercase;
-              }
-              .person-phone {
-                font-size: 10px;
-                margin-bottom: 6px;
-              }
-              .person-address {
-                font-size: 9px;
-                line-height: 1.6;
-                text-transform: uppercase;
-              }
-
-              /* Content Grid */
-              .content-grid {
-                display: grid;
-                grid-template-columns: 2fr 1fr;
-                border-bottom: 2px solid #000;
-                flex: 1;
-              }
-              .content-box {
-                padding: 4mm;
-              }
-              .content-box.left {
-                border-right: 2px solid #000;
-              }
-              .item-line {
-                font-size: 10px;
-                line-height: 1.4;
-                margin-bottom: 2px;
-                text-transform: uppercase;
-              }
-              
-              .order-id-box {
-                text-align: center;
-                padding-top: 4mm;
-              }
-              .order-id-val {
-                font-family: 'Inter', sans-serif;
-                font-size: 12px;
-                font-weight: 800;
-                margin-top: 4px;
-              }
-              .qty-val {
-                font-size: 9px;
-                margin-top: 8px;
-                display: flex;
-                justify-content: space-between;
-                padding: 0 4px;
-              }
-
-              /* Footer */
-              .footer {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 2mm 4mm;
-                font-size: 8px;
-              }
-              .fragile-badge {
-                background: #000;
-                color: #fff;
-                font-family: 'Inter', sans-serif;
-                font-weight: 800;
-                padding: 2px 6px;
-                font-size: 10px;
-                letter-spacing: 1px;
-              }
-
-              @media print {
-                @page { margin: 0; size: 100mm 150mm; }
-              }
-            </style>
-          </head>
-          <body>
-              <div class="label">
-                ${watermarkHtml}
-                <div class="label-inner">
-                  
-                  <div class="header">
-                    <div class="brand">NINOC <span>ARCHIVE</span></div>
-                    <div class="courier-box">
-                      <div class="courier-badge">${(order.courier || 'STD').toUpperCase().slice(0, 5)}</div>
-                    </div>
-                  </div>
-
-                  <div class="barcode-section">
-                    <svg class="barcode"
-                      jsbarcode-format="CODE128"
-                      jsbarcode-value="${order.tracking_id || 'NNC' + order.id.toUpperCase()}"
-                      jsbarcode-textmargin="0"
-                      jsbarcode-fontoptions="bold"
-                      jsbarcode-height="50"
-                      jsbarcode-displayvalue="false"
-                      jsbarcode-width="2"
-                      jsbarcode-margin="0">
-                    </svg>
-                    <div class="awb-text">${order.tracking_id || 'NNC' + order.id.toUpperCase()}</div>
-                  </div>
-
-                  <div class="address-grid">
-                    <div class="address-box left">
-                      <div class="box-title">PENERIMA / TO</div>
-                      <div class="person-name">${order.shipping_address?.name || 'GUEST'}</div>
-                      <div class="person-phone">${maskPhone(order.shipping_address?.phone)}</div>
-                      ${order.shipping_address?.address_type ? `<div style="display:inline-block; border:1px solid black; padding:1px 4px; font-size:8px; font-weight:bold; margin-top:2px; margin-bottom:2px;">${order.shipping_address.address_type === 'Home' ? 'Home / Rumah' : 'Office / Kantor'}</div>` : ''}
-                      <div class="person-address">
-                        ${order.shipping_address?.address || '-'}<br/>
-                        ${order.shipping_address?.address?.toUpperCase().includes((order.shipping_address?.city || '').toUpperCase()) ? '' : (order.shipping_address?.city || '-')}
-                      </div>
-                    </div>
-                    <div class="address-box">
-                      <div class="box-title">PENGIRIM / FROM</div>
-                      <div class="person-name">NINOC STUDIO</div>
-                      <div class="person-phone">0821-1983-774</div>
-                      <div class="person-address">
-                        Kota Bandung<br/>
-                        Jawa Barat<br/>
-                        40292
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="content-grid">
-                    <div class="content-box left">
-                      <div class="box-title">ISI PAKET / CONTENTS</div>
-                      ${enrichedItems?.map((i: any) => `
-                        <div class="item-line">${i.product_name} ${[i.sku, i.color, i.size].filter(Boolean).length > 0 ? `(${[i.sku, i.color, i.size].filter(Boolean).join(' / ')})` : ''} x${i.quantity}</div>
-                      `).join('') || '<div class="item-line">No items found</div>'}
-                    </div>
-                    <div class="content-box">
-                      <div class="order-id-box">
-                        <div class="box-title" style="text-decoration:none;">ORDER ID</div>
-                        <div class="order-id-val">#${order.id.toUpperCase()}</div>
-                      </div>
-                      <div class="qty-val">
-                        <span>Qty: ${totalItems}</span>
-                        <span>~${totalItems * 100}g</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="footer">
-                    <div>${new Date(order.created_at).toLocaleDateString('id-ID', {day: 'numeric', month: 'short', year: 'numeric'})}</div>
-                    <div>NINOC ARCHIVE - BANDUNG, INDONESIA</div>
-                    <div class="fragile-badge">FRAGILE</div>
-                  </div>
-
-                </div>
-              </div>
-            
-            <script>
-              JsBarcode(".barcode").init();
-              window.onload = () => { setTimeout(() => { window.print(); }, 800); }
-            </script>
-          </body>
-        </html>
-      `;
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
+    await printShippingLabel(order, adminUser, products, setSelectedOrder, isAuthorizedReprint);
   };
 
 
