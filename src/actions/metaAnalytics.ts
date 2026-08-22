@@ -72,13 +72,54 @@ async function metaGraphFetch<T = any>(
     next: { revalidate }
   });
 
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    const message = errorData.error?.message || `Facebook Graph API error (status: ${res.status})`;
-    throw new Error(message);
+  const data = await res.json().catch(() => ({} as any));
+
+  // Facebook Graph API can return errors in two ways:
+  // 1. Non-200 status with error in body
+  // 2. HTTP 200 but with an `error` object in the JSON body
+  if (!res.ok || data?.error) {
+    const message = data?.error?.message || `Facebook Graph API error (status: ${res.status})`;
+    const code = data?.error?.code || res.status;
+    const err = new Error(message);
+    (err as any).graphApiCode = code;
+    throw err;
   }
 
-  return res.json() as Promise<T>;
+  return data as T;
+}
+
+/**
+ * Converts raw Facebook Graph API error messages into clean,
+ * actionable Indonesian messages for the admin dashboard.
+ * Technical details are logged server-side via console.error.
+ */
+function sanitizeOrganicError(rawMessage: string): string {
+  const lower = rawMessage.toLowerCase();
+
+  if (lower.includes('does not exist') || lower.includes('missing permissions') || lower.includes('unsupported get request')) {
+    return 'Token API belum memiliki izin yang cukup untuk membaca data Halaman ini. ' +
+      'Pastikan token memiliki izin pages_show_list dan pages_read_engagement, ' +
+      'lalu tambahkan ulang Halaman di Meta Business Settings. Data yang ditampilkan adalah simulasi.';
+  }
+
+  if (lower.includes('session has expired') || lower.includes('invalid oauth') || lower.includes('access token')) {
+    return 'Token akses Meta telah kedaluwarsa atau tidak valid. ' +
+      'Silakan perbarui META_CAPI_TOKEN di pengaturan environment. Data yang ditampilkan adalah simulasi.';
+  }
+
+  if (lower.includes('rate limit') || lower.includes('too many calls')) {
+    return 'Batas pemanggilan API Meta tercapai. Coba refresh kembali dalam beberapa menit. ' +
+      'Data yang ditampilkan sementara adalah simulasi.';
+  }
+
+  if (lower.includes('valid insights metric') || lower.includes('deprecated')) {
+    return 'Beberapa metrik insights sudah tidak didukung oleh versi API saat ini. ' +
+      'Data yang ditampilkan adalah simulasi.';
+  }
+
+  // Generic fallback — still human-readable, no raw API dump
+  return 'Terjadi kendala saat menghubungi Facebook API. Data yang ditampilkan adalah simulasi. ' +
+    'Periksa konfigurasi token dan izin di Meta Business Settings.';
 }
 
 /**
@@ -305,7 +346,9 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
 
   if (!capiToken || !pageId) {
     const mock = generateMockOrganicData(timeFilter);
-    mock.error = "Meta Page ID atau CAPI Token belum diatur di environment. Menampilkan data simulasi.";
+    mock.error = !pageId
+      ? 'META_PAGE_ID belum diatur di environment variables. Tambahkan ID Halaman Facebook Anda untuk melihat data organik asli.'
+      : 'META_CAPI_TOKEN belum diatur di environment variables. Tambahkan token dari Meta Business Settings.';
     return mock;
   }
 
@@ -441,9 +484,10 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       trend
     };
   } catch (error: any) {
-    console.error("Meta Organic API Fetch Error:", error);
+    // Log full technical error server-side for debugging
+    console.error("Meta Organic API Fetch Error:", error.message, error.graphApiCode || '');
     const mock = generateMockOrganicData(timeFilter);
-    mock.error = `Gagal menarik data organik asli: ${error.message}. Menampilkan data simulasi.`;
+    mock.error = sanitizeOrganicError(error.message || '');
     return mock;
   }
 }

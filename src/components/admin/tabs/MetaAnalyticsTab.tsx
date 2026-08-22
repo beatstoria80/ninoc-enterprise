@@ -157,11 +157,14 @@ export function MetaAnalyticsTab() {
       )}
 
       {viewMode === 'organic' && organicData?.error && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
-          <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <p className="text-sm font-bold">Peringatan Izin API Organik</p>
-            <p className="text-xs text-amber-700 leading-relaxed">{organicData.error}</p>
+        <div className="bg-blue-50/80 border border-blue-200 text-blue-900 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <MonitorSmartphone size={20} className="text-blue-500 shrink-0 mt-0.5" />
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-bold">Mode Simulasi Aktif</p>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-200 text-blue-800 font-bold uppercase tracking-wider">Data Simulasi</span>
+            </div>
+            <p className="text-xs text-blue-700 leading-relaxed">{organicData.error}</p>
           </div>
         </div>
       )}
