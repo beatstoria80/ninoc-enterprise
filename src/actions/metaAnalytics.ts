@@ -33,14 +33,32 @@ export interface MetaAnalyticsData {
   trend: { date: string; spend: number; conversions: number }[];
 }
 
-export interface MetaOrganicData {
-  configured: boolean;
-  error?: string;
+export interface SocialMediaItem {
+  id: string;
+  url: string;
+  type: string;
+  thumbnail: string;
+  caption: string;
+  likes: number;
+  comments: number;
+  date: string;
+}
+
+export interface PlatformMetrics {
   followers: number;
   reach: number;
   profileViews: number;
   engagement: number;
   trend: { date: string; reach: number; engagement: number }[];
+  demographics?: MetaDemographics;
+  topPosts: SocialMediaItem[];
+}
+
+export interface MetaOrganicData {
+  configured: boolean;
+  error?: string;
+  instagram: PlatformMetrics;
+  facebook: PlatformMetrics;
 }
 
 // Constant values for Meta Graph API
@@ -74,9 +92,6 @@ async function metaGraphFetch<T = any>(
 
   const data = await res.json().catch(() => ({} as any));
 
-  // Facebook Graph API can return errors in two ways:
-  // 1. Non-200 status with error in body
-  // 2. HTTP 200 but with an `error` object in the JSON body
   if (!res.ok || data?.error) {
     const message = data?.error?.message || `Facebook Graph API error (status: ${res.status})`;
     const code = data?.error?.code || res.status;
@@ -88,11 +103,6 @@ async function metaGraphFetch<T = any>(
   return data as T;
 }
 
-/**
- * Converts raw Facebook Graph API error messages into clean,
- * actionable Indonesian messages for the admin dashboard.
- * Technical details are logged server-side via console.error.
- */
 function sanitizeOrganicError(rawMessage: string): string {
   const lower = rawMessage.toLowerCase();
 
@@ -117,14 +127,10 @@ function sanitizeOrganicError(rawMessage: string): string {
       'Data yang ditampilkan adalah simulasi.';
   }
 
-  // Generic fallback — still human-readable, no raw API dump
   return 'Terjadi kendala saat menghubungi Facebook API. Data yang ditampilkan adalah simulasi. ' +
     'Periksa konfigurasi token dan izin di Meta Business Settings.';
 }
 
-/**
- * Helper to parse conversion action arrays and extract total purchases.
- */
 function getPurchasesCount(actions: any[] | undefined): number {
   if (!actions || !Array.isArray(actions)) return 0;
   const purchaseAction = actions.find(
@@ -133,9 +139,6 @@ function getPurchasesCount(actions: any[] | undefined): number {
   return purchaseAction ? parseInt(purchaseAction.value || 0, 10) : 0;
 }
 
-/**
- * Maps dashboard timeFilter to Facebook's date_preset parameter.
- */
 function getAdsDatePreset(timeFilter: string): string {
   switch (timeFilter) {
     case '24h': return 'today';
@@ -146,44 +149,28 @@ function getAdsDatePreset(timeFilter: string): string {
   }
 }
 
-/**
- * Calculates unix timestamp ranges for organic metrics.
- */
-function getOrganicUnixRange(timeFilter: string): { sinceUnix: number; untilUnix: number } {
+function getOrganicUnixRange(timeFilter: string): { sinceUnix: number; untilUnix: number; days: number } {
   const until = new Date();
   const since = new Date();
+  let days = 28;
 
   switch (timeFilter) {
-    case '24h':
-      since.setDate(until.getDate() - 1);
-      break;
-    case '7d':
-      since.setDate(until.getDate() - 7);
-      break;
-    case '90d':
-      since.setDate(until.getDate() - 90);
-      break;
-    default: // 28d
-      since.setDate(until.getDate() - 28);
-      break;
+    case '24h': days = 1; break;
+    case '7d': days = 7; break;
+    case '90d': days = 90; break;
+    default: days = 28; break;
   }
+  
+  since.setDate(until.getDate() - days);
 
   return {
     sinceUnix: Math.floor(since.getTime() / 1000),
-    untilUnix: Math.floor(until.getTime() / 1000)
+    untilUnix: Math.floor(until.getTime() / 1000),
+    days
   };
 }
 
-/**
- * Returns empty data structure for Organic Analytics when API fails or not configured.
- * We no longer use mock data as per user request (Must be Real Data).
- */
-function getEmptyOrganicData(timeFilter: string): MetaOrganicData {
-  let days = 28;
-  if (timeFilter === '7d') days = 7;
-  if (timeFilter === '24h') days = 1;
-  if (timeFilter === '90d') days = 90;
-
+function getEmptyPlatformMetrics(days: number): PlatformMetrics {
   const trend: { date: string; reach: number; engagement: number }[] = [];
 
   for (let i = days; i >= 0; i--) {
@@ -197,18 +184,24 @@ function getEmptyOrganicData(timeFilter: string): MetaOrganicData {
   }
 
   return {
-    configured: true,
     followers: 0,
     reach: 0,
     profileViews: 0,
     engagement: 0,
-    trend
+    trend,
+    topPosts: []
   };
 }
 
-/**
- * Fetch Meta Analytics Data (Facebook/Instagram Ads)
- */
+function getEmptyOrganicData(timeFilter: string): MetaOrganicData {
+  const { days } = getOrganicUnixRange(timeFilter);
+  return {
+    configured: true,
+    instagram: getEmptyPlatformMetrics(days),
+    facebook: getEmptyPlatformMetrics(days)
+  };
+}
+
 export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<MetaAnalyticsData> {
   const capiToken = process.env.META_CAPI_TOKEN;
   const adAccountId = process.env.META_AD_ACCOUNT_ID;
@@ -227,7 +220,6 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
   const datePreset = getAdsDatePreset(timeFilter);
 
   try {
-    // 1. Fetch Overview Insights
     const overviewData = await metaGraphFetch(
       `${formattedAdAccountId}/insights`,
       capiToken,
@@ -243,7 +235,7 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
     const totalClicks = insights ? parseInt(insights.clicks || 0, 10) : 0;
     const totalConversions = insights ? getPurchasesCount(insights.actions) : 0;
     const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-    const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0; // Assuming 150k AOV for demo
+    const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0;
 
     const overview = {
       totalSpend,
@@ -254,7 +246,6 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
       averageRoas: parseFloat(averageRoas.toFixed(2))
     };
 
-    // 2. Fetch Campaigns
     const campaignsData = await metaGraphFetch(
       `${formattedAdAccountId}/campaigns`,
       capiToken,
@@ -282,7 +273,6 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
       };
     });
 
-    // 3. Fetch Trend Data (Time Increment)
     const trendData = await metaGraphFetch(
       `${formattedAdAccountId}/insights`,
       capiToken,
@@ -319,9 +309,46 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
   }
 }
 
-/**
- * Fetch Meta Organic Analytics Data (Facebook Page / Instagram Profile)
- */
+// --- HELPER UNTUK PARSING DEMOGRAFIS FB/IG ---
+function parseDemographics(demoData: any[]): MetaDemographics {
+  const ageGenderMap = new Map<string, number>();
+  const cityMap = new Map<string, number>();
+  let totalDemo = 0;
+
+  // Graph API returns age/gender demographics slightly differently between FB and IG
+  // usually [{ name: "audience_gender_age", values: [{ value: { "M.25-34": 120, "F.18-24": 300 } }] }]
+  const ageGenderVal = demoData.find((d) => d.name === 'audience_gender_age' || d.name === 'page_fans_gender_age')?.values?.[0]?.value || {};
+  
+  Object.entries(ageGenderVal).forEach(([key, val]) => {
+    const value = typeof val === 'number' ? val : 0;
+    const mappedKey = key.replace('F.', 'Perempuan ').replace('M.', 'Laki-laki ').replace('U.', 'Lainnya ');
+    ageGenderMap.set(mappedKey, (ageGenderMap.get(mappedKey) || 0) + value);
+    totalDemo += value;
+  });
+
+  const cityVal = demoData.find((d) => d.name === 'audience_city' || d.name === 'page_fans_city')?.values?.[0]?.value || {};
+  
+  Object.entries(cityVal).forEach(([key, val]) => {
+    const value = typeof val === 'number' ? val : 0;
+    // FB returns "Bandung, West Java", we just want the city name
+    const city = key.split(',')[0].trim();
+    cityMap.set(city, (cityMap.get(city) || 0) + value);
+  });
+
+  // Convert maps to sorted arrays with percentages
+  const topAgeGender = Array.from(ageGenderMap.entries())
+    .map(([segment, count]) => ({ segment, percentage: totalDemo > 0 ? (count / totalDemo) * 100 : 0 }))
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 5);
+
+  const topLocations = Array.from(cityMap.entries())
+    .map(([city, count]) => ({ city, percentage: totalDemo > 0 ? (count / totalDemo) * 100 : 0 }))
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, 5);
+
+  return { ageGender: topAgeGender, topLocations };
+}
+
 export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<MetaOrganicData> {
   const capiToken = process.env.META_CAPI_TOKEN;
   const pageId = process.env.META_PAGE_ID;
@@ -334,16 +361,13 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
     return mock;
   }
 
-  const { sinceUnix, untilUnix } = getOrganicUnixRange(timeFilter);
+  const { sinceUnix, untilUnix, days } = getOrganicUnixRange(timeFilter);
   
   try {
-    // 1. Fetch Page Details and dynamic Page Access Token
     const pageData = await metaGraphFetch(
       pageId,
       capiToken,
-      {
-        fields: 'instagram_business_account,followers_count,access_token'
-      }
+      { fields: 'instagram_business_account,followers_count,access_token' }
     );
 
     const pageToken = pageData.access_token;
@@ -352,132 +376,158 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
     }
 
     const igAccountId = pageData.instagram_business_account?.id;
-    let followers = pageData.followers_count || 0;
-    let reach = 0;
-    let profileViews = 0;
-    let engagement = 0;
-    let trend: { date: string; reach: number; engagement: number }[] = [];
+    const fbMetrics = getEmptyPlatformMetrics(days);
+    const igMetrics = getEmptyPlatformMetrics(days);
 
+    // ==========================================
+    // FETCH FACEBOOK METRICS
+    // ==========================================
+    fbMetrics.followers = pageData.followers_count || 0;
+
+    const fbInsightsData = await metaGraphFetch(
+      `${pageId}/insights`,
+      pageToken,
+      {
+        metric: 'page_post_engagements,page_daily_follows,page_views_total,page_fans_gender_age,page_fans_city',
+        period: 'day',
+        since: sinceUnix,
+        until: untilUnix
+      }
+    ).catch(() => ({ data: [] }));
+
+    if (fbInsightsData.data && fbInsightsData.data.length > 0) {
+      const viewsData = fbInsightsData.data.find((d: any) => d.name === 'page_views_total')?.values || [];
+      const engData = fbInsightsData.data.find((d: any) => d.name === 'page_post_engagements')?.values || [];
+      const followsData = fbInsightsData.data.find((d: any) => d.name === 'page_daily_follows')?.values || [];
+      
+      const dailyMap: { [date: string]: { reach: number; engagement: number } } = {};
+      
+      viewsData.forEach((val: any) => {
+        const dateStr = val.end_time.split('T')[0];
+        const estReach = val.value * 12 + 100;
+        dailyMap[dateStr] = { reach: estReach, engagement: 0 };
+        fbMetrics.profileViews += val.value;
+        fbMetrics.reach += estReach;
+      });
+
+      engData.forEach((val: any) => {
+        const dateStr = val.end_time.split('T')[0];
+        if (!dailyMap[dateStr]) dailyMap[dateStr] = { reach: 100, engagement: 0 };
+        dailyMap[dateStr].engagement = val.value;
+        fbMetrics.engagement += val.value;
+      });
+
+      followsData.forEach((val: any) => {
+        fbMetrics.followers += val.value;
+      });
+
+      fbMetrics.trend = Object.keys(dailyMap).sort().map(date => ({
+        date,
+        reach: dailyMap[date].reach,
+        engagement: dailyMap[date].engagement
+      }));
+
+      // Set Demographics (Lifetime)
+      fbMetrics.demographics = parseDemographics(fbInsightsData.data);
+    }
+
+    // Fetch Facebook Posts
+    const fbPostsData = await metaGraphFetch(
+      `${pageId}/posts`,
+      pageToken,
+      { fields: 'id,message,full_picture,permalink_url,created_time,shares,likes.summary(true),comments.summary(true)', limit: 6 }
+    ).catch(() => ({ data: [] }));
+
+    fbMetrics.topPosts = (fbPostsData.data || []).filter((p: any) => p.full_picture).map((p: any) => ({
+      id: p.id,
+      url: p.permalink_url || `https://facebook.com/${p.id}`,
+      type: 'IMAGE',
+      thumbnail: p.full_picture,
+      caption: (p.message || '').substring(0, 60) + '...',
+      likes: p.likes?.summary?.total_count || 0,
+      comments: p.comments?.summary?.total_count || 0,
+      date: p.created_time?.split('T')[0] || ''
+    }));
+
+    // ==========================================
+    // FETCH INSTAGRAM METRICS
+    // ==========================================
     if (igAccountId) {
-      // IG User Info (Followers)
       const igUserData = await metaGraphFetch(
         igAccountId,
         pageToken,
-        {
-          fields: 'followers_count'
-        }
-      );
-      followers += (igUserData.followers_count || 0);
+        { fields: 'followers_count' }
+      ).catch(() => ({ followers_count: 0 }));
+      
+      igMetrics.followers = igUserData.followers_count || 0;
 
-      // IG Insights (Reach)
       const reachInsightsData = await metaGraphFetch(
         `${igAccountId}/insights`,
         pageToken,
-        {
-          metric: 'reach',
-          period: 'day',
-          since: sinceUnix,
-          until: untilUnix
-        }
+        { metric: 'reach', period: 'day', since: sinceUnix, until: untilUnix }
       ).catch(() => ({ data: [] }));
 
-      // IG Insights (Profile Views)
       const viewsInsightsData = await metaGraphFetch(
         `${igAccountId}/insights`,
         pageToken,
-        {
-          metric: 'profile_views',
-          period: 'day',
-          metric_type: 'total_value',
-          since: sinceUnix,
-          until: untilUnix
-        }
+        { metric: 'profile_views', period: 'day', metric_type: 'total_value', since: sinceUnix, until: untilUnix }
       ).catch(() => ({ data: [] }));
 
       const reachData = reachInsightsData.data?.find((d: any) => d.name === 'reach')?.values || [];
       const viewsData = viewsInsightsData.data?.find((d: any) => d.name === 'profile_views')?.values || [];
-        
-        reachData.forEach((val: any) => {
-          reach += val.value;
-          engagement += Math.floor(val.value * 0.05);
-          trend.push({
-            date: val.end_time.split('T')[0],
-            reach: val.value,
-            engagement: Math.floor(val.value * 0.05)
-          });
+      
+      igMetrics.trend = [];
+      reachData.forEach((val: any) => {
+        igMetrics.reach += val.value;
+        const estEng = Math.floor(val.value * 0.05);
+        igMetrics.engagement += estEng;
+        igMetrics.trend.push({
+          date: val.end_time.split('T')[0],
+          reach: val.value,
+          engagement: estEng
         });
-        
-        viewsData.forEach((val: any) => {
-          profileViews += val.value;
-        });
-    } else {
-      // Fallback to basic Page insights using Page Access Token
-      const fbInsightsData = await metaGraphFetch(
-        `${pageId}/insights`,
+      });
+      
+      viewsData.forEach((val: any) => {
+        igMetrics.profileViews += val.value;
+      });
+
+      // Instagram Demographics (Lifetime)
+      const igDemoData = await metaGraphFetch(
+        `${igAccountId}/insights`,
         pageToken,
-        {
-          metric: 'page_post_engagements,page_daily_follows,page_views_total',
-          period: 'day',
-          since: sinceUnix,
-          until: untilUnix
-        }
-      );
-
-      if (fbInsightsData.data && fbInsightsData.data.length > 0) {
-        const viewsData = fbInsightsData.data.find((d: any) => d.name === 'page_views_total')?.values || [];
-        const engData = fbInsightsData.data.find((d: any) => d.name === 'page_post_engagements')?.values || [];
-        const followsData = fbInsightsData.data.find((d: any) => d.name === 'page_daily_follows')?.values || [];
-        
-        const dailyMap: { [date: string]: { reach: number; engagement: number } } = {};
-        
-        viewsData.forEach((val: any) => {
-          const dateStr = val.end_time.split('T')[0];
-          const estReach = val.value * 12 + 100;
-          dailyMap[dateStr] = { reach: estReach, engagement: 0 };
-          profileViews += val.value;
-          reach += estReach;
-        });
-
-        engData.forEach((val: any) => {
-          const dateStr = val.end_time.split('T')[0];
-          if (!dailyMap[dateStr]) {
-            dailyMap[dateStr] = { reach: 100, engagement: 0 };
-          }
-          dailyMap[dateStr].engagement = val.value;
-          engagement += val.value;
-        });
-
-        followsData.forEach((val: any) => {
-          followers += val.value;
-        });
-
-        trend = Object.keys(dailyMap).sort().map(date => ({
-          date,
-          reach: dailyMap[date].reach,
-          engagement: dailyMap[date].engagement
-        }));
+        { metric: 'audience_gender_age,audience_city', period: 'lifetime' }
+      ).catch(() => ({ data: [] }));
+      
+      if (igDemoData.data && igDemoData.data.length > 0) {
+        igMetrics.demographics = parseDemographics(igDemoData.data);
       }
 
-      if (trend.length === 0) {
-        const mock = getEmptyOrganicData(timeFilter);
-        return {
-          ...mock,
-          followers: followers || mock.followers,
-          error: "Kredensial valid tetapi data organik Halaman kosong/baru. Menampilkan visualisasi data kosong."
-        };
-      }
+      // Instagram Media
+      const igMediaData = await metaGraphFetch(
+        `${igAccountId}/media`,
+        pageToken,
+        { fields: 'id,media_type,media_url,thumbnail_url,permalink,like_count,comments_count,caption,timestamp', limit: 6 }
+      ).catch(() => ({ data: [] }));
+
+      igMetrics.topPosts = (igMediaData.data || []).map((m: any) => ({
+        id: m.id,
+        url: m.permalink || `https://instagram.com/p/${m.id}`,
+        type: m.media_type,
+        thumbnail: m.thumbnail_url || m.media_url,
+        caption: (m.caption || '').substring(0, 60) + '...',
+        likes: m.like_count || 0,
+        comments: m.comments_count || 0,
+        date: m.timestamp?.split('T')[0] || ''
+      }));
     }
 
     return {
       configured: true,
-      followers,
-      reach,
-      profileViews,
-      engagement,
-      trend
+      instagram: igMetrics,
+      facebook: fbMetrics
     };
   } catch (error: any) {
-    // Log full technical error server-side for debugging
     console.error("Meta Organic API Fetch Error:", error.message, error.graphApiCode || '');
     const mock = getEmptyOrganicData(timeFilter);
     mock.error = sanitizeOrganicError(error.message || '');
