@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Instagram, Facebook, Heart, MessageCircle, ImageIcon } from 'lucide-react';
+import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon } from 'lucide-react';
 import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData } from '@/actions/metaAnalytics';
 import { cn } from '@/lib/utils';
 
@@ -281,13 +281,13 @@ export function MetaAnalyticsTab() {
               onClick={() => setOrganicTab('instagram')}
               className={cn("text-sm font-bold pb-3 border-b-2 transition-colors flex items-center gap-2", organicTab === 'instagram' ? "text-pink-600 border-pink-600" : "text-ink/40 border-transparent hover:text-ink/80")}
             >
-              <Instagram size={16} className={organicTab === 'instagram' ? "text-pink-500" : ""} /> Instagram
+              <Camera size={16} className={organicTab === 'instagram' ? "text-pink-500" : ""} /> Instagram
             </button>
             <button 
               onClick={() => setOrganicTab('facebook')}
               className={cn("text-sm font-bold pb-3 border-b-2 transition-colors flex items-center gap-2", organicTab === 'facebook' ? "text-blue-600 border-blue-600" : "text-ink/40 border-transparent hover:text-ink/80")}
             >
-              <Facebook size={16} className={organicTab === 'facebook' ? "text-blue-500" : ""} /> Facebook Page
+              <MonitorSmartphone size={16} className={organicTab === 'facebook' ? "text-blue-500" : ""} /> Facebook Page
             </button>
           </div>
 
@@ -353,7 +353,7 @@ export function MetaAnalyticsTab() {
                 {/* TOP POSTS GRID */}
                 <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm">
                   <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4">
-                    {organicTab === 'instagram' ? <Instagram size={16} className="text-pink-600" /> : <Facebook size={16} className="text-blue-600" />}
+                    {organicTab === 'instagram' ? <Camera size={16} className="text-pink-600" /> : <MonitorSmartphone size={16} className="text-blue-600" />}
                     Konten Teratas
                   </h3>
                   
