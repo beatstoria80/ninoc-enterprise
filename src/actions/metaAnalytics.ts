@@ -1,7 +1,5 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
-
 // Types for Meta Analytics Data
 export interface MetaCampaign {
   id: string;
@@ -35,132 +33,6 @@ export interface MetaAnalyticsData {
   trend: { date: string; spend: number; conversions: number }[];
 }
 
-/**
- * Fetch Meta Analytics Data (Facebook/Instagram Ads)
- * Currently uses mock data until a valid Ad Account ID is provided.
- */
-export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<MetaAnalyticsData> {
-  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  const capiToken = process.env.META_CAPI_TOKEN;
-  const adAccountId = process.env.META_AD_ACCOUNT_ID; // We don't have this yet
-
-  // If no Ad Account ID or CAPI token, we consider it unconfigured
-  if (!capiToken || !adAccountId) {
-    return {
-      configured: false,
-      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
-      campaigns: [],
-      demographics: { ageGender: [], topLocations: [] },
-      trend: []
-    };
-  }
-
-  // Format the Ad Account ID (must start with 'act_')
-  const formattedAdAccountId = adAccountId.startsWith('act_') ? adAccountId : `act_${adAccountId}`;
-
-  // Map time filter to Meta date_preset
-  let datePreset = 'last_28d';
-  if (timeFilter === '7d') datePreset = 'last_7d';
-  if (timeFilter === '24h') datePreset = 'today';
-  if (timeFilter === '90d') datePreset = 'last_90d';
-  if (timeFilter === 'all') datePreset = 'maximum';
-
-  try {
-    const graphApiVersion = 'v19.0';
-    const baseUrl = `https://graph.facebook.com/${graphApiVersion}/${formattedAdAccountId}`;
-
-    // 1. Fetch Overview Insights
-    const overviewUrl = `${baseUrl}/insights?access_token=${capiToken}&date_preset=${datePreset}&fields=spend,impressions,clicks,actions`;
-    const overviewRes = await fetch(overviewUrl, { next: { revalidate: 300 } });
-    const overviewData = await overviewRes.json();
-
-    if (overviewData.error) {
-      throw new Error(overviewData.error.message || 'Failed to fetch overview data');
-    }
-
-    const insights = overviewData.data && overviewData.data.length > 0 ? overviewData.data[0] : null;
-    
-    // Helper to extract purchase conversions
-    const getPurchases = (actions: any[]) => {
-      if (!actions || !Array.isArray(actions)) return 0;
-      const purchaseAction = actions.find(a => a.action_type === 'purchase' || a.action_type === 'omni_purchase');
-      return purchaseAction ? parseInt(purchaseAction.value) : 0;
-    };
-
-    const totalSpend = insights ? parseFloat(insights.spend || 0) : 0;
-    const totalImpressions = insights ? parseInt(insights.impressions || 0) : 0;
-    const totalClicks = insights ? parseInt(insights.clicks || 0) : 0;
-    const totalConversions = insights ? getPurchases(insights.actions) : 0;
-    const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-    
-    // For ROAS, we need conversion values. If not available in simple insights, fallback to 0 or estimate.
-    // In production, ensure `action_values` is queried and parsed.
-    const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0; // Assuming 150k AOV for demo
-
-    const overview = {
-      totalSpend,
-      totalImpressions,
-      totalClicks,
-      totalConversions,
-      averageCtr: parseFloat(averageCtr.toFixed(2)),
-      averageRoas: parseFloat(averageRoas.toFixed(2))
-    };
-
-    // 2. Fetch Campaigns
-    const campaignsUrl = `${baseUrl}/campaigns?access_token=${capiToken}&date_preset=${datePreset}&fields=id,name,status,insights{spend,impressions,clicks,actions}`;
-    const campaignsRes = await fetch(campaignsUrl, { next: { revalidate: 300 } });
-    const campaignsData = await campaignsRes.json();
-
-    const campaigns: MetaCampaign[] = (campaignsData.data || []).map((camp: any) => {
-      const cInsights = camp.insights?.data?.[0];
-      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
-      const cConversions = cInsights ? getPurchases(cInsights.actions) : 0;
-      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
-
-      return {
-        id: camp.id,
-        name: camp.name,
-        status: camp.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED',
-        spend: cSpend,
-        impressions: cInsights ? parseInt(cInsights.impressions || 0) : 0,
-        clicks: cInsights ? parseInt(cInsights.clicks || 0) : 0,
-        conversions: cConversions,
-        roas: parseFloat(cRoas.toFixed(2))
-      };
-    });
-
-    // 3. Fetch Trend Data (Time Increment)
-    const trendUrl = `${baseUrl}/insights?access_token=${capiToken}&date_preset=${datePreset}&time_increment=1&fields=date_start,spend,actions`;
-    const trendRes = await fetch(trendUrl, { next: { revalidate: 300 } });
-    const trendData = await trendRes.json();
-    
-    const trend = (trendData.data || []).map((t: any) => ({
-      date: t.date_start,
-      spend: parseFloat(t.spend || 0),
-      conversions: getPurchases(t.actions)
-    }));
-    
-    return {
-      configured: true,
-      overview,
-      campaigns,
-      demographics: { ageGender: [], topLocations: [] }, // Demographics require additional breakdown queries
-      trend
-    };
-
-  } catch (error: any) {
-    console.error("Meta API Fetch Error:", error);
-    return {
-      configured: true,
-      error: `Failed to fetch data from Meta: ${error.message}`,
-      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
-      campaigns: [],
-      demographics: { ageGender: [], topLocations: [] },
-      trend: []
-    };
-  }
-}
-
 export interface MetaOrganicData {
   configured: boolean;
   error?: string;
@@ -169,6 +41,96 @@ export interface MetaOrganicData {
   profileViews: number;
   engagement: number;
   trend: { date: string; reach: number; engagement: number }[];
+}
+
+// Constant values for Meta Graph API
+const GRAPH_API_VERSION = 'v19.0';
+const BASE_GRAPH_URL = 'https://graph.facebook.com';
+const CACHE_REVALIDATE_SECONDS = 300; // 5 minutes
+
+/**
+ * Reusable HTTP Request Wrapper for Facebook Graph API.
+ * Handles unified parameters, error boundary decoding, and revalidation logic.
+ */
+async function metaGraphFetch<T = any>(
+  endpoint: string,
+  accessToken: string,
+  params: Record<string, string | number> = {},
+  revalidate = CACHE_REVALIDATE_SECONDS
+): Promise<T> {
+  const queryParams = new URLSearchParams();
+  queryParams.set('access_token', accessToken);
+  
+  Object.entries(params).forEach(([key, val]) => {
+    if (val !== undefined && val !== null) {
+      queryParams.set(key, String(val));
+    }
+  });
+
+  const url = `${BASE_GRAPH_URL}/${GRAPH_API_VERSION}/${endpoint}?${queryParams.toString()}`;
+  const res = await fetch(url, {
+    next: { revalidate }
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    const message = errorData.error?.message || `Facebook Graph API error (status: ${res.status})`;
+    throw new Error(message);
+  }
+
+  return res.json() as Promise<T>;
+}
+
+/**
+ * Helper to parse conversion action arrays and extract total purchases.
+ */
+function getPurchasesCount(actions: any[] | undefined): number {
+  if (!actions || !Array.isArray(actions)) return 0;
+  const purchaseAction = actions.find(
+    a => a.action_type === 'purchase' || a.action_type === 'omni_purchase'
+  );
+  return purchaseAction ? parseInt(purchaseAction.value || 0, 10) : 0;
+}
+
+/**
+ * Maps dashboard timeFilter to Facebook's date_preset parameter.
+ */
+function getAdsDatePreset(timeFilter: string): string {
+  switch (timeFilter) {
+    case '24h': return 'today';
+    case '7d': return 'last_7d';
+    case '90d': return 'last_90d';
+    case 'all': return 'maximum';
+    default: return 'last_28d';
+  }
+}
+
+/**
+ * Calculates unix timestamp ranges for organic metrics.
+ */
+function getOrganicUnixRange(timeFilter: string): { sinceUnix: number; untilUnix: number } {
+  const until = new Date();
+  const since = new Date();
+
+  switch (timeFilter) {
+    case '24h':
+      since.setDate(until.getDate() - 1);
+      break;
+    case '7d':
+      since.setDate(until.getDate() - 7);
+      break;
+    case '90d':
+      since.setDate(until.getDate() - 90);
+      break;
+    default: // 28d
+      since.setDate(until.getDate() - 28);
+      break;
+  }
+
+  return {
+    sinceUnix: Math.floor(since.getTime() / 1000),
+    untilUnix: Math.floor(until.getTime() / 1000)
+  };
 }
 
 /**
@@ -222,39 +184,142 @@ function generateMockOrganicData(timeFilter: string): MetaOrganicData {
 }
 
 /**
+ * Fetch Meta Analytics Data (Facebook/Instagram Ads)
+ */
+export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<MetaAnalyticsData> {
+  const capiToken = process.env.META_CAPI_TOKEN;
+  const adAccountId = process.env.META_AD_ACCOUNT_ID;
+
+  if (!capiToken || !adAccountId) {
+    return {
+      configured: false,
+      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
+      campaigns: [],
+      demographics: { ageGender: [], topLocations: [] },
+      trend: []
+    };
+  }
+
+  const formattedAdAccountId = adAccountId.startsWith('act_') ? adAccountId : `act_${adAccountId}`;
+  const datePreset = getAdsDatePreset(timeFilter);
+
+  try {
+    // 1. Fetch Overview Insights
+    const overviewData = await metaGraphFetch(
+      `${formattedAdAccountId}/insights`,
+      capiToken,
+      {
+        date_preset: datePreset,
+        fields: 'spend,impressions,clicks,actions'
+      }
+    );
+
+    const insights = overviewData.data && overviewData.data.length > 0 ? overviewData.data[0] : null;
+    const totalSpend = insights ? parseFloat(insights.spend || 0) : 0;
+    const totalImpressions = insights ? parseInt(insights.impressions || 0, 10) : 0;
+    const totalClicks = insights ? parseInt(insights.clicks || 0, 10) : 0;
+    const totalConversions = insights ? getPurchasesCount(insights.actions) : 0;
+    const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
+    const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0; // Assuming 150k AOV for demo
+
+    const overview = {
+      totalSpend,
+      totalImpressions,
+      totalClicks,
+      totalConversions,
+      averageCtr: parseFloat(averageCtr.toFixed(2)),
+      averageRoas: parseFloat(averageRoas.toFixed(2))
+    };
+
+    // 2. Fetch Campaigns
+    const campaignsData = await metaGraphFetch(
+      `${formattedAdAccountId}/campaigns`,
+      capiToken,
+      {
+        date_preset: datePreset,
+        fields: 'id,name,status,insights{spend,impressions,clicks,actions}'
+      }
+    );
+
+    const campaigns: MetaCampaign[] = (campaignsData.data || []).map((camp: any) => {
+      const cInsights = camp.insights?.data?.[0];
+      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+      const cConversions = cInsights ? getPurchasesCount(cInsights.actions) : 0;
+      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+
+      return {
+        id: camp.id,
+        name: camp.name,
+        status: camp.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED',
+        spend: cSpend,
+        impressions: cInsights ? parseInt(cInsights.impressions || 0, 10) : 0,
+        clicks: cInsights ? parseInt(cInsights.clicks || 0, 10) : 0,
+        conversions: cConversions,
+        roas: parseFloat(cRoas.toFixed(2))
+      };
+    });
+
+    // 3. Fetch Trend Data (Time Increment)
+    const trendData = await metaGraphFetch(
+      `${formattedAdAccountId}/insights`,
+      capiToken,
+      {
+        date_preset: datePreset,
+        time_increment: 1,
+        fields: 'date_start,spend,actions'
+      }
+    );
+    
+    const trend = (trendData.data || []).map((t: any) => ({
+      date: t.date_start,
+      spend: parseFloat(t.spend || 0),
+      conversions: getPurchasesCount(t.actions)
+    }));
+
+    return {
+      configured: true,
+      overview,
+      campaigns,
+      demographics: { ageGender: [], topLocations: [] },
+      trend
+    };
+  } catch (error: any) {
+    console.error("Meta API Fetch Error:", error);
+    return {
+      configured: true,
+      error: `Failed to fetch data from Meta: ${error.message}`,
+      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
+      campaigns: [],
+      demographics: { ageGender: [], topLocations: [] },
+      trend: []
+    };
+  }
+}
+
+/**
  * Fetch Meta Organic Analytics Data (Facebook Page / Instagram Profile)
  */
 export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<MetaOrganicData> {
   const capiToken = process.env.META_CAPI_TOKEN;
   const pageId = process.env.META_PAGE_ID;
 
-  // Fallback to pretty mock data if critical credentials are missing
   if (!capiToken || !pageId) {
     const mock = generateMockOrganicData(timeFilter);
     mock.error = "Meta Page ID atau CAPI Token belum diatur di environment. Menampilkan data simulasi.";
     return mock;
   }
 
-  let since = new Date();
-  since.setDate(since.getDate() - 28);
-  if (timeFilter === '7d') since.setDate(new Date().getDate() - 7);
-  if (timeFilter === '24h') since.setDate(new Date().getDate() - 1);
-  if (timeFilter === '90d') since.setDate(new Date().getDate() - 90);
-  
-  const sinceUnix = Math.floor(since.getTime() / 1000);
-  const untilUnix = Math.floor(Date.now() / 1000);
+  const { sinceUnix, untilUnix } = getOrganicUnixRange(timeFilter);
   
   try {
-    const graphApiVersion = 'v19.0';
-    
     // 1. Fetch Page Details and dynamic Page Access Token
-    const pageUrl = `https://graph.facebook.com/${graphApiVersion}/${pageId}?fields=instagram_business_account,followers_count,access_token&access_token=${capiToken}`;
-    const pageRes = await fetch(pageUrl, { next: { revalidate: 300 } });
-    const pageData = await pageRes.json();
-    
-    if (pageData.error) {
-      throw new Error(pageData.error.message || 'Failed to fetch Page details. Make sure token has pages_read_engagement');
-    }
+    const pageData = await metaGraphFetch(
+      pageId,
+      capiToken,
+      {
+        fields: 'instagram_business_account,followers_count,access_token'
+      }
+    );
 
     const pageToken = pageData.access_token;
     if (!pageToken) {
@@ -270,25 +335,34 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
 
     if (igAccountId) {
       // IG User Info (Followers)
-      const igUserUrl = `https://graph.facebook.com/${graphApiVersion}/${igAccountId}?fields=followers_count&access_token=${pageToken}`;
-      const igUserRes = await fetch(igUserUrl, { next: { revalidate: 300 } });
-      const igUserData = await igUserRes.json();
-      if (!igUserData.error) {
-        followers += (igUserData.followers_count || 0);
-      }
+      const igUserData = await metaGraphFetch(
+        igAccountId,
+        pageToken,
+        {
+          fields: 'followers_count'
+        }
+      );
+      followers += (igUserData.followers_count || 0);
 
       // IG Insights (Reach, Profile Views)
-      const insightsUrl = `https://graph.facebook.com/${graphApiVersion}/${igAccountId}/insights?metric=impressions,reach,profile_views&period=day&since=${sinceUnix}&until=${untilUnix}&access_token=${pageToken}`;
-      const insightsRes = await fetch(insightsUrl, { next: { revalidate: 300 } });
-      const insightsData = await insightsRes.json();
+      const insightsData = await metaGraphFetch(
+        `${igAccountId}/insights`,
+        pageToken,
+        {
+          metric: 'impressions,reach,profile_views',
+          period: 'day',
+          since: sinceUnix,
+          until: untilUnix
+        }
+      );
 
-      if (!insightsData.error && insightsData.data) {
+      if (insightsData.data) {
         const reachData = insightsData.data.find((d: any) => d.name === 'reach')?.values || [];
         const viewsData = insightsData.data.find((d: any) => d.name === 'profile_views')?.values || [];
         
-        reachData.forEach((val: any, index: number) => {
+        reachData.forEach((val: any) => {
           reach += val.value;
-          engagement += Math.floor(val.value * 0.05); // Derived estimation for simplified organic view
+          engagement += Math.floor(val.value * 0.05);
           trend.push({
             date: val.end_time.split('T')[0],
             reach: val.value,
@@ -302,13 +376,16 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       }
     } else {
       // Fallback to basic Page insights using Page Access Token
-      const fbInsightsUrl = `https://graph.facebook.com/${graphApiVersion}/${pageId}/insights?metric=page_post_engagements,page_daily_follows,page_views_total&period=day&since=${sinceUnix}&until=${untilUnix}&access_token=${pageToken}`;
-      const fbInsightsRes = await fetch(fbInsightsUrl, { next: { revalidate: 300 } });
-      const fbInsightsData = await fbInsightsRes.json();
-      
-      if (fbInsightsData.error) {
-        throw new Error(fbInsightsData.error.message || 'Failed to fetch Page insights');
-      }
+      const fbInsightsData = await metaGraphFetch(
+        `${pageId}/insights`,
+        pageToken,
+        {
+          metric: 'page_post_engagements,page_daily_follows,page_views_total',
+          period: 'day',
+          since: sinceUnix,
+          until: untilUnix
+        }
+      );
 
       if (fbInsightsData.data && fbInsightsData.data.length > 0) {
         const viewsData = fbInsightsData.data.find((d: any) => d.name === 'page_views_total')?.values || [];
@@ -317,7 +394,6 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         
         const dailyMap: { [date: string]: { reach: number; engagement: number } } = {};
         
-        // Use page views as proxy for organic reach if not directly provided
         viewsData.forEach((val: any) => {
           const dateStr = val.end_time.split('T')[0];
           const estReach = val.value * 12 + 100;
@@ -346,7 +422,6 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         }));
       }
 
-      // If data is empty (like a brand new page), return pretty mock data but flag as simulated
       if (trend.length === 0) {
         const mock = generateMockOrganicData(timeFilter);
         return {
