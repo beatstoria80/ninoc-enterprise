@@ -147,24 +147,24 @@ export function MetaAnalyticsTab() {
       </div>
 
       {viewMode === 'ads' && data?.error && (
-        <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
-          <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
+        <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <AlertCircle size={20} className="text-red-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
-            <p className="text-sm font-bold">Simulasi Data (Mock Data)</p>
-            <p className="text-xs text-amber-700 leading-relaxed">{data.error}</p>
+            <p className="text-sm font-bold">Data Iklan Tidak Tersedia</p>
+            <p className="text-xs text-red-700 leading-relaxed">{data.error.replace(/Menampilkan data simulasi\./gi, '')}</p>
           </div>
         </div>
       )}
 
       {viewMode === 'organic' && organicData?.error && (
-        <div className="bg-blue-50/80 border border-blue-200 text-blue-900 p-4 rounded-xl flex items-start gap-3 shadow-sm">
-          <MonitorSmartphone size={20} className="text-blue-500 shrink-0 mt-0.5" />
+        <div className="bg-red-50/80 border border-red-200 text-red-900 p-4 rounded-xl flex items-start gap-3 shadow-sm">
+          <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" />
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <p className="text-sm font-bold">Mode Simulasi Aktif</p>
-              <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-200 text-blue-800 font-bold uppercase tracking-wider">Data Simulasi</span>
+              <p className="text-sm font-bold">Data Organik Tidak Tersedia</p>
+              <span className="text-[9px] px-1.5 py-0.5 rounded bg-red-200 text-red-800 font-bold uppercase tracking-wider">Error Konfigurasi</span>
             </div>
-            <p className="text-xs text-blue-700 leading-relaxed">{organicData.error}</p>
+            <p className="text-xs text-red-700 leading-relaxed">{organicData.error.replace(/Data yang ditampilkan adalah simulasi\./gi, '')}</p>
           </div>
         </div>
       )}

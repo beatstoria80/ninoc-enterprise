@@ -175,51 +175,33 @@ function getOrganicUnixRange(timeFilter: string): { sinceUnix: number; untilUnix
 }
 
 /**
- * Helper to generate realistic and pretty Mock Organic Data for Meta
+ * Returns empty data structure for Organic Analytics when API fails or not configured.
+ * We no longer use mock data as per user request (Must be Real Data).
  */
-function generateMockOrganicData(timeFilter: string): MetaOrganicData {
+function getEmptyOrganicData(timeFilter: string): MetaOrganicData {
   let days = 28;
   if (timeFilter === '7d') days = 7;
   if (timeFilter === '24h') days = 1;
   if (timeFilter === '90d') days = 90;
 
   const trend: { date: string; reach: number; engagement: number }[] = [];
-  let totalReach = 0;
-  let totalEngagement = 0;
-  let totalProfileViews = 0;
-
-  const baseReach = 2500;
-  const baseEngagement = 350;
-  const baseViews = 180;
 
   for (let i = days; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split('T')[0];
-
-    // Create natural variations in mock data
-    const randomFactor = 0.7 + Math.random() * 0.6; // 0.7 to 1.3
-    const dailyReach = Math.floor(baseReach * randomFactor);
-    const dailyEngagement = Math.floor(baseEngagement * randomFactor * 0.8);
-    const dailyViews = Math.floor(baseViews * randomFactor * 0.9);
-
-    totalReach += dailyReach;
-    totalEngagement += dailyEngagement;
-    totalProfileViews += dailyViews;
-
     trend.push({
-      date: dateStr,
-      reach: dailyReach,
-      engagement: dailyEngagement
+      date: d.toISOString().split('T')[0],
+      reach: 0,
+      engagement: 0
     });
   }
 
   return {
     configured: true,
-    followers: 12840,
-    reach: totalReach,
-    profileViews: totalProfileViews,
-    engagement: totalEngagement,
+    followers: 0,
+    reach: 0,
+    profileViews: 0,
+    engagement: 0,
     trend
   };
 }
@@ -345,7 +327,7 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
   const pageId = process.env.META_PAGE_ID;
 
   if (!capiToken || !pageId) {
-    const mock = generateMockOrganicData(timeFilter);
+    const mock = getEmptyOrganicData(timeFilter);
     mock.error = !pageId
       ? 'META_PAGE_ID belum diatur di environment variables. Tambahkan ID Halaman Facebook Anda untuk melihat data organik asli.'
       : 'META_CAPI_TOKEN belum diatur di environment variables. Tambahkan token dari Meta Business Settings.';
@@ -466,11 +448,11 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       }
 
       if (trend.length === 0) {
-        const mock = generateMockOrganicData(timeFilter);
+        const mock = getEmptyOrganicData(timeFilter);
         return {
           ...mock,
           followers: followers || mock.followers,
-          error: "Kredensial valid tetapi data organik Halaman kosong/baru. Menampilkan visualisasi data simulasi."
+          error: "Kredensial valid tetapi data organik Halaman kosong/baru. Menampilkan visualisasi data kosong."
         };
       }
     }
@@ -486,7 +468,7 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
   } catch (error: any) {
     // Log full technical error server-side for debugging
     console.error("Meta Organic API Fetch Error:", error.message, error.graphApiCode || '');
-    const mock = generateMockOrganicData(timeFilter);
+    const mock = getEmptyOrganicData(timeFilter);
     mock.error = sanitizeOrganicError(error.message || '');
     return mock;
   }
