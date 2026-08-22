@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
-import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Instagram, Facebook, Heart, MessageCircle, Image as ImageIcon } from 'lucide-react';
-import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData, type PlatformMetrics } from '@/actions/metaAnalytics';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Instagram, Facebook, Heart, MessageCircle, ImageIcon } from 'lucide-react';
+import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData } from '@/actions/metaAnalytics';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 export function MetaAnalyticsTab() {
   const [loading, setLoading] = useState(true);
