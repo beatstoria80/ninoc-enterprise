@@ -416,22 +416,27 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       const dailyMap: { [date: string]: { reach: number; engagement: number } } = {};
       
       viewsData.forEach((val: any) => {
-        const dateStr = val.end_time.split('T')[0];
-        const estReach = val.value * 12 + 100;
+        if (!val) return;
+        const dateStr = val.end_time ? val.end_time.split('T')[0] : new Date().toISOString().split('T')[0];
+        const valVal = Number(val.value) || 0;
+        const estReach = valVal * 12 + 100;
         dailyMap[dateStr] = { reach: estReach, engagement: 0 };
-        fbMetrics.profileViews += val.value;
+        fbMetrics.profileViews += valVal;
         fbMetrics.reach += estReach;
       });
 
       engData.forEach((val: any) => {
-        const dateStr = val.end_time.split('T')[0];
+        if (!val) return;
+        const dateStr = val.end_time ? val.end_time.split('T')[0] : new Date().toISOString().split('T')[0];
+        const valVal = Number(val.value) || 0;
         if (!dailyMap[dateStr]) dailyMap[dateStr] = { reach: 100, engagement: 0 };
-        dailyMap[dateStr].engagement = val.value;
-        fbMetrics.engagement += val.value;
+        dailyMap[dateStr].engagement = valVal;
+        fbMetrics.engagement += valVal;
       });
 
       followsData.forEach((val: any) => {
-        fbMetrics.followers += val.value;
+        if (!val) return;
+        fbMetrics.followers += Number(val.value) || 0;
       });
 
       fbMetrics.trend = Object.keys(dailyMap).sort().map(date => ({
@@ -491,18 +496,22 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       
       igMetrics.trend = [];
       reachData.forEach((val: any) => {
-        igMetrics.reach += val.value;
-        const estEng = Math.floor(val.value * 0.05);
+        if (!val) return;
+        const valVal = Number(val.value) || 0;
+        igMetrics.reach += valVal;
+        const estEng = Math.floor(valVal * 0.05);
         igMetrics.engagement += estEng;
+        const dateStr = val.end_time ? val.end_time.split('T')[0] : new Date().toISOString().split('T')[0];
         igMetrics.trend.push({
-          date: val.end_time.split('T')[0],
-          reach: val.value,
+          date: dateStr,
+          reach: valVal,
           engagement: estEng
         });
       });
       
       viewsData.forEach((val: any) => {
-        igMetrics.profileViews += val.value;
+        if (!val) return;
+        igMetrics.profileViews += Number(val.value) || 0;
       });
 
       // Instagram Demographics (Lifetime)
