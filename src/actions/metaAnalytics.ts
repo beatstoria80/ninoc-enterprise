@@ -369,21 +369,33 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       );
       followers += (igUserData.followers_count || 0);
 
-      // IG Insights (Reach, Profile Views)
-      const insightsData = await metaGraphFetch(
+      // IG Insights (Reach)
+      const reachInsightsData = await metaGraphFetch(
         `${igAccountId}/insights`,
         pageToken,
         {
-          metric: 'impressions,reach,profile_views',
+          metric: 'reach',
           period: 'day',
           since: sinceUnix,
           until: untilUnix
         }
-      );
+      ).catch(() => ({ data: [] }));
 
-      if (insightsData.data) {
-        const reachData = insightsData.data.find((d: any) => d.name === 'reach')?.values || [];
-        const viewsData = insightsData.data.find((d: any) => d.name === 'profile_views')?.values || [];
+      // IG Insights (Profile Views)
+      const viewsInsightsData = await metaGraphFetch(
+        `${igAccountId}/insights`,
+        pageToken,
+        {
+          metric: 'profile_views',
+          period: 'day',
+          metric_type: 'total_value',
+          since: sinceUnix,
+          until: untilUnix
+        }
+      ).catch(() => ({ data: [] }));
+
+      const reachData = reachInsightsData.data?.find((d: any) => d.name === 'reach')?.values || [];
+      const viewsData = viewsInsightsData.data?.find((d: any) => d.name === 'profile_views')?.values || [];
         
         reachData.forEach((val: any) => {
           reach += val.value;
@@ -398,7 +410,6 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         viewsData.forEach((val: any) => {
           profileViews += val.value;
         });
-      }
     } else {
       // Fallback to basic Page insights using Page Access Token
       const fbInsightsData = await metaGraphFetch(
