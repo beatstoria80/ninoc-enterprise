@@ -52,6 +52,13 @@ export interface PlatformMetrics {
   trend: { date: string; reach: number; engagement: number }[];
   demographics?: MetaDemographics;
   topPosts: SocialMediaItem[];
+  // Derived strategic metrics (computed server-side)
+  engagementRate: number;
+  avgReachPerPost: number;
+  growthRate: number;
+  bestDay: string;
+  contentScore: number;
+  strategicInsights: string[];
 }
 
 export interface MetaOrganicData {
@@ -189,7 +196,13 @@ function getEmptyPlatformMetrics(days: number): PlatformMetrics {
     profileViews: 0,
     engagement: 0,
     trend,
-    topPosts: []
+    topPosts: [],
+    engagementRate: 0,
+    avgReachPerPost: 0,
+    growthRate: 0,
+    bestDay: '-',
+    contentScore: 0,
+    strategicInsights: []
   };
 }
 
@@ -522,6 +535,10 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       }));
     }
 
+    // Compute derived metrics for both platforms
+    computeDerivedMetrics(igMetrics);
+    computeDerivedMetrics(fbMetrics);
+
     return {
       configured: true,
       instagram: igMetrics,
@@ -533,4 +550,92 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
     mock.error = sanitizeOrganicError(error.message || '');
     return mock;
   }
+}
+
+/**
+ * Computes derived strategic metrics from raw platform data.
+ * Mutates the metrics object in place for efficiency.
+ */
+function computeDerivedMetrics(metrics: PlatformMetrics): void {
+  const postCount = metrics.topPosts.length || 1;
+
+  // Engagement Rate = (total engagement / followers) × 100
+  metrics.engagementRate = metrics.followers > 0
+    ? parseFloat(((metrics.engagement / metrics.followers) * 100).toFixed(2))
+    : 0;
+
+  // Avg Reach per Post
+  metrics.avgReachPerPost = Math.round(metrics.reach / postCount);
+
+  // Growth Rate — estimated from daily follows trend
+  // Uses first vs last data point in trend
+  if (metrics.trend.length >= 2) {
+    const firstReach = metrics.trend[0].reach;
+    const lastReach = metrics.trend[metrics.trend.length - 1].reach;
+    metrics.growthRate = firstReach > 0
+      ? parseFloat((((lastReach - firstReach) / firstReach) * 100).toFixed(1))
+      : 0;
+  }
+
+  // Best Day to Post — day with highest engagement in trend
+  const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const dayEngagement: Record<string, number> = {};
+  metrics.trend.forEach(t => {
+    const dayOfWeek = dayNames[new Date(t.date).getDay()];
+    if (dayOfWeek) {
+      dayEngagement[dayOfWeek] = (dayEngagement[dayOfWeek] || 0) + t.engagement;
+    }
+  });
+  const sortedDays = Object.entries(dayEngagement).sort((a, b) => b[1] - a[1]);
+  metrics.bestDay = sortedDays.length > 0 ? sortedDays[0][0] : '-';
+
+  // Content Performance Score = (likes × 1 + comments × 3) / reach × 100
+  const totalLikes = metrics.topPosts.reduce((sum, p) => sum + p.likes, 0);
+  const totalComments = metrics.topPosts.reduce((sum, p) => sum + p.comments, 0);
+  metrics.contentScore = metrics.reach > 0
+    ? parseFloat((((totalLikes + totalComments * 3) / metrics.reach) * 100).toFixed(2))
+    : 0;
+
+  // Strategic Insights — conditional recommendations
+  const insights: string[] = [];
+
+  if (metrics.engagementRate < 1 && metrics.followers > 0) {
+    insights.push('⚠️ Engagement rate di bawah rata-rata industri (< 1%). Coba gunakan CTA di caption dan posting lebih banyak Reels/Video pendek.');
+  } else if (metrics.engagementRate >= 3) {
+    insights.push('🔥 Engagement rate sangat baik (≥ 3%)! Audiens Anda sangat aktif. Pertahankan jenis konten ini.');
+  }
+
+  // Check for declining reach (3+ consecutive days)
+  if (metrics.trend.length >= 3) {
+    const last3 = metrics.trend.slice(-3);
+    if (last3[0].reach > last3[1].reach && last3[1].reach > last3[2].reach) {
+      insights.push('📉 Reach menurun 3 hari berturut-turut. Pertimbangkan konten carousel, kolaborasi, atau Reels untuk meningkatkan jangkauan.');
+    }
+  }
+
+  // Profile views high but followers low
+  if (metrics.profileViews > metrics.followers * 0.5 && metrics.followers < 1000) {
+    insights.push('👀 Banyak yang mengunjungi profil tapi belum follow. Optimalkan bio, highlight stories, dan pinned post untuk meningkatkan konversi.');
+  }
+
+  // Best performing content
+  if (metrics.topPosts.length > 0) {
+    const bestPost = [...metrics.topPosts].sort((a, b) => (b.likes + b.comments * 3) - (a.likes + a.comments * 3))[0];
+    if (bestPost && (bestPost.likes > 0 || bestPost.comments > 0)) {
+      const cleanCaption = bestPost.caption.replace(/\.\.\.$/, '').trim();
+      insights.push(`🏆 Konten "${cleanCaption || 'tanpa caption'}" mendapat performa terbaik. Buat lebih banyak konten serupa.`);
+    }
+  }
+
+  if (metrics.growthRate > 5) {
+    insights.push('🚀 Pertumbuhan audiens sangat bagus (> 5%)! Strategi konten saat ini efektif.');
+  } else if (metrics.growthRate < -5) {
+    insights.push('📉 Pertumbuhan negatif terdeteksi. Evaluasi ulang frekuensi dan jenis konten yang diposting.');
+  }
+
+  if (metrics.bestDay !== '-') {
+    insights.push(`📅 Hari terbaik untuk posting: ${metrics.bestDay}. Prioritaskan jadwal konten di hari ini.`);
+  }
+
+  metrics.strategicInsights = insights;
 }

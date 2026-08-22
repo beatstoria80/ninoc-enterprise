@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon, CheckCircle2, XCircle, Copy, Link, Database, Zap, Settings } from 'lucide-react';
+import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon, CheckCircle2, XCircle, Copy, Link, Database, Zap, Settings, BarChart3, CalendarDays, Lightbulb, Sparkles } from 'lucide-react';
 import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData } from '@/actions/metaAnalytics';
 import { getMetaTrackingStatus, type MetaTrackingStatus } from '@/actions/metaTracking';
 import { cn } from '@/lib/utils';
@@ -336,6 +336,37 @@ export function MetaAnalyticsTab() {
                   </div>
                 </div>
 
+                {/* DERIVED STRATEGIC KPIs - Row 2 */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/60 rounded-xl p-4 shadow-sm">
+                    <p className="text-[10px] font-bold text-amber-700/70 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Sparkles size={12} className="text-amber-500" /> Engagement Rate
+                    </p>
+                    <p className="text-2xl font-mono font-extrabold text-amber-900">{currentPlatformMetrics.engagementRate}%</p>
+                    <p className="text-[9px] text-amber-700/50 mt-1">{currentPlatformMetrics.engagementRate >= 3 ? 'Sangat Bagus' : currentPlatformMetrics.engagementRate >= 1 ? 'Normal' : 'Di Bawah Rata-rata'}</p>
+                  </div>
+                  <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm">
+                    <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <BarChart3 size={12} className={organicTab === 'instagram' ? 'text-pink-500' : 'text-blue-500'} /> Avg. Reach/Post
+                    </p>
+                    <p className="text-2xl font-mono font-extrabold text-ink">{currentPlatformMetrics.avgReachPerPost.toLocaleString()}</p>
+                  </div>
+                  <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm">
+                    <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <TrendingUp size={12} className={currentPlatformMetrics.growthRate >= 0 ? 'text-emerald-500' : 'text-red-500'} /> Growth Rate
+                    </p>
+                    <p className={cn("text-2xl font-mono font-extrabold", currentPlatformMetrics.growthRate >= 0 ? 'text-emerald-600' : 'text-red-600')}>
+                      {currentPlatformMetrics.growthRate >= 0 ? '+' : ''}{currentPlatformMetrics.growthRate}%
+                    </p>
+                  </div>
+                  <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm">
+                    <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <CalendarDays size={12} className="text-violet-500" /> Hari Terbaik Posting
+                    </p>
+                    <p className="text-2xl font-extrabold text-ink">{currentPlatformMetrics.bestDay}</p>
+                  </div>
+                </div>
+
                 {/* MAIN TREND CHART */}
                 <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm">
                   <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4">
@@ -409,6 +440,24 @@ export function MetaAnalyticsTab() {
                   )}
                 </div>
 
+                {/* STRATEGIC INSIGHTS PANEL */}
+                {currentPlatformMetrics.strategicInsights && currentPlatformMetrics.strategicInsights.length > 0 && (
+                  <div className="bg-gradient-to-br from-violet-50/80 to-indigo-50/50 border border-violet-200/60 rounded-xl p-5 shadow-sm">
+                    <h3 className="text-sm font-bold text-violet-900 flex items-center gap-2 mb-4">
+                      <Lightbulb size={16} className="text-violet-600" />
+                      Strategic Insights & Rekomendasi
+                    </h3>
+                    <div className="space-y-3">
+                      {currentPlatformMetrics.strategicInsights.map((insight, i) => (
+                        <div key={i} className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-3.5 rounded-lg border border-violet-100/80 shadow-sm">
+                          <span className="text-sm shrink-0 mt-0.5">{insight.substring(0, 2)}</span>
+                          <p className="text-xs text-violet-900/80 leading-relaxed">{insight.substring(2).trim()}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
               </div>
 
               {/* RIGHT COLUMN: Demographics */}
@@ -460,6 +509,38 @@ export function MetaAnalyticsTab() {
                     </div>
                   )}
                 </div>
+
+                {/* BEST DAY & CONTENT SCORE PANEL */}
+                <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm">
+                  <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4">
+                    <Sparkles size={16} className="text-amber-500" />
+                    Skor Performa Konten
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="text-center py-4 bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg border border-amber-100">
+                      <p className="text-4xl font-mono font-extrabold text-amber-700">{currentPlatformMetrics.contentScore}</p>
+                      <p className="text-[10px] text-amber-600/70 font-bold uppercase tracking-wider mt-1">Content Score</p>
+                      <p className="text-[9px] text-amber-600/50 mt-0.5">(likes + komentar×3) / reach × 100</p>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-ink/[0.02] rounded-lg border border-ink/5">
+                      <div>
+                        <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Hari Terbaik</p>
+                        <p className="text-sm font-extrabold text-ink mt-0.5">{currentPlatformMetrics.bestDay}</p>
+                      </div>
+                      <CalendarDays size={20} className="text-violet-400" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-ink/[0.02] rounded-lg border border-ink/5">
+                      <div>
+                        <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Engagement Rate</p>
+                        <p className={cn("text-sm font-extrabold mt-0.5", currentPlatformMetrics.engagementRate >= 3 ? 'text-emerald-600' : currentPlatformMetrics.engagementRate >= 1 ? 'text-amber-600' : 'text-red-600')}>
+                          {currentPlatformMetrics.engagementRate}%
+                        </p>
+                      </div>
+                      <Activity size={20} className="text-amber-400" />
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
             </div>
