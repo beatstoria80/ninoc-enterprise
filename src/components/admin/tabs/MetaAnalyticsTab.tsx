@@ -27,7 +27,7 @@ export function MetaAnalyticsTab() {
     }
   };
 
-  const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'organic') => {
+  const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'organic' | 'tracking') => {
     const filter = filterOverride || timeFilter;
     const mode = modeOverride || viewMode;
     try {
