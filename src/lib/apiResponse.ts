@@ -127,16 +127,32 @@ export function withAdminAuth(
       return await handler(req, ...args);
     }
 
-    // 2. Check Whitelist Database for other admins
+    // 2. Dual-Validation: Check newer admin_users table (by user_id)
     const { data: adminData } = await supabaseServer
       .from('admin_users')
       .select('id')
       .eq('user_id', user.id)
       .maybeSingle();
 
-    if (!adminData) {
-      return apiForbidden('Forbidden. Admin privileges required.');
+    if (adminData) {
+      return await handler(req, ...args);
     }
+
+    // 3. Fallback Validation: Check older admin_roles table (by email) 
+    // This bridges the split-brain auth issue between UI and API
+    if (user.email) {
+      const { data: roleData } = await supabaseServer
+        .from('admin_roles')
+        .select('role')
+        .eq('email', user.email)
+        .maybeSingle();
+
+      if (roleData) {
+        return await handler(req, ...args);
+      }
+    }
+
+    return apiForbidden('Forbidden. Admin privileges required.');
 
     return await handler(req, ...args);
   });
