@@ -2,16 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon } from 'lucide-react';
+import { Activity, Users, MousePointer, AlertTriangle, AlertCircle, RefreshCw, Eye, TrendingUp, DollarSign, Target, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon, CheckCircle2, XCircle, Copy, Link, Database, Zap, Settings } from 'lucide-react';
 import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData } from '@/actions/metaAnalytics';
+import { getMetaTrackingStatus, type MetaTrackingStatus } from '@/actions/metaTracking';
 import { cn } from '@/lib/utils';
 
 export function MetaAnalyticsTab() {
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'ads' | 'organic'>('ads');
+  const [viewMode, setViewMode] = useState<'ads' | 'organic' | 'tracking'>('ads');
   const [organicTab, setOrganicTab] = useState<'instagram' | 'facebook'>('instagram');
   const [data, setData] = useState<MetaAnalyticsData | null>(null);
   const [organicData, setOrganicData] = useState<MetaOrganicData | null>(null);
+  const [trackingData, setTrackingData] = useState<MetaTrackingStatus | null>(null);
   const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
 
   const getTimeLabel = () => {
@@ -33,9 +35,12 @@ export function MetaAnalyticsTab() {
       if (mode === 'ads') {
         const res = await getMetaAnalyticsData(filter);
         setData(res);
-      } else {
+      } else if (mode === 'organic') {
         const orgRes = await getMetaOrganicData(filter);
         setOrganicData(orgRes);
+      } else if (mode === 'tracking') {
+        const trkRes = await getMetaTrackingStatus();
+        setTrackingData(trkRes);
       }
     } catch (error) {
       console.error('Error fetching Meta analytics:', error);
@@ -104,18 +109,24 @@ export function MetaAnalyticsTab() {
             Pantau performa kampanye Ads Berbayar dan pertumbuhan Organik (Facebook & Instagram).
           </p>
           
-          <div className="flex items-center gap-2 mt-4 bg-ink/[0.03] p-1 rounded-lg w-fit border border-ink/10">
+          <div className="flex items-center gap-2 mt-4 bg-ink/[0.03] p-1 rounded-lg w-fit border border-ink/10 overflow-x-auto">
             <button 
               onClick={() => setViewMode('ads')}
-              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5", viewMode === 'ads' ? "bg-white shadow-sm text-blue-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'ads' ? "bg-white shadow-sm text-blue-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
             >
               <Target size={14} /> Paid Ads
             </button>
             <button 
               onClick={() => setViewMode('organic')}
-              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5", viewMode === 'organic' ? "bg-white shadow-sm text-emerald-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'organic' ? "bg-white shadow-sm text-emerald-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
             >
               <Users size={14} /> Organic Social
+            </button>
+            <button 
+              onClick={() => setViewMode('tracking')}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'tracking' ? "bg-white shadow-sm text-purple-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+            >
+              <Settings size={14} /> Tracking & Integrations
             </button>
           </div>
         </div>
@@ -453,6 +464,106 @@ export function MetaAnalyticsTab() {
 
             </div>
           )}
+        </div>
+      )}
+
+      {/* ==================================================== */}
+      {/* SECTION: TRACKING & INTEGRATIONS                     */}
+      {/* ==================================================== */}
+      {viewMode === 'tracking' && trackingData && (
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {/* META PIXEL & CAPI STATUS */}
+            <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm space-y-6">
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4 pb-4 border-b border-ink/10">
+                <Database size={16} className="text-purple-600" />
+                Status Koneksi Tracking
+              </h3>
+
+              <div className="space-y-4">
+                <div className="flex items-start justify-between p-4 rounded-lg bg-ink/[0.02] border border-ink/5">
+                  <div>
+                    <p className="text-xs font-bold text-ink flex items-center gap-1.5 mb-1">
+                      Meta Pixel <span className="text-[9px] bg-ink/10 px-1.5 py-0.5 rounded font-mono">Client-Side</span>
+                    </p>
+                    <p className="text-[11px] text-ink/60">ID: <code className="font-mono bg-white px-1 py-0.5 rounded border border-ink/10">{trackingData.pixelId || 'Tidak Diatur'}</code></p>
+                  </div>
+                  {trackingData.pixelId ? <CheckCircle2 size={20} className="text-emerald-500" /> : <XCircle size={20} className="text-red-500" />}
+                </div>
+
+                <div className="flex items-start justify-between p-4 rounded-lg bg-ink/[0.02] border border-ink/5">
+                  <div>
+                    <p className="text-xs font-bold text-ink flex items-center gap-1.5 mb-1">
+                      Conversions API (CAPI) <span className="text-[9px] bg-ink/10 px-1.5 py-0.5 rounded font-mono">Server-Side</span>
+                    </p>
+                    <p className="text-[11px] text-ink/60">{trackingData.capiTokenExists ? 'Token Terkonfigurasi' : 'Token Tidak Ditemukan'}</p>
+                  </div>
+                  {trackingData.capiTokenExists ? <CheckCircle2 size={20} className="text-emerald-500" /> : <XCircle size={20} className="text-red-500" />}
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-ink/10">
+                <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-3">Supported Standard Events</p>
+                <div className="flex flex-wrap gap-2">
+                  {trackingData.supportedEvents.map(evt => (
+                    <div key={evt.name} className="flex items-center gap-1.5 bg-white border border-ink/10 px-2.5 py-1.5 rounded-md text-[10px] font-bold text-ink/80 shadow-sm">
+                      <Zap size={10} className="text-amber-500" />
+                      {evt.name}
+                      {evt.serverSide && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-emerald-500" title="Server-Side Active" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* PRODUCT CATALOG FEED */}
+            <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm flex flex-col">
+              <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4 pb-4 border-b border-ink/10">
+                <Link size={16} className="text-blue-600" />
+                Meta Commerce Catalog Feed
+              </h3>
+              
+              <div className="flex-1 space-y-5">
+                <p className="text-xs text-ink/70 leading-relaxed">
+                  Gunakan URL Feed XML berikut di <strong>Meta Commerce Manager</strong> (Data Sources) untuk melakukan sinkronisasi otomatis produk Anda ke Facebook & Instagram Shop.
+                </p>
+
+                <div className="bg-blue-50/50 border border-blue-100 rounded-lg p-4 space-y-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <p className="text-[10px] font-bold text-blue-800 uppercase tracking-wider">Feed URL (Real-time XML)</p>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(trackingData.catalog.feedUrl);
+                        alert('URL disalin ke clipboard!');
+                      }}
+                      className="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-[10px] font-bold bg-white px-2 py-1 rounded shadow-sm border border-blue-200 transition-transform active:scale-95"
+                    >
+                      <Copy size={12} /> Salin URL
+                    </button>
+                  </div>
+                  <code className="block w-full text-[11px] bg-white p-2.5 rounded border border-blue-100 text-blue-900 break-all select-all">
+                    {trackingData.catalog.feedUrl}
+                  </code>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg bg-ink/[0.02] border border-ink/5">
+                    <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1">Produk Tersinkronisasi</p>
+                    <p className="text-xl font-mono font-bold text-ink">{trackingData.catalog.totalProductsSynced.toLocaleString()}</p>
+                  </div>
+                  <div className="p-4 rounded-lg bg-ink/[0.02] border border-ink/5">
+                    <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1">Status Generator</p>
+                    <p className="text-sm font-bold text-emerald-600 flex items-center gap-1.5 mt-1">
+                      <CheckCircle2 size={14} /> Aktif & Valid
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
         </div>
       )}
     </div>
