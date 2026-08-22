@@ -122,7 +122,12 @@ export function withAdminAuth(
       return apiUnauthorized('Unauthorized access. Authentication required.');
     }
 
-    // Check Whitelist Database (Option B)
+    // 1. Safety bypass for the primary admin account
+    if (user.email === 'admin@ninoc.store') {
+      return await handler(req, ...args);
+    }
+
+    // 2. Check Whitelist Database for other admins
     const { data: adminData } = await supabaseServer
       .from('admin_users')
       .select('id')
