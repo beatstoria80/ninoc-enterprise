@@ -74,6 +74,7 @@ export async function GET() {
       <g:title>${escapeXml(product.name || 'Untitled')}</g:title>
       <g:description>${escapeXml(product.description || product.name || '')}</g:description>
       <g:link>${escapeXml(link)}</g:link>
+      <g:mobile_link>${escapeXml(link)}</g:mobile_link>
       <g:image_link>${escapeXml(imageLink)}</g:image_link>
       <g:brand>NINOC</g:brand>
       <g:condition>new</g:condition>
