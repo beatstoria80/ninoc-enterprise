@@ -11,19 +11,6 @@ export default async function ProfilePage() {
     redirect('/login');
   }
 
-  // Fetch structured profile from DB
-  const { data: profile } = await supabase
-    .from('customer_profiles')
-    .select('*')
-    .eq('user_id', authUser.id)
-    .single();
-
-  if (!profile || !profile.is_verified) {
-    redirect('/onboarding');
-  }
-
-  const deterministicCustomerNumber = 'NNC-' + authUser.id.split('-')[0].toUpperCase();
-
   // Check if user is an admin
   const { data: roleData } = await supabase
     .from('admin_roles')
@@ -31,12 +18,27 @@ export default async function ProfilePage() {
     .eq('email', authUser.email || '')
     .single();
 
+  const isAdmin = roleData?.role || authUser.email?.toLowerCase() === 'admin@ninoc.store';
+
+  // Fetch structured profile from DB
+  const { data: profile } = await supabase
+    .from('customer_profiles')
+    .select('*')
+    .eq('user_id', authUser.id)
+    .single();
+
+  if (!isAdmin && (!profile || !profile.is_verified)) {
+    redirect('/onboarding');
+  }
+
+  const deterministicCustomerNumber = 'NNC-' + authUser.id.split('-')[0].toUpperCase();
+
   const user: UserProfile = {
     id: authUser.id,
     email: authUser.email || '',
-    full_name: profile.full_name || authUser.user_metadata?.full_name || 'NINOC Member',
-    avatar_url: profile.avatar_url || authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '',
-    created_at: profile.created_at || authUser.created_at,
+    full_name: profile?.full_name || authUser.user_metadata?.full_name || 'NINOC Member',
+    avatar_url: profile?.avatar_url || authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '',
+    created_at: profile?.created_at || authUser.created_at,
     customer_number: deterministicCustomerNumber,
     role: roleData?.role || null,
   };
