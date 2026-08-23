@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { useRef } from 'react';
 
 import dynamic from 'next/dynamic';
+import { trackPurchase } from '@/lib/metaPixel';
 
 const LocationPicker = dynamic(() => import('./_components/LocationPicker').then(mod => mod.LocationPicker), { 
   ssr: false, 
@@ -836,6 +837,7 @@ export default function CheckoutPage() {
             console.log('Payment successful:', result);
             setIsRedirecting(true);
             setPaymentToken(null); // Close the Midtrans overlay
+            trackPurchase(createdOrderId || result.order_id || 'unknown', finalTotal, items);
             clearCart();
             sessionStorage.removeItem('ninoc_checkout_form');
             const params = new URLSearchParams({ courier: shippingMethod });
@@ -888,7 +890,7 @@ export default function CheckoutPage() {
         }
       }
     }
-  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, userId]);
+  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, userId, finalTotal, items]);
 
   if (!mounted) return null;
 
