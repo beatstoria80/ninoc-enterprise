@@ -18,7 +18,7 @@ self.addEventListener('push', (event) => {
       badge: '/favicon.ico',
       vibrate: [100, 50, 100],
       data: {
-        url: data.url || '/admin'
+        url: data.url || '/'
       }
     };
     
@@ -41,12 +41,12 @@ self.addEventListener('notificationclick', (event) => {
   
   event.waitUntil(
     self.clients.matchAll({ type: 'window' }).then((clientList) => {
-      const url = event.notification.data?.url || '/admin';
+      const url = event.notification.data?.url || '/';
       
       // If window is already open, focus it
       for (const client of clientList) {
-        if (client.url.includes('/admin') && 'focus' in client) {
-          if (url !== '/admin') {
+        if (client.url.includes('/') && 'focus' in client) {
+          if (url !== '/') {
             client.navigate(url);
           }
           return client.focus();
