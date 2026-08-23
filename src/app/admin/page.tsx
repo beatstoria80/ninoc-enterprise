@@ -13,10 +13,10 @@ export default async function AdminPage() {
   }
 
   // 1. Safety bypass: If the email is the primary admin email, grant access immediately
-  if (user.email === 'admin@ninoc.store') {
+  if (user.email?.toLowerCase() === 'admin@ninoc.store') {
     const initialUser = {
       id: user.id,
-      email: user.email,
+      email: user.email || '',
       role: 'super_admin'
     };
     return (
@@ -30,7 +30,7 @@ export default async function AdminPage() {
   const { data: roleData, error: roleError } = await supabase
     .from('admin_roles')
     .select('role')
-    .eq('email', user.email)
+    .eq('email', user.email || '')
     .single();
 
   if (roleError || !roleData) {
@@ -41,7 +41,7 @@ export default async function AdminPage() {
 
   const initialUser = {
     id: user.id,
-    email: user.email,
+    email: user.email || '',
     role: roleData.role
   };
 

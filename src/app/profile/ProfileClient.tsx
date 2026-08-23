@@ -203,7 +203,7 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
           </Link>
 
           {/* Admin Dashboard CTA */}
-          {(user.role === 'super_admin' || user.role === 'admin' || user.email === 'admin@ninoc.store') && (
+          {(user.role === 'super_admin' || user.role === 'admin' || user.email?.toLowerCase() === 'admin@ninoc.store') && (
             <Link
               href="/admin"
               className="group flex items-center justify-between p-4 border border-ink/10 bg-ink rounded-[4px] hover:bg-ink/90 transition-all shadow-md"

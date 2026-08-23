@@ -28,7 +28,7 @@ export default async function ProfilePage() {
   const { data: roleData } = await supabase
     .from('admin_roles')
     .select('role')
-    .eq('email', authUser.email)
+    .eq('email', authUser.email || '')
     .single();
 
   const user: UserProfile = {
