@@ -483,8 +483,10 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       
       let reach = 0;
       let views = 0;
+      let hasRealInsights = false;
 
       if (p.insights && p.insights.data) {
+        hasRealInsights = true;
         const reachObj = p.insights.data.find((i: any) => i.name === 'post_impressions_unique');
         const viewsObj = p.insights.data.find((i: any) => i.name === 'post_impressions');
         if (reachObj && reachObj.values && reachObj.values[0]) {
@@ -495,10 +497,8 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         }
       }
 
-      if (reach === 0) {
+      if (!hasRealInsights) {
         reach = (likes * 15) + (comments * 30) + (shares * 50) + 120;
-      }
-      if (views === 0) {
         views = Math.floor(reach * 1.25 + (likes % 10) * 12);
       }
       
@@ -605,8 +605,10 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         let saved = 0;
         let reach = 0;
         let views = 0;
+        let hasRealInsights = false;
 
         if (m.insights && m.insights.data) {
+          hasRealInsights = true;
           const reachObj = m.insights.data.find((i: any) => i.name === 'reach');
           const viewsObj = m.insights.data.find((i: any) => i.name === 'views');
           const savedObj = m.insights.data.find((i: any) => i.name === 'saved');
@@ -624,13 +626,9 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         
         const shares = Math.floor(likes * 0.04);
         
-        if (saved === 0) {
+        if (!hasRealInsights) {
           saved = Math.floor(likes * 0.08);
-        }
-        if (reach === 0) {
           reach = (likes * 12) + (comments * 25) + (saved * 40) + 200;
-        }
-        if (views === 0) {
           views = Math.floor(reach * 1.15 + (likes % 10) * 8);
         }
         
