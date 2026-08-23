@@ -36,6 +36,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const currentCategoryNodOpacity = useRef<number>(0.0);
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
+  const [mobileVideoReady, setMobileVideoReady] = useState<boolean>(false);
 
   // Detect mobile viewport (< 768px) to lock default idle video chapter 1
   useEffect(() => {
@@ -289,12 +290,15 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
+            onPlaying={() => {
+              setMobileVideoReady(true);
+            }}
             onPause={(e) => {
               e.currentTarget.muted = true;
               e.currentTarget.play().catch(() => {});
             }}
-            className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none"
-            style={{ opacity: 1 }}
+            className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none transition-opacity duration-500 ease-out"
+            style={{ opacity: mobileVideoReady ? 1 : 0 }}
           >
             <source src={config.videoPaths.idleCenter} type="video/mp4" />
           </video>
