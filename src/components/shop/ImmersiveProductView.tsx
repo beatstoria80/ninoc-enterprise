@@ -386,17 +386,17 @@ export default function ImmersiveProductView({
              </div>
 
              {/* Mobile Action Bar: Ulasan & Bagikan — BELOW photo, horizontal, NOT overlay */}
-             <div className="lg:hidden relative z-[100] flex items-center justify-center gap-6 py-2.5 bg-white border-t border-ink/5 shrink-0">
+             <div className="lg:hidden relative z-[100] flex items-center justify-center gap-4 py-1.5 bg-white border-t border-ink/5 shrink-0">
                <button 
                  onClick={() => {
                    if (onOpenReviews) onOpenReviews();
                  }}
-                 className="flex items-center gap-2 text-ink/70 active:text-rose transition-colors px-3 py-1.5"
+                 className="flex items-center gap-1.5 text-ink/60 active:text-rose transition-colors px-2 py-1"
                >
-                 <Star strokeWidth={1.5} size={18} />
-                 <span className="text-[11px] font-bold uppercase tracking-wider">Ulasan</span>
+                 <Star strokeWidth={1.5} size={14} />
+                 <span className="text-[9px] font-bold uppercase tracking-wider">Ulasan</span>
                </button>
-               <div className="w-px h-5 bg-ink/10" />
+               <div className="w-px h-3.5 bg-ink/10" />
                <button 
                  onClick={async () => {
                    if (navigator.share) {
@@ -414,10 +414,10 @@ export default function ImmersiveProductView({
                      alert('Link disalin ke clipboard!');
                    }
                  }}
-                 className="flex items-center gap-2 text-ink/70 active:text-rose transition-colors px-3 py-1.5"
+                 className="flex items-center gap-1.5 text-ink/60 active:text-rose transition-colors px-2 py-1"
                >
-                 <Share2 strokeWidth={1.5} size={18} />
-                 <span className="text-[11px] font-bold uppercase tracking-wider">Bagikan</span>
+                 <Share2 strokeWidth={1.5} size={14} />
+                 <span className="text-[9px] font-bold uppercase tracking-wider">Bagikan</span>
                </button>
              </div>
                
