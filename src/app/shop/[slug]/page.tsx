@@ -53,6 +53,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       images: product.image_url ? [product.image_url] : [],
     },
+    appLinks: {
+      web: {
+        url: `${BASE_URL}/shop/${slug}`,
+        should_fallback: true,
+      },
+    },
     alternates: {
       canonical: `${BASE_URL}/shop/${slug}`,
     },

@@ -97,6 +97,12 @@ export async function generateMetadata(): Promise<Metadata> {
         'max-snippet': -1,
       },
     },
+    appLinks: {
+      web: {
+        url: BASE_URL,
+        should_fallback: true,
+      },
+    },
     alternates: {
       languages: {
         'id': BASE_URL,
