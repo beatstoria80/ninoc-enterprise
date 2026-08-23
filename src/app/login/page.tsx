@@ -77,9 +77,9 @@ export default function LoginPage() {
       if (isSupplierLogin || loginEmail === 'supplier_test@ninoc.store' || loginEmail === 'it.tairflask@ninoc.store' || loginEmail === 'audit_it@ninoc.store' || nextUrl === '/supplier') {
         window.location.href = '/supplier';
       } else if (nextUrl) {
-        router.push(nextUrl);
+        window.location.href = nextUrl;
       } else {
-        router.push('/profile'); 
+        window.location.href = '/profile'; 
       }
     } catch (err) {
       setError((err as Error)?.message || 'Autentikasi gagal.');
