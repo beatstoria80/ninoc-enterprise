@@ -128,7 +128,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
     <div className="space-y-2">
 
       {/* Row 1: Core KPIs + Orders */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
 
         {/* Total Orders */}
         <MetricCard
@@ -184,7 +184,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
       </div>
 
       {/* Row 2: 7-Day Trend + Top Products */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
 
         {/* 7-Day Order Trend */}
         <div className="bg-white rounded-sm border border-ink/10 px-3.5 py-1.5">
