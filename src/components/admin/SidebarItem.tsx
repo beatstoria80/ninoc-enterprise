@@ -47,7 +47,7 @@ export const SidebarItem = ({
         <div className="flex items-center gap-2">
           {badge !== undefined && badge > 0 && (
             <span className={cn(
-              "text-[10px] md:text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm animate-pulse flex items-center justify-center min-w-[20px]",
+              "text-[10px] md:text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm flex items-center justify-center min-w-[20px]",
               active ? "bg-white text-rose" : "bg-rose text-white"
             )}>
               {badge}
@@ -72,7 +72,7 @@ export const SidebarItem = ({
               <span>{sub.label}</span>
               {sub.badge !== undefined && sub.badge > 0 && (
                 <span className={cn(
-                  "text-[10px] md:text-[9px] px-1.5 py-0.5 rounded-full ml-2 font-bold shadow-sm animate-pulse flex items-center justify-center min-w-[20px]",
+                  "text-[10px] md:text-[9px] px-1.5 py-0.5 rounded-full ml-2 font-bold shadow-sm flex items-center justify-center min-w-[20px]",
                   sub.active ? "bg-white text-rose" : "bg-rose text-white"
                 )}>
                   {sub.badge}
