@@ -217,7 +217,31 @@ export function OrganicAnalyticsView({ data, timeFilter }: OrganicAnalyticsViewP
                       </div>
                       <div className="p-2.5 bg-white">
                         <p className="text-[10px] text-ink/50 mb-1">{post.date}</p>
-                        <p className="text-xs text-ink/80 line-clamp-2 leading-tight">{post.caption || 'Tanpa deskripsi'}</p>
+                        <p className="text-xs text-ink/80 line-clamp-2 leading-tight mb-3">{post.caption || 'Tanpa deskripsi'}</p>
+                        
+                        {/* Always visible metrics footer (highly readable on mobile) */}
+                        <div className="flex items-center gap-3 pt-2.5 border-t border-ink/5 flex-wrap">
+                          <span className="flex items-center gap-1.5 text-[10px] font-bold font-mono text-ink/70" title="Likes">
+                            <Heart size={11} className="text-pink-500 fill-pink-500" />
+                            {post.likes?.toLocaleString()}
+                          </span>
+                          <span className="flex items-center gap-1.5 text-[10px] font-bold font-mono text-ink/70" title="Komentar">
+                            <MessageCircle size={11} className="text-blue-500 fill-blue-500" />
+                            {post.comments?.toLocaleString()}
+                          </span>
+                          {post.views !== undefined && (
+                            <span className="flex items-center gap-1.5 text-[10px] font-bold font-mono text-ink/70 ml-auto" title="Views">
+                              <Eye size={11} className="text-purple-600" />
+                              {post.views?.toLocaleString()}
+                            </span>
+                          )}
+                          {post.reach !== undefined && post.views === undefined && (
+                            <span className="flex items-center gap-1.5 text-[10px] font-bold font-mono text-ink/70 ml-auto" title="Reach">
+                              <Globe size={11} className="text-emerald-600" />
+                              {post.reach?.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </a>
                   ))}
