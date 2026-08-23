@@ -1087,7 +1087,67 @@ export function OrdersTab({
           </div>
         ) : (
           <div className="flex-1 overflow-auto minimal-scroll relative bg-white">
-            <table className="w-full text-left border-collapse">
+            
+            {/* MOBILE CARD VIEW */}
+            <div className="lg:hidden flex flex-col gap-2 p-2 bg-gray-50/50">
+              {filteredOrders.map((order) => (
+                <div 
+                  key={order.id} 
+                  onClick={() => openOrderDetail(order)}
+                  className="bg-white border border-ink/10 rounded-xl p-3 flex flex-col gap-2 shadow-sm active:scale-[0.98] transition-transform"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      <span className="font-mono text-xs font-bold text-ink">#{order.id.slice(0, 8).toUpperCase()}</span>
+                      <span className="text-[10px] text-ink/60">{format(new Date(order.created_at), 'dd MMM yyyy, HH:mm')}</span>
+                    </div>
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-[9px] uppercase tracking-wider font-bold",
+                      order.status === 'pending' ? 'bg-amber-100 text-amber-700' :
+                      order.status === 'paid' ? 'bg-blue-100 text-blue-700' :
+                      order.status === 'shipped' ? 'bg-purple-100 text-purple-700' :
+                      order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                      'bg-red-100 text-red-700'
+                    )}>
+                      {order.status}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mt-1">
+                    <div className="w-8 h-8 bg-ink/5 rounded-full flex items-center justify-center shrink-0">
+                      <User size={14} className="text-ink/60" />
+                    </div>
+                    <div className="flex flex-col overflow-hidden">
+                      <span className="text-[11px] font-bold text-ink truncate">{order.shipping_address?.name || order.user_id?.slice(0,8) || 'Guest'}</span>
+                      <span className="text-[10px] text-ink/60 truncate flex items-center gap-1"><MapPin size={10} /> {order.shipping_address?.city || 'Unknown City'}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-end border-t border-ink/5 pt-2 mt-1">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] uppercase tracking-widest text-ink/60">Total</span>
+                      <span className="text-[11px] font-bold font-mono text-ink">Rp {order.total_price.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[9px] uppercase tracking-widest text-ink/60">Courier</span>
+                      <div className="flex items-center gap-1">
+                        {order.courier ? (
+                           <>
+                             <CourierLogo courier={order.courier} className="h-2.5" />
+                             <span className="text-[10px] font-bold text-ink">{order.courier.toUpperCase()}</span>
+                           </>
+                        ) : (
+                           <span className="text-[10px] font-bold text-ink/50">—</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* DESKTOP TABLE VIEW */}
+            <table className="hidden lg:table w-full text-left border-collapse">
               <thead className="sticky top-0 z-10 bg-white">
                 <tr className="bg-ink/[0.03] border-b border-ink/10">
                   <th className="px-1.5 py-1 text-[10px] uppercase tracking-widest text-ink/80 font-medium whitespace-nowrap">Order ID</th>

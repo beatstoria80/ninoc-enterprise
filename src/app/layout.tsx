@@ -115,6 +115,7 @@ export async function generateMetadata(): Promise<Metadata> {
         'facebook-domain-verification': 'mdawcs7lo6md33d800mlxjv6t62aq0',
       },
     },
+    manifest: '/manifest.json',
   };
 }
 

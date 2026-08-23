@@ -269,6 +269,18 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       fetchData();
       fetchFinancialData();
     });
+
+    // PWA Service Worker Registration & Notification Permission
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator && 'Notification' in window) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => {
+          console.log('Service Worker registered', reg);
+          if (Notification.permission === 'default') {
+            Notification.requestPermission();
+          }
+        })
+        .catch(err => console.error('Service Worker registration failed:', err));
+    }
   }, [fetchData, fetchFinancialData]);
 
 

@@ -1010,9 +1010,12 @@ export function ReturTab() {
   });
 
   return (
-    <div className="flex h-full bg-gray-50 border-t border-gray-200">
-      {/* Left Panel — List (Wider for better readability) */}
-      <div className="w-[360px] flex flex-col shrink-0 border-r border-gray-200 bg-white">
+    <div className="flex h-full bg-gray-50 border-t border-gray-200 overflow-hidden">
+      {/* Left Panel — List (Responsive) */}
+      <div className={cn(
+        "flex flex-col shrink-0 border-r border-gray-200 bg-white transition-all duration-300",
+        selected ? "hidden lg:flex lg:w-[360px]" : "w-full lg:w-[360px]"
+      )}>
         <div className="p-5 space-y-4 shrink-0 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div>
@@ -1045,7 +1048,7 @@ export function ReturTab() {
                 key={s}
                 onClick={() => setStatusFilter(s)}
                 className={cn(
-                  'px-3 py-1.5 text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1',
+                  'px-3 py-1.5 text-xs lg:text-sm font-medium rounded-md transition-all whitespace-nowrap flex-1',
                   statusFilter === s
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
@@ -1082,23 +1085,23 @@ export function ReturTab() {
                       isSelected ? 'bg-blue-50/50' : ''
                     )}
                   >
-                    {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600" />}
+                    {isSelected && <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600 hidden lg:block" />}
                     
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-sm font-mono font-bold text-gray-900 truncate pr-2">{r.order_id}</span>
-                      <span className={cn('text-xs px-2 py-0.5 rounded-full font-bold uppercase shrink-0', cfg?.color)}>
+                      <span className={cn('text-[9px] px-2 py-0.5 rounded-full font-bold uppercase shrink-0', cfg?.color)}>
                         {r.status}
                       </span>
                     </div>
                     
-                    <p className="text-sm text-gray-600 font-medium mb-1 truncate">{r.reason_label}</p>
+                    <p className="text-[11px] lg:text-sm text-gray-600 font-medium mb-1 truncate">{r.reason_label}</p>
                     
-                    <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+                    <div className="flex items-center justify-between text-[10px] lg:text-xs text-gray-500 mt-2">
                       <div className="flex items-center gap-2">
                         {!r.user_id ? (
-                          <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-semibold">GUEST</span>
+                          <span className="bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-semibold text-[8px]">GUEST</span>
                         ) : (
-                          <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-semibold">USER</span>
+                          <span className="bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-semibold text-[8px]">USER</span>
                         )}
                         <span className="truncate max-w-[120px]">{r.guest_email || r.user?.email || r.order?.customer_email || (r.order?.shipping_address as any)?.email || 'N/A'}</span>
                       </div>
@@ -1113,7 +1116,10 @@ export function ReturTab() {
       </div>
 
       {/* Right Panel — Detail */}
-      <div className="flex-1 overflow-hidden">
+      <div className={cn(
+        "flex-1 overflow-hidden transition-all duration-300",
+        !selected ? "hidden lg:flex" : "flex flex-col"
+      )}>
         {selected ? (
           <ReturDetail
             key={selected.id}
@@ -1122,7 +1128,7 @@ export function ReturTab() {
             onRefresh={fetchReturs}
           />
         ) : (
-          <div className="h-full flex flex-col items-center justify-center bg-gray-50">
+          <div className="h-full flex flex-col items-center justify-center bg-gray-50 w-full hidden lg:flex">
             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 mb-6">
               <RefreshCw size={40} className="text-gray-300" strokeWidth={1.5} />
             </div>

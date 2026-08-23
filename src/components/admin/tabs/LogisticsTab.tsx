@@ -331,8 +331,8 @@ export function LogisticsTab({
         </div>
       </div>
 
-      {/* STAT CELLS — 4 compact cells, no gap, cell-block */}
-      <div className="shrink-0 grid grid-cols-4 border border-gray-200 bg-white">
+      {/* STAT CELLS — Compact cells */}
+      <div className="shrink-0 grid grid-cols-2 lg:grid-cols-4 border border-gray-200 bg-white">
         {[
           { label: 'Siap Kirim', count: pendingCount, color: 'text-amber-600', bg: 'bg-amber-50', filterKey: 'paid' },
           { label: 'In Transit', count: inTransitCount, color: 'text-blue-600', bg: 'bg-blue-50', filterKey: 'shipped' },
@@ -343,36 +343,37 @@ export function LogisticsTab({
             key={stat.filterKey}
             onClick={() => setLogisticsFilter(logisticsFilter === stat.filterKey ? 'all' : stat.filterKey)}
             className={cn(
-              "px-1.5 py-1.5 text-left transition-colors relative",
-              i < 3 && "border-r border-gray-200",
+              "px-2 py-2 text-left transition-colors relative border-b lg:border-b-0",
+              (i % 2 === 0) && "border-r border-gray-200",
+              (i < 3 && "lg:border-r lg:border-gray-200"),
               logisticsFilter === stat.filterKey ? stat.bg : "hover:bg-gray-50"
             )}
           >
             {logisticsFilter === stat.filterKey && (
               <div className="absolute top-0 left-0 right-0 h-[2px] bg-rose" />
             )}
-            <p className="text-[11px] uppercase tracking-[0.2em] text-gray-800 mb-1">{stat.label}</p>
-            <p className={cn("text-lg font-medium font-mono", stat.color)}>{stat.count}</p>
+            <p className="text-[10px] md:text-[11px] uppercase tracking-[0.2em] text-gray-800 mb-0.5">{stat.label}</p>
+            <p className={cn("text-base md:text-lg font-medium font-mono", stat.color)}>{stat.count}</p>
           </button>
         ))}
       </div>
 
       {/* MAIN CONTENT: TABLE + DETAIL PANEL */}
-      <div className="flex-1 min-h-0 flex border border-t-0 border-gray-200 bg-white">
-        {/* LEFT: MASTER TABLE */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row border border-t-0 border-gray-200 bg-white">
+        {/* LEFT: MASTER TABLE/LIST */}
         <div className={cn(
           "flex flex-col transition-all duration-300",
-          logisticsSelectedOrder ? "w-[55%]" : "w-full"
+          logisticsSelectedOrder ? "hidden lg:flex w-[55%]" : "w-full"
         )}>
           {/* Table sub-header with filter & search */}
-          <div className="flex items-center justify-between px-1.5 py-1 border-b border-gray-200 bg-gray-50/80 shrink-0">
-            <div className="flex items-center gap-1">
+          <div className="flex flex-wrap items-center justify-between px-2 py-1.5 border-b border-gray-200 bg-gray-50/80 shrink-0 gap-2">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar w-full lg:w-auto">
               {['all', 'paid', 'shipped', 'delivered'].map((f) => (
                 <button
                   key={f}
                   onClick={() => setLogisticsFilter(f)}
                   className={cn(
-                    "px-2 py-1 text-[11px] uppercase tracking-[0.15em] transition-colors",
+                    "px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] transition-colors whitespace-nowrap rounded",
                     logisticsFilter === f
                       ? "bg-ink text-white"
                       : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
@@ -382,12 +383,80 @@ export function LogisticsTab({
                 </button>
               ))}
             </div>
-            <span className="text-[11px] font-mono text-gray-800">{logisticsOrders.length} results</span>
+            <span className="text-[10px] font-mono text-gray-800 hidden lg:inline-block">{logisticsOrders.length} results</span>
           </div>
 
-          {/* Dense table */}
-          <div className="flex-1 overflow-y-auto">
-            <table className="w-full text-left border-collapse">
+          <div className="flex-1 overflow-y-auto bg-gray-50/50 lg:bg-white relative">
+            
+            {/* MOBILE CARD VIEW */}
+            <div className="lg:hidden flex flex-col gap-2 p-2">
+              {logisticsOrders.map((order) => (
+                <div 
+                  key={order.id} 
+                  onClick={() => setLogisticsSelectedOrder(order)}
+                  className="bg-white border border-gray-200 rounded-xl p-3 flex flex-col gap-2 shadow-sm active:scale-[0.98] transition-transform"
+                >
+                  <div className="flex justify-between items-start">
+                    <div className="flex flex-col">
+                      <span className="font-mono text-xs font-bold text-gray-900">#{order.id.slice(0, 8).toUpperCase()}</span>
+                      <span className="text-[9px] text-gray-500 uppercase tracking-wider">{new Date(order.created_at).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}</span>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className={cn(
+                        "text-[9px] uppercase tracking-[0.1em] px-2 py-0.5 rounded-full font-bold",
+                        order.status === 'paid' && "bg-amber-100 text-amber-700",
+                        order.status === 'shipped' && "bg-blue-100 text-blue-700",
+                        order.status === 'delivered' && "bg-emerald-100 text-emerald-700",
+                        order.status === 'cancelled' && "bg-red-100 text-red-600",
+                      )}>
+                        {order.status === 'paid' ? 'SIAP KIRIM' : order.status}
+                      </span>
+                      {order.status === 'paid' && (
+                        <span className={cn("text-[8px] font-bold px-1 py-0.5 rounded border uppercase tracking-wider", getShippingSLA(order.created_at, order.courier).badgeClass)}>
+                          {getShippingSLA(order.created_at, order.courier).label}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-2 mt-1">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] uppercase tracking-widest text-gray-500">Destination</span>
+                      <span className="text-[11px] font-bold text-gray-900 truncate max-w-[150px]">{order.shipping_address?.city || 'Unknown'}</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[9px] uppercase tracking-widest text-gray-500">Courier</span>
+                      <div className="flex items-center gap-1.5">
+                        {order.courier ? (
+                          <>
+                            <CourierLogo courier={order.courier} className="h-3" />
+                            <span className="text-[10px] font-bold text-gray-900 uppercase">{order.courier}</span>
+                          </>
+                        ) : (
+                          <span className="text-[10px] font-bold text-gray-500">—</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {order.status === 'paid' && (
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setLogisticsSelectedOrder(order); }}
+                      className="mt-2 w-full bg-rose text-white text-[10px] uppercase font-bold tracking-wider py-2 rounded-lg"
+                    >
+                      Process Dispatch
+                    </button>
+                  )}
+                </div>
+              ))}
+              {logisticsOrders.length === 0 && (
+                <div className="py-12 text-center text-xs text-gray-500 uppercase tracking-[0.3em]">
+                  No orders in this category
+                </div>
+              )}
+            </div>
+
+            {/* DESKTOP TABLE VIEW */}
+            <table className="hidden lg:table w-full text-left border-collapse">
               <thead className="sticky top-0 bg-white z-10 shadow-[0_1px_0_0_#e5e7eb]">
                 <tr>
                   <th className="px-2 py-1 text-[11px] font-medium uppercase tracking-[0.15em] text-gray-800 whitespace-nowrap w-[15%]">Order</th>
