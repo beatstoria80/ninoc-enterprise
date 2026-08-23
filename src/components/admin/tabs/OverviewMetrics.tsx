@@ -40,10 +40,10 @@ function MetricCard({
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[11px] uppercase tracking-[0.12em] text-ink/90 font-medium leading-none mb-1.5">{label}</p>
+        <p className="text-[11px] uppercase tracking-[0.12em] text-ink/90 font-medium leading-normal mb-1.5">{label}</p>
         <p className="text-lg font-semibold text-ink leading-tight tracking-tight">{value}</p>
         {sub && (
-          <p className={`text-[11px] mt-1 leading-none ${subColor || 'text-ink/90'}`}>{sub}</p>
+          <p className={`text-[11px] mt-1 leading-normal ${subColor || 'text-ink/90'}`}>{sub}</p>
         )}
       </div>
       {badge && <div className="shrink-0">{badge}</div>}
@@ -196,7 +196,7 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
             {ordersLast7Days.map((day, idx) => (
               <div key={idx} className="flex-1 flex flex-col items-center gap-[3px]">
                 <MiniBar value={day.count} max={maxDaily} active={idx === ordersLast7Days.length - 1} />
-                <span className="text-[11px] text-ink/90 leading-none">{day.date}</span>
+                <span className="text-[11px] text-ink/90 leading-normal">{day.date}</span>
               </div>
             ))}
           </div>
@@ -214,11 +214,11 @@ export function OverviewMetrics({ orders, products }: OverviewMetricsProps) {
               const pct = Math.round((product.totalRevenue / maxRev) * 100);
               return (
                 <div key={product.id} className="flex items-center gap-2">
-                  <span className="text-xs md:text-xs font-medium text-ink/25 w-3 text-right leading-none">#{idx + 1}</span>
+                  <span className="text-xs md:text-xs font-medium text-ink/25 w-3 text-right leading-normal">#{idx + 1}</span>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-[11px] font-medium text-ink line-clamp-2 leading-none">{product.name}</span>
-                      <span className="text-[11px] font-semibold text-rose shrink-0 leading-none">
+                      <span className="text-[11px] font-medium text-ink line-clamp-2 leading-tight">{product.name}</span>
+                      <span className="text-[11px] font-semibold text-rose shrink-0 leading-normal">
                         {product.totalRevenue >= 1000
                           ? `IDR ${(product.totalRevenue / 1000).toFixed(0)}K`
                           : `IDR ${product.totalRevenue.toLocaleString('id-ID')}`}

@@ -877,7 +877,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         </header>
 
         {/* Content */}
-        <section className="flex-1 overflow-hidden flex flex-col p-4 md:px-8 md:py-6">
+        <section className="flex-1 overflow-y-auto md:overflow-hidden flex flex-col p-4 md:px-8 md:py-6 custom-scrollbar">
           
           {activeTab === 'overview' && (
             <OverviewTab 
