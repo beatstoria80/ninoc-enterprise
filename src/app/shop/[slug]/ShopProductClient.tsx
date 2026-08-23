@@ -193,7 +193,8 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     if (product) {
       trackViewContent(String(product.id), product.name || 'Untitled', product.price || 0);
     }
-  }, [product]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [product?.id]);
 
   if (isLoading) return <div className="min-h-screen bg-cr flex items-center justify-center font-medium uppercase tracking-[0.5em] text-ink/10 animate-pulse">Initializing Shop Catalog...</div>;
   if (!product) return <div className="min-h-screen bg-cr flex items-center justify-center">Product Not Found.</div>;
@@ -208,7 +209,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     if (remainingStock <= 0) return;
     const success = hookHandleAddToCart();
     if (success) {
-      trackAddToCart(String(product.id), product.name || 'Untitled', product.price || 0, quantity);
+      trackAddToCart(String(product.id), product.name || 'Untitled', (product.price || 0) + currentSurcharge, quantity);
       setAddedToCart(true);
       const currentItems = useCart.getState().items;
       if (currentItems.length >= 4) {

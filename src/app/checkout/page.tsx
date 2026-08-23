@@ -837,7 +837,10 @@ export default function CheckoutPage() {
             console.log('Payment successful:', result);
             setIsRedirecting(true);
             setPaymentToken(null); // Close the Midtrans overlay
-            trackPurchase(createdOrderId || result.order_id || 'unknown', finalTotal, items);
+            // Snapshot cart items BEFORE clearCart empties the array
+            const purchasedItems = [...items].map(item => ({ id: item.id, quantity: item.quantity }));
+            const purchaseTotal = finalTotal;
+            trackPurchase(createdOrderId || result.order_id || 'unknown', purchaseTotal, purchasedItems);
             clearCart();
             sessionStorage.removeItem('ninoc_checkout_form');
             const params = new URLSearchParams({ courier: shippingMethod });
@@ -890,7 +893,8 @@ export default function CheckoutPage() {
         }
       }
     }
-  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, userId, finalTotal, items]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentToken, snapLoaded, router, createdOrderId, createdOrderNumber, shippingMethod, clearCart, userId]);
 
   if (!mounted) return null;
 
