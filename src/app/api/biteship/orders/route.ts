@@ -231,6 +231,11 @@ export async function POST(req: Request) {
       .eq('id', order_id)
       .single();
 
+    if (existingOrder?.status === 'cancelled') {
+      console.warn(`[Biteship Create Order] Blocked pickup request for cancelled order: ${order_id}`);
+      return NextResponse.json({ error: 'Gagal memproses pickup: Pesanan ini telah dibatalkan oleh admin lain.' }, { status: 400 });
+    }
+
     if (existingOrder?.tracking_id) {
       const newCount = (existingOrder.print_count || 0) + 1;
       await adminClient.from('orders').update({ print_count: newCount }).eq('id', order_id);
