@@ -198,7 +198,7 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
                 <motion.div
                   role="button"
                   tabIndex={0}
-                  className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                  className="hidden md:flex w-8 h-8 rounded-none bg-ink/5 items-center justify-center transition-colors duration-200 cursor-pointer"
                   style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
