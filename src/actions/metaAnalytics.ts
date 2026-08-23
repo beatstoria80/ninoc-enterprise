@@ -582,7 +582,7 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
           `${igAccountId}/media`,
           pageToken,
           { 
-            fields: 'id,media_type,media_url,thumbnail_url,permalink,like_count,comments_count,caption,timestamp,insights.metric(reach,impressions,saved)', 
+            fields: 'id,media_type,media_url,thumbnail_url,permalink,like_count,comments_count,caption,timestamp,insights.metric(reach,views,saved)', 
             limit: 6 
           }
         );
@@ -608,7 +608,7 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
 
         if (m.insights && m.insights.data) {
           const reachObj = m.insights.data.find((i: any) => i.name === 'reach');
-          const viewsObj = m.insights.data.find((i: any) => i.name === 'impressions');
+          const viewsObj = m.insights.data.find((i: any) => i.name === 'views');
           const savedObj = m.insights.data.find((i: any) => i.name === 'saved');
           
           if (reachObj && reachObj.values && reachObj.values[0]) {
