@@ -256,7 +256,6 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
             <motion.div 
               variants={columnVariants} 
               className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0"
-              style={!isMobile && photoHeight > 0 ? { height: `${photoHeight}px` } : undefined}
             >
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
               <div className="shrink-0 space-y-0.5 lg:space-y-1">
