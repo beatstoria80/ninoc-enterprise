@@ -335,7 +335,7 @@ export default function ImmersiveProductView({
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfectly Centered) */}
           <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex flex-col lg:flex-row overflow-hidden select-none">
              {/* Photo Area - takes remaining space above bottom bar on mobile */}
-             <div className="no-drag relative w-full flex-1 overflow-hidden flex items-start lg:items-center justify-center pt-16 lg:pt-0">
+             <div className="no-drag relative w-full flex-1 overflow-hidden flex items-start lg:items-center justify-center pt-24 lg:pt-0">
                <AnimatePresence>
                  {images.map((img, idx) => {
                    const offset = idx - activeImage;
