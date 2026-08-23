@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight, LogOut, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Camera, ChevronRight, Loader2, User, CornerDownRight, LogOut, RefreshCw, ShieldAlert } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import Image from 'next/image';
 import { createClient } from '@/utils/supabase/client';
@@ -22,6 +22,7 @@ export interface UserProfile {
   avatar_url: string;
   created_at: string;
   customer_number?: string;
+  role?: string | null;
 }
 
 export interface Order {
@@ -200,6 +201,25 @@ export default function ProfileClient({ initialUser, initialOrders }: { initialU
             </div>
             <ChevronRight size={12} className="text-rose/50 group-hover:text-rose group-hover:translate-x-1 transition-all" />
           </Link>
+
+          {/* Admin Dashboard CTA */}
+          {(user.role === 'super_admin' || user.role === 'admin' || user.email === 'admin@ninoc.store') && (
+            <Link
+              href="/admin"
+              className="group flex items-center justify-between p-4 border border-ink/10 bg-ink rounded-[4px] hover:bg-ink/90 transition-all shadow-md"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/10 rounded-sm flex items-center justify-center">
+                  <ShieldAlert size={13} className="text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">NINOC Admin Hub</p>
+                  <p className="text-xs text-white/70">Akses Secure Admin Portal</p>
+                </div>
+              </div>
+              <ChevronRight size={12} className="text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
+            </Link>
+          )}
 
           {/* Section: Activity Logs (Orders) */}
           <div className="space-y-4">

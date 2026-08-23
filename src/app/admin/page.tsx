@@ -9,7 +9,7 @@ export default async function AdminPage() {
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   
   if (!user || userError) {
-    redirect('/admin/login');
+    redirect('/login');
   }
 
   // 1. Safety bypass: If the email is the primary admin email, grant access immediately
@@ -36,7 +36,7 @@ export default async function AdminPage() {
   if (roleError || !roleData) {
     // Unauthorized user, sign out and redirect
     await supabase.auth.signOut();
-    redirect('/admin/login?error=unauthorized');
+    redirect('/login?error=unauthorized');
   }
 
   const initialUser = {

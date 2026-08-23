@@ -19,6 +19,7 @@ import { supabase } from '@/lib/supabase';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { compressImage, forceDownloadImage } from '@/lib/utils/imageUtils';
+import PushNotificationManager from '@/components/PushNotificationManager';
 
 import { OverviewTab } from '@/components/admin/tabs/OverviewTab';
 const ProductsTab = dynamic(() => import('@/components/admin/tabs/ProductsTab').then(mod => mod.ProductsTab), { ssr: false });
@@ -1658,6 +1659,8 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         <ShippingLabel order={selectedOrder} />
       </div>
     )}
+    {/* PUSH NOTIFICATION MANAGER FOR ADMINS ONLY */}
+    <PushNotificationManager />
     </>
   );
 }

@@ -24,6 +24,13 @@ export default async function ProfilePage() {
 
   const deterministicCustomerNumber = 'NNC-' + authUser.id.split('-')[0].toUpperCase();
 
+  // Check if user is an admin
+  const { data: roleData } = await supabase
+    .from('admin_roles')
+    .select('role')
+    .eq('email', authUser.email)
+    .single();
+
   const user: UserProfile = {
     id: authUser.id,
     email: authUser.email || '',
@@ -31,6 +38,7 @@ export default async function ProfilePage() {
     avatar_url: profile.avatar_url || authUser.user_metadata?.avatar_url || authUser.user_metadata?.picture || '',
     created_at: profile.created_at || authUser.created_at,
     customer_number: deterministicCustomerNumber,
+    role: roleData?.role || null,
   };
 
   // Fetch Orders

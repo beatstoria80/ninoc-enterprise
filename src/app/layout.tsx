@@ -11,7 +11,6 @@ import SecurityEnforcer from "@/components/SecurityEnforcer";
 import { AffiliateTracker } from "@/components/AffiliateTracker";
 import { Suspense } from "react";
 import ClientOverlays from "@/components/ClientOverlays";
-import PushNotificationManager from "@/components/PushNotificationManager";
 import GlobalDragScroll from "@/components/GlobalDragScroll";
 import MetaPixel from "@/components/MetaPixel";
 
@@ -324,7 +323,6 @@ export default async function RootLayout({
             </BrandProvider>
           </ClientPlatformManager>
           <ClientOverlays />
-          <PushNotificationManager />
         </SmoothScrollProvider>
       </body>
     </html>
