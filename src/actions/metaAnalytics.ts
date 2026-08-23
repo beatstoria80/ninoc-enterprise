@@ -454,19 +454,53 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
     }
 
     // Fetch Facebook Posts
-    const fbPostsData = await metaGraphFetch(
-      `${pageId}/posts`,
-      pageToken,
-      { fields: 'id,message,full_picture,permalink_url,created_time,shares,likes.summary(true),comments.summary(true)', limit: 6 }
-    ).catch(() => ({ data: [] }));
+    let fbPostsData: any;
+    try {
+      fbPostsData = await metaGraphFetch(
+        `${pageId}/posts`,
+        pageToken,
+        { 
+          fields: 'id,message,full_picture,permalink_url,created_time,shares,likes.summary(true),comments.summary(true),insights.metric(post_impressions_unique,post_impressions)', 
+          limit: 6 
+        }
+      );
+    } catch (e: any) {
+      console.warn("Failed to fetch FB post insights, falling back to basic posts fetch:", e.message);
+      fbPostsData = await metaGraphFetch(
+        `${pageId}/posts`,
+        pageToken,
+        { 
+          fields: 'id,message,full_picture,permalink_url,created_time,shares,likes.summary(true),comments.summary(true)', 
+          limit: 6 
+        }
+      ).catch(() => ({ data: [] }));
+    }
 
     fbMetrics.topPosts = (fbPostsData.data || []).filter((p: any) => p.full_picture).map((p: any) => {
       const likes = p.likes?.summary?.total_count || 0;
       const comments = p.comments?.summary?.total_count || 0;
       const shares = p.shares?.count || Math.floor((likes + comments) * 0.05);
-      const reach = (likes * 15) + (comments * 30) + (shares * 50) + 120;
-      // Deterministic calculation for views so it doesn't fluctuate on refresh
-      const views = Math.floor(reach * 1.25 + (likes % 10) * 12);
+      
+      let reach = 0;
+      let views = 0;
+
+      if (p.insights && p.insights.data) {
+        const reachObj = p.insights.data.find((i: any) => i.name === 'post_impressions_unique');
+        const viewsObj = p.insights.data.find((i: any) => i.name === 'post_impressions');
+        if (reachObj && reachObj.values && reachObj.values[0]) {
+          reach = Number(reachObj.values[0].value) || 0;
+        }
+        if (viewsObj && viewsObj.values && viewsObj.values[0]) {
+          views = Number(viewsObj.values[0].value) || 0;
+        }
+      }
+
+      if (reach === 0) {
+        reach = (likes * 15) + (comments * 30) + (shares * 50) + 120;
+      }
+      if (views === 0) {
+        views = Math.floor(reach * 1.25 + (likes % 10) * 12);
+      }
       
       return {
         id: p.id,
@@ -542,20 +576,63 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       }
 
       // Instagram Media
-      const igMediaData = await metaGraphFetch(
-        `${igAccountId}/media`,
-        pageToken,
-        { fields: 'id,media_type,media_url,thumbnail_url,permalink,like_count,comments_count,caption,timestamp', limit: 6 }
-      ).catch(() => ({ data: [] }));
+      let igMediaData: any;
+      try {
+        igMediaData = await metaGraphFetch(
+          `${igAccountId}/media`,
+          pageToken,
+          { 
+            fields: 'id,media_type,media_url,thumbnail_url,permalink,like_count,comments_count,caption,timestamp,insights.metric(reach,impressions,saved)', 
+            limit: 6 
+          }
+        );
+      } catch (e: any) {
+        console.warn("Failed to fetch IG media insights, falling back to basic media fetch:", e.message);
+        igMediaData = await metaGraphFetch(
+          `${igAccountId}/media`,
+          pageToken,
+          { 
+            fields: 'id,media_type,media_url,thumbnail_url,permalink,like_count,comments_count,caption,timestamp', 
+            limit: 6 
+          }
+        ).catch(() => ({ data: [] }));
+      }
 
       igMetrics.topPosts = (igMediaData.data || []).map((m: any) => {
         const likes = m.like_count || 0;
         const comments = m.comments_count || 0;
-        const saved = Math.floor(likes * 0.08);
+        
+        let saved = 0;
+        let reach = 0;
+        let views = 0;
+
+        if (m.insights && m.insights.data) {
+          const reachObj = m.insights.data.find((i: any) => i.name === 'reach');
+          const viewsObj = m.insights.data.find((i: any) => i.name === 'impressions');
+          const savedObj = m.insights.data.find((i: any) => i.name === 'saved');
+          
+          if (reachObj && reachObj.values && reachObj.values[0]) {
+            reach = Number(reachObj.values[0].value) || 0;
+          }
+          if (viewsObj && viewsObj.values && viewsObj.values[0]) {
+            views = Number(viewsObj.values[0].value) || 0;
+          }
+          if (savedObj && savedObj.values && savedObj.values[0]) {
+            saved = Number(savedObj.values[0].value) || 0;
+          }
+        }
+        
         const shares = Math.floor(likes * 0.04);
-        const reach = (likes * 12) + (comments * 25) + (saved * 40) + 200;
-        // Deterministic calculation for views
-        const views = Math.floor(reach * 1.15 + (likes % 10) * 8);
+        
+        if (saved === 0) {
+          saved = Math.floor(likes * 0.08);
+        }
+        if (reach === 0) {
+          reach = (likes * 12) + (comments * 25) + (saved * 40) + 200;
+        }
+        if (views === 0) {
+          views = Math.floor(reach * 1.15 + (likes % 10) * 8);
+        }
         
         return {
           id: m.id,
