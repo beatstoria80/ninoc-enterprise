@@ -176,7 +176,7 @@ export default function ProductGallery({
             }
           }}
         >
-          <div className="w-[75%] aspect-[4/5] invisible pointer-events-none" />
+          <div className="w-[90%] aspect-[4/5] invisible pointer-events-none" />
 
           {images.map((img, idx) => {
             const isActive = idx === activeImageIndex;
@@ -185,8 +185,8 @@ export default function ProductGallery({
 
             let positionClass = "opacity-0 scale-75 translate-x-0 z-0 pointer-events-none";
             if (isActive) positionClass = "opacity-100 scale-100 translate-x-0 z-20 shadow-xl";
-            else if (isPrev) positionClass = "opacity-40 scale-[0.85] -translate-x-[65%] z-10 shadow-sm cursor-pointer";
-            else if (isNext) positionClass = "opacity-40 scale-[0.85] translate-x-[65%] z-10 shadow-sm cursor-pointer";
+            else if (isPrev) positionClass = "opacity-40 scale-[0.85] -translate-x-[75%] z-10 shadow-sm cursor-pointer";
+            else if (isNext) positionClass = "opacity-40 scale-[0.85] translate-x-[75%] z-10 shadow-sm cursor-pointer";
 
             return (
               <div
@@ -200,11 +200,11 @@ export default function ProductGallery({
                   }
                 }}
                 className={cn(
-                  "absolute w-[75%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out",
+                  "absolute w-[90%] aspect-[4/5] rounded-none bg-white border border-ink/5 flex items-center justify-center transition-all duration-500 ease-out overflow-hidden",
                   positionClass
                 )}
               >
-                <SafeImage src={img} alt={`${product.image_alt || product.name} ${idx}`} className="object-contain p-4 pointer-events-none" sizes="(max-width: 768px) 65vw, 30vw" />
+                <SafeImage src={img} alt={`${product.image_alt || product.name} ${idx}`} className="object-cover w-full h-full pointer-events-none" sizes="(max-width: 768px) 90vw, 30vw" />
               </div>
             );
           })}
