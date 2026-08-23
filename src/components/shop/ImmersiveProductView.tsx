@@ -333,8 +333,9 @@ export default function ImmersiveProductView({
           </div>
 
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfectly Centered) */}
-          <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex items-center justify-center overflow-hidden select-none">
-             <div className="no-drag relative w-full h-full overflow-hidden flex items-center justify-center">
+          <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex flex-col lg:flex-row overflow-hidden select-none">
+             {/* Photo Area - takes remaining space above bottom bar on mobile */}
+             <div className="no-drag relative w-full flex-1 overflow-hidden flex items-start lg:items-center justify-center pt-16 lg:pt-0">
                <AnimatePresence>
                  {images.map((img, idx) => {
                    const offset = idx - activeImage;
@@ -367,7 +368,7 @@ export default function ImmersiveProductView({
                            setActiveImage(prev => (prev > 0 ? prev - 1 : images.length - 1));
                          }
                        }}
-                       className="absolute inset-0 flex items-center justify-center p-4 lg:p-12 cursor-grab active:cursor-grabbing"
+                       className="absolute inset-0 flex items-center justify-center p-0 lg:p-12 cursor-grab active:cursor-grabbing"
                        style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
                      >
                        <div className="relative w-full h-full max-w-4xl mx-auto flex items-center justify-center">
@@ -383,83 +384,75 @@ export default function ImmersiveProductView({
                  })}
                </AnimatePresence>
              </div>
-             
-             {/* Mobile Bottom Navigation (Floating) */}
-             <div className="lg:hidden absolute bottom-0 left-0 right-0 z-[100] pointer-events-none">
-               {/* Store & Share Buttons */}
-               <div className="flex justify-end px-4 pb-4 pointer-events-auto">
-                 <div className="flex flex-col gap-4">
-                   <button 
-                     onClick={() => {
-                       if (onOpenReviews) onOpenReviews();
-                     }}
-                     className="flex flex-col items-center gap-1 group"
-                   >
-                     <div className="w-10 h-10 bg-white rounded-full p-2 shadow-lg flex items-center justify-center text-ink border border-ink/5">
-                        <Star strokeWidth={1.5} size={18} />
-                     </div>
-                     <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Ulasan</span>
-                   </button>
-                   <button 
-                     onClick={async () => {
-                       if (navigator.share) {
-                         try {
-                           await navigator.share({
-                             title: product.name,
-                             text: `Cek ${product.name} di NINOC B2B!`,
-                             url: window.location.href,
-                           });
-                         } catch (err) {
-                           console.error('Error sharing:', err);
-                         }
-                       } else {
-                         navigator.clipboard.writeText(window.location.href);
-                         alert('Link disalin ke clipboard!');
-                       }
-                     }}
-                     className="flex flex-col items-center gap-1"
-                   >
-                     <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center text-ink shadow-lg border border-ink/5">
-                       <Share2 strokeWidth={1.5} size={18} />
-                     </div>
-                     <span className="text-[9px] text-ink font-bold drop-shadow-md bg-white/90 px-1.5 py-0.5 rounded-sm">Bagikan</span>
-                   </button>
-                 </div>
+
+             {/* Mobile Action Bar: Ulasan & Bagikan — BELOW photo, horizontal, NOT overlay */}
+             <div className="lg:hidden relative z-[100] flex items-center justify-center gap-6 py-2.5 bg-white border-t border-ink/5 shrink-0">
+               <button 
+                 onClick={() => {
+                   if (onOpenReviews) onOpenReviews();
+                 }}
+                 className="flex items-center gap-2 text-ink/70 active:text-rose transition-colors px-3 py-1.5"
+               >
+                 <Star strokeWidth={1.5} size={18} />
+                 <span className="text-[11px] font-bold uppercase tracking-wider">Ulasan</span>
+               </button>
+               <div className="w-px h-5 bg-ink/10" />
+               <button 
+                 onClick={async () => {
+                   if (navigator.share) {
+                     try {
+                       await navigator.share({
+                         title: product.name,
+                         text: `Cek ${product.name} di NINOC B2B!`,
+                         url: window.location.href,
+                       });
+                     } catch (err) {
+                       console.error('Error sharing:', err);
+                     }
+                   } else {
+                     navigator.clipboard.writeText(window.location.href);
+                     alert('Link disalin ke clipboard!');
+                   }
+                 }}
+                 className="flex items-center gap-2 text-ink/70 active:text-rose transition-colors px-3 py-1.5"
+               >
+                 <Share2 strokeWidth={1.5} size={18} />
+                 <span className="text-[11px] font-bold uppercase tracking-wider">Bagikan</span>
+               </button>
+             </div>
+               
+             {/* Mobile White Checkout Card */}
+             <div className="lg:hidden bg-white p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.15)] flex gap-3 items-center shrink-0 pb-6 z-[100]">
+               {/* Thumbnail */}
+               <div className="w-12 h-12 rounded border border-gray-100 shrink-0 overflow-hidden relative bg-gray-50">
+                 {images.length > 0 && <Image src={images[0]} alt="thumb" fill className="object-cover" unoptimized />}
                </div>
                
-               {/* White Checkout Card */}
-               <div className="bg-white p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.15)] flex gap-3 items-center pointer-events-auto pb-6">
-                 {/* Thumbnail */}
-                 <div className="w-12 h-12 rounded border border-gray-100 shrink-0 overflow-hidden relative bg-gray-50">
-                   {images.length > 0 && <Image src={images[0]} alt="thumb" fill className="object-cover" unoptimized />}
-                 </div>
-                 
-                 {/* Product Info */}
-                 <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2">
-                   <span className="text-ink font-bold text-sm leading-none mb-1">
-                     Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
-                   </span>
-                   <span className="text-[10px] text-gray-600 truncate leading-tight font-medium">
-                     {product.name}
-                   </span>
-                 </div>
-                 
-                 {/* Action Buttons */}
-                 <div className="flex items-center gap-1.5 shrink-0">
-                   <button 
-                     onClick={() => setIsMobileCheckoutOpen(true)}
-                     className="w-8 h-8 rounded border border-ink text-ink bg-ink/5 flex items-center justify-center relative"
-                   >
-                     <ShoppingBag size={14} strokeWidth={2.5} />
-                     <Plus size={10} strokeWidth={3} className="absolute bottom-1 right-0.5 bg-white rounded-full text-ink p-[1px]" />
-                   </button>
-                   <button 
-                     onClick={() => setIsMobileCheckoutOpen(true)}
-                     className="px-4 h-8 rounded bg-ink text-white text-[11px] font-bold whitespace-nowrap hover:bg-ink/90 transition-colors"
-                   >
-                     Beli Sekarang
-                   </button>
-                 </div>
+               {/* Product Info */}
+               <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2">
+                 <span className="text-ink font-bold text-sm leading-none mb-1">
+                   Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
+                 </span>
+                 <span className="text-[10px] text-gray-600 truncate leading-tight font-medium">
+                   {product.name}
+                 </span>
+               </div>
+               
+               {/* Action Buttons */}
+               <div className="flex items-center gap-1.5 shrink-0">
+                 <button 
+                   onClick={() => setIsMobileCheckoutOpen(true)}
+                   className="w-8 h-8 rounded border border-ink text-ink bg-ink/5 flex items-center justify-center relative"
+                 >
+                   <ShoppingBag size={14} strokeWidth={2.5} />
+                   <Plus size={10} strokeWidth={3} className="absolute bottom-1 right-0.5 bg-white rounded-full text-ink p-[1px]" />
+                 </button>
+                 <button 
+                   onClick={() => setIsMobileCheckoutOpen(true)}
+                   className="px-4 h-8 rounded bg-ink text-white text-[11px] font-bold whitespace-nowrap hover:bg-ink/90 transition-colors"
+                 >
+                   Beli Sekarang
+                 </button>
                </div>
              </div>
           </div>
