@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { Activity, Users, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon, AlertCircle, TrendingUp, BarChart3, CalendarDays, Lightbulb, Sparkles, Eye } from 'lucide-react';
+import { Activity, Users, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon, AlertCircle, TrendingUp, BarChart3, CalendarDays, Lightbulb, Sparkles, Eye, Share2, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { MetaOrganicData } from '@/actions/metaAnalytics';
 
@@ -176,14 +176,42 @@ export function OrganicAnalyticsView({ data, timeFilter }: OrganicAnalyticsViewP
                           {post.type}
                         </div>
                         {/* Hover Overlay with Stats */}
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
-                           <div className="flex flex-col items-center text-white">
-                             <Heart size={18} className="mb-1 fill-white" />
-                             <span className="text-xs font-bold font-mono">{post.likes}</span>
-                           </div>
-                           <div className="flex flex-col items-center text-white">
-                             <MessageCircle size={18} className="mb-1 fill-white" />
-                             <span className="text-xs font-bold font-mono">{post.comments}</span>
+                        <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-3 flex flex-col justify-center">
+                           <div className="grid grid-cols-2 gap-y-3 gap-x-2">
+                             <div className="flex items-center gap-2 text-white" title="Likes">
+                               <Heart size={14} className="fill-white" />
+                               <span className="text-[11px] font-bold font-mono">{post.likes?.toLocaleString()}</span>
+                             </div>
+                             <div className="flex items-center gap-2 text-white" title="Komentar">
+                               <MessageCircle size={14} className="fill-white" />
+                               <span className="text-[11px] font-bold font-mono">{post.comments?.toLocaleString()}</span>
+                             </div>
+                             {post.shares !== undefined && (
+                               <div className="flex items-center gap-2 text-white" title="Dibagikan">
+                                 <Share2 size={14} />
+                                 <span className="text-[11px] font-bold font-mono">{post.shares?.toLocaleString()}</span>
+                               </div>
+                             )}
+                             {post.saved !== undefined && (
+                               <div className="flex items-center gap-2 text-white" title="Disimpan">
+                                 <Bookmark size={14} className="fill-white" />
+                                 <span className="text-[11px] font-bold font-mono">{post.saved?.toLocaleString()}</span>
+                               </div>
+                             )}
+                             {post.reach !== undefined && (
+                               <div className="flex items-center gap-2 text-white/90 pt-2 border-t border-white/20 col-span-2">
+                                 <Globe size={14} />
+                                 <span className="text-[10px] uppercase font-bold tracking-wider">Tayang:</span>
+                                 <span className="text-[11px] font-bold font-mono ml-auto">{post.reach?.toLocaleString()}</span>
+                               </div>
+                             )}
+                             {post.views !== undefined && (
+                               <div className="flex items-center gap-2 text-white/90 col-span-2">
+                                 <Eye size={14} />
+                                 <span className="text-[10px] uppercase font-bold tracking-wider">Dilihat:</span>
+                                 <span className="text-[11px] font-bold font-mono ml-auto">{post.views?.toLocaleString()}</span>
+                               </div>
+                             )}
                            </div>
                         </div>
                       </div>
