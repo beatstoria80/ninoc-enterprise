@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import { Search, ShoppingBag, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, MoreVertical, LogOut, Bell } from 'lucide-react';
+import { Search, ShoppingBag, User, X, Trash2, ShieldCheck, Plus, Minus, ArrowLeft, Truck, Menu, LogOut, Bell } from 'lucide-react';
 import Link from '@/components/LocalizedLink';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -582,7 +582,7 @@ export default function GlobalHeader() {
               onClick={() => setIsMenuOpen(true)} 
               className={cn("transition-colors cursor-pointer p-2 -ml-5 md:-ml-5 md:-my-2 md:-mr-2 flex items-center justify-center", isDarkBg ? "text-white hover:text-white/80" : "text-ink/70 hover:text-rose")}
             >
-              <MoreVertical size={20} strokeWidth={1.5} />
+              <Menu size={20} strokeWidth={1.5} />
             </PressScale>
 
             {/* Logo */}
