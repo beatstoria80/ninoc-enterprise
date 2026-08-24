@@ -448,15 +448,6 @@ export default function GlobalHeader() {
 
   const cartItemsCount = isHydrated ? items.length : 0;
 
-  // Auto-open drawer menu on homepage with delay for entrance animation
-  useEffect(() => {
-    if (pathname === '/' || pathname === '/en') {
-      const timer = setTimeout(() => {
-        setIsMenuOpen(true);
-      }, 1000); // Delay 1 detik agar animasi entrance UI selesai dulu sebelum drawer slide-in
-      return () => clearTimeout(timer);
-    }
-  }, [pathname]);
   // Scroll handler with debounce
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
@@ -1027,9 +1018,16 @@ export default function GlobalHeader() {
                     unoptimized
                   />
                 </div>
-                <PressScale onClick={() => setIsMenuOpen(false)} className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center text-ink hover:bg-rose hover:text-white">
-                  <X size={14} />
-                </PressScale>
+                <motion.button 
+                  onClick={() => setIsMenuOpen(false)} 
+                  className="w-8 h-8 rounded-none bg-ink/5 flex items-center justify-center hover:bg-rose hover:text-white focus:outline-none"
+                  animate={{ color: ['#141414', '#e11d48', '#141414'] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                >
+                  <X size={16} strokeWidth={2.5} />
+                </motion.button>
               </div>
 
               <div className="overflow-y-auto no-scrollbar px-6 md:px-10 py-8 flex-1 flex flex-col gap-6">
