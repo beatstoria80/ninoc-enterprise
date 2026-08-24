@@ -2,7 +2,7 @@
 
 import React, { useRef, useState } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { ShoppingBag, ChevronRight } from 'lucide-react';
+import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { productCardVariants, cardImageVariants, cardContentVariants, DURATION, EASING } from '@/lib/animations';
@@ -194,19 +194,6 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
                   transition={{ duration: DURATION.fast, ease: EASING.out }}
                 >
                   <ShoppingBag className="w-4 h-4" />
-                </motion.div>
-                <motion.div
-                  role="button"
-                  tabIndex={0}
-                  className="hidden md:flex w-8 h-8 rounded-none bg-ink/5 items-center justify-center transition-colors duration-200 cursor-pointer"
-                  style={{ backgroundColor: isHovered ? brandColor.color : 'rgba(20,20,20,0.05)' }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ duration: DURATION.fast, ease: EASING.out }}
-                >
-                  <motion.div animate={{ x: isHovered ? 2 : 0, color: isHovered ? '#ffffff' : '#141414' }}>
-                    <ChevronRight className="w-4 h-4" />
-                  </motion.div>
                 </motion.div>
               </div>
             </div>
