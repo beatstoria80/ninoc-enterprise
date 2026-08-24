@@ -294,7 +294,7 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <MetaPixel />
         </Suspense>
-        <NextTopLoader color="#e8527a" showSpinner={false} height={3} />
+        <NextTopLoader color="#e8527a" showSpinner={false} height={3} speed={100} crawlSpeed={100} easing="ease-in-out" />
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
         {/* Skip to main content — Accessibility */}
