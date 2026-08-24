@@ -318,7 +318,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             <div 
               onClick={handleOverlayTap}
               onTouchStart={handleOverlayTap}
-              className="absolute inset-0 w-full h-full cursor-pointer overflow-hidden"
+              className="absolute inset-0 w-full h-full cursor-pointer"
             >
               <motion.div
                 className="w-full h-full"
@@ -346,7 +346,11 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               <div className="flex justify-between items-center w-full pt-1">
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
-                  animate={{ opacity: 1, y: 0 }} 
+                  animate={
+                    (mounted && isMobile)
+                      ? (isTouched ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 })
+                      : { opacity: 1, y: 0 }
+                  }
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
                   className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
                 >

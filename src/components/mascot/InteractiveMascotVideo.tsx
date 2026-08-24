@@ -28,7 +28,8 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  if (isMobile === null) return null; // Wait for client hydration
+  // Jika isMobile masih null (fase SSR/hidrasi), render MascotMobile sebagai default (Mobile First)
+  const renderMobile = isMobile === null || isMobile;
 
   return (
     <div
@@ -36,7 +37,7 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       style={{ touchAction: 'none' }}
     >
       <div className="relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7]">
-        {isMobile ? (
+        {renderMobile ? (
           <MascotMobile config={config} />
         ) : (
           <MascotDesktop config={config} pointerTracker={pointerTracker} onLoaded={onLoaded} />

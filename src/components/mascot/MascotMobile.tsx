@@ -16,9 +16,19 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
     let animId: number;
     const keepPlaying = () => {
       const v = videoRef.current;
-      if (v && v.paused) {
-        v.muted = true;
-        v.play().catch(() => {});
+      if (v) {
+        if (v.paused) {
+          v.muted = true;
+          v.play().catch(() => {});
+        }
+        // Batasi pemutaran video hanya pada fase idle (0.0 - 2.8 detik)
+        const idleStart = config.timestamps.idleStart ?? 0.0;
+        const idleEnd = config.timestamps.idleEnd ?? 2.8;
+        if (v.currentTime < idleStart || v.currentTime >= idleEnd - 0.1) {
+          try {
+            v.currentTime = idleStart;
+          } catch (e) {}
+        }
       }
       animId = requestAnimationFrame(keepPlaying);
     };
@@ -42,7 +52,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       window.removeEventListener('pointerdown', handleUserInteraction);
       window.removeEventListener('click', handleUserInteraction);
     };
-  }, []);
+  }, [config]);
 
   return (
     <video
