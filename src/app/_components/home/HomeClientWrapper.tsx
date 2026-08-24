@@ -126,7 +126,7 @@ function MobileIntroCard({
  * DesktopIntroOverlay Component
  * Always active and visible on Desktop, Laptop, and Tablet viewports.
  */
-function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
+function DesktopIntroOverlay({ isRevealed, onShopClick }: { isRevealed: boolean; onShopClick: () => void }) {
   return (
     <>
       <div className="hidden md:flex flex-1 items-center justify-between my-auto pointer-events-auto">
@@ -134,7 +134,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
         <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-20 xl:ml-28 2xl:ml-36">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
+            animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
             transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
             className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#475569]"
           >
@@ -144,7 +144,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
 
           <motion.div
             initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
+            animate={isRevealed ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
             transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
             className="space-y-1"
           >
@@ -156,7 +156,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
 
           <motion.p
             initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
+            animate={isRevealed ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
             transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
             className="text-xs sm:text-sm md:text-base text-[#334155] font-medium leading-relaxed max-w-sm sm:max-w-md md:max-w-lg"
           >
@@ -165,7 +165,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
 
           <motion.div
             initial={{ opacity: 0, x: -20, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
+            animate={isRevealed ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -20, scale: 0.95 }}
             transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.6 }}
             className="pt-2"
           >
@@ -186,7 +186,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
         <motion.div
           className="hidden md:flex flex-col items-end gap-4 text-xs md:text-[11px] lg:text-xs font-mono font-bold uppercase tracking-[0.2em] text-ink/80 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
           initial={{ opacity: 0, x: 40 }}
-          animate={{ opacity: 1, x: 0 }}
+          animate={isRevealed ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
           transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-ink/60 mb-1 border-b border-ink/15 pb-1.5 w-full text-right">
@@ -200,8 +200,13 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
         </motion.div>
       </div>
 
-      {/* Bottom Bar: Left Spec Badge & Right Social Footer */}
-      <div className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20">
+      {/* Bottom Bar: Left Spec Badge & Right Social Footer (Animasi reveal) */}
+      <motion.div 
+        className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20"
+        initial={{ opacity: 0 }}
+        animate={isRevealed ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.8, delay: 0.6 }}
+      >
         <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:left-12 bottom-12 md:bottom-14 lg:bottom-16">
           EST. 2024 · BANDUNG ID
         </div>
@@ -220,7 +225,7 @@ function DesktopIntroOverlay({ onShopClick }: { onShopClick: () => void }) {
             </a>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 }
@@ -239,6 +244,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     return false;
   });
   const [isTouched, setIsTouched] = useState(false);
+  const [isDesktopRevealed, setIsDesktopRevealed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -284,6 +290,17 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
     return () => clearTimeout(autoRevealTimer);
   }, [scene]);
+
+  useEffect(() => {
+    if (scene !== 'hero' || isMobile) return;
+
+    // Timer 2.2 detik untuk menunda reveal UI copy & navigasi di desktop
+    const desktopTimer = setTimeout(() => {
+      setIsDesktopRevealed(true);
+    }, 2200);
+
+    return () => clearTimeout(desktopTimer);
+  }, [scene, isMobile]);
 
 
 
@@ -352,7 +369,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                   animate={
                     (mounted && isMobile)
                       ? (isTouched ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 })
-                      : { opacity: 1, y: 0 }
+                      : (isDesktopRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 })
                   }
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
                   className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
@@ -363,7 +380,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
               {/* Main Content Area */}
               <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
-                <DesktopIntroOverlay onShopClick={handleShopClick} />
+                <DesktopIntroOverlay isRevealed={isDesktopRevealed} onShopClick={handleShopClick} />
                 <MobileIntroCard isTouched={isTouched} onShopClick={handleShopClick} />
               </div>
             </div>
