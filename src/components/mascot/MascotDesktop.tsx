@@ -91,7 +91,8 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
           // Play loop untuk nodding
           if (v.paused) v.play().catch(() => {});
           
-          if (v.currentTime < nodStart || v.currentTime >= nodEnd - 0.1) {
+          const nodEndLimit = nodStart + 2.8; // Batasi loop tepat di frame mengangguk murni (2.8 detik)
+          if (v.currentTime < nodStart || v.currentTime >= nodEndLimit - 0.15) {
              safeSeek(v, nodStart);
           }
         } else if (frame.currentX <= 0.01) {
