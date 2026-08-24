@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MascotVideoConfigType } from './MascotVideoConfig';
 import { PointerTracker } from './PointerTracker';
 import { MotionStateController, MotionStateFrame } from './MotionStateController';
@@ -14,24 +14,12 @@ interface MascotDesktopProps {
 export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTracker, onLoaded }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   
-  // 3 Duplikasi elemen video yang SEMUANYA menggunakan file yang SAMA (mascot_ninoc.mp4)
-  const videoIdleRef = useRef<HTMLVideoElement | null>(null);
-  const videoHorizontalRef = useRef<HTMLVideoElement | null>(null);
-  const videoCategoryNodRef = useRef<HTMLVideoElement | null>(null);
-
-  // Cached opacity refs
-  const prevIdleOpacity = useRef<number>(-1);
-  const prevHorizOpacity = useRef<number>(-1);
-  const prevCategoryNodOpacity = useRef<number>(-1);
-
-  // Smooth lerp state containers
-  const currentIdleOpacity = useRef<number>(1.0);
-  const currentHorizOpacity = useRef<number>(0.0);
-  const currentCategoryNodOpacity = useRef<number>(0.0);
+  // HANYA SATU VIDEO TAG - Mencegah tumpang tindih (ghosting) dan video hilang
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const motionControllerRef = useRef<MotionStateController | null>(null);
   const internalTrackerRef = useRef<PointerTracker | null>(null);
-  const activeLayerRef = useRef<number>(0);
 
   useEffect(() => {
     motionControllerRef.current = new MotionStateController(config);
@@ -55,25 +43,21 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
   }, [pointerTracker, config]);
 
   useEffect(() => {
-    const vIdle = videoIdleRef.current;
-    const vHoriz = videoHorizontalRef.current;
-    const vCategoryNod = videoCategoryNodRef.current;
-
-    [vIdle, vHoriz, vCategoryNod].forEach((v) => {
-      if (v) {
-        v.muted = true;
-        v.defaultMuted = true;
-        v.playsInline = true;
-        v.play().catch(() => {});
-      }
-    });
-
+    const v = videoRef.current;
+    if (v) {
+      v.muted = true;
+      v.defaultMuted = true;
+      v.playsInline = true;
+      // Jangan autoplay terus-menerus, kita akan mengontrol (scrub) frame-nya
+      v.pause();
+    }
     if (onLoaded) onLoaded();
   }, [onLoaded]);
 
-  // Utility to safely seek video to avoid redundant DOM writes
+  // Utility to safely seek video
   const safeSeek = (v: HTMLVideoElement, targetTime: number) => {
-    if (Math.abs(v.currentTime - targetTime) > 0.05) {
+    if (v.readyState < 2) return; // Guard: pastikan video sudah memiliki data frame
+    if (Math.abs(v.currentTime - targetTime) > 0.02) { // Tolerance
       try {
         v.currentTime = targetTime;
       } catch (e) {}
@@ -84,103 +68,46 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
     let animFrameId: number;
     let lastTimestamp = performance.now();
 
-    const lerp = (a: number, b: number, t: number) => a + (b - a) * Math.min(1, t);
-
     const renderLoop = (now: number) => {
       const dt = Math.min((now - lastTimestamp) / 1000, 0.05);
       lastTimestamp = now;
 
       const tracker = pointerTracker || internalTrackerRef.current;
       const motion = motionControllerRef.current;
+      const v = videoRef.current;
 
-      const vIdle = videoIdleRef.current;
-      const vHoriz = videoHorizontalRef.current;
-      const vCategoryNod = videoCategoryNodRef.current;
-
-      if (tracker && motion && vIdle && vHoriz) {
+      if (tracker && motion && v && isVideoReady) {
         const pointer = tracker.getState();
+        
+        // Dapatkan hasil fisika pergerakan (currentX = 0.0 hingga 1.0)
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
+        
+        // INTERPOLASI (Scrubbing) Waktu Video secara Halus berdasarkan pergerakan kursor
+        // Jika kursor di tengah (currentX = 0), video di detik idleStart (0.0s)
+        // Jika kursor di kanan (currentX = 1), video di detik turnRightStart (5.0s)
+        // Jika kursor hover kategori, kita asumsikan nilainya meloncat ke noddingStart (10.0s)
 
-        let targetActiveLayer = 0;
-        if (frame.weights.categoryNodOpacity > 0.5) {
-          targetActiveLayer = 2;
-        } else if (frame.weights.horizontalOpacity > 0.5) {
-          targetActiveLayer = 1;
-        } else {
-          targetActiveLayer = 0;
-        }
-
-        if (activeLayerRef.current !== targetActiveLayer) {
-          activeLayerRef.current = targetActiveLayer;
+        let targetTime = config.timestamps.idleStart ?? 0.0;
+        
+        if (frame.stateName === 'CATEGORY_NODDING') {
+          // Play loop untuk nodding
+          if (v.paused) v.play().catch(() => {});
           
-          if (targetActiveLayer === 1 && vHoriz) {
-            if (frame.stateName === 'RETURNING_CENTER') {
-              const maxReturnTime = Math.min(vHoriz.duration || 3.2, (config.timestamps.turnRightStart ?? 5.0) + 2.8);
-              safeSeek(vHoriz, maxReturnTime);
-              vHoriz.pause();
-            } else {
-              safeSeek(vHoriz, config.timestamps.turnRightStart ?? 5.0);
-              vHoriz.play().catch(() => {});
-            }
-          } else if (targetActiveLayer === 2 && vCategoryNod) {
-            safeSeek(vCategoryNod, config.timestamps.noddingStart ?? 10.0);
-            vCategoryNod.play().catch(() => {});
-          } else if (targetActiveLayer === 0) {
-            if (vIdle && vIdle.paused) {
-              vIdle.play().catch(() => {});
-            }
-          }
-        }
-
-        if (targetActiveLayer === 1 && vHoriz) {
-          if (frame.stateName === 'RETURNING_CENTER') {
-            vHoriz.pause();
-            const minTime = config.timestamps.turnRightStart ?? 5.0;
-            const currentT = vHoriz.currentTime;
-            if (currentT > minTime) {
-              safeSeek(vHoriz, Math.max(minTime, currentT - dt * 0.95));
-            }
-          } else if (vHoriz.paused) {
-            vHoriz.play().catch(() => {});
-          }
-        } else if (targetActiveLayer === 2 && vCategoryNod) {
-          if (vHoriz && !vHoriz.paused) {
-            vHoriz.pause();
-          }
-          if (vCategoryNod.paused) {
-            vCategoryNod.play().catch(() => {});
-          }
           const nodStart = config.timestamps.noddingStart ?? 10.0;
-          if (vCategoryNod.duration && vCategoryNod.currentTime >= vCategoryNod.duration - 0.15) {
-            safeSeek(vCategoryNod, nodStart);
+          if (v.currentTime < nodStart || (v.duration && v.currentTime >= v.duration - 0.15)) {
+             safeSeek(v, nodStart);
           }
-        } else if (targetActiveLayer === 0 && vIdle && vIdle.paused) {
-          vIdle.play().catch(() => {});
-        }
-
-        const targetIdle = frame.weights.idleOpacity;
-        const targetHoriz = frame.weights.horizontalOpacity;
-        const targetCategoryNod = frame.weights.categoryNodOpacity;
-
-        const lerpRate = Math.min(1.0, dt * 20);
-
-        currentIdleOpacity.current = lerp(currentIdleOpacity.current, targetIdle, lerpRate);
-        currentHorizOpacity.current = lerp(currentHorizOpacity.current, targetHoriz, lerpRate);
-        currentCategoryNodOpacity.current = lerp(currentCategoryNodOpacity.current, targetCategoryNod, lerpRate);
-
-        if (Math.abs(prevIdleOpacity.current - currentIdleOpacity.current) > 0.001) {
-          prevIdleOpacity.current = currentIdleOpacity.current;
-          vIdle.style.opacity = currentIdleOpacity.current.toFixed(3);
-        }
-
-        if (Math.abs(prevHorizOpacity.current - currentHorizOpacity.current) > 0.001) {
-          prevHorizOpacity.current = currentHorizOpacity.current;
-          vHoriz.style.opacity = currentHorizOpacity.current.toFixed(3);
-        }
-
-        if (vCategoryNod && Math.abs(prevCategoryNodOpacity.current - currentCategoryNodOpacity.current) > 0.001) {
-          prevCategoryNodOpacity.current = currentCategoryNodOpacity.current;
-          vCategoryNod.style.opacity = currentCategoryNodOpacity.current.toFixed(3);
+        } else {
+          // Pause and Scrub untuk pergerakan kiri-kanan
+          if (!v.paused) v.pause();
+          
+          const idleTime = config.timestamps.idleStart ?? 0.0;
+          const rightTime = config.timestamps.turnRightStart ?? 5.0;
+          
+          // Interpolasi linear dari Idle ke Nengok Kanan berdasarkan currentX
+          targetTime = idleTime + (rightTime - idleTime) * frame.currentX;
+          
+          safeSeek(v, targetTime);
         }
       }
 
@@ -190,47 +117,27 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
     animFrameId = requestAnimationFrame(renderLoop);
 
     return () => cancelAnimationFrame(animFrameId);
-  }, [pointerTracker, config]);
+  }, [pointerTracker, config, isVideoReady]);
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
-      {/* DUPLIKAT 1: IDLE */}
+      {/* 
+        HANYA 1 TAG VIDEO. 
+        Mencegah tumpang tindih frame dan kebocoran memori.
+      */}
       <video
-        ref={videoIdleRef}
+        ref={videoRef}
         src={config.videoPaths.singleMascot}
-        autoPlay
-        loop
         muted
         playsInline
         preload="auto"
+        onCanPlay={() => setIsVideoReady(true)}
         className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none"
-        style={{ opacity: 1, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
-      />
-
-      {/* DUPLIKAT 2: MENGHADAP KANAN (DI-SEEK KE DURASI TERTENTU) */}
-      <video
-        ref={videoHorizontalRef}
-        src={config.videoPaths.singleMascot}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none"
-        style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
-      />
-
-      {/* DUPLIKAT 3: MENGANGGUK (DI-SEEK KE DURASI TERTENTU) */}
-      <video
-        ref={videoCategoryNodRef}
-        src={config.videoPaths.singleMascot}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-contain object-center scale-[0.88] pointer-events-none"
-        style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
+        style={{ 
+          opacity: isVideoReady ? 1 : 0, 
+          transition: 'opacity 0.3s ease-in',
+          filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' 
+        }}
       />
     </div>
   );
