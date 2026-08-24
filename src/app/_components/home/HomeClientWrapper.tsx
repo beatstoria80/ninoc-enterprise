@@ -239,6 +239,19 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     return false;
   });
   const [isTouched, setIsTouched] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (scene === 'hero') {
@@ -254,6 +267,23 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
       window.dispatchEvent(new CustomEvent('show-mobile-nav'));
     };
   }, [scene]);
+
+  // Auto-transition untuk mobile layout splash screen
+  useEffect(() => {
+    if (mounted && isMobile && scene === 'hero') {
+      const timer = setTimeout(() => {
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('ninoc_intro_played', 'true');
+        }
+        setScene('transitioning');
+        setTimeout(() => {
+          setScene('archive');
+          window.dispatchEvent(new CustomEvent('show-mobile-nav'));
+        }, 1000);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [mounted, isMobile, scene]);
 
   useEffect(() => {
     const handleReplay = () => window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -299,39 +329,62 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Mascot Video Container */}
-            <div 
-              onClick={handleOverlayTap}
-              onTouchStart={handleOverlayTap}
-              className="absolute inset-0 w-full h-full cursor-pointer"
-            >
-              <InteractiveMascotVideo className="w-full h-full" />
-            </div>
-
-            {/* Overlay Layer */}
-            <div 
-              onClick={handleOverlayTap}
-              onTouchStart={handleOverlayTap}
-              className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 z-10 text-ink pointer-events-auto cursor-pointer pt-safe pb-safe"
-            >
-              {/* Header Logo */}
-              <div className="flex justify-between items-center w-full pt-1">
-                <motion.div 
-                  initial={{ opacity: 0, y: -20 }} 
-                  animate={{ opacity: 1, y: 0 }} 
-                  transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
-                  className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
+            {mounted && isMobile ? (
+              /* Splash screen minimalis khusus mobile: hanya maskot di tengah, bergerak naik turun looping */
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#e3e4e7] p-4">
+                <motion.div
+                  className="w-56 h-56 relative flex items-center justify-center"
+                  animate={{ 
+                    y: [0, -14, 0] 
+                  }}
+                  transition={{
+                    duration: 2.2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
                 >
-                  <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-8 h-8 md:w-10 md:h-10 object-contain" priority unoptimized />
+                  <div className="w-48 h-48 rounded-full overflow-hidden relative shadow-[0_12px_36px_rgba(0,0,0,0.06)] bg-white/40 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                    <InteractiveMascotVideo className="w-full h-full scale-[1.05] pointer-events-none" />
+                  </div>
                 </motion.div>
               </div>
+            ) : (
+              <>
+                {/* Mascot Video Container */}
+                <div 
+                  onClick={handleOverlayTap}
+                  onTouchStart={handleOverlayTap}
+                  className="absolute inset-0 w-full h-full cursor-pointer"
+                >
+                  <InteractiveMascotVideo className="w-full h-full" />
+                </div>
 
-              {/* Main Content Area */}
-              <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
-                <DesktopIntroOverlay onShopClick={handleShopClick} />
-                <MobileIntroCard isTouched={isTouched} onShopClick={handleShopClick} />
-              </div>
-            </div>
+                {/* Overlay Layer */}
+                <div 
+                  onClick={handleOverlayTap}
+                  onTouchStart={handleOverlayTap}
+                  className="absolute inset-0 h-full flex flex-col justify-between p-4 sm:p-6 md:p-8 lg:p-12 z-10 text-ink pointer-events-auto cursor-pointer pt-safe pb-safe"
+                >
+                  {/* Header Logo */}
+                  <div className="flex justify-between items-center w-full pt-1">
+                    <motion.div 
+                      initial={{ opacity: 0, y: -20 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
+                      className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
+                    >
+                      <Image src="/logo.png" alt="NINOC Logo" width={120} height={120} className="w-8 h-8 md:w-10 md:h-10 object-contain" priority unoptimized />
+                    </motion.div>
+                  </div>
+
+                  {/* Main Content Area */}
+                  <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
+                    <DesktopIntroOverlay onShopClick={handleShopClick} />
+                    <MobileIntroCard isTouched={isTouched} onShopClick={handleShopClick} />
+                  </div>
+                </div>
+              </>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
