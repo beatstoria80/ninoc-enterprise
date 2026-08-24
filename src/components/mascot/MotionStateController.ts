@@ -95,30 +95,11 @@ export class MotionStateController {
     }
 
     if (isRightDrag) {
-      // ═══ RIGHTWARD MOTION (3-Stage Sequential Chain: Chapter 1 → Chapter 2 → Chapter 3) ═══
-      this.turnRightTimer += dt;
-      const turnPhaseDuration = this.config.chapter2Duration ?? 3.2;
-
-      // Jika kursor berada di menu navigasi kategori, langsung bypass dan aktifkan animasi nodding secara instan
-      if (pointer.isCategoryHovered) {
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      } else if (this.turnRightTimer < turnPhaseDuration) {
-        // Stage 2: Mandatory Chapter 2 turn motion (turns mascot from center → right pose)
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'MOVING_HORIZONTAL';
-      } else {
-        // Stage 3: After Chapter 2 turn completes → transition into pure Nodding Loop (Chapter 3)
-        // Keep horizontalOpacity = 1.0 as the smooth background video layer underneath nodding video
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      }
+      // Langsung bypass turn motion dan aktifkan nodding loop secara instan di area kanan
+      idleOpacity = 0.0;
+      horizontalOpacity = 1.0;
+      categoryNodOpacity = 1.0;
+      this.stateName = 'CATEGORY_NODDING';
     } else if (this.wasRightDrag || this.returnTimer > 0) {
       // ═══ RETURNING TO CENTER (CHAPTER 2 REVERSE) ═══
       // Play Chapter 2 in 60 FPS REVERSE to return mascot smoothly from right to center pose
