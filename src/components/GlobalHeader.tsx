@@ -464,10 +464,16 @@ export default function GlobalHeader() {
         return () => clearTimeout(timer);
       } else {
         // Jika sedang di intro (opening), tunggu sampai intro selesai ('show-mobile-nav' dipicu)
-        let timer: NodeJS.Timeout;
+        let timer: NodeJS.Timeout | null = null;
+        let hasOpened = false;
+        
         const handleIntroFinish = () => {
+          if (hasOpened) return; // Prevent multiple triggers
+          hasOpened = true;
+          if (timer) clearTimeout(timer);
           timer = openDrawer();
         };
+        
         window.addEventListener('show-mobile-nav', handleIntroFinish);
         return () => {
           window.removeEventListener('show-mobile-nav', handleIntroFinish);
