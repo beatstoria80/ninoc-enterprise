@@ -330,22 +330,20 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
           >
             {mounted && isMobile ? (
-              /* Splash screen minimalis khusus mobile: hanya maskot di tengah, bergerak naik turun looping */
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#e3e4e7] p-4">
+              /* Splash screen minimalis khusus mobile: hanya maskot besar di tengah, bergerak naik turun looping secara mulus */
+              <div className="absolute inset-0 bg-[#e3e4e7] overflow-hidden flex items-center justify-center">
                 <motion.div
-                  className="w-56 h-56 relative flex items-center justify-center"
+                  className="absolute inset-0 w-full h-full"
                   animate={{ 
-                    y: [0, -14, 0] 
+                    y: [0, -16, 0] 
                   }}
                   transition={{
-                    duration: 2.2,
+                    duration: 2.4,
                     repeat: Infinity,
                     ease: "easeInOut"
                   }}
                 >
-                  <div className="w-48 h-48 rounded-full overflow-hidden relative shadow-[0_12px_36px_rgba(0,0,0,0.06)] bg-white/40 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                    <InteractiveMascotVideo className="w-full h-full scale-[1.05] pointer-events-none" />
-                  </div>
+                  <InteractiveMascotVideo className="w-full h-full scale-115 pointer-events-none" />
                 </motion.div>
               </div>
             ) : (
