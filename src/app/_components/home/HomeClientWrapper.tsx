@@ -268,6 +268,23 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     };
   }, [scene]);
 
+  useEffect(() => {
+    if (scene !== 'hero') return;
+
+    // Auto-reveal timer: jika pengguna tidak menyentuh layar dalam 5 detik, munculkan UI navigasi secara otomatis
+    const autoRevealTimer = setTimeout(() => {
+      setIsTouched((prev) => {
+        if (!prev) {
+          window.dispatchEvent(new CustomEvent('show-mobile-nav'));
+          return true;
+        }
+        return prev;
+      });
+    }, 5000);
+
+    return () => clearTimeout(autoRevealTimer);
+  }, [scene]);
+
 
 
   useEffect(() => {
