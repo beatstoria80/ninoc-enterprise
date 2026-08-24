@@ -1,9 +1,11 @@
 import { DEFAULT_MASCOT_VIDEO_CONFIG, MascotVideoConfigType } from './MascotVideoConfig';
 
 export interface PointerState {
-  normX: number;              // Normalized X [-1.0 .. +1.0] relative to container center
-  normY: number;              // Normalized Y [-1.0 .. +1.0] relative to container center
-  isHovered: boolean;         // Is cursor/touch currently active over hero area
+  normX: number;              // Raw normalized X [-1.0 .. +1.0]
+  normY: number;              // Raw normalized Y [-1.0 .. +1.0]
+  targetX: number;            // Smoothstep dead-zone adjusted X target [-1.0 .. +1.0]
+  isHovered: boolean;         // Is cursor/touch currently active over hero/right area
+  isCategoryHovered: boolean; // Is cursor specifically hovering over category navigation items
   isTouch: boolean;           // Is interaction touch-based
   reducedMotion: boolean;     // Does user request reduced motion
 }
@@ -17,7 +19,9 @@ export class PointerTracker {
   private readonly state: PointerState = {
     normX: 0,
     normY: 0,
+    targetX: 0,
     isHovered: false,
+    isCategoryHovered: false,
     isTouch: false,
     reducedMotion: false,
   };
@@ -98,23 +102,38 @@ export class PointerTracker {
     if (rect.width === 0 || rect.height === 0) return;
 
     const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
 
-    // Simple normalized position relative to container center [-1.0 .. +1.0]
-    let normX = ((clientX - centerX) / (rect.width / 2)) * this.config.pointerSensitivity;
-    let normY = ((clientY - centerY) / (rect.height / 2)) * this.config.pointerSensitivity;
+    let targetX = 0;
+    let isCategory = false;
 
-    // Clamp to [-1.0 .. +1.0]
-    normX = Math.max(-1.0, Math.min(1.0, normX));
-    normY = Math.max(-1.0, Math.min(1.0, normY));
+    // Spatial Thresholds based on Mascot Card Container Bounds
+    // Zone 2: Right area inside mascot frame container
+    const rightFrameZoneX = centerX + (rect.width * 0.05);
+    // Zone 3: OUTSIDE mascot frame container to the right (Categories Navigation Menu with hysteresis)
+    const categoryMenuZoneX = rect.right + 10;
 
-    if (this.state.reducedMotion) {
-      normX *= this.config.reducedMotionFactor;
-      normY *= this.config.reducedMotionFactor;
+    if (clientX >= categoryMenuZoneX) {
+      // Zone 3: Outside video frame in category menu -> Pure Nodding Loop (Chapter 3)
+      targetX = 1.0;
+      isCategory = true;
+    } else if (clientX >= rightFrameZoneX) {
+      // Zone 2: Inside right area of mascot video frame -> Rightward Turn Motion (Chapter 2)
+      targetX = 1.0;
+      isCategory = false;
+    } else {
+      // Zone 1: Left / Center -> Idle Center (Chapter 1)
+      targetX = 0;
+      isCategory = false;
     }
 
-    this.state.normX = normX;
-    this.state.normY = normY;
+    if (this.state.reducedMotion) {
+      targetX *= this.config.reducedMotionFactor;
+    }
+
+    this.state.normX = (clientX - centerX) / (rect.width / 2);
+    this.state.normY = 0;
+    this.state.targetX = targetX;
+    this.state.isCategoryHovered = isCategory;
     this.state.isTouch = isTouch;
   }
 
@@ -147,8 +166,10 @@ export class PointerTracker {
 
   private handleMouseLeave = (): void => {
     this.state.isHovered = false;
+    this.state.isCategoryHovered = false;
     this.state.normX = 0;
     this.state.normY = 0;
+    this.state.targetX = 0;
   };
 
   private handleTouchStart = (e: TouchEvent): void => {
