@@ -448,6 +448,35 @@ export default function GlobalHeader() {
 
   const cartItemsCount = isHydrated ? items.length : 0;
 
+  // Auto-open drawer menu on homepage (TIDAK di opening/intro)
+  useEffect(() => {
+    if (pathname === '/' || pathname === '/en') {
+      const openDrawer = () => {
+        const timer = setTimeout(() => {
+          setIsMenuOpen(true);
+        }, 1000); // Delay sedikit agar animasi entrance UI selesai dulu
+        return timer;
+      };
+
+      if (typeof window !== 'undefined' && sessionStorage.getItem('ninoc_intro_played') === 'true') {
+        // Jika intro sudah pernah diputar, langsung jadwalkan buka
+        const timer = openDrawer();
+        return () => clearTimeout(timer);
+      } else {
+        // Jika sedang di intro (opening), tunggu sampai intro selesai ('show-mobile-nav' dipicu)
+        let timer: NodeJS.Timeout;
+        const handleIntroFinish = () => {
+          timer = openDrawer();
+        };
+        window.addEventListener('show-mobile-nav', handleIntroFinish);
+        return () => {
+          window.removeEventListener('show-mobile-nav', handleIntroFinish);
+          if (timer) clearTimeout(timer);
+        };
+      }
+    }
+  }, [pathname]);
+
   // Scroll handler with debounce
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
