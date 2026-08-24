@@ -448,7 +448,15 @@ export default function GlobalHeader() {
 
   const cartItemsCount = isHydrated ? items.length : 0;
 
-
+  // Auto-open drawer menu on homepage with delay for entrance animation
+  useEffect(() => {
+    if (pathname === '/' || pathname === '/en') {
+      const timer = setTimeout(() => {
+        setIsMenuOpen(true);
+      }, 1000); // Delay 1 detik agar animasi entrance UI selesai dulu sebelum drawer slide-in
+      return () => clearTimeout(timer);
+    }
+  }, [pathname]);
   // Scroll handler with debounce
   useEffect(() => {
     let scrollTimer: ReturnType<typeof setTimeout> | undefined;
