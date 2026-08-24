@@ -11,9 +11,14 @@ export default function GlobalCursor() {
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
 
-  const springConfig = { damping: 25, stiffness: 400, mass: 0.5 };
+  const springConfig = { damping: 22, stiffness: 350, mass: 0.4 };
   const cursorX = useSpring(mouseX, springConfig);
   const cursorY = useSpring(mouseY, springConfig);
+
+  // Trailing ring (follows with more lag for organic feel)
+  const trailConfig = { damping: 30, stiffness: 180, mass: 0.8 };
+  const trailX = useSpring(mouseX, trailConfig);
+  const trailY = useSpring(mouseY, trailConfig);
 
   const pathname = usePathname();
   const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
@@ -61,6 +66,7 @@ export default function GlobalCursor() {
       html.drawer-open * { cursor: auto !important; }
       html:not(.drawer-open) input, html:not(.drawer-open) textarea, html:not(.drawer-open) [contenteditable="true"] { cursor: text !important; }
       html.drawer-open #ninoc-global-cursor { display: none !important; }
+      html.drawer-open #ninoc-cursor-trail { display: none !important; }
     `;
     document.head.appendChild(style);
 
@@ -77,24 +83,70 @@ export default function GlobalCursor() {
   if (isDashboardRoute || !isVisible) return null;
 
   return (
-    <motion.div
-      id="ninoc-global-cursor"
-      className="pointer-events-none fixed top-0 left-0 z-[999999] flex items-center justify-center rounded-full"
-      style={{
-        x: cursorX,
-        y: cursorY,
-        translateX: '-50%',
-        translateY: '-50%',
-      }}
-      animate={{
-        width: isHovering ? 48 : 12,
-        height: isHovering ? 48 : 12,
-        backgroundColor: isHovering ? 'rgba(255, 255, 255, 0.05)' : 'rgba(15, 23, 42, 0.9)', // 5% white on hover, dark ink on default
-        backdropFilter: isHovering ? 'blur(8px)' : 'blur(0px)',
-        border: isHovering ? '1px solid rgba(15, 23, 42, 0.2)' : '0px solid transparent',
-        boxShadow: isHovering ? 'inset 0 0 15px rgba(0,0,0,0.05), 0 10px 15px -3px rgba(0,0,0,0.1)' : '0 1px 2px 0 rgba(0,0,0,0.05)'
-      }}
-      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-    />
+    <>
+      {/* Outer trailing ring — soft glow that follows with lag */}
+      <motion.div
+        id="ninoc-cursor-trail"
+        className="pointer-events-none fixed top-0 left-0 z-[999998] rounded-full"
+        style={{
+          x: trailX,
+          y: trailY,
+          translateX: '-50%',
+          translateY: '-50%',
+        }}
+        animate={{
+          width: isHovering ? 56 : 32,
+          height: isHovering ? 56 : 32,
+          opacity: isHovering ? 0.5 : 0.2,
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      >
+        <div
+          className="w-full h-full rounded-full"
+          style={{
+            background: isHovering
+              ? 'radial-gradient(circle, rgba(168,85,247,0.15) 0%, rgba(139,92,246,0.05) 60%, transparent 100%)'
+              : 'radial-gradient(circle, rgba(15,23,42,0.08) 0%, transparent 70%)',
+            transition: 'background 0.3s ease',
+          }}
+        />
+      </motion.div>
+
+      {/* Main cursor — ring/circle outline */}
+      <motion.div
+        id="ninoc-global-cursor"
+        className="pointer-events-none fixed top-0 left-0 z-[999999] flex items-center justify-center rounded-full"
+        style={{
+          x: cursorX,
+          y: cursorY,
+          translateX: '-50%',
+          translateY: '-50%',
+        }}
+        animate={{
+          width: isHovering ? 48 : 10,
+          height: isHovering ? 48 : 10,
+          borderWidth: isHovering ? 1.5 : 0,
+          borderColor: isHovering ? 'rgba(139, 92, 246, 0.6)' : 'transparent',
+          backgroundColor: isHovering ? 'rgba(139, 92, 246, 0.06)' : 'rgba(15, 23, 42, 0.85)',
+          backdropFilter: isHovering ? 'blur(12px)' : 'blur(0px)',
+          boxShadow: isHovering
+            ? '0 0 20px rgba(139,92,246,0.15), inset 0 0 12px rgba(139,92,246,0.06)'
+            : '0 1px 3px rgba(0,0,0,0.12)',
+        }}
+        transition={{ type: "spring", stiffness: 400, damping: 22 }}
+      >
+        {/* Inner dot visible on hover for precise pointer feedback */}
+        <motion.div
+          className="rounded-full"
+          animate={{
+            width: isHovering ? 4 : 0,
+            height: isHovering ? 4 : 0,
+            opacity: isHovering ? 0.8 : 0,
+            backgroundColor: 'rgba(139, 92, 246, 0.9)',
+          }}
+          transition={{ type: "spring", stiffness: 500, damping: 28 }}
+        />
+      </motion.div>
+    </>
   );
 }

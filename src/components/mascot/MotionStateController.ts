@@ -1,51 +1,27 @@
 import { DEFAULT_MASCOT_VIDEO_CONFIG, MascotVideoConfigType } from './MascotVideoConfig';
 import { PointerState } from './PointerTracker';
 
-export type MotionStateName = 
-  | 'IDLE_CENTER'
-  | 'MOVING_HORIZONTAL'
-  | 'CATEGORY_NODDING'
-  | 'RETURNING_CENTER';
-
-export interface VideoLayerWeights {
-  idleOpacity: number;        // Opacity of Chapter 1 (Idle Center)
-  horizontalOpacity: number;  // Opacity of Chapter 2 (Rightward Motion)
-  categoryNodOpacity: number;  // Opacity of Chapter 3 (Category Nodding Loop)
-  horizontalTimeFraction: number;
-}
-
-export interface MotionStateFrame {
-  currentX: number;           // Current interpolated horizontal position [-1.0 .. +1.0]
-  velocity: number;           // Velocity scalar
-  stateName: MotionStateName; // Current state machine name
-  weights: VideoLayerWeights; // Video layer opacities and seek ratios
+export interface ParallaxFrame {
+  translateX: number;   // Horizontal translate in px
+  translateY: number;   // Vertical translate in px
+  rotateY: number;      // Subtle Y-axis tilt rotation in degrees
+  scale: number;        // Subtle scale for breathing effect
 }
 
 export class MotionStateController {
   private config: MascotVideoConfigType;
   
   private currentX = 0;
-  private velocity = 0;
-  private stateName: MotionStateName = 'IDLE_CENTER';
-  
-  // Separate timers for forward (right) and return (left) phases
-  private turnRightTimer = 0;
-  private returnTimer = 0;
-  
-  // Edge detection: was cursor in right zone on previous frame?
-  private wasRightDrag = false;
+  private currentY = 0;
+  private velocityX = 0;
+  private velocityY = 0;
 
   // Zero-Allocation Buffer: Pre-allocated scratch frame mutated in-place
-  private readonly scratchFrame: MotionStateFrame = {
-    currentX: 0,
-    velocity: 0,
-    stateName: 'IDLE_CENTER',
-    weights: {
-      idleOpacity: 1,
-      horizontalOpacity: 0,
-      categoryNodOpacity: 0,
-      horizontalTimeFraction: 0,
-    },
+  private readonly scratchFrame: ParallaxFrame = {
+    translateX: 0,
+    translateY: 0,
+    rotateY: 0,
+    scale: 1,
   };
 
   constructor(config: MascotVideoConfigType = DEFAULT_MASCOT_VIDEO_CONFIG) {
@@ -57,112 +33,37 @@ export class MotionStateController {
   }
 
   /**
-   * Updates state physics and returns pre-allocated scratch frame buffer.
+   * Updates parallax state physics and returns pre-allocated scratch frame buffer.
    * Zero GC allocations occur inside this method.
    */
-  public update(pointer: Readonly<PointerState>, dt: number): Readonly<MotionStateFrame> {
-    const isRightDrag = pointer.isHovered && pointer.targetX > 0.05;
-    const targetX = isRightDrag ? pointer.targetX : 0.0;
+  public update(pointer: Readonly<PointerState>, dt: number): Readonly<ParallaxFrame> {
+    const isActive = pointer.isHovered;
+    const targetX = isActive ? pointer.normX : 0.0;
+    const targetY = isActive ? pointer.normY : 0.0;
 
     // Spring physics interpolation
-    const response = isRightDrag ? this.config.motionResponse : this.config.returnToCenterSpeed;
+    const response = isActive ? this.config.motionResponse : this.config.returnToCenterSpeed;
     const damping = this.config.motionDamping;
 
-    const accel = response * (targetX - this.currentX) - damping * this.velocity;
-    this.velocity += accel * (dt * 60);
-    this.currentX += this.velocity * (dt * 60);
+    // X-axis spring
+    const accelX = response * (targetX - this.currentX) - damping * this.velocityX;
+    this.velocityX += accelX * (dt * 60);
+    this.currentX += this.velocityX * (dt * 60);
+    this.currentX = Math.max(-1.0, Math.min(1.0, this.currentX));
 
-    // Clamp position strictly between 0.0 (Idle Main) and 1.0 (Full Right Drag)
-    this.currentX = Math.max(0.0, Math.min(1.0, this.currentX));
+    // Y-axis spring
+    const accelY = response * (targetY - this.currentY) - damping * this.velocityY;
+    this.velocityY += accelY * (dt * 60);
+    this.currentY += this.velocityY * (dt * 60);
+    this.currentY = Math.max(-1.0, Math.min(1.0, this.currentY));
 
-    let idleOpacity = 1.0;
-    let horizontalOpacity = 0.0;
-    let categoryNodOpacity = 0.0;
-
-    const ch2Duration = this.config.chapter2Duration ?? 3.2;
-
-    // ─── Edge Detection: Cursor just entered right zone (fresh turn) ───
-    if (isRightDrag && !this.wasRightDrag) {
-      // Fresh rightward entry: reset turn timer for full Chapter 2 animation
-      this.turnRightTimer = 0;
-      this.returnTimer = 0;
-    }
-
-    // ─── Edge Detection: Cursor just left right zone (start return) ───
-    if (!isRightDrag && this.wasRightDrag) {
-      // Just moved left: start return timer from 0 for full Chapter 2 return animation
-      this.returnTimer = 0;
-    }
-
-    if (isRightDrag) {
-      // ═══ RIGHTWARD MOTION (3-Stage Sequential Chain: Chapter 1 → Chapter 2 → Chapter 3) ═══
-      this.turnRightTimer += dt;
-      const turnPhaseDuration = this.config.chapter2Duration ?? 3.2;
-
-      if (this.turnRightTimer < turnPhaseDuration) {
-        // Stage 2: Mandatory Chapter 2 turn motion (turns mascot from center → right pose)
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'MOVING_HORIZONTAL';
-      } else {
-        // Stage 3: After Chapter 2 turn completes → transition into pure Nodding Loop (Chapter 3)
-        // Keep horizontalOpacity = 1.0 as the smooth background video layer underneath nodding video
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 1.0;
-        this.stateName = 'CATEGORY_NODDING';
-      }
-    } else if (this.wasRightDrag || this.returnTimer > 0) {
-      // ═══ RETURNING TO CENTER (CHAPTER 2 REVERSE) ═══
-      // Play Chapter 2 in 60 FPS REVERSE to return mascot smoothly from right to center pose
-      this.returnTimer += dt;
-
-      if (this.returnTimer < ch2Duration) {
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'RETURNING_CENTER';
-      } else {
-        // Return animation complete → back to Idle Center (Chapter 1)
-        this.returnTimer = 0;
-        this.turnRightTimer = 0;
-        idleOpacity = 1.0;
-        horizontalOpacity = 0.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'IDLE_CENTER';
-      }
-    } else {
-      // ═══ IDLE CENTER ═══
-      this.turnRightTimer = 0;
-      this.returnTimer = 0;
-      idleOpacity = 1.0;
-      horizontalOpacity = 0.0;
-      categoryNodOpacity = 0.0;
-      this.stateName = 'IDLE_CENTER';
-    }
-
-    // Update edge detection state for next frame
-    this.wasRightDrag = isRightDrag;
-
-    const horizontalTimeFraction = Math.max(0.0, Math.min(1.0, this.currentX));
-
-    // Mutate internal buffer in-place (Zero Allocation)
+    // Convert to parallax transforms
     const frame = this.scratchFrame;
-    frame.currentX = this.currentX;
-    frame.velocity = this.velocity;
-    frame.stateName = this.stateName;
-
-    const w = frame.weights;
-    w.idleOpacity = idleOpacity;
-    w.horizontalOpacity = horizontalOpacity;
-    w.categoryNodOpacity = categoryNodOpacity;
-    w.horizontalTimeFraction = horizontalTimeFraction;
+    frame.translateX = this.currentX * this.config.parallaxIntensityX;
+    frame.translateY = this.currentY * this.config.parallaxIntensityY;
+    frame.rotateY = this.currentX * this.config.parallaxTiltDeg;
+    frame.scale = 1 + Math.abs(this.currentX) * 0.02; // Subtle 2% scale when offset
 
     return frame;
-  }
-
-  public getCurrentStateName(): MotionStateName {
-    return this.stateName;
   }
 }
