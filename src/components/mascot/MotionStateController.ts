@@ -99,7 +99,13 @@ export class MotionStateController {
       this.turnRightTimer += dt;
       const turnPhaseDuration = this.config.chapter2Duration ?? 3.2;
 
-      if (this.turnRightTimer < turnPhaseDuration) {
+      // Jika kursor berada di menu navigasi kategori, langsung bypass dan aktifkan animasi nodding secara instan
+      if (pointer.isCategoryHovered) {
+        idleOpacity = 0.0;
+        horizontalOpacity = 1.0;
+        categoryNodOpacity = 1.0;
+        this.stateName = 'CATEGORY_NODDING';
+      } else if (this.turnRightTimer < turnPhaseDuration) {
         // Stage 2: Mandatory Chapter 2 turn motion (turns mascot from center → right pose)
         idleOpacity = 0.0;
         horizontalOpacity = 1.0;
