@@ -8,13 +8,16 @@ export interface MascotVideoConfigType {
   
   readonly videoCrossfadeDurationMs: number; // Layer transition opacity crossfade duration in ms
   readonly chapter2Duration: number;        // Extended duration in seconds for Chapter 2 rightward motion (~1.8s)
-  readonly chapter2StartTime: number;       // Start timestamp offset in seconds to skip initial still frame
-  readonly categoryNodStartTime: number;   // Start timestamp offset in seconds for pure nodding loop
   
   readonly videoPaths: {
-    readonly idleCenter: string;        // Chapter 1: Neutral Idle / Center (now mascot_ninoc.mp4)
-    readonly horizontalMotion: string;  // Chapter 2: Center -> Rightward Motion
-    readonly categoryNodding: string;   // Chapter 3: Category Selection Nodding Loop
+    readonly singleMascot: string;      // The ONE AND ONLY video file used
+  };
+
+  // Timestamps (in seconds) indicating where each animation starts within the single video file
+  readonly timestamps: {
+    readonly idleStart: number;
+    readonly turnRightStart: number;
+    readonly noddingStart: number;
   };
 
   readonly reducedMotionFactor: number;
@@ -30,13 +33,15 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   
   videoCrossfadeDurationMs: 120,
   chapter2Duration: 3.2, // Extended long duration for complete Chapter 2 rightward turn and 60 FPS reverse return
-  chapter2StartTime: 0.1,
-  categoryNodStartTime: 0.5, // Bypasses initial turn-left lead-in frames to start directly on pure nodding loop
   
   videoPaths: Object.freeze({
-    idleCenter: '/videos/mascot_ninoc.mp4',
-    horizontalMotion: '/videos/Mascot_horizontal_motion_video_chapter_2.mp4',
-    categoryNodding: '/videos/looping_mengangguk.mp4',
+    singleMascot: '/videos/mascot_ninoc.mp4',
+  }),
+
+  timestamps: Object.freeze({
+    idleStart: 0.0,         // Default: Idle starts at 0s
+    turnRightStart: 5.0,    // Default: Turn right starts at 5s
+    noddingStart: 10.0,     // Default: Nodding starts at 10s
   }),
   
   reducedMotionFactor: 0.1,
@@ -53,6 +58,10 @@ export function createMascotVideoConfig(
     videoPaths: Object.freeze({
       ...DEFAULT_MASCOT_VIDEO_CONFIG.videoPaths,
       ...(overrides.videoPaths || {}),
+    }),
+    timestamps: Object.freeze({
+      ...DEFAULT_MASCOT_VIDEO_CONFIG.timestamps,
+      ...(overrides.timestamps || {}),
     }),
   });
 }

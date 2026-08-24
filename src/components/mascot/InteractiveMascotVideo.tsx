@@ -20,12 +20,12 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   
-  // Video element refs for the 3 motion state chapters
+  // 3 Duplikasi elemen video yang SEMUANYA menggunakan file yang SAMA (mascot_ninoc.mp4)
   const videoIdleRef = useRef<HTMLVideoElement | null>(null);
   const videoHorizontalRef = useRef<HTMLVideoElement | null>(null);
   const videoCategoryNodRef = useRef<HTMLVideoElement | null>(null);
 
-  // Cached opacity refs to eliminate redundant DOM mutations
+  // Cached opacity refs
   const prevIdleOpacity = useRef<number>(-1);
   const prevHorizOpacity = useRef<number>(-1);
   const prevCategoryNodOpacity = useRef<number>(-1);
@@ -38,17 +38,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   const [isMobile, setIsMobile] = useState<boolean>(false);
   const [mobileVideoReady, setMobileVideoReady] = useState<boolean>(false);
 
-  // Detect mobile viewport (<768px) to lock default idle video chapter 1
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Controllers
   const motionControllerRef = useRef<MotionStateController | null>(null);
   const internalTrackerRef = useRef<PointerTracker | null>(null);
 
@@ -56,9 +52,8 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     motionControllerRef.current = new MotionStateController(config);
   }, [config]);
 
-  // Pointer Tracker initialization with strict cleanup
   useEffect(() => {
-    if (isMobile) return; // Skip pointer tracking on mobile screens
+    if (isMobile) return;
 
     const activeTracker = pointerTracker || internalTrackerRef.current || new PointerTracker(config);
     if (!pointerTracker) {
@@ -76,7 +71,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     };
   }, [pointerTracker, config, isMobile]);
 
-  // Immediate Video Autoplay Enforcer for 3 Video Layers
   useEffect(() => {
     const vIdle = videoIdleRef.current;
     const vHoriz = videoHorizontalRef.current;
@@ -94,10 +88,8 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     if (onLoaded) onLoaded();
   }, [onLoaded, isMobile]);
 
-  // Track active layer index (0: Idle, 1: Horiz, 2: Category Nodding)
   const activeLayerRef = useRef<number>(0);
 
-  // High-Performance 60 FPS Render Loop with Liquid Smooth Opacity Crossfading
   useEffect(() => {
     if (isMobile) return;
 
@@ -121,7 +113,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         const pointer = tracker.getState();
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
 
-        // Frame-Sync Layer Transitioning & Stream Control
         let targetActiveLayer = 0;
         if (frame.weights.categoryNodOpacity > 0.5) {
           targetActiveLayer = 2;
@@ -137,36 +128,30 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           if (targetActiveLayer === 1 && vHoriz) {
             try {
               if (frame.stateName === 'RETURNING_CENTER') {
-                // When returning left from nodding/right, seed currentTime to turned-right frame for full extended reverse playback
-                const maxReturnTime = Math.min(vHoriz.duration || 3.2, (config.chapter2StartTime ?? 0.1) + 2.8);
+                const maxReturnTime = Math.min(vHoriz.duration || 3.2, (config.timestamps.turnRightStart ?? 5.0) + 2.8);
                 vHoriz.currentTime = maxReturnTime;
                 vHoriz.pause();
               } else {
-                // Forward rightward turn entry: seek directly to movement start frame
-                vHoriz.currentTime = config.chapter2StartTime ?? 0.1;
+                vHoriz.currentTime = config.timestamps.turnRightStart ?? 5.0;
                 vHoriz.play().catch(() => {});
               }
             } catch (e) {}
           } else if (targetActiveLayer === 2 && vCategoryNod) {
-            // Seek directly to pure nodding loop frame segment
             try {
-              vCategoryNod.currentTime = config.categoryNodStartTime ?? 0.5;
+              vCategoryNod.currentTime = config.timestamps.noddingStart ?? 10.0;
               vCategoryNod.play().catch(() => {});
             } catch (e) {}
           } else if (targetActiveLayer === 0) {
-            // When returning to center idle, ensure idle video plays
             if (vIdle && vIdle.paused) {
               vIdle.play().catch(() => {});
             }
           }
         }
 
-        // Active stream playback & 60 FPS Reverse Controller
         if (targetActiveLayer === 1 && vHoriz) {
           if (frame.stateName === 'RETURNING_CENTER') {
-            // 60 FPS Reverse Playback: decrement currentTime dynamically frame by frame across full extended duration
             vHoriz.pause();
-            const minTime = config.chapter2StartTime ?? 0.1;
+            const minTime = config.timestamps.turnRightStart ?? 5.0;
             const currentT = vHoriz.currentTime;
             if (currentT > minTime) {
               vHoriz.currentTime = Math.max(minTime, currentT - dt * 0.95);
@@ -175,15 +160,14 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
             vHoriz.play().catch(() => {});
           }
         } else if (targetActiveLayer === 2 && vCategoryNod) {
-          // Keep Chapter 2 (vHoriz) active as steady turned-right background layer underneath nodding video
           if (vHoriz && !vHoriz.paused) {
             vHoriz.pause();
           }
           if (vCategoryNod.paused) {
             vCategoryNod.play().catch(() => {});
           }
-          // Liquid Loop Boundary Safeguard: Seamlessly loop back to pure nodding start frame (categoryNodStartTime)
-          const nodStart = config.categoryNodStartTime ?? 0.5;
+          // Loop safeguard for nodding
+          const nodStart = config.timestamps.noddingStart ?? 10.0;
           if (vCategoryNod.duration && vCategoryNod.currentTime >= vCategoryNod.duration - 0.15) {
             try {
               vCategoryNod.currentTime = nodStart;
@@ -193,7 +177,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
           vIdle.play().catch(() => {});
         }
 
-        // Smooth Opacity Interpolation (Lerp) over ~100ms
         const targetIdle = frame.weights.idleOpacity;
         const targetHoriz = frame.weights.horizontalOpacity;
         const targetCategoryNod = frame.weights.categoryNodOpacity;
@@ -204,7 +187,6 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
         currentHorizOpacity.current = lerp(currentHorizOpacity.current, targetHoriz, lerpRate);
         currentCategoryNodOpacity.current = lerp(currentCategoryNodOpacity.current, targetCategoryNod, lerpRate);
 
-        // Smart DOM Opacity Diffing: Only write style when value changes
         if (Math.abs(prevIdleOpacity.current - currentIdleOpacity.current) > 0.001) {
           prevIdleOpacity.current = currentIdleOpacity.current;
           vIdle.style.opacity = currentIdleOpacity.current.toFixed(3);
@@ -229,150 +211,68 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
     return () => cancelAnimationFrame(animFrameId);
   }, [pointerTracker, isMobile, config]);
 
-  // Mobile Continuous Video Playback Loop (Prevents browser pause on touch or card appearance)
-  useEffect(() => {
-    if (!isMobile) return;
-
-    let animId: number;
-    const keepPlaying = () => {
-      const v = videoIdleRef.current;
-      if (v && v.paused) {
-        v.muted = true;
-        v.play().catch(() => {});
-      }
-      animId = requestAnimationFrame(keepPlaying);
-    };
-    animId = requestAnimationFrame(keepPlaying);
-
-    const handleUserInteraction = () => {
-      const v = videoIdleRef.current;
-      if (v && v.paused) {
-        v.muted = true;
-        v.play().catch(() => {});
-      }
-    };
-
-    window.addEventListener('touchstart', handleUserInteraction, { passive: true });
-    window.addEventListener('pointerdown', handleUserInteraction, { passive: true });
-    window.addEventListener('click', handleUserInteraction, { passive: true });
-
-    return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('touchstart', handleUserInteraction);
-      window.removeEventListener('pointerdown', handleUserInteraction);
-      window.removeEventListener('click', handleUserInteraction);
-    };
-  }, [isMobile]);
-
   return (
     <div
       ref={containerRef}
       className={`relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7] select-none ${className}`}
       style={{ touchAction: 'none' }}
     >
-      {/* Video Rendering Stack: Separated for Mobile vs Desktop/PC/Tablet */}
       <div className="relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7]">
         {isMobile ? (
-          /* Mobile Video Player: Dedicated full-bleed object-cover with auto-resumer */
+          /* Mobile */
           <video
             ref={videoIdleRef}
-            src={config.videoPaths.idleCenter}
+            src={config.videoPaths.singleMascot}
             autoPlay
             loop
             muted
             playsInline
             preload="auto"
-            onCanPlay={(e) => {
-              e.currentTarget.muted = true;
-              e.currentTarget.play().catch(() => {});
-            }}
-            onLoadedData={(e) => {
-              e.currentTarget.muted = true;
-              e.currentTarget.play().catch(() => {});
-            }}
-            onPlaying={() => {
-              setMobileVideoReady(true);
-            }}
-            onPause={(e) => {
-              e.currentTarget.muted = true;
-              e.currentTarget.play().catch(() => {});
-            }}
+            onPlaying={() => setMobileVideoReady(true)}
             className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none transition-opacity duration-500 ease-out"
             style={{ opacity: mobileVideoReady ? 1 : 0 }}
-          >
-            <source src={config.videoPaths.idleCenter} type="video/mp4" />
-          </video>
+          />
         ) : (
-          /* Desktop / PC / Laptop / Tablet Video Stack: Synchronized 3-Layer Mouse & Category Tracking */
+          /* Desktop / PC: DUPLIKASI 3 ELEMEN VIDEO YANG SAMA (NO PARALLAX SHAKING) */
           <>
-            {/* Layer 0: Idle Center — mascot_ninoc.mp4 */}
+            {/* DUPLIKAT 1: IDLE */}
             <video
               ref={videoIdleRef}
-              src={config.videoPaths.idleCenter}
+              src={config.videoPaths.singleMascot}
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
-              onCanPlay={(e) => {
-                e.currentTarget.muted = true;
-                e.currentTarget.play().catch(() => {});
-              }}
-              onLoadedData={(e) => {
-                e.currentTarget.muted = true;
-                e.currentTarget.play().catch(() => {});
-              }}
-              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none transition-transform duration-500 ease-out transform-gpu will-change-transform"
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none"
               style={{ opacity: 1, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
-            >
-              <source src={config.videoPaths.idleCenter} type="video/mp4" />
-            </video>
+            />
 
-            {/* Layer 1: Rightward Motion (Chapter 2 - Moving to Right Area) */}
+            {/* DUPLIKAT 2: MENGHADAP KANAN (DI-SEEK KE DURASI TERTENTU) */}
             <video
               ref={videoHorizontalRef}
-              src={config.videoPaths.horizontalMotion}
+              src={config.videoPaths.singleMascot}
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
-              onCanPlay={(e) => {
-                e.currentTarget.muted = true;
-                e.currentTarget.play().catch(() => {});
-              }}
-              onLoadedData={(e) => {
-                e.currentTarget.muted = true;
-                e.currentTarget.play().catch(() => {});
-              }}
-              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none transition-transform duration-500 ease-out transform-gpu will-change-transform"
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.94] pointer-events-none"
               style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
-            >
-              <source src={config.videoPaths.horizontalMotion} type="video/mp4" />
-            </video>
+            />
 
-            {/* Layer 2: Category Selection Nodding Loop (Chapter 3 - Looping Mengangguk) */}
+            {/* DUPLIKAT 3: MENGANGGUK (DI-SEEK KE DURASI TERTENTU) */}
             <video
               ref={videoCategoryNodRef}
-              src={config.videoPaths.categoryNodding}
+              src={config.videoPaths.singleMascot}
               autoPlay
               loop
               muted
               playsInline
               preload="auto"
-              onCanPlay={(e) => {
-                e.currentTarget.muted = true;
-                e.currentTarget.play().catch(() => {});
-              }}
-              onLoadedData={(e) => {
-                e.currentTarget.muted = true;
-                e.currentTarget.play().catch(() => {});
-              }}
-              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.88] pointer-events-none transition-transform duration-500 ease-out transform-gpu will-change-transform"
+              className="absolute inset-0 w-full h-full object-contain object-center scale-[0.88] pointer-events-none"
               style={{ opacity: 0, filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
-            >
-              <source src={config.videoPaths.categoryNodding} type="video/mp4" />
-            </video>
+            />
           </>
         )}
       </div>
