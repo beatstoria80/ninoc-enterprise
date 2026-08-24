@@ -322,7 +322,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             >
               <motion.div
                 className="w-full h-full"
-                style={{ scale: mounted && isMobile ? 0.93 : 1 }}
+                style={{ scale: mounted && isMobile ? 0.95 : 1 }}
                 animate={mounted && isMobile ? { 
                   y: [0, -12, 0] 
                 } : {}}

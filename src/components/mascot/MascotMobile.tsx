@@ -9,7 +9,6 @@ interface MascotMobileProps {
 
 export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [mobileVideoReady, setMobileVideoReady] = useState<boolean>(false);
 
   // Mobile Continuous Video Playback Loop (Prevents browser pause on touch or card appearance)
   useEffect(() => {
@@ -63,9 +62,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       muted
       playsInline
       preload="auto"
-      onPlaying={() => setMobileVideoReady(true)}
-      className="absolute inset-0 w-full h-full object-contain object-center scale-100 pointer-events-none transition-opacity duration-500 ease-out"
-      style={{ opacity: mobileVideoReady ? 1 : 0 }}
+      className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none opacity-100"
     />
   );
 };
