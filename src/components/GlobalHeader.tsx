@@ -740,7 +740,7 @@ export default function GlobalHeader() {
               onClick={() => setIsMenuOpen(true)} 
               className="text-ink/60 hover:text-rose transition-colors cursor-pointer block p-1"
             >
-              <MoreVertical size={20} strokeWidth={1.5} />
+              <Menu size={20} strokeWidth={1.5} />
             </PressScale>
           </div>
           <div className="pointer-events-auto flex items-center gap-1.5 text-[10px] md:text-[9px] font-semibold tracking-[0.15em] text-ink/60 mt-1 px-2.5 py-1.5 rounded-full border border-ink/10">
