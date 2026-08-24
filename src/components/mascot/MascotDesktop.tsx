@@ -78,50 +78,44 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
 
       if (tracker && motion && v && isVideoReady) {
         const pointer = tracker.getState();
-        
-        // Dapatkan hasil fisika pergerakan (currentX = 0.0 hingga 1.0)
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
         
-        // INTERPOLASI (Scrubbing) Waktu Video secara Halus berdasarkan pergerakan kursor
-        // Jika kursor di tengah (currentX = 0), video di detik idleStart (0.0s)
-        // Jika kursor di kanan (currentX = 1), video di detik turnRightStart (5.0s)
-        // Jika kursor hover kategori, kita asumsikan nilainya meloncat ke noddingStart (10.0s)
-
-        let targetTime = config.timestamps.idleStart ?? 0.0;
+        // Kunci: Jangan scrubbing! Gunakan Playback Normal (60FPS Halus)
+        // Kita mendeteksi transisi antar State untuk melakukan 1x lompatan (seek) di awal, lalu Play normal.
         
+        const idleStart = config.timestamps.idleStart ?? 0.0;
+        const rightStart = config.timestamps.turnRightStart ?? 5.0;
+        const nodStart = config.timestamps.noddingStart ?? 10.0;
+
+        // Tentukan Active State berdasarkan currentX (Fisika kursor)
+        let activeState = 'IDLE';
         if (frame.stateName === 'CATEGORY_NODDING') {
-          // Play loop untuk nodding
+          activeState = 'NODDING';
+        } else if (frame.currentX > 0.05) {
+          activeState = 'RIGHT';
+        }
+
+        // Jalankan State Machine
+        if (activeState === 'NODDING') {
           if (v.paused) v.play().catch(() => {});
-          
-          const nodStart = config.timestamps.noddingStart ?? 10.0;
+          // Jika baru masuk state Nodding, atau sudah melewati durasi video
           if (v.currentTime < nodStart || (v.duration && v.currentTime >= v.duration - 0.15)) {
              safeSeek(v, nodStart);
           }
-        } else if (frame.currentX <= 0.01) {
-          // KURSOR DI TENGAH (IDLE): PLAY ANIMASI LOOPING
-          // Jika kursor statis di tengah, mascot HARUS bergerak/bernafas (tidak freeze)
+        } else if (activeState === 'RIGHT') {
           if (v.paused) v.play().catch(() => {});
-          
-          const idleStart = config.timestamps.idleStart ?? 0.0;
-          const turnRightStart = config.timestamps.turnRightStart ?? 5.0;
-          
-          // Loop kembali ke awal idle jika sudah mencapai batas awal animasi 'Nengok Kanan'
-          if (v.currentTime < idleStart || v.currentTime >= turnRightStart) {
-             safeSeek(v, idleStart);
+          // Saat nengok kanan, biarkan video memutar. 
+          // Jika video kebablasan sampai masuk ke area Nodding, loop kembali ke awal Right
+          if (v.currentTime < rightStart || v.currentTime >= nodStart - 0.2) {
+             safeSeek(v, rightStart);
           }
         } else {
-          // KURSOR BERGERAK KE KANAN: PAUSE & SCRUB
-          // Video di-pause dan diputar frame-demi-frame maju-mundur mengikuti tarikan mouse
-          if (!v.paused) v.pause();
-          
-          const rightStart = config.timestamps.turnRightStart ?? 5.0;
-          const nodStart = config.timestamps.noddingStart ?? 10.0;
-          const turnDuration = nodStart - rightStart; // Range durasi untuk gerakan nengok kanan
-          
-          // Interpolasi linear berdasarkan posisi tarikan fisika mouse
-          targetTime = rightStart + (turnDuration * frame.currentX);
-          
-          safeSeek(v, targetTime);
+          // IDLE (Center)
+          if (v.paused) v.play().catch(() => {});
+          // Biarkan video memutar. Jika kebablasan sampai masuk ke area Nengok Kanan, loop ke awal Idle
+          if (v.currentTime < idleStart || v.currentTime >= rightStart - 0.2) {
+             safeSeek(v, idleStart);
+          }
         }
       }
 
