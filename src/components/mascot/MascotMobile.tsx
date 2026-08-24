@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import { MascotVideoConfigType } from './MascotVideoConfig';
 
 interface MascotMobileProps {
@@ -54,7 +55,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
   }, [config]);
 
   return (
-    <video
+    <motion.video
       ref={videoRef}
       src={config.videoPaths.singleMascot}
       autoPlay
@@ -62,7 +63,16 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       muted
       playsInline
       preload="auto"
-      className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none opacity-100"
+      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
+      style={{ scale: 1.08 }}
+      animate={{ 
+        y: [0, -14, 0] 
+      }}
+      transition={{
+        duration: 2.4,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }}
     />
   );
 };

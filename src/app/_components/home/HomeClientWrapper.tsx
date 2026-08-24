@@ -314,26 +314,12 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
             }
             transition={{ duration: 1.0, ease: [0.23, 1, 0.32, 1] }}
           >
-            {/* Mascot Video Container */}
             <div 
               onClick={handleOverlayTap}
               onTouchStart={handleOverlayTap}
               className="absolute inset-0 w-full h-full cursor-pointer"
             >
-              <motion.div
-                className="w-full h-full"
-                style={{ scale: mounted && isMobile ? 0.95 : 1 }}
-                animate={mounted && isMobile ? { 
-                  y: [0, -12, 0] 
-                } : {}}
-                transition={mounted && isMobile ? {
-                  duration: 2.4,
-                  repeat: Infinity,
-                  ease: "easeInOut"
-                } : {}}
-              >
-                <InteractiveMascotVideo className="w-full h-full" />
-              </motion.div>
+              <InteractiveMascotVideo className="w-full h-full" />
             </div>
 
             {/* Overlay Layer (Logo & Content Card) */}
