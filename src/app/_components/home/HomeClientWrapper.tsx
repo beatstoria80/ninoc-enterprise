@@ -294,10 +294,10 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   useEffect(() => {
     if (scene !== 'hero' || isMobile) return;
 
-    // Timer 2.2 detik untuk menunda reveal UI copy & navigasi di desktop
+    // Timer 1 detik untuk menunda reveal UI copy & navigasi di desktop
     const desktopTimer = setTimeout(() => {
       setIsDesktopRevealed(true);
-    }, 2200);
+    }, 1000);
 
     return () => clearTimeout(desktopTimer);
   }, [scene, isMobile]);
