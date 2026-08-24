@@ -97,15 +97,29 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
           if (v.currentTime < nodStart || (v.duration && v.currentTime >= v.duration - 0.15)) {
              safeSeek(v, nodStart);
           }
+        } else if (frame.currentX <= 0.01) {
+          // KURSOR DI TENGAH (IDLE): PLAY ANIMASI LOOPING
+          // Jika kursor statis di tengah, mascot HARUS bergerak/bernafas (tidak freeze)
+          if (v.paused) v.play().catch(() => {});
+          
+          const idleStart = config.timestamps.idleStart ?? 0.0;
+          const turnRightStart = config.timestamps.turnRightStart ?? 5.0;
+          
+          // Loop kembali ke awal idle jika sudah mencapai batas awal animasi 'Nengok Kanan'
+          if (v.currentTime < idleStart || v.currentTime >= turnRightStart) {
+             safeSeek(v, idleStart);
+          }
         } else {
-          // Pause and Scrub untuk pergerakan kiri-kanan
+          // KURSOR BERGERAK KE KANAN: PAUSE & SCRUB
+          // Video di-pause dan diputar frame-demi-frame maju-mundur mengikuti tarikan mouse
           if (!v.paused) v.pause();
           
-          const idleTime = config.timestamps.idleStart ?? 0.0;
-          const rightTime = config.timestamps.turnRightStart ?? 5.0;
+          const rightStart = config.timestamps.turnRightStart ?? 5.0;
+          const nodStart = config.timestamps.noddingStart ?? 10.0;
+          const turnDuration = nodStart - rightStart; // Range durasi untuk gerakan nengok kanan
           
-          // Interpolasi linear dari Idle ke Nengok Kanan berdasarkan currentX
-          targetTime = idleTime + (rightTime - idleTime) * frame.currentX;
+          // Interpolasi linear berdasarkan posisi tarikan fisika mouse
+          targetTime = rightStart + (turnDuration * frame.currentX);
           
           safeSeek(v, targetTime);
         }
