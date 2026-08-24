@@ -64,7 +64,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       playsInline
       preload="auto"
       onPlaying={() => setMobileVideoReady(true)}
-      className="absolute inset-0 w-full h-full object-cover object-center scale-100 pointer-events-none transition-opacity duration-500 ease-out"
+      className="absolute inset-0 w-full h-full object-contain object-center scale-100 pointer-events-none transition-opacity duration-500 ease-out"
       style={{ opacity: mobileVideoReady ? 1 : 0 }}
     />
   );
