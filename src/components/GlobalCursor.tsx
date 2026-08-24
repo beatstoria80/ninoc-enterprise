@@ -59,24 +59,10 @@ export default function GlobalCursor() {
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseover', handleMouseOver);
 
-    // Hide native cursor for interactive elements globally by injecting CSS
-    const style = document.createElement('style');
-    style.innerHTML = `
-      html:not(.drawer-open) * { cursor: none !important; }
-      html.drawer-open * { cursor: auto !important; }
-      html:not(.drawer-open) input, html:not(.drawer-open) textarea, html:not(.drawer-open) [contenteditable="true"] { cursor: text !important; }
-      html.drawer-open #ninoc-global-cursor { display: none !important; }
-      html.drawer-open #ninoc-cursor-trail { display: none !important; }
-    `;
-    document.head.appendChild(style);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseover', handleMouseOver);
       clearTimeout(timeout);
-      if (document.head.contains(style)) {
-        document.head.removeChild(style);
-      }
     };
   }, [mouseX, mouseY, isDashboardRoute]);
 
@@ -84,6 +70,15 @@ export default function GlobalCursor() {
 
   return (
     <>
+      {/* Inject global cursor hiding styles declaratively */}
+      <style dangerouslySetInnerHTML={{__html: `
+        html:not(.drawer-open) * { cursor: none !important; }
+        html.drawer-open * { cursor: auto !important; }
+        html:not(.drawer-open) input, html:not(.drawer-open) textarea, html:not(.drawer-open) [contenteditable="true"] { cursor: text !important; }
+        html.drawer-open #ninoc-global-cursor { display: none !important; }
+        html.drawer-open #ninoc-cursor-trail { display: none !important; }
+      `}} />
+
       {/* Outer trailing ring — soft glow that follows with lag */}
       <motion.div
         id="ninoc-cursor-trail"
