@@ -13,11 +13,14 @@ export interface MascotVideoConfigType {
     readonly singleMascot: string;      // The ONE AND ONLY video file used
   };
 
-  // Timestamps (in seconds) indicating where each animation starts within the single video file
+  // Timestamps (in seconds) indicating where each animation starts and ends within the single video file
   readonly timestamps: {
     readonly idleStart: number;
+    readonly idleEnd: number;
     readonly turnRightStart: number;
+    readonly turnRightEnd: number;
     readonly noddingStart: number;
+    readonly noddingEnd: number;
   };
 
   readonly reducedMotionFactor: number;
@@ -39,9 +42,12 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   }),
 
   timestamps: Object.freeze({
-    idleStart: 0.0,         // Default: Idle starts at 0s
-    turnRightStart: 5.0,    // Default: Turn right starts at 5s
-    noddingStart: 10.0,     // Default: Nodding starts at 10s
+    idleStart: 0.0,         // Mulai idle
+    idleEnd: 2.8,           // AKHIR IDLE (Harus dipotong sebelum maskot mulai nengok kanan!)
+    turnRightStart: 3.0,    // Mulai nengok kanan
+    turnRightEnd: 5.5,      // Akhir nengok kanan
+    noddingStart: 6.0,      // Mulai mengangguk
+    noddingEnd: 10.0,       // Akhir mengangguk
   }),
   
   reducedMotionFactor: 0.1,

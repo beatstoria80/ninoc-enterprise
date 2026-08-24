@@ -84,8 +84,11 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
         // Kita mendeteksi transisi antar State untuk melakukan 1x lompatan (seek) di awal, lalu Play normal.
         
         const idleStart = config.timestamps.idleStart ?? 0.0;
-        const rightStart = config.timestamps.turnRightStart ?? 5.0;
-        const nodStart = config.timestamps.noddingStart ?? 10.0;
+        const idleEnd = config.timestamps.idleEnd ?? 2.8;
+        const rightStart = config.timestamps.turnRightStart ?? 3.0;
+        const rightEnd = config.timestamps.turnRightEnd ?? 5.5;
+        const nodStart = config.timestamps.noddingStart ?? 6.0;
+        const nodEnd = config.timestamps.noddingEnd ?? 10.0;
 
         // Tentukan Active State berdasarkan currentX (Fisika kursor)
         let activeState = 'IDLE';
@@ -95,25 +98,24 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
           activeState = 'RIGHT';
         }
 
-        // Jalankan State Machine
+        // Jalankan State Machine - STRICT LOOPING
         if (activeState === 'NODDING') {
           if (v.paused) v.play().catch(() => {});
-          // Jika baru masuk state Nodding, atau sudah melewati durasi video
-          if (v.currentTime < nodStart || (v.duration && v.currentTime >= v.duration - 0.15)) {
+          if (v.currentTime < nodStart || v.currentTime >= nodEnd - 0.1) {
              safeSeek(v, nodStart);
           }
         } else if (activeState === 'RIGHT') {
           if (v.paused) v.play().catch(() => {});
-          // Saat nengok kanan, biarkan video memutar. 
-          // Jika video kebablasan sampai masuk ke area Nodding, loop kembali ke awal Right
-          if (v.currentTime < rightStart || v.currentTime >= nodStart - 0.2) {
+          // Loop khusus animasi nengok kanan
+          if (v.currentTime < rightStart || v.currentTime >= rightEnd - 0.1) {
              safeSeek(v, rightStart);
           }
         } else {
           // IDLE (Center)
           if (v.paused) v.play().catch(() => {});
-          // Biarkan video memutar. Jika kebablasan sampai masuk ke area Nengok Kanan, loop ke awal Idle
-          if (v.currentTime < idleStart || v.currentTime >= rightStart - 0.2) {
+          // KUNCI: Potong tepat sebelum maskot mulai nengok kanan agar tidak bocor!
+          // Loop kembali ke awal idle (0.0s) setelah mencapai idleEnd (2.8s)
+          if (v.currentTime < idleStart || v.currentTime >= idleEnd - 0.1) {
              safeSeek(v, idleStart);
           }
         }
