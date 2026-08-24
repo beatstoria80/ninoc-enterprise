@@ -100,27 +100,9 @@ export class MotionStateController {
       horizontalOpacity = 1.0;
       categoryNodOpacity = 1.0;
       this.stateName = 'CATEGORY_NODDING';
-    } else if (this.wasRightDrag || this.returnTimer > 0) {
-      // ═══ RETURNING TO CENTER (CHAPTER 2 REVERSE) ═══
-      // Play Chapter 2 in 60 FPS REVERSE to return mascot smoothly from right to center pose
-      this.returnTimer += dt;
-
-      if (this.returnTimer < ch2Duration) {
-        idleOpacity = 0.0;
-        horizontalOpacity = 1.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'RETURNING_CENTER';
-      } else {
-        // Return animation complete → back to Idle Center (Chapter 1)
-        this.returnTimer = 0;
-        this.turnRightTimer = 0;
-        idleOpacity = 1.0;
-        horizontalOpacity = 0.0;
-        categoryNodOpacity = 0.0;
-        this.stateName = 'IDLE_CENTER';
-      }
     } else {
       // ═══ IDLE CENTER ═══
+      // Langsung kembali ke depan tanpa memutar kepala menoleh ke kiri balik
       this.turnRightTimer = 0;
       this.returnTimer = 0;
       idleOpacity = 1.0;
