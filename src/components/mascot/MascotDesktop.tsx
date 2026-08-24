@@ -80,9 +80,6 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
         const pointer = tracker.getState();
         const frame: Readonly<MotionStateFrame> = motion.update(pointer, dt);
         
-        // Kunci: Jangan scrubbing! Gunakan Playback Normal (60FPS Halus)
-        // Kita mendeteksi transisi antar State untuk melakukan 1x lompatan (seek) di awal, lalu Play normal.
-        
         const idleStart = config.timestamps.idleStart ?? 0.0;
         const idleEnd = config.timestamps.idleEnd ?? 2.8;
         const rightStart = config.timestamps.turnRightStart ?? 3.0;
@@ -90,34 +87,33 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
         const nodStart = config.timestamps.noddingStart ?? 6.0;
         const nodEnd = config.timestamps.noddingEnd ?? 10.0;
 
-        // Tentukan Active State berdasarkan currentX (Fisika kursor)
-        let activeState = 'IDLE';
         if (frame.stateName === 'CATEGORY_NODDING') {
-          activeState = 'NODDING';
-        } else if (frame.currentX > 0.05) {
-          activeState = 'RIGHT';
-        }
-
-        // Jalankan State Machine - STRICT LOOPING
-        if (activeState === 'NODDING') {
+          // Play loop untuk nodding
           if (v.paused) v.play().catch(() => {});
+          
           if (v.currentTime < nodStart || v.currentTime >= nodEnd - 0.1) {
              safeSeek(v, nodStart);
           }
-        } else if (activeState === 'RIGHT') {
+        } else if (frame.currentX <= 0.01) {
+          // KURSOR DI TENGAH (IDLE): PLAY ANIMASI LOOPING
+          // Jika kursor statis di tengah, mascot HARUS bergerak/bernafas (tidak freeze)
           if (v.paused) v.play().catch(() => {});
-          // Loop khusus animasi nengok kanan
-          if (v.currentTime < rightStart || v.currentTime >= rightEnd - 0.1) {
-             safeSeek(v, rightStart);
-          }
-        } else {
-          // IDLE (Center)
-          if (v.paused) v.play().catch(() => {});
-          // KUNCI: Potong tepat sebelum maskot mulai nengok kanan agar tidak bocor!
-          // Loop kembali ke awal idle (0.0s) setelah mencapai idleEnd (2.8s)
+          
+          // Potong tepat sebelum maskot mulai nengok kanan agar tidak bocor ke kanan sendiri
           if (v.currentTime < idleStart || v.currentTime >= idleEnd - 0.1) {
              safeSeek(v, idleStart);
           }
+        } else {
+          // KURSOR BERGERAK KE KANAN: PAUSE & SCRUB
+          // Ini adalah transisi halus di mana maskot mengikuti kursor secara interaktif
+          if (!v.paused) v.pause();
+          
+          const turnDuration = rightEnd - rightStart; // Range durasi untuk gerakan nengok kanan
+          
+          // Interpolasi linear berdasarkan posisi tarikan fisika mouse
+          let targetTime = rightStart + (turnDuration * frame.currentX);
+          
+          safeSeek(v, targetTime);
         }
       }
 
