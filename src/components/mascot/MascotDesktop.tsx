@@ -57,7 +57,7 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
   // Utility to safely seek video
   const safeSeek = (v: HTMLVideoElement, targetTime: number) => {
     if (v.readyState < 2) return; // Guard: pastikan video sudah memiliki data frame
-    if (Math.abs(v.currentTime - targetTime) > 0.02) { // Tolerance
+    if (Math.abs(v.currentTime - targetTime) > 0.001) { // Tolerance diturunkan drastis untuk 60FPS murni
       try {
         v.currentTime = targetTime;
       } catch (e) {}

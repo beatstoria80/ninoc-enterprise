@@ -25,11 +25,11 @@ export interface MascotVideoConfigType {
 
 export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze({
   pointerDeadZone: 0.05,
-  pointerSensitivity: 1.8,
+  pointerSensitivity: 2.2, // Ditingkatkan agar lebih sensitif terhadap gerakan mouse
   
-  motionDamping: 0.12,
-  motionResponse: 0.45,
-  returnToCenterSpeed: 0.15,
+  motionDamping: 0.25,      // Ditingkatkan agar cepat stabil (tidak berayun-ayun lama)
+  motionResponse: 0.85,     // Ditingkatkan drastis agar sangat cepat bereaksi (sebelumnya 0.45)
+  returnToCenterSpeed: 0.35, // Ditingkatkan agar cepat kembali ke tengah (sebelumnya 0.15)
   
   videoCrossfadeDurationMs: 120,
   chapter2Duration: 3.2, // Extended long duration for complete Chapter 2 rightward turn and 60 FPS reverse return
