@@ -11,19 +11,31 @@ interface MascotMobileProps {
 export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // Mobile Continuous Video Playback Loop (Prevents browser pause on touch or card appearance)
+  // Mobile Continuous Video Playback Loop
   useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+
     let animId: number;
+    let isPlayPending = false;
+
+    const safePlay = () => {
+      if (v.paused && !isPlayPending) {
+        isPlayPending = true;
+        v.play().catch(() => {}).finally(() => {
+          isPlayPending = false;
+        });
+      }
+    };
+
     const keepPlaying = () => {
-      const v = videoRef.current;
-      if (v) {
-        if (v.paused) {
-          v.muted = true;
-          v.play().catch(() => {});
-        }
-        // Batasi pemutaran video hanya pada fase idle (0.0 - 2.8 detik)
-        const idleStart = config.timestamps.idleStart ?? 0.0;
-        const idleEnd = config.timestamps.idleEnd ?? 2.8;
+      safePlay();
+
+      // Batasi pemutaran video hanya pada fase idle (0.0 - 2.8 detik)
+      const idleStart = config.timestamps.idleStart ?? 0.0;
+      const idleEnd = config.timestamps.idleEnd ?? 2.8;
+      
+      if (v.readyState >= 2) {
         if (v.currentTime < idleStart || v.currentTime >= idleEnd - 0.1) {
           try {
             v.currentTime = idleStart;
@@ -32,14 +44,11 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       }
       animId = requestAnimationFrame(keepPlaying);
     };
+    
     animId = requestAnimationFrame(keepPlaying);
 
     const handleUserInteraction = () => {
-      const v = videoRef.current;
-      if (v && v.paused) {
-        v.muted = true;
-        v.play().catch(() => {});
-      }
+      safePlay();
     };
 
     window.addEventListener('touchstart', handleUserInteraction, { passive: true });
@@ -63,8 +72,8 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       muted
       playsInline
       preload="auto"
-      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
-      style={{ scale: 0.98 }}
+      // object-contain digunakan agar SELURUH maskot (termasuk tentakel) masuk ke layar tanpa terpotong
+      className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none opacity-100"
     />
   );
 };
