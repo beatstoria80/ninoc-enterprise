@@ -48,8 +48,7 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
       v.muted = true;
       v.defaultMuted = true;
       v.playsInline = true;
-      // Jangan autoplay terus-menerus, kita akan mengontrol (scrub) frame-nya
-      v.pause();
+      // Biarkan browser melakukan autoplay secara native agar prioritas buffering tinggi
     }
     // Panggil onLoaded langsung — jangan blokir UI menunggu video 38MB
     if (onLoaded) onLoaded();
@@ -135,10 +134,11 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
       <video
         ref={videoRef}
         src={config.videoPaths.singleMascot}
+        autoPlay
         muted
         playsInline
         preload="auto"
-        onCanPlay={() => setIsVideoReady(true)}
+        onLoadedData={() => setIsVideoReady(true)}
         className="absolute inset-0 w-full h-full object-contain object-center scale-[0.98] pointer-events-none"
         style={{ 
           opacity: isVideoReady ? 1 : 0, 
