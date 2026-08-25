@@ -336,8 +336,10 @@ export default function MobileLayout({
   return (
     <div className="min-h-screen bg-cr ios-native-layout flex flex-col">
 
-      {/* Safe area top spacer */}
-      <div className="h-[env(safe-area-inset-top)] bg-white/95" />
+      {/* Safe area top spacer — rendered conditionally */}
+      {(!hideHeader && !isOpeningSequence && isNavVisible) && (
+        <div className="h-[env(safe-area-inset-top)] bg-white/95" />
+      )}
 
       {/* ═══════════════════════════════════════════════════════════════ */}
       {/* FIXED HEADER — Hide and Rise */}
@@ -659,8 +661,8 @@ export default function MobileLayout({
       {/* Main Content */}
       <main className={cn(
         "flex-1 overflow-y-auto",
-        !hideHeader && "pt-14",
-        !hideTabBar && "pb-[calc(50px+env(safe-area-inset-bottom))]",
+        (!hideHeader && !isOpeningSequence && isNavVisible) && "pt-14",
+        (!hideTabBar && !isOpeningSequence && isNavVisible) && "pb-[calc(50px+env(safe-area-inset-bottom))]",
         "ios-momentum-scroll"
       )}>
         {children}

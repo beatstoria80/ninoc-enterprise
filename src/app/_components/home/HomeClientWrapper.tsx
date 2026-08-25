@@ -264,7 +264,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
       document.body.style.overflow = 'hidden';
       window.scrollTo(0, 0);
       window.dispatchEvent(new CustomEvent('hide-mobile-nav'));
-    } else {
+    } else if (scene === 'archive') {
       document.body.style.overflow = 'auto';
       window.dispatchEvent(new CustomEvent('show-mobile-nav'));
     }
@@ -281,7 +281,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     const autoRevealTimer = setTimeout(() => {
       setIsTouched((prev) => {
         if (!prev) {
-          window.dispatchEvent(new CustomEvent('show-mobile-nav'));
           return true;
         }
         return prev;
