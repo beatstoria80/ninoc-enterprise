@@ -133,9 +133,9 @@ function DesktopIntroOverlay({ isRevealed, onShopClick }: { isRevealed: boolean;
         {/* Left Column: Brand Copy & CTA */}
         <div className="w-full max-w-md lg:max-w-[480px] xl:max-w-[520px] text-left pointer-events-auto space-y-4 sm:space-y-5 md:space-y-6 ml-4 sm:ml-8 md:ml-12 lg:ml-20 xl:ml-28 2xl:ml-36">
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
-            transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
+            initial={{ opacity: 0, y: 15 }}
+            animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.15 }}
             className="inline-flex items-center gap-2 text-[11px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#475569]"
           >
             <span className="w-2 h-2 rounded-full bg-[#8b5cf6] shadow-sm shadow-purple-500/50" />
@@ -143,9 +143,9 @@ function DesktopIntroOverlay({ isRevealed, onShopClick }: { isRevealed: boolean;
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={isRevealed ? { opacity: 1, x: 0 } : { opacity: 0, x: -40 }}
-            transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.3 }}
+            initial={{ opacity: 0, y: 25 }}
+            animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 25 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.25 }}
             className="space-y-1"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[#0f172a] tracking-tight leading-[1.08] font-sans drop-shadow-2xs">
@@ -155,18 +155,18 @@ function DesktopIntroOverlay({ isRevealed, onShopClick }: { isRevealed: boolean;
           </motion.div>
 
           <motion.p
-            initial={{ opacity: 0, x: -30 }}
-            animate={isRevealed ? { opacity: 1, x: 0 } : { opacity: 0, x: -30 }}
-            transition={{ duration: 0.9, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.35 }}
             className="text-xs sm:text-sm md:text-base text-[#334155] font-medium leading-relaxed max-w-sm sm:max-w-md md:max-w-lg"
           >
             Premium apparel, artisan objects, and specialty pantry curated under one roof.
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, x: -20, scale: 0.95 }}
-            animate={isRevealed ? { opacity: 1, x: 0, scale: 1 } : { opacity: 0, x: -20, scale: 0.95 }}
-            transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.6 }}
+            initial={{ opacity: 0, y: 15, scale: 0.97 }}
+            animate={isRevealed ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 15, scale: 0.97 }}
+            transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.45 }}
             className="pt-2"
           >
             <motion.button
@@ -185,9 +185,9 @@ function DesktopIntroOverlay({ isRevealed, onShopClick }: { isRevealed: boolean;
         {/* Right Column: Vertical Navigation Menu */}
         <motion.div
           className="hidden md:flex flex-col items-end gap-4 text-xs md:text-[11px] lg:text-xs font-mono font-bold uppercase tracking-[0.2em] text-ink/80 pointer-events-auto absolute right-4 sm:right-6 md:right-8 lg:right-10 xl:right-14 top-1/2 -translate-y-1/2 z-20"
-          initial={{ opacity: 0, x: 40 }}
-          animate={isRevealed ? { opacity: 1, x: 0 } : { opacity: 0, x: 40 }}
-          transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.4 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.55 }}
         >
           <span className="text-[10px] font-mono font-bold tracking-[0.25em] uppercase text-ink/60 mb-1 border-b border-ink/15 pb-1.5 w-full text-right">
             CATEGORIES
@@ -203,9 +203,9 @@ function DesktopIntroOverlay({ isRevealed, onShopClick }: { isRevealed: boolean;
       {/* Bottom Bar: Left Spec Badge & Right Social Footer (Animasi reveal) */}
       <motion.div 
         className="hidden md:flex items-center justify-between pointer-events-auto px-4 sm:px-8 md:px-12 lg:px-16 pb-4 pt-2 z-20"
-        initial={{ opacity: 0 }}
-        animate={isRevealed ? { opacity: 1 } : { opacity: 0 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
+        initial={{ opacity: 0, y: 15 }}
+        animate={isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+        transition={{ duration: 0.8, ease: [0.23, 1, 0.32, 1], delay: 0.65 }}
       >
         <div className="text-[10px] font-mono tracking-widest text-[#94a3b8] uppercase absolute left-4 sm:left-6 md:left-8 lg:left-10 xl:left-12 bottom-12 md:bottom-14 lg:bottom-16">
           EST. 2024 · BANDUNG ID
@@ -244,6 +244,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     return false;
   });
   const [isTouched, setIsTouched] = useState(false);
+  const [isMascotLoaded, setIsMascotLoaded] = useState(false);
   const [isDesktopRevealed, setIsDesktopRevealed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -293,13 +294,14 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   useEffect(() => {
     if (scene !== 'hero' || isMobile) return;
 
-    // Timer 1 detik untuk menunda reveal UI copy & navigasi di desktop
-    const desktopTimer = setTimeout(() => {
-      setIsDesktopRevealed(true);
-    }, 1000);
-
-    return () => clearTimeout(desktopTimer);
-  }, [scene, isMobile]);
+    if (isMascotLoaded) {
+      // Menunda sebentar agar transisi memudarnya loader dan masuknya UI estetik
+      const desktopTimer = setTimeout(() => {
+        setIsDesktopRevealed(true);
+      }, 350);
+      return () => clearTimeout(desktopTimer);
+    }
+  }, [scene, isMobile, isMascotLoaded]);
 
 
 
@@ -352,7 +354,10 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               onTouchStart={handleOverlayTap}
               className="absolute inset-0 w-full h-full cursor-pointer"
             >
-              <InteractiveMascotVideo className="w-full h-full" />
+              <InteractiveMascotVideo 
+                className="w-full h-full" 
+                onLoaded={() => setIsMascotLoaded(true)}
+              />
             </div>
 
             {/* Overlay Layer (Logo & Content Card) */}
