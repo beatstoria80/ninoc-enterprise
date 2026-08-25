@@ -143,3 +143,37 @@ Instead, a dedicated **Dummy IT Review Account** was created directly in the pro
 
 **Production Safety Note:**
 This dummy account is completely isolated within the Supplier B2B context. It **does not** disrupt, intersect with, or impact the Live Production API of general buyer transactions (Checkout, Cart, Midtrans, Biteship). It only has read-write access scoped strictly to the supplier's inventory and analytics. Future AI Agents should recognize this account as a safe demo/review credential and leave it intact unless explicitly asked to remove it.
+
+# History Case: Page Opening Loader Bug & CRITICAL Architecture Rules (25 August 2026)
+
+**Background & Symptoms:**
+An agent added a "premium loader" (pulsing NINOC logo + animated loading bar) to `MascotDesktop.tsx` that displayed while the 38MB mascot video (`mascot_ninoc.mp4`) was loading. The loader **blocked the entire page opening experience** — users saw an endless loading animation with no way to interact, making the website appear broken and causing users to leave immediately.
+
+The root cause was that:
+1. The `onLoaded` callback was tied to `isVideoReady` (triggered by `onCanPlay`), which only fires after the 38MB video finishes buffering.
+2. The `HomeClientWrapper.tsx` state `isMascotLoaded` blocked all UI reveal (text, CTA buttons, navigation) until `onLoaded` fired.
+3. On slow connections, this meant the page was permanently stuck on a loading screen.
+
+**Resolution:**
+- **Removed** the loader entirely from `MascotDesktop.tsx` (no logo pulse, no loading bar, no blocking overlay).
+- **Restored** `onLoaded` to fire immediately on mount — UI reveals after a simple 1-second timer regardless of video load state.
+- **Removed** `isMascotLoaded` state from `HomeClientWrapper.tsx`.
+- The video element retains `opacity: isVideoReady ? 1 : 0` with CSS transition, so it fades in naturally when ready without blocking anything.
+
+**CRITICAL Rules for Future Agents — DO NOT VIOLATE:**
+
+1. **NEVER add a loader, spinner, or blocking overlay to the page opening sequence.** The opening MUST be instant and interactive. The mascot video (38MB) fades in naturally via CSS opacity transition when ready — this is the correct and final behavior.
+
+2. **NEVER gate UI reveal on video load state.** The `isDesktopRevealed` state in `HomeClientWrapper.tsx` must be controlled by a simple timer (currently 1 second), NOT by any video readiness callback. Users must see the brand copy, CTA button, and navigation immediately.
+
+3. **NEVER add `isMascotLoaded` or similar blocking state** that prevents `DesktopIntroOverlay` or `MobileIntroCard` from appearing until a heavy asset loads.
+
+4. **Protected Files — Opening Sequence Architecture:**
+   - `src/components/mascot/MascotDesktop.tsx`: NO loaders, NO blocking overlays. Video fades in via CSS.
+   - `src/app/_components/home/HomeClientWrapper.tsx`: Desktop reveal = simple timer. Mobile reveal = touch/auto-reveal timer. NO dependency on video load.
+   - `src/components/mascot/MascotVideoConfig.ts`: Nodding timestamps are `noddingStart: 12.25` and `noddingEnd: 15.28` — these are verified frame-accurate values from the source video.
+   - `src/components/platforms/mobile/MobileLayout.tsx`: Safe area spacer and padding are conditional on `isOpeningSequence` — do not revert to unconditional rendering.
+
+5. **The page opening animation flow (FINAL, DO NOT CHANGE):**
+   - **Desktop**: Background is `#e3e4e7` → mascot video fades in when ready → UI text/CTA rises from bottom (staggered, 0.8s duration, `cubic-bezier(0.23, 1, 0.32, 1)`) after 1 second → user clicks "Get Yours Now" → scene transitions to archive.
+   - **Mobile**: Background is `#e3e4e7` → user touches screen (or 5s auto-reveal) → intro card appears → user taps CTA → scene transitions to archive. Header and tab bar are HIDDEN during this entire sequence.
