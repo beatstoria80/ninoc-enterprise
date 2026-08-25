@@ -139,12 +139,8 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
         playsInline
         preload="auto"
         onLoadedData={() => setIsVideoReady(true)}
-        className="absolute inset-0 w-full h-full object-contain object-center scale-[0.98] pointer-events-none"
-        style={{ 
-          opacity: isVideoReady ? 1 : 0, 
-          transition: 'opacity 0.3s ease-in',
-          filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' 
-        }}
+        className="absolute inset-0 w-full h-full object-contain object-center scale-[0.98] pointer-events-none opacity-100"
+        style={{ filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' }}
       />
     </div>
   );
