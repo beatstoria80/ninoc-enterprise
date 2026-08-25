@@ -65,14 +65,6 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       preload="auto"
       className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
       style={{ scale: 0.98 }}
-      animate={{ 
-        y: [0, -14, 0] 
-      }}
-      transition={{
-        duration: 2.4,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }}
     />
   );
 };
