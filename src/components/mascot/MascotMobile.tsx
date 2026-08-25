@@ -74,12 +74,8 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
         loop
         muted
         playsInline
-        onCanPlay={() => setIsVideoReady(true)}
-        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-1000 ease-in-out"
-        style={{ 
-          scale: 0.95,
-          opacity: isVideoReady ? 1 : 0 
-        }}
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
+        style={{ scale: 0.95 }}
       />
       {/* 
         Vignette Inset Shadow: 
