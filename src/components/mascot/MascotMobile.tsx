@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MascotVideoConfigType } from './MascotVideoConfig';
 
@@ -10,6 +10,7 @@ interface MascotMobileProps {
 
 export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   // Mobile Continuous Video Playback Loop
   useEffect(() => {
@@ -36,6 +37,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       const idleEnd = config.timestamps.idleEnd ?? 2.8;
       
       if (v.readyState >= 2) {
+        if (!isVideoReady) setIsVideoReady(true);
         if (v.currentTime < idleStart || v.currentTime >= idleEnd - 0.1) {
           try {
             v.currentTime = idleStart;
@@ -61,17 +63,33 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       window.removeEventListener('pointerdown', handleUserInteraction);
       window.removeEventListener('click', handleUserInteraction);
     };
-  }, [config]);
+  }, [config, isVideoReady]);
 
   return (
-    <motion.video
-      ref={videoRef}
-      src={config.videoPaths.singleMascot}
-      autoPlay
-      loop
-      muted
-      playsInline
-      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
-    />
+    <>
+      <motion.video
+        ref={videoRef}
+        src={config.videoPaths.singleMascot}
+        autoPlay
+        loop
+        muted
+        playsInline
+        onCanPlay={() => setIsVideoReady(true)}
+        className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-opacity duration-1000 ease-in-out"
+        style={{ 
+          scale: 0.95,
+          opacity: isVideoReady ? 1 : 0 
+        }}
+      />
+      {/* 
+        Vignette Inset Shadow: 
+        Menutupi batas pinggir video yang terekspos karena disusutkan (scale: 0.95).
+        Shadow abu-abu membaur sempurna dengan background #e3e4e7.
+      */}
+      <div 
+        className="absolute inset-0 pointer-events-none" 
+        style={{ boxShadow: 'inset 0 0 35px 35px #e3e4e7' }} 
+      />
+    </>
   );
 };
