@@ -243,8 +243,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     }
     return false;
   });
-  const [isTouched, setIsTouched] = useState(false);
-  const [isDesktopRevealed, setIsDesktopRevealed] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -277,29 +276,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   useEffect(() => {
     if (scene !== 'hero') return;
 
-    // Auto-reveal timer: jika pengguna tidak menyentuh layar dalam 5 detik, munculkan UI navigasi secara otomatis
-    const autoRevealTimer = setTimeout(() => {
-      setIsTouched((prev) => {
-        if (!prev) {
-          return true;
-        }
-        return prev;
-      });
-    }, 5000);
-
-    return () => clearTimeout(autoRevealTimer);
-  }, [scene]);
-
-  useEffect(() => {
-    if (scene !== 'hero' || isMobile) return;
-
-    // Timer 1 detik untuk menunda reveal UI copy & navigasi di desktop
-    const desktopTimer = setTimeout(() => {
-      setIsDesktopRevealed(true);
+    // Timer 1 detik untuk menunda reveal UI copy & navigasi (berlaku untuk desktop & mobile)
+    const revealTimer = setTimeout(() => {
+      setIsRevealed(true);
     }, 1000);
 
-    return () => clearTimeout(desktopTimer);
-  }, [scene, isMobile]);
+    return () => clearTimeout(revealTimer);
+  }, [scene]);
 
 
 
@@ -326,11 +309,11 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   }, []);
 
   const handleOverlayTap = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    if (!isTouched) {
+    if (!isRevealed) {
       e.stopPropagation();
-      setIsTouched(true);
+      setIsRevealed(true);
     }
-  }, [isTouched]);
+  }, [isRevealed]);
 
   return (
     <div className={`relative min-h-screen overflow-hidden ${scene === 'archive' ? 'bg-white' : 'bg-[#e3e4e7]'}`}>
@@ -366,9 +349,9 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
                 <motion.div 
                   initial={{ opacity: 0, y: -20 }} 
                   animate={
-                    (mounted && isMobile)
-                      ? (isTouched ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 })
-                      : (isDesktopRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 })
+                    (mounted)
+                      ? (isRevealed ? { opacity: 1, y: 0 } : { opacity: 0, y: -20 })
+                      : { opacity: 0, y: -20 }
                   }
                   transition={{ duration: DURATION.slow, ease: EASING.out, delay: 0.2 }}
                   className="absolute left-4 sm:left-6 md:left-8 lg:left-12 top-4 md:top-6 z-20 flex items-center gap-2.5"
@@ -379,8 +362,8 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
 
               {/* Main Content Area */}
               <div className="flex flex-col justify-end md:justify-between flex-grow w-full max-w-[1800px] mx-auto py-2 md:py-12">
-                <DesktopIntroOverlay isRevealed={isDesktopRevealed} onShopClick={handleShopClick} />
-                <MobileIntroCard isTouched={isTouched} onShopClick={handleShopClick} />
+                <DesktopIntroOverlay isRevealed={isRevealed} onShopClick={handleShopClick} />
+                <MobileIntroCard isTouched={isRevealed} onShopClick={handleShopClick} />
               </div>
             </div>
           </motion.div>
