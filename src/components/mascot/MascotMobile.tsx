@@ -71,9 +71,8 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       loop
       muted
       playsInline
-      preload="auto"
-      // object-contain digunakan agar SELURUH maskot (termasuk tentakel) masuk ke layar tanpa terpotong
-      className="absolute inset-0 w-full h-full object-contain object-center pointer-events-none opacity-100"
+      // object-cover memastikan video memenuhi seluruh layar HP
+      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
     />
   );
 };
