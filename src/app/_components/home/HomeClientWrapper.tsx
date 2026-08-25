@@ -244,7 +244,6 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
     return false;
   });
   const [isTouched, setIsTouched] = useState(false);
-  const [isMascotLoaded, setIsMascotLoaded] = useState(false);
   const [isDesktopRevealed, setIsDesktopRevealed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -294,14 +293,13 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
   useEffect(() => {
     if (scene !== 'hero' || isMobile) return;
 
-    if (isMascotLoaded) {
-      // Menunda sebentar agar transisi memudarnya loader dan masuknya UI estetik
-      const desktopTimer = setTimeout(() => {
-        setIsDesktopRevealed(true);
-      }, 350);
-      return () => clearTimeout(desktopTimer);
-    }
-  }, [scene, isMobile, isMascotLoaded]);
+    // Timer 1 detik untuk menunda reveal UI copy & navigasi di desktop
+    const desktopTimer = setTimeout(() => {
+      setIsDesktopRevealed(true);
+    }, 1000);
+
+    return () => clearTimeout(desktopTimer);
+  }, [scene, isMobile]);
 
 
 
@@ -354,10 +352,7 @@ export default function HomeClientWrapper({ products, dict }: HomeClientWrapperP
               onTouchStart={handleOverlayTap}
               className="absolute inset-0 w-full h-full cursor-pointer"
             >
-              <InteractiveMascotVideo 
-                className="w-full h-full" 
-                onLoaded={() => setIsMascotLoaded(true)}
-              />
+              <InteractiveMascotVideo className="w-full h-full" />
             </div>
 
             {/* Overlay Layer (Logo & Content Card) */}

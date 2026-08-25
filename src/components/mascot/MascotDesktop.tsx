@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
 import { MascotVideoConfigType } from './MascotVideoConfig';
 import { PointerTracker } from './PointerTracker';
 import { MotionStateController, MotionStateFrame } from './MotionStateController';
@@ -52,13 +51,9 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
       // Jangan autoplay terus-menerus, kita akan mengontrol (scrub) frame-nya
       v.pause();
     }
-  }, []);
-
-  useEffect(() => {
-    if (isVideoReady && onLoaded) {
-      onLoaded();
-    }
-  }, [isVideoReady, onLoaded]);
+    // Panggil onLoaded langsung — jangan blokir UI menunggu video 38MB
+    if (onLoaded) onLoaded();
+  }, [onLoaded]);
 
   // Utility to safely seek video
   const safeSeek = (v: HTMLVideoElement, targetTime: number) => {
@@ -133,28 +128,6 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
 
   return (
     <div ref={containerRef} className="relative w-full h-full">
-      {/* Premium Loader: Tampil selama video belum siap */}
-      {!isVideoReady && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#e3e4e7] z-[15] transition-opacity duration-500">
-          <div className="flex flex-col items-center gap-5">
-            {/* Denyut Logo NINOC */}
-            <div className="relative w-16 h-16 opacity-30 animate-pulse">
-              <Image
-                src="/logo.png"
-                alt="NINOC Logo"
-                fill
-                className="object-contain filter grayscale"
-                unoptimized
-              />
-            </div>
-            {/* Loading progress bar minimalis */}
-            <div className="w-24 h-[1.5px] bg-black/5 overflow-hidden rounded-full relative">
-              <div className="absolute left-0 top-0 bottom-0 bg-black/40 w-1/2 rounded-full animate-loading-bar" />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* 
         HANYA 1 TAG VIDEO. 
         Mencegah tumpang tindih frame dan kebocoran memori.
@@ -173,18 +146,6 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
           filter: 'contrast(1.08) brightness(1.02) saturate(1.05)' 
         }}
       />
-
-      {/* Animasi Kustom CSS untuk Loader Bar */}
-      <style jsx>{`
-        @keyframes loading-bar-move {
-          0% { left: -50%; width: 50%; }
-          50% { left: 25%; width: 50%; }
-          100% { left: 100%; width: 50%; }
-        }
-        .animate-loading-bar {
-          animation: loading-bar-move 1.5s infinite ease-in-out;
-        }
-      `}</style>
     </div>
   );
 };
