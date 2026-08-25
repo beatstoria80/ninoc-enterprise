@@ -46,8 +46,8 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
     idleEnd: 4.95,          // Durasi penuh animasi tengah (naik turun)
     turnRightStart: 5.0,    // Mulai nengok kanan
     turnRightEnd: 9.95,     // Akhir nengok kanan
-    noddingStart: 10.0,     // Mulai mengangguk
-    noddingEnd: 15.0,       // Akhir mengangguk
+    noddingStart: 12.25,    // Mulai mengangguk yang benar (0:00:12:15)
+    noddingEnd: 15.28,      // Akhir mengangguk yang benar (0:00:15:17)
   }),
   
   reducedMotionFactor: 0.1,

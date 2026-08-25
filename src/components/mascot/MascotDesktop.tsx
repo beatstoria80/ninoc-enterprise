@@ -90,15 +90,14 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
         const idleEnd = config.timestamps.idleEnd ?? 2.8;
         const rightStart = config.timestamps.turnRightStart ?? 3.0;
         const rightEnd = config.timestamps.turnRightEnd ?? 5.5;
-        const nodStart = config.timestamps.noddingStart ?? 6.0;
-        const nodEnd = config.timestamps.noddingEnd ?? 10.0;
+        const nodStart = config.timestamps.noddingStart ?? 12.25;
+        const nodEnd = config.timestamps.noddingEnd ?? 15.28;
 
         if (frame.stateName === 'CATEGORY_NODDING') {
           // Play loop untuk nodding
           if (v.paused) v.play().catch(() => {});
           
-          const nodEndLimit = nodStart + 2.8; // Batasi loop tepat di frame mengangguk murni (2.8 detik)
-          if (v.currentTime < nodStart || v.currentTime >= nodEndLimit - 0.15) {
+          if (v.currentTime < nodStart || v.currentTime >= nodEnd - 0.05) {
              safeSeek(v, nodStart);
           }
         } else if (frame.currentX <= 0.01) {
