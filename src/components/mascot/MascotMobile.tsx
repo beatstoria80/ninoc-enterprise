@@ -71,14 +71,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       loop
       muted
       playsInline
-      // object-cover dengan scale dan radial-gradient mask untuk memudarkan batas asli video (bingkai)
-      // agar menyatu sempurna dengan background tanpa potongan tegas.
       className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
-      style={{ 
-        scale: 0.88,
-        WebkitMaskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 98%)',
-        maskImage: 'radial-gradient(ellipse at center, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 98%)'
-      }}
     />
   );
 };
