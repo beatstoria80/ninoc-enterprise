@@ -454,7 +454,7 @@ export default function GlobalHeader() {
       const openDrawer = () => {
         const timer = setTimeout(() => {
           setIsMenuOpen(true);
-        }, 1000); // Delay sedikit agar animasi entrance UI selesai dulu
+        }, 2200); // Delay 2.2s agar animasi entrance UI / page transition selesai total dulu
         return timer;
       };
 
