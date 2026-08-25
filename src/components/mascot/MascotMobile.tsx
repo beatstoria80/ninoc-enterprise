@@ -71,15 +71,7 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
       loop
       muted
       playsInline
-      // Ide jenius: Melebarkan bingkai video 120% dari layar dan menggesernya ke tengah,
-      // sehingga batas ujung kontainer terdorong KELUAR dari batas fisik HP.
-      className="absolute object-cover object-center pointer-events-none opacity-100"
-      style={{
-        top: 0,
-        bottom: 0,
-        left: '-10vw',
-        width: '120vw'
-      }}
+      className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
     />
   );
 };
