@@ -87,15 +87,6 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
         className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
         style={{ scale: 0.92 }}
       />
-      {/* 
-        Vignette Inset Shadow: 
-        Menutupi batas pinggir video yang terekspos karena disusutkan (scale: 0.95).
-        Shadow abu-abu membaur sempurna dengan background #e3e4e7.
-      */}
-      <div 
-        className="absolute inset-0 pointer-events-none" 
-        style={{ boxShadow: 'inset 0 0 35px 35px #e3e4e7' }} 
-      />
     </>
   );
 };
