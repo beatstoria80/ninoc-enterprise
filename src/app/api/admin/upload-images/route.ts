@@ -2,7 +2,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
-export const maxDuration = 120; // 2 minutes
+export const maxDuration = 60; // Max execution limit for Vercel Hobby
 export const dynamic = 'force-dynamic';
 
 // Body size limit - 50MB per request

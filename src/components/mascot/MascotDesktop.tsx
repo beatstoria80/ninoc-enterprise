@@ -17,9 +17,22 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
   // HANYA SATU VIDEO TAG - Mencegah tumpang tindih (ghosting) dan video hilang
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
+  const isInViewRef = useRef(true);
 
   const motionControllerRef = useRef<MotionStateController | null>(null);
   const internalTrackerRef = useRef<PointerTracker | null>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      isInViewRef.current = entry.isIntersecting;
+    }, { threshold: 0.1 });
+    
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     motionControllerRef.current = new MotionStateController(config);
@@ -71,6 +84,11 @@ export const MascotDesktop: React.FC<MascotDesktopProps> = ({ config, pointerTra
     const renderLoop = (now: number) => {
       const dt = Math.min((now - lastTimestamp) / 1000, 0.05);
       lastTimestamp = now;
+
+      if (!isInViewRef.current) {
+        animFrameId = requestAnimationFrame(renderLoop);
+        return;
+      }
 
       const tracker = pointerTracker || internalTrackerRef.current;
       const motion = motionControllerRef.current;

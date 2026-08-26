@@ -98,3 +98,30 @@ export function findVariant(product: Product | null | undefined, size: string, c
     (!color ? !v.color : v.color?.toUpperCase() === color.toUpperCase())
   );
 }
+
+/**
+ * Checks if a category is part of Food and Beverage (FnB).
+ */
+export const isFnBCategory = (category?: string): boolean => {
+  const cat = (category || '').toLowerCase();
+  return ['coffee', 'pastry', 'rtd', 'snack', 'beverage', 'pantry'].some(k => cat.includes(k));
+};
+
+/**
+ * Checks if a category is part of Objects/Homeware.
+ */
+export const isObjectsCategory = (category?: string): boolean => {
+  const cat = (category || '').toLowerCase();
+  return !isFnBCategory(category) && ['home', 'kitchen', 'utilities', 'ceramics', 'objects', 'collectibles'].some(k => cat.includes(k));
+};
+
+/**
+ * Safely extracts stock quantity from a variant or product object.
+ */
+export const getSafeStockQuantity = (variantOrProduct: any): number => {
+  if (!variantOrProduct) return 0;
+  if (typeof variantOrProduct.stock_quantity === 'number') {
+    return variantOrProduct.stock_quantity;
+  }
+  return parseInt(variantOrProduct.stock_quantity) || 0;
+};
