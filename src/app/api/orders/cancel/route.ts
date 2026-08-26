@@ -19,9 +19,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized or missing phone number' }, { status: 401 });
     }
 
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('[Orders Cancel] Missing Supabase credentials');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
     const supabaseAdmin = createSupabaseAdmin(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
     // 1. Fetch Order from Supabase
