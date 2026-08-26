@@ -122,6 +122,7 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
               alt={product.name}
               fill
               draggable={false}
+              unoptimized
               className="object-cover object-top transition-all duration-700 select-none pointer-events-none"
               style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
             />
