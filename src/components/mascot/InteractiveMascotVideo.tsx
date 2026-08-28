@@ -21,21 +21,33 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
   onLoaded,
   style,
 }) => {
+  const [isMobile, setIsMobile] = React.useState<boolean>(true);
+
+  // useLayoutEffect prevents visual flashing before the browser paints
+  const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? React.useLayoutEffect : React.useEffect;
+
+  useIsomorphicLayoutEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div
       className={`relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7] select-none ${className}`}
       style={{ touchAction: 'none', ...style }}
     >
       <div className="relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7]">
-        {/* Kontainer Video Mobile: Tampil secara instan di HP, disembunyikan di MD (768px) ke atas */}
-        <div className="absolute inset-0 w-full h-full md:hidden">
-          <MascotMobile config={config} />
-        </div>
-
-        {/* Kontainer Video Desktop: Tampil secara instan di PC/Laptop/Tablet (768px ke atas), disembunyikan di HP */}
-        <div className="relative w-full h-full hidden md:flex items-center justify-center bg-[#e3e4e7]">
-          <MascotDesktop config={config} pointerTracker={pointerTracker} onLoaded={onLoaded} />
-        </div>
+        {isMobile ? (
+          <div className="absolute inset-0 w-full h-full">
+            <MascotMobile config={config} />
+          </div>
+        ) : (
+          <div className="relative w-full h-full flex items-center justify-center bg-[#e3e4e7]">
+            <MascotDesktop config={config} pointerTracker={pointerTracker} onLoaded={onLoaded} />
+          </div>
+        )}
       </div>
     </div>
   );
