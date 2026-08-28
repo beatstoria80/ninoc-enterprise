@@ -10,7 +10,8 @@ export interface MascotVideoConfigType {
   readonly chapter2Duration: number;        // Extended duration in seconds for Chapter 2 rightward motion (~1.8s)
   
   readonly videoPaths: {
-    readonly singleMascot: string;      // The ONE AND ONLY video file used
+    readonly singleMascot: string;      // The ONE AND ONLY video file used for desktop
+    readonly mobileMascot: string;      // Video specifically for mobile
   };
 
   // Timestamps (in seconds) indicating where each animation starts and ends within the single video file
@@ -39,6 +40,7 @@ export const DEFAULT_MASCOT_VIDEO_CONFIG: MascotVideoConfigType = Object.freeze(
   
   videoPaths: Object.freeze({
     singleMascot: '/videos/mascot_ninoc.mp4',
+    mobileMascot: '/videos/jellymascot_ninoc_mobile.mp4',
   }),
 
   timestamps: Object.freeze({

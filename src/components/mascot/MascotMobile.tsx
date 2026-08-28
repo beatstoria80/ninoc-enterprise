@@ -79,13 +79,12 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
     <>
       <motion.video
         ref={videoRef}
-        src={config.videoPaths.singleMascot}
+        src={config.videoPaths.mobileMascot || config.videoPaths.singleMascot}
         autoPlay
         loop
         muted
         playsInline
         className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none opacity-100"
-        style={{ scale: 0.92 }}
       />
     </>
   );

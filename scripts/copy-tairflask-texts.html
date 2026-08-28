@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salin Teks Pitching Tairflask</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 40px;
+            background-color: #f9fafb;
+            color: #111827;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 24px;
+            color: #111827;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #000000;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #374151;
+        }
+
+        .success-msg {
+            display: none;
+            color: #059669;
+            font-size: 14px;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🚀 Aksi Eksekusi: Tairflask Indonesia</h1>
+    <p style="margin-bottom: 32px; color: #4b5563;">Gunakan tombol di bawah untuk menyalin teks dengan cepat ke
+        *clipboard* Anda. Tidak ada satupun *codebase* Ninoc yang diubah.</p>
+
+    <!-- LinkedIn Message -->
+    <div class="card">
+        <h2>1. Pesan Pembuka (LinkedIn)</h2>
+        <textarea id="linkedin-text"
+            readonly>Halo Tim Partnership Tairflask Indonesia, salam hangat dari ninoc.store. Kami mengagumi pertumbuhan pesat Tairflask sebagai brand tumbler premium di Indonesia. Saat ini kami telah merampungkan infrastruktur e-commerce terintegrasi multi-vendor di ninoc.store dan ingin mengajukan proposal kerja sama dropship resmi dengan garansi perlindungan penuh terhadap kebijakan Price Parity merek Anda. Boleh kami meminta alamat email resmi divisi partnership untuk mengirimkan berkas official proposal dan draf PKS kerja sama kami? Terima kasih. - Ninoc, Owner ninoc.store</textarea>
+        <div style="display: flex; align-items: center;">
+            <button onclick="copyText('linkedin-text', 'linkedin-msg')">Salin Pesan LinkedIn</button>
+            <span id="linkedin-msg" class="success-msg">✓ Berhasil disalin!</span>
+        </div>
+    </div>
+
+    <!-- Email Message -->
+    <div class="card">
+        <h2>2. Email Resmi Kemitraan</h2>
+        <textarea id="email-text" readonly style="height: 250px;">Subjek: [OFFICIAL PROPOSAL] Kemitraan Strategis Dropship Multi-Vendor – ninoc.store x Tairflask Indonesia
+
+Kepada Yth.
+Tim Business Development / Partnership
+PT Tairflask Indonesia Utama
+
+Dengan hormat,
+
+Perkenalkan, saya Ninoc, pemilik dari platform Premium Curated Webcommerce Mall ninoc.store. Melalui surat ini, kami bermaksud mengajukan usulan kemitraan strategis yang saling menguntungkan. Kami ingin mengundang PT Tairflask Indonesia Utama sebagai vendor utama pada kategori Premium Lifestyle & Eco-Living di platform kami.
+
+Untuk mempermudah peninjauan awal oleh tim internal Tairflask, kami melampirkan dua dokumen penting pada email ini:
+1. Proposal Kemitraan Bisnis (Pitch Deck)
+2. Draf Awal Perjanjian Kerja Sama (PKS)
+
+Sistem kami telah siap 100% dari sisi teknologi untuk menerima integrasi dengan dasbor tim gudang Tairflask (Akun Demo / Sandbox telah kami siapkan). Kami sangat terbuka untuk berdiskusi lebih lanjut guna membahas penyesuaian pasal kontrak dan skema komisi komersial yang paling ideal bagi kedua belah pihak.
+
+Besar harapan kami untuk dapat bertumbuh bersama Tairflask Indonesia. Atas perhatian dan kesediaan waktunya, kami ucapkan terima kasih.
+
+Hormat kami,
+Ninoc
+Owner & Founder, ninoc.store</textarea>
+        <div style="display: flex; align-items: center;">
+            <button onclick="copyText('email-text', 'email-msg')">Salin Teks Email</button>
+            <span id="email-msg" class="success-msg">✓ Berhasil disalin!</span>
+        </div>
+    </div>
+
+    <script>
+        function copyText(elementId, msgId) {
+            var copyText = document.getElementById(elementId);
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); // Untuk perangkat mobile
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                var msg = document.getElementById(msgId);
+                msg.style.display = 'inline';
+                setTimeout(() => { msg.style.display = 'none'; }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
