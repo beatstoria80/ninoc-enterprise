@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { MascotVideoConfigType } from './MascotVideoConfig';
 
@@ -10,7 +10,6 @@ interface MascotMobileProps {
 
 export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isVideoReady, setIsVideoReady] = useState(false);
 
   // Mobile Continuous Video Playback Loop
   useEffect(() => {
@@ -22,7 +21,6 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
     v.defaultMuted = true;
     v.playsInline = true;
 
-    let animId: number;
     let isPlayPending = false;
 
     // safePlay hanya dipanggil saat ada interaksi user untuk fallback, JANGAN dipanggil di loop
@@ -38,27 +36,6 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
     // Coba play sekali saat mount (dibungkus catch agar tidak throw error jika diblokir)
     safePlay();
 
-    const keepPlaying = () => {
-      // BATAS PENTING: JANGAN panggil safePlay() di sini! 
-      // Memanggil play() 60fps tanpa user gesture akan membuat iOS Safari memblokir video sepenuhnya.
-
-      // Batasi pemutaran video hanya pada fase idle (0.0 - 2.8 detik)
-      const idleStart = config.timestamps.idleStart ?? 0.0;
-      const idleEnd = config.timestamps.idleEnd ?? 2.8;
-      
-      if (v.readyState >= 2) {
-        if (!isVideoReady) setIsVideoReady(true);
-        if (v.currentTime < idleStart || v.currentTime >= idleEnd - 0.1) {
-          try {
-            v.currentTime = idleStart;
-          } catch (e) {}
-        }
-      }
-      animId = requestAnimationFrame(keepPlaying);
-    };
-    
-    animId = requestAnimationFrame(keepPlaying);
-
     const handleUserInteraction = () => {
       safePlay();
     };
@@ -68,12 +45,11 @@ export const MascotMobile: React.FC<MascotMobileProps> = ({ config }) => {
     window.addEventListener('click', handleUserInteraction, { passive: true });
 
     return () => {
-      cancelAnimationFrame(animId);
       window.removeEventListener('touchstart', handleUserInteraction);
       window.removeEventListener('pointerdown', handleUserInteraction);
       window.removeEventListener('click', handleUserInteraction);
     };
-  }, [config, isVideoReady]);
+  }, [config]);
 
   return (
     <>
