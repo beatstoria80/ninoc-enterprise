@@ -177,3 +177,8 @@ The root cause was that:
 5. **The page opening animation flow (FINAL, DO NOT CHANGE):**
    - **Desktop**: Background is `#e3e4e7` → mascot video fades in when ready → UI text/CTA rises from bottom (staggered, 0.8s duration, `cubic-bezier(0.23, 1, 0.32, 1)`) after 1 second → user clicks "Get Yours Now" → scene transitions to archive.
    - **Mobile**: Background is `#e3e4e7` → user touches screen (or 5s auto-reveal) → intro card appears → user taps CTA → scene transitions to archive. Header and tab bar are HIDDEN during this entire sequence.
+
+
+# Infrastructure Note: Meta Configuration
+
+**Rule:** The website infrastructure is already fully integrated with Meta Configurations (WhatsApp Business API, Webhooks, etc). Future agents MUST NOT assume the Meta environment is empty or prompt the user to create a new Meta App from scratch. The environment variables (like `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`, etc.) are already established in the production/sandbox environments. Skip basic Meta onboarding unless explicitly asked to troubleshoot.
