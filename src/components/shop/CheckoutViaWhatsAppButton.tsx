@@ -64,12 +64,12 @@ export default function CheckoutViaWhatsAppButton({
         throw new Error(data.error || 'Gagal memproses checkout via WhatsApp');
       }
 
-      if (!data.redirect_url) {
+      if (!data.deepLink) {
         throw new Error('Tidak mendapatkan URL redirect ke WhatsApp');
       }
 
       // 4. Redirect user to WhatsApp Deep Link
-      window.location.href = data.redirect_url;
+      window.location.href = data.deepLink;
       
     } catch (error: any) {
       console.error('[WA Checkout Error]:', error);
