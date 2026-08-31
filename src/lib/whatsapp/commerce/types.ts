@@ -269,6 +269,8 @@ export interface CartSnapshotItem {
   image_url?: string;
   weight_grams: number;
   is_perishable: boolean;
+  origin_postal_code?: string;
+  warehouse_id?: string;
 }
 
 export interface ShippingAddress {

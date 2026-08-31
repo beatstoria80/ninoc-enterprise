@@ -44,6 +44,8 @@ export default function CheckoutViaWhatsAppButton({
           image_url: item.image_url || undefined,
           weight_grams: item.weight_grams || 100,
           is_perishable: item.is_perishable || false,
+          origin_postal_code: item.origin_postal_code,
+          warehouse_id: item.warehouse_id || undefined,
         })),
         subtotal: totalPrice,
         currency: 'IDR',

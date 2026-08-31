@@ -287,8 +287,11 @@ async function handleTextMessage(
       const apiKey = process.env.BITESHIP_API_KEY;
       if (!apiKey) throw new Error('Biteship API Key missing');
 
+      // Extract dynamic origin from the cart (fallback to 40292 Bandung)
+      const dynamicOrigin = activeSession.cart_snapshot.items[0]?.origin_postal_code || '40292';
+
       const payload = {
-        origin_postal_code: '40292',
+        origin_postal_code: dynamicOrigin,
         destination_postal_code: addressData.postal_code,
         items: activeSession.cart_snapshot.items.map(i => ({
           name: i.product_name,
