@@ -131,6 +131,7 @@ export async function updateOrderSession(
       | 'midtrans_snap_token'
       | 'payment_status'
       | 'wa_message_id'
+      | 'bot_state'
     >
   >
 ): Promise<boolean> {
@@ -158,4 +159,29 @@ export function extractOrderToken(messageText: string): string | null {
     /NINOC-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-[A-F0-9]{6}/i
   );
   return match ? match[0] : null;
+}
+
+/**
+ * Retrieve the active order session for a specific phone number.
+ */
+export async function getActiveSessionByPhone(
+  phone: string
+): Promise<WAOrderSession | null> {
+  const supabase = getSupabaseAdmin();
+
+  const { data, error } = await supabase
+    .from('wa_commerce_sessions')
+    .select('*')
+    .eq('user_phone', phone)
+    .eq('payment_status', 'pending')
+    .gte('expires_at', new Date().toISOString())
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data as WAOrderSession;
 }

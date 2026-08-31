@@ -29,12 +29,15 @@ import {
 import {
   buildWelcomeMessage,
   buildOrderSummary,
+  buildCourierSelection,
 } from '@/lib/whatsapp/commerce/message-builder';
 import {
   extractOrderToken,
   getOrderSession,
   updateOrderSession,
+  getActiveSessionByPhone,
 } from '@/lib/order-token';
+import { getSnapApiSingleton } from '@/lib/midtrans';
 import { isFeatureEnabled } from '@/lib/feature-flags';
 import type {
   WAWebhookPayload,
@@ -42,6 +45,7 @@ import type {
   WAContact,
 } from '@/lib/whatsapp/commerce/types';
 import { BUTTON_IDS } from '@/lib/whatsapp/commerce/types';
+import { parseAddressText } from '@/lib/whatsapp/commerce/address-parser';
 
 // ─── GET: Webhook Verification ─────────────────────────────────────────────────
 
@@ -257,7 +261,79 @@ async function handleTextMessage(
     return;
   }
 
-  // No order token — general message
+  // No order token — check if user is in an active session (e.g. typing address)
+  const activeSession = await getActiveSessionByPhone(from);
+  
+  if (activeSession && activeSession.bot_state === 'pending') {
+    // Treat this text as an address input
+    const addressData = parseAddressText(text, from);
+    
+    if (!addressData) {
+      await sendTextMessage(
+        from, 
+        '⚠️ Format alamat tidak dikenali.\n\nMohon pastikan mencantumkan *Kode Pos* (5 digit angka) agar kami bisa menghitung ongkos kirim. Silakan coba kirim ulang alamatnya.'
+      );
+      return;
+    }
+
+    // Save address and update state
+    await updateOrderSession(activeSession.order_token, {
+      shipping_address: addressData,
+      bot_state: 'address_collected'
+    });
+
+    // Fetch Biteship couriers
+    try {
+      const apiKey = process.env.BITESHIP_API_KEY;
+      if (!apiKey) throw new Error('Biteship API Key missing');
+
+      const payload = {
+        origin_postal_code: '40292',
+        destination_postal_code: addressData.postal_code,
+        items: activeSession.cart_snapshot.items.map(i => ({
+          name: i.product_name,
+          value: i.price,
+          quantity: i.quantity,
+          weight: i.weight_grams || 100
+        })),
+        couriers: 'jne,jnt,sicepat,grab,gojek'
+      };
+
+      const rateRes = await fetch('https://api.biteship.com/v1/rates/couriers', {
+        method: 'POST',
+        headers: { 'Authorization': apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const rateData = await rateRes.json();
+      if (!rateData.success || !rateData.pricing || rateData.pricing.length === 0) {
+        await sendTextMessage(from, '⚠️ Gagal mendapatkan tarif pengiriman untuk kode pos tersebut. Silakan periksa kembali alamat atau kode pos kamu.');
+        return;
+      }
+
+      const couriers = rateData.pricing.map((r: any) => ({
+        courier_code: r.company,
+        courier_name: r.courier_name,
+        service_type: r.courier_service_code,
+        service_name: r.courier_service_name,
+        price: r.price,
+        estimated_days: r.duration
+      }));
+
+      // Update state
+      await updateOrderSession(activeSession.order_token, { bot_state: 'courier_selected' });
+
+      // Send List Message
+      const listMessage = buildCourierSelection(couriers);
+      await sendInteractiveMessage(from, listMessage);
+    } catch (e) {
+      console.error('[Biteship Fetch Error]', e);
+      await sendTextMessage(from, '⚠️ Maaf, layanan kurir sedang gangguan. Silakan coba beberapa saat lagi.');
+    }
+
+    return;
+  }
+
   // Check for keywords
   const lowerText = text.toLowerCase().trim();
 
@@ -305,10 +381,18 @@ async function handleInteractiveReply(
 
   switch (buttonId) {
     case BUTTON_IDS.CONTINUE_CHECKOUT:
-      // TODO: Phase 2 — Check if address exists, trigger Flow or courier selection
+      const activeSession = await getActiveSessionByPhone(from);
+      if (!activeSession) {
+        await sendTextMessage(from, '❌ Sesi order tidak ditemukan atau sudah kedaluwarsa. Silakan checkout ulang dari website.');
+        break;
+      }
+      
+      // Update bot state to pending (waiting for address)
+      await updateOrderSession(activeSession.order_token, { bot_state: 'pending' });
+
       await sendTextMessage(
         from,
-        '🚧 Fitur checkout via WhatsApp sedang dalam pengembangan. Stay tuned! 🎉\n\nSementara ini, silakan checkout di ninoc.store'
+        '📍 *Informasi Pengiriman*\n\nMohon balas pesan ini dengan rincian alamat pengiriman kamu dengan format bebas, pastikan data berikut ada:\n\n- Nama Penerima\n- No HP\n- Kota/Kabupaten\n- Kode Pos (Wajib 5 angka)\n- Alamat Lengkap Jalan'
       );
       break;
 
@@ -357,17 +441,93 @@ async function handleInteractiveReply(
     default:
       // Handle courier selection
       if (buttonId.startsWith('courier_')) {
-        // TODO: Phase 2 — Process courier selection
-        await sendTextMessage(
-          from,
-          '🚧 Pemilihan kurir sedang dikembangkan. Stay tuned!'
-        );
-      } else {
-        await sendTextMessage(
-          from,
-          'Maaf, saya tidak mengenali pilihan tersebut. Ketik "menu" untuk melihat opsi.'
-        );
+        const parts = buttonId.split('_'); // courier_jne_reg_15000
+        if (parts.length >= 4) {
+          const company = parts[1];
+          const serviceType = parts[2];
+          const price = parseInt(parts[3], 10);
+
+          const activeSession = await getActiveSessionByPhone(from);
+          if (activeSession && activeSession.shipping_address) {
+            
+            // Calculate Total
+            const grossAmount = activeSession.cart_snapshot.subtotal + price;
+
+            // Generate Midtrans Snap Token
+            try {
+              const snap = getSnapApiSingleton();
+              const transactionParams = {
+                transaction_details: {
+                  order_id: activeSession.order_token,
+                  gross_amount: grossAmount
+                },
+                customer_details: {
+                  first_name: activeSession.shipping_address.recipient_name,
+                  phone: activeSession.shipping_address.phone,
+                },
+                item_details: [
+                  ...activeSession.cart_snapshot.items.map(i => ({
+                    id: i.product_id,
+                    price: i.price,
+                    quantity: i.quantity,
+                    name: i.product_name.substring(0, 50)
+                  })),
+                  {
+                    id: 'SHIPPING',
+                    price: price,
+                    quantity: 1,
+                    name: `Ongkir ${company.toUpperCase()} ${serviceType.toUpperCase()}`
+                  }
+                ]
+              };
+
+              const transaction = await snap.createTransaction(transactionParams);
+              const snapToken = transaction.token;
+              const redirectUrl = transaction.redirect_url;
+
+              // Save to session
+              await updateOrderSession(activeSession.order_token, {
+                selected_courier: {
+                  courier_code: company,
+                  courier_name: company.toUpperCase(),
+                  service_type: serviceType,
+                  service_name: serviceType.toUpperCase(),
+                  price: price,
+                  estimated_days: 'Sesuai Layanan'
+                },
+                midtrans_snap_token: snapToken,
+                bot_state: 'paid' // Actually waiting for payment, but we let standard webhook handle the "paid" update
+              });
+
+              // Send Payment CTA Button
+              await sendInteractiveMessage(from, {
+                type: 'button',
+                header: { type: 'text', text: '💳 Pembayaran' },
+                body: { text: `Total Tagihan: *Rp ${grossAmount.toLocaleString('id-ID')}*\n\nSilakan klik tombol di bawah untuk membayar pesanan kamu.` },
+                action: {
+                  buttons: [
+                    {
+                      type: 'reply',
+                      reply: { id: BUTTON_IDS.PAY_NOW, title: '💳 Bayar Sekarang' }
+                    }
+                  ]
+                }
+              });
+
+              // Send the real clickable link as fallback since CTA_URL requires specific Meta approval for Sandbox
+              await sendTextMessage(from, `Atau buka link ini untuk membayar:\n${redirectUrl}`);
+              return;
+
+            } catch (err) {
+              console.error('[Midtrans Error]', err);
+              await sendTextMessage(from, '⚠️ Terjadi kesalahan saat membuat link pembayaran. Silakan coba lagi nanti.');
+              return;
+            }
+          }
+        }
       }
+      
+      await sendTextMessage(from, 'Maaf, saya tidak mengenali pilihan tersebut. Ketik "menu" untuk melihat opsi.');
       break;
   }
 }

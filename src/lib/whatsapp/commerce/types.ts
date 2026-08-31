@@ -246,6 +246,7 @@ export interface WAOrderSession {
   midtrans_snap_token: string | null;
   payment_status: 'pending' | 'paid' | 'expired' | 'cancelled';
   wa_message_id: string | null;
+  bot_state: 'pending' | 'address_collected' | 'courier_selected' | 'paid';
   created_at: string;
   expires_at: string;
   is_sandbox: boolean;

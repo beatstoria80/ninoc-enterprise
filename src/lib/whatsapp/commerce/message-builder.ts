@@ -141,7 +141,7 @@ export function buildCourierSelection(
     sections.push({
       title: '📦 Reguler',
       rows: regularCouriers.slice(0, 5).map((c) => ({
-        id: `courier_${c.courier_code}_${c.service_type}`,
+        id: `courier_${c.courier_code}_${c.service_type}_${c.price}`,
         title: `${c.courier_name} ${c.service_name}`,
         description: `${formatCurrency(c.price)} • Est. ${c.estimated_days}`,
       })),
@@ -152,7 +152,7 @@ export function buildCourierSelection(
     sections.push({
       title: '⚡ Express & Instant',
       rows: expressCouriers.slice(0, 5).map((c) => ({
-        id: `courier_${c.courier_code}_${c.service_type}`,
+        id: `courier_${c.courier_code}_${c.service_type}_${c.price}`,
         title: `${c.courier_name} ${c.service_name}`,
         description: `${formatCurrency(c.price)} • Est. ${c.estimated_days}`,
       })),
