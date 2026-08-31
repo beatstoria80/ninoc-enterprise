@@ -32,16 +32,21 @@ export default function CheckoutViaWhatsAppButton({
       // 2. Prepare CartSnapshot payload
       const cartSnapshot = {
         items: items.map((item) => ({
-          id: item.id,
+          product_id: item.id,
           product_name: item.name,
           variant_label: item.size
             ? `${item.color ? item.color + ' / ' : ''}${item.size}`
             : item.color || undefined,
+          size: item.size,
+          color: item.color,
           quantity: item.quantity,
           price: item.price + (item.size_surcharge || 0),
           image_url: item.image_url || undefined,
+          weight_grams: item.weight_grams || 100,
+          is_perishable: item.is_perishable || false,
         })),
         subtotal: totalPrice,
+        currency: 'IDR',
       };
 
       // 3. Call backend API to generate token & redirect URL
