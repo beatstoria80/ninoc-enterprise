@@ -50,6 +50,7 @@ export async function createOrderSession(
   const waPhoneNumber =
     process.env.WA_COMMERCE_BUSINESS_PHONE ||
     process.env.WHATSAPP_BUSINESS_PHONE ||
+    process.env.NEXT_PUBLIC_ADMIN_WA_NUMBER ||
     '';
 
   if (!waPhoneNumber) {
