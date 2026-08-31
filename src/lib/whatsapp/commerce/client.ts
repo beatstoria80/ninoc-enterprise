@@ -97,13 +97,19 @@ async function callCommerceAPI(
         }
       );
 
-      const data = await res.json();
+      const rawResponseText = await res.text();
+      let data: Record<string, any> = {};
+      try {
+        data = rawResponseText ? JSON.parse(rawResponseText) : {};
+      } catch (parseError) {
+        console.warn(`[WA-Commerce] Failed to parse Meta API response as JSON. Status: ${res.status}`);
+      }
 
       if (!res.ok) {
         // Retry on rate limit or server errors
         if (res.status === 429 || res.status >= 500) {
           throw new Error(
-            `Transient error: ${res.status} - ${data.error?.message || 'Unknown'}`
+            `Transient error: ${res.status} - ${data.error?.message || res.statusText || 'Unknown'}`
           );
         }
 

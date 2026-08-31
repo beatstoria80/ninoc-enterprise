@@ -100,7 +100,10 @@ export async function POST(req: NextRequest) {
   //    In serverless (Vercel), we process inline since there's no
   //    background thread, but we keep processing fast.
 
-  // 5. Process each entry/change
+  // 5. Process all messages concurrently to prevent Meta webhook timeout
+  // Meta expects a 200 OK extremely fast. Processing sequentially causes 504 Gateway Timeouts.
+  const messagePromises: Promise<void>[] = [];
+
   for (const entry of payload.entry || []) {
     for (const change of entry.changes || []) {
       if (change.field !== 'messages') continue;
@@ -109,7 +112,7 @@ export async function POST(req: NextRequest) {
       const contacts = value.contacts || [];
       const messages = value.messages || [];
 
-      // Process message statuses (delivery reports)
+      // Process message statuses (delivery reports) asynchronously
       if (value.statuses) {
         for (const status of value.statuses) {
           console.log(
@@ -119,11 +122,24 @@ export async function POST(req: NextRequest) {
         }
       }
 
-      // Process incoming messages
+      // Queue all incoming messages for concurrent processing
       for (const message of messages) {
         const contact = contacts.find((c) => c.wa_id === message.from);
-        await handleIncomingMessage(message, contact || null);
+        messagePromises.push(handleIncomingMessage(message, contact || null));
       }
+    }
+  }
+
+  // Wait for all message processing to complete (or fail) safely
+  if (messagePromises.length > 0) {
+    const results = await Promise.allSettled(messagePromises);
+    const failures = results.filter((r) => r.status === 'rejected');
+    if (failures.length > 0) {
+      console.error(
+        `[WA-Commerce-Webhook] ${failures.length} messages failed to process:`,
+        failures
+      );
+      // We still return 200 OK so Meta doesn't retry the entire batch
     }
   }
 
