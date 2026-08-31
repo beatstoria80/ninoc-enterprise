@@ -10,6 +10,7 @@ import { useDevice } from '@/app/checkout/_components/useDevice';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useRouter } from 'next/navigation';
+import CheckoutViaWhatsAppButton from '@/components/shop/CheckoutViaWhatsAppButton';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -223,9 +224,18 @@ export default function CartPage() {
                   <span>Proceed to Checkout</span>
                   <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
+
+                <div className="relative flex items-center py-2">
+                  <div className="flex-grow border-t border-ink/10"></div>
+                  <span className="flex-shrink-0 mx-4 text-[9px] font-bold text-ink/40 uppercase tracking-widest">Atau</span>
+                  <div className="flex-grow border-t border-ink/10"></div>
+                </div>
+
+                <CheckoutViaWhatsAppButton />
+
                 <Link
                   href="/shop"
-                  className="w-full border border-ink/15 text-ink hover:border-ink py-3 text-xs font-bold uppercase tracking-widest text-center transition-colors cursor-pointer"
+                  className="w-full border border-ink/15 text-ink hover:border-ink py-3 text-xs font-bold uppercase tracking-widest text-center transition-colors cursor-pointer mt-2"
                 >
                   Continue Shopping
                 </Link>

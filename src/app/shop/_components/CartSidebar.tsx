@@ -9,6 +9,7 @@ import { useHydratedCart, CartItem, useCart } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
 import type { Dictionary } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import CheckoutViaWhatsAppButton from '@/components/shop/CheckoutViaWhatsAppButton';
 
 function CartItemImage({ item }: { item: CartItem }) {
   const [fetchedOverride, setFetchedOverride] = useState<string | null>(null);
@@ -272,6 +273,9 @@ export function CartSidebar({
                 >
                   {dict.product.checkout}
                 </motion.button>
+
+                <CheckoutViaWhatsAppButton variant="compact" />
+
                 <motion.button
                   variants={textVariants}
                   onClick={() => clearCart()}
