@@ -476,46 +476,48 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       ).catch(() => ({ data: [] }));
     }
 
-    fbMetrics.topPosts = (fbPostsData.data || []).filter((p: any) => p.full_picture).map((p: any) => {
-      const likes = p.likes?.summary?.total_count || 0;
-      const comments = p.comments?.summary?.total_count || 0;
-      const shares = p.shares?.count || Math.floor((likes + comments) * 0.05);
-      
-      let reach = 0;
-      let views = 0;
-      let hasRealInsights = false;
+    if (fbPostsData.data && fbPostsData.data.length > 0) {
+      fbMetrics.topPosts = (fbPostsData.data || []).map((p: any) => {
+        const likes = p.likes?.summary?.total_count || 0;
+        const comments = p.comments?.summary?.total_count || 0;
+        const shares = p.shares?.count || Math.floor((likes + comments) * 0.05);
+        
+        let reach = 0;
+        let views = 0;
+        let hasRealInsights = false;
 
-      if (p.insights && p.insights.data) {
-        hasRealInsights = true;
-        const reachObj = p.insights.data.find((i: any) => i.name === 'post_impressions_unique');
-        const viewsObj = p.insights.data.find((i: any) => i.name === 'post_impressions');
-        if (reachObj && reachObj.values && reachObj.values[0]) {
-          reach = Number(reachObj.values[0].value) || 0;
+        if (p.insights && p.insights.data) {
+          hasRealInsights = true;
+          const reachObj = p.insights.data.find((i: any) => i.name === 'post_impressions_unique');
+          const viewsObj = p.insights.data.find((i: any) => i.name === 'post_impressions');
+          if (reachObj && reachObj.values && reachObj.values[0]) {
+            reach = Number(reachObj.values[0].value) || 0;
+          }
+          if (viewsObj && viewsObj.values && viewsObj.values[0]) {
+            views = Number(viewsObj.values[0].value) || 0;
+          }
         }
-        if (viewsObj && viewsObj.values && viewsObj.values[0]) {
-          views = Number(viewsObj.values[0].value) || 0;
-        }
-      }
 
-      if (!hasRealInsights) {
-        reach = (likes * 15) + (comments * 30) + (shares * 50) + 120;
-        views = Math.floor(reach * 1.25 + (likes % 10) * 12);
-      }
-      
-      return {
-        id: p.id,
-        url: p.permalink_url || `https://facebook.com/${p.id}`,
-        type: 'IMAGE',
-        thumbnail: p.full_picture,
-        caption: (p.message || '').substring(0, 60) + '...',
-        likes,
-        comments,
-        shares,
-        reach,
-        views,
-        date: p.created_time?.split('T')[0] || ''
-      };
-    });
+        if (!hasRealInsights) {
+          reach = (likes * 15) + (comments * 30) + (shares * 50) + 120;
+          views = Math.floor(reach * 1.25 + (likes % 10) * 12);
+        }
+        
+        return {
+          id: p.id,
+          url: p.permalink_url || `https://facebook.com/${p.id}`,
+          type: 'IMAGE',
+          thumbnail: p.full_picture || '',
+          caption: (p.message || '').substring(0, 60) + '...',
+          likes,
+          comments,
+          shares,
+          reach,
+          views,
+          date: p.created_time?.split('T')[0] || ''
+        };
+      });
+    }
 
     // ==========================================
     // FETCH INSTAGRAM METRICS
@@ -544,20 +546,22 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
       const reachData = reachInsightsData.data?.find((d: any) => d.name === 'reach')?.values || [];
       const viewsData = viewsInsightsData.data?.find((d: any) => d.name === 'profile_views')?.values || [];
       
-      igMetrics.trend = [];
-      reachData.forEach((val: any) => {
-        if (!val) return;
-        const valVal = Number(val.value) || 0;
-        igMetrics.reach += valVal;
-        const estEng = Math.floor(valVal * 0.05);
-        igMetrics.engagement += estEng;
-        const dateStr = val.end_time ? val.end_time.split('T')[0] : new Date().toISOString().split('T')[0];
-        igMetrics.trend.push({
-          date: dateStr,
-          reach: valVal,
-          engagement: estEng
+      if (reachData.length > 0) {
+        igMetrics.trend = [];
+        reachData.forEach((val: any) => {
+          if (!val) return;
+          const valVal = Number(val.value) || 0;
+          igMetrics.reach += valVal;
+          const estEng = Math.floor(valVal * 0.05);
+          igMetrics.engagement += estEng;
+          const dateStr = val.end_time ? val.end_time.split('T')[0] : new Date().toISOString().split('T')[0];
+          igMetrics.trend.push({
+            date: dateStr,
+            reach: valVal,
+            engagement: estEng
+          });
         });
-      });
+      }
       
       viewsData.forEach((val: any) => {
         if (!val) return;
@@ -598,55 +602,57 @@ export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<Me
         ).catch(() => ({ data: [] }));
       }
 
-      igMetrics.topPosts = (igMediaData.data || []).map((m: any) => {
-        const likes = m.like_count || 0;
-        const comments = m.comments_count || 0;
-        
-        let saved = 0;
-        let reach = 0;
-        let views = 0;
-        let hasRealInsights = false;
-
-        if (m.insights && m.insights.data) {
-          hasRealInsights = true;
-          const reachObj = m.insights.data.find((i: any) => i.name === 'reach');
-          const viewsObj = m.insights.data.find((i: any) => i.name === 'total_views') || m.insights.data.find((i: any) => i.name === 'views');
-          const savedObj = m.insights.data.find((i: any) => i.name === 'saved');
+      if (igMediaData.data && igMediaData.data.length > 0) {
+        igMetrics.topPosts = (igMediaData.data || []).map((m: any) => {
+          const likes = m.like_count || 0;
+          const comments = m.comments_count || 0;
           
-          if (reachObj && reachObj.values && reachObj.values[0]) {
-            reach = Number(reachObj.values[0].value) || 0;
+          let saved = 0;
+          let reach = 0;
+          let views = 0;
+          let hasRealInsights = false;
+
+          if (m.insights && m.insights.data) {
+            hasRealInsights = true;
+            const reachObj = m.insights.data.find((i: any) => i.name === 'reach');
+            const viewsObj = m.insights.data.find((i: any) => i.name === 'total_views') || m.insights.data.find((i: any) => i.name === 'views');
+            const savedObj = m.insights.data.find((i: any) => i.name === 'saved');
+            
+            if (reachObj && reachObj.values && reachObj.values[0]) {
+              reach = Number(reachObj.values[0].value) || 0;
+            }
+            if (viewsObj && viewsObj.values && viewsObj.values[0]) {
+              views = Number(viewsObj.values[0].value) || 0;
+            }
+            if (savedObj && savedObj.values && savedObj.values[0]) {
+              saved = Number(savedObj.values[0].value) || 0;
+            }
           }
-          if (viewsObj && viewsObj.values && viewsObj.values[0]) {
-            views = Number(viewsObj.values[0].value) || 0;
+          
+          const shares = Math.floor(likes * 0.04);
+          
+          if (!hasRealInsights) {
+            saved = Math.floor(likes * 0.08);
+            reach = (likes * 12) + (comments * 25) + (saved * 40) + 200;
+            views = Math.floor(reach * 1.15 + (likes % 10) * 8);
           }
-          if (savedObj && savedObj.values && savedObj.values[0]) {
-            saved = Number(savedObj.values[0].value) || 0;
-          }
-        }
-        
-        const shares = Math.floor(likes * 0.04);
-        
-        if (!hasRealInsights) {
-          saved = Math.floor(likes * 0.08);
-          reach = (likes * 12) + (comments * 25) + (saved * 40) + 200;
-          views = Math.floor(reach * 1.15 + (likes % 10) * 8);
-        }
-        
-        return {
-          id: m.id,
-          url: m.permalink || `https://instagram.com/p/${m.id}`,
-          type: m.media_type,
-          thumbnail: m.thumbnail_url || m.media_url,
-          caption: (m.caption || '').substring(0, 60) + '...',
-          likes,
-          comments,
-          saved,
-          shares,
-          reach,
-          views,
-          date: m.timestamp?.split('T')[0] || ''
-        };
-      });
+          
+          return {
+            id: m.id,
+            url: m.permalink || `https://instagram.com/p/${m.id}`,
+            type: m.media_type,
+            thumbnail: m.thumbnail_url || m.media_url,
+            caption: (m.caption || '').substring(0, 60) + '...',
+            likes,
+            comments,
+            saved,
+            shares,
+            reach,
+            views,
+            date: m.timestamp?.split('T')[0] || ''
+          };
+        });
+      }
     }
 
     // Compute derived metrics for both platforms
