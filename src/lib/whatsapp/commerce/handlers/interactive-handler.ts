@@ -99,8 +99,8 @@ export async function handleInteractiveReply(
               };
 
               const transaction = await snap.createTransaction(transactionParams);
-              const snapToken = transaction.token;
-              const redirectUrl = transaction.redirect_url;
+              const snapToken = transaction.token as string;
+              const redirectUrl = transaction.redirect_url as string;
 
               await updateOrderSession(activeSession.order_token, {
                 selected_courier: {
