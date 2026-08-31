@@ -310,3 +310,45 @@ export interface WACommerceAPIResponse {
   error?: string;
   error_code?: string;
 }
+
+// ─── Commerce Domain Types ─────────────────────────────────────────────────────
+
+export interface CourierOption {
+  courier_code: string;
+  courier_name: string;
+  service_type: string;
+  service_name: string;
+  price: number;
+  estimated_days: string;
+}
+
+// ─── Button ID Constants (Single Source of Truth) ──────────────────────────────
+
+/**
+ * All interactive button IDs used across message-builder and webhook handler.
+ * Centralised here to prevent magic string mismatches between the two files.
+ */
+export const BUTTON_IDS = {
+  // Order summary actions
+  CONTINUE_CHECKOUT: 'btn_continue_checkout',
+  EDIT_CART: 'btn_edit_cart',
+  CANCEL_ORDER: 'btn_cancel_order',
+
+  // Welcome menu
+  BROWSE_PRODUCTS: 'btn_browse_products',
+  CHECK_ORDER: 'btn_check_order',
+  HELP: 'btn_help',
+
+  // Address confirmation
+  ADDRESS_CONFIRM: 'btn_address_confirm',
+  ADDRESS_CHANGE: 'btn_address_change',
+
+  // Payment
+  PAY_NOW: 'btn_pay_now',
+
+  // Post-purchase
+  TRACK_ORDER: 'btn_track_order',
+  SHOP_MORE: 'btn_shop_more',
+} as const;
+
+export type ButtonId = (typeof BUTTON_IDS)[keyof typeof BUTTON_IDS];

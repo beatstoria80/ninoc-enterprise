@@ -8,12 +8,13 @@
  * can be passed to sendInteractiveMessage() from the client.
  */
 
-import type {
+import {
   WAInteractiveButtons,
   WAInteractiveList,
   CartSnapshot,
   SelectedCourier,
   ShippingAddress,
+  BUTTON_IDS,
 } from './types';
 
 // ─── Formatters ────────────────────────────────────────────────────────────────
@@ -60,15 +61,15 @@ export function buildOrderSummary(
       buttons: [
         {
           type: 'reply',
-          reply: { id: 'btn_continue_checkout', title: '✅ Lanjutkan' },
+          reply: { id: BUTTON_IDS.CONTINUE_CHECKOUT, title: '✅ Lanjutkan' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_edit_cart', title: '✏️ Edit di Web' },
+          reply: { id: BUTTON_IDS.EDIT_CART, title: '✏️ Edit di Web' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_cancel_order', title: '❌ Batalkan' },
+          reply: { id: BUTTON_IDS.CANCEL_ORDER, title: '❌ Batalkan' },
         },
       ],
     },
@@ -99,11 +100,11 @@ export function buildAddressConfirmation(
       buttons: [
         {
           type: 'reply',
-          reply: { id: 'btn_address_confirm', title: '✅ Ya, Benar' },
+          reply: { id: BUTTON_IDS.ADDRESS_CONFIRM, title: '✅ Ya, Benar' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_address_change', title: '📝 Ganti Alamat' },
+          reply: { id: BUTTON_IDS.ADDRESS_CHANGE, title: '📝 Ganti Alamat' },
         },
       ],
     },
@@ -216,11 +217,11 @@ export function buildOrderReview(
       buttons: [
         {
           type: 'reply',
-          reply: { id: 'btn_pay_now', title: '💳 Bayar Sekarang' },
+          reply: { id: BUTTON_IDS.PAY_NOW, title: '💳 Bayar Sekarang' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_cancel_order', title: '❌ Batalkan' },
+          reply: { id: BUTTON_IDS.CANCEL_ORDER, title: '❌ Batalkan' },
         },
       ],
     },
@@ -251,11 +252,11 @@ export function buildPaymentSuccess(
       buttons: [
         {
           type: 'reply',
-          reply: { id: 'btn_track_order', title: '📦 Track Pesanan' },
+          reply: { id: BUTTON_IDS.TRACK_ORDER, title: '📦 Track Pesanan' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_shop_more', title: '🛍️ Belanja Lagi' },
+          reply: { id: BUTTON_IDS.SHOP_MORE, title: '🛍️ Belanja Lagi' },
         },
       ],
     },
@@ -285,15 +286,15 @@ export function buildWelcomeMessage(): WAInteractiveButtons {
       buttons: [
         {
           type: 'reply',
-          reply: { id: 'btn_browse_products', title: '🛍️ Lihat Produk' },
+          reply: { id: BUTTON_IDS.BROWSE_PRODUCTS, title: '🛍️ Lihat Produk' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_check_order', title: '📦 Cek Pesanan' },
+          reply: { id: BUTTON_IDS.CHECK_ORDER, title: '📦 Cek Pesanan' },
         },
         {
           type: 'reply',
-          reply: { id: 'btn_help', title: '❓ Bantuan' },
+          reply: { id: BUTTON_IDS.HELP, title: '❓ Bantuan' },
         },
       ],
     },

@@ -41,6 +41,7 @@ import type {
   WAIncomingMessage,
   WAContact,
 } from '@/lib/whatsapp/commerce/types';
+import { BUTTON_IDS } from '@/lib/whatsapp/commerce/types';
 
 // ─── GET: Webhook Verification ─────────────────────────────────────────────────
 
@@ -287,7 +288,7 @@ async function handleInteractiveReply(
   console.log(`[WA-Commerce-Webhook] Interactive reply: ${buttonId}`);
 
   switch (buttonId) {
-    case 'btn_continue_checkout':
+    case BUTTON_IDS.CONTINUE_CHECKOUT:
       // TODO: Phase 2 — Check if address exists, trigger Flow or courier selection
       await sendTextMessage(
         from,
@@ -295,35 +296,35 @@ async function handleInteractiveReply(
       );
       break;
 
-    case 'btn_edit_cart':
+    case BUTTON_IDS.EDIT_CART:
       await sendTextMessage(
         from,
         '🛒 Silakan edit keranjang belanja kamu di website:\n👉 ninoc.store/cart'
       );
       break;
 
-    case 'btn_cancel_order':
+    case BUTTON_IDS.CANCEL_ORDER:
       await sendTextMessage(
         from,
         '❌ Order dibatalkan. Keranjang belanja kamu tetap tersimpan di website.\n\nKunjungi ninoc.store untuk melanjutkan kapan saja.'
       );
       break;
 
-    case 'btn_browse_products':
+    case BUTTON_IDS.BROWSE_PRODUCTS:
       await sendTextMessage(
         from,
         '🛍️ Kunjungi koleksi lengkap kami di:\n👉 ninoc.store/shop\n\nSetelah menemukan produk yang kamu suka, tambahkan ke keranjang dan pilih "Lanjut via WhatsApp" saat checkout!'
       );
       break;
 
-    case 'btn_check_order':
+    case BUTTON_IDS.CHECK_ORDER:
       await sendTextMessage(
         from,
         '📦 Kirimkan kode order kamu (format: NINOC-xxxxx) untuk cek status.\n\nAtau kunjungi ninoc.store/track'
       );
       break;
 
-    case 'btn_help':
+    case BUTTON_IDS.HELP:
       await sendTextMessage(
         from,
         '❓ *Bantuan NINOC*\n\n' +

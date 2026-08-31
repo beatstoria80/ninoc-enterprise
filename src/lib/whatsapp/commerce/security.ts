@@ -109,6 +109,11 @@ const processedMessageIds = new Map<string, number>(); // messageId → timestam
  * Check if a message has already been processed.
  * If not, mark it as processed.
  *
+ * NOTE: Vercel serverless instances are stateless. These in-memory Maps will 
+ * reset on every cold start. A duplicate message arriving on a different 
+ * instance may bypass dedup entirely. This is acceptable for MVP sandbox, 
+ * but must be migrated to Redis/Upstash for production.
+ *
  * @param messageId - The unique WA message ID (wamid.xxx)
  * @returns true if this is a NEW message (not a duplicate)
  */
@@ -138,38 +143,32 @@ export function deduplicateMessage(messageId: string): boolean {
 
 // ─── Rate Limiting (Per Phone Number) ──────────────────────────────────────────
 
+import { rateLimit } from '@/lib/rate-limit';
+
 const RATE_LIMIT_WINDOW_MS = 60_000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 30; // Max 30 messages per minute per phone
 
-const rateLimitMap = new Map<
-  string,
-  { count: number; windowStart: number }
->();
-
 /**
  * Check if a phone number has exceeded the rate limit.
+ * Uses the shared rate-limit utility.
  *
  * @param phoneNumber - The sender's phone number
  * @returns true if the request is within rate limits
  */
 export function checkRateLimit(phoneNumber: string): boolean {
-  const now = Date.now();
-  const entry = rateLimitMap.get(phoneNumber);
+  const result = rateLimit(
+    `wa_commerce_rate_limit_${phoneNumber}`,
+    RATE_LIMIT_MAX_REQUESTS,
+    RATE_LIMIT_WINDOW_MS
+  );
 
-  if (!entry || now - entry.windowStart > RATE_LIMIT_WINDOW_MS) {
-    // New window
-    rateLimitMap.set(phoneNumber, { count: 1, windowStart: now });
-    return true;
-  }
-
-  if (entry.count >= RATE_LIMIT_MAX_REQUESTS) {
+  if (!result.isAllowed) {
     console.warn(
-      `[WA-Commerce-Security] Rate limit exceeded for ${phoneNumber}: ${entry.count}/${RATE_LIMIT_MAX_REQUESTS} in window`
+      `[WA-Commerce-Security] Rate limit exceeded for ${phoneNumber}: ${RATE_LIMIT_MAX_REQUESTS} in window`
     );
     return false;
   }
 
-  entry.count++;
   return true;
 }
 
@@ -179,8 +178,8 @@ const CLEANUP_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
 let lastCleanup = Date.now();
 
 /**
- * Run periodic cleanup of dedup and rate limit maps.
- * Should be called on each webhook request to prevent memory leaks.
+ * Run periodic cleanup of dedup map.
+ * Should be called on each webhook request to prevent memory leaks in stateful environments.
  */
 export function runSecurityCleanup(): void {
   const now = Date.now();
@@ -195,11 +194,5 @@ export function runSecurityCleanup(): void {
       processedMessageIds.delete(key);
     }
   }
-
-  // Cleanup old rate limit windows
-  for (const [key, entry] of rateLimitMap) {
-    if (now - entry.windowStart > RATE_LIMIT_WINDOW_MS * 2) {
-      rateLimitMap.delete(key);
-    }
-  }
 }
+

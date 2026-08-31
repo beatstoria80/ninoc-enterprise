@@ -14,16 +14,8 @@
  */
 
 import crypto from 'crypto';
-import { createClient } from '@supabase/supabase-js';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import type { CartSnapshot, WAOrderSession } from './whatsapp/commerce/types';
-
-// ─── Supabase Admin Client (for server-side operations) ────────────────────────
-
-function getSupabaseAdmin() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-  return createClient(url, key);
-}
 
 // ─── Token Generation ──────────────────────────────────────────────────────────
 

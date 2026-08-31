@@ -27,8 +27,12 @@ import type {
 const WA_COMMERCE_API_VERSION = 'v21.0';
 const WA_COMMERCE_BASE_URL = `https://graph.facebook.com/${WA_COMMERCE_API_VERSION}`;
 
+let cachedConfig: WACloudAPIConfig | null = null;
+
 function getCommerceConfig(): WACloudAPIConfig {
-  return {
+  if (cachedConfig) return cachedConfig;
+
+  cachedConfig = {
     apiVersion: WA_COMMERCE_API_VERSION,
     phoneNumberId:
       process.env.WA_COMMERCE_PHONE_NUMBER_ID ||
@@ -45,6 +49,8 @@ function getCommerceConfig(): WACloudAPIConfig {
     appSecret: process.env.WA_APP_SECRET || '',
     verifyToken: process.env.WA_VERIFY_TOKEN || '',
   };
+
+  return cachedConfig;
 }
 
 /**
