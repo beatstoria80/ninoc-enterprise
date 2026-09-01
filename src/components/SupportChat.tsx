@@ -173,6 +173,15 @@ export default function SupportChat() {
   const hasUnreadRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Keep latest state in refs for stable websocket callback
+  const ticketsRef = useRef(tickets);
+  const activeTicketRef = useRef(activeTicket);
+  const activeTabRef = useRef(activeTab);
+
+  useEffect(() => { ticketsRef.current = tickets; }, [tickets]);
+  useEffect(() => { activeTicketRef.current = activeTicket; }, [activeTicket]);
+  useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+
   // Dispatch unread count to other components
   useEffect(() => {
     window.dispatchEvent(new CustomEvent('support-unread-count', { detail: notifCount }));
@@ -219,7 +228,7 @@ export default function SupportChat() {
     fetchUser();
   }, [fetchTickets]);
 
-  // ─── Real-time subscription
+  // ─── Real-time subscription (Stable Permanent Connection)
   useEffect(() => {
     const channel = supabase
       .channel('support-realtime')
@@ -233,10 +242,14 @@ export default function SupportChat() {
         },
         async (payload) => {
           const newMsg = payload.new as SupportMessage;
-          const isRelevant = activeTicket?.id === newMsg.ticket_id || tickets.some(t => t.id === newMsg.ticket_id);
+          const currentActiveTicket = activeTicketRef.current;
+          const currentTickets = ticketsRef.current;
+          const currentActiveTab = activeTabRef.current;
+
+          const isRelevant = currentActiveTicket?.id === newMsg.ticket_id || currentTickets.some(t => t.id === newMsg.ticket_id);
           if (!isRelevant) return;
 
-          if (activeTab === 'chat' && activeTicket?.id === newMsg.ticket_id) {
+          if (currentActiveTab === 'chat' && currentActiveTicket?.id === newMsg.ticket_id) {
             setChatMessages(prev => {
               if (prev.some(m => m.id === newMsg.id || (m.sender_role === 'admin' && m.message === newMsg.message))) return prev;
               return [...prev, newMsg];
@@ -246,7 +259,7 @@ export default function SupportChat() {
 
           hasUnreadRef.current = true;
           setNotifCount(prev => prev + 1);
-          const relevantTicket = activeTicket?.id === newMsg.ticket_id ? activeTicket : tickets.find(t => t.id === newMsg.ticket_id);
+          const relevantTicket = currentActiveTicket?.id === newMsg.ticket_id ? currentActiveTicket : currentTickets.find(t => t.id === newMsg.ticket_id);
           setLastNotif({
             subject: relevantTicket?.subject || 'Status Update',
             message: newMsg.message,
@@ -258,7 +271,7 @@ export default function SupportChat() {
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, [activeTicket, tickets, activeTab]);
+  }, []); // Empty dependency array ensures it never thrashes
 
   // Auto-scroll
   useEffect(() => {

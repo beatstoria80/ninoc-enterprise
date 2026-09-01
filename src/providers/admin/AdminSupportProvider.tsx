@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
 import { ChatSession, ChatMessage } from '@/components/admin/types';
 import { fetchSupportTicketsAction, sendSupportMessageAction, markSupportMessagesReadAction } from '@/app/actions/admin/support';
+import { supabase } from '@/lib/supabase';
 
 interface AdminSupportContextType {
   chatSessions: ChatSession[];
@@ -21,6 +22,13 @@ export function AdminSupportProvider({ children }: { children: ReactNode }) {
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([]);
   const [activeChatSession, setActiveChatSession] = useState<ChatSession | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Keep latest state in refs for stable websocket callback
+  const chatSessionsRef = useRef(chatSessions);
+  const activeChatSessionRef = useRef(activeChatSession);
+
+  useEffect(() => { chatSessionsRef.current = chatSessions; }, [chatSessions]);
+  useEffect(() => { activeChatSessionRef.current = activeChatSession; }, [activeChatSession]);
 
   const fetchChatSessions = useCallback(async () => {
     setIsLoading(true);
@@ -101,6 +109,72 @@ export function AdminSupportProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchChatSessions();
+  }, [fetchChatSessions]);
+
+  // ─── Real-time subscription for Admin
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-support-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'support_messages',
+          filter: 'sender_role=eq.customer',
+        },
+        async (payload) => {
+          const newMsg = payload.new;
+          const currentSessions = chatSessionsRef.current;
+          const currentActive = activeChatSessionRef.current;
+          
+          const sessionExists = currentSessions.some(s => s.id === newMsg.ticket_id);
+          
+          if (!sessionExists) {
+             fetchChatSessions();
+             return;
+          }
+          
+          const optimisticMessage: ChatMessage = {
+             id: newMsg.id,
+             sender: 'customer',
+             message: newMsg.message,
+             timestamp: newMsg.created_at,
+             is_read: false
+          };
+          
+          setChatSessions(prev => prev.map(s => {
+             if (s.id === newMsg.ticket_id) {
+                if (s.messages.some(m => m.id === newMsg.id)) return s;
+                return {
+                   ...s, 
+                   messages: [...s.messages, optimisticMessage],
+                   last_message: newMsg.message,
+                   last_message_time: newMsg.created_at,
+                   unread_count: s.unread_count + 1
+                };
+             }
+             return s;
+          }));
+          
+          if (currentActive?.id === newMsg.ticket_id) {
+             setActiveChatSession(prev => {
+                if (!prev) return prev;
+                if (prev.messages.some(m => m.id === newMsg.id)) return prev;
+                return {
+                   ...prev,
+                   messages: [...prev.messages, optimisticMessage],
+                   last_message: newMsg.message,
+                   last_message_time: newMsg.created_at,
+                   unread_count: prev.unread_count + 1
+                };
+             });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
   }, [fetchChatSessions]);
 
   const totalUnreadChats = chatSessions.reduce((sum, s) => sum + s.unread_count, 0);
