@@ -98,8 +98,31 @@ export default function SuccessContent({ order, courierName, isInvalid }: Props)
       if (typeof window !== 'undefined') {
         try {
           sessionStorage.removeItem('ninoc_checkout_form');
+
+          // GTM & Google Ads: Push purchase event for accurate ROAS tracking
+          const hasFired = sessionStorage.getItem(`gtm_purchase_${order.id}`);
+          if (!hasFired) {
+            const windowObj = window as any;
+            windowObj.dataLayer = windowObj.dataLayer || [];
+            windowObj.dataLayer.push({ ecommerce: null }); // Clear previous
+            windowObj.dataLayer.push({
+              event: 'purchase',
+              ecommerce: {
+                transaction_id: order.id,
+                value: order.total_price,
+                currency: 'IDR',
+                items: (order.order_items || []).map((item) => ({
+                  item_id: item.id,
+                  item_name: item.product_name,
+                  price: item.price_at_purchase,
+                  quantity: item.quantity
+                }))
+              }
+            });
+            sessionStorage.setItem(`gtm_purchase_${order.id}`, 'true');
+          }
         } catch (e) {
-          console.warn('sessionStorage removeItem failed:', e);
+          console.warn('sessionStorage removeItem or GTM push failed:', e);
         }
       }
     }
