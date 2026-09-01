@@ -47,7 +47,7 @@ function getCommerceConfig(): WACloudAPIConfig {
       process.env.WHATSAPP_ACCESS_TOKEN ||
       '',
     appSecret: process.env.WA_APP_SECRET || '',
-    verifyToken: process.env.WA_VERIFY_TOKEN || '',
+    verifyToken: process.env.META_WEBHOOK_VERIFY_TOKEN || process.env.WA_VERIFY_TOKEN || '',
   };
 
   return cachedConfig;
@@ -68,7 +68,6 @@ async function delay(ms: number): Promise<void> {
 }
 
 async function callCommerceAPI(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   payload: Record<string, any>,
   retries = 3,
   baseDelay = 1000
