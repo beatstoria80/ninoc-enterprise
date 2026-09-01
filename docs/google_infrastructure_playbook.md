@@ -163,5 +163,41 @@ Robot tidak akan bisa membaca data jika tidak diundang sebagai tamu di dasbor ut
 
 ---
 
+## Tahap 6: Instalasi Conversion Tracking (Pelacak Pembelian) Secara Presisi
+
+Agar Google Ads dapat mengetahui secara pasti berapa pendapatan (*Revenue* / ROAS) yang dihasilkan dari setiap klik iklan, kita wajib memasang **Conversion Tracking** dengan injeksi nilai dinamis (*Dynamic Value*) ke dalam GTM.
+
+### A. Persiapan Kode di Next.js (Data Layer)
+Kita menggunakan halaman *Checkout Success* (`src/app/payment/success/SuccessContent.tsx`) sebagai titik pemicu (*trigger*).
+
+1. **Injeksi DataLayer:** Kita menanamkan `window.dataLayer.push({ event: 'purchase', ecommerce: { ... } })` saat pesanan dikonfirmasi sukses.
+2. **Dynamic Values:** Data yang wajib dikirim ke Google Ads meliputi:
+   - `transaction_id`: Nomor unik pesanan (Order ID).
+   - `value`: Total harga pesanan (`total_price`).
+   - `currency`: Mata uang (contoh: `IDR`).
+3. **Pencegahan Duplikasi:** Pembeli sering me-*refresh* halaman struk berulang kali. Untuk mencegah data pembelian terkirim ganda ke Google Ads, kita membungkus skrip tersebut dengan `sessionStorage.getItem('gtm_purchase_id')`. Skrip hanya akan menembak satu kali per sesi *checkout*.
+
+### B. Konfigurasi di Dashboard Google Ads
+1. Masuk ke **Goals > Conversions > Summary**.
+2. Klik **+ New conversion action** > Pilih **Website**.
+3. Masukkan domain web utama (misal: `https://ninoc.store`).
+4. Klik **Add a conversion action manually**.
+5. Isi konfigurasi secara presisi:
+   - **Goal:** Purchase (Pembelian).
+   - **Conversion Name:** Bebas (Misal: `NINOC Web Purchase`).
+   - **Value:** Wajib pilih opsi **"Use different values for each conversion"** (Biarkan defaultnya 1 atau 0, karena nilai sebenarnya akan ditarik otomatis dari *source code* Next.js).
+   - **Count:** Pilih **Every** (Setiap pembelian dihitung sebagai transaksi baru).
+6. Simpan, lalu pilih opsi **Use Google Tag Manager**. Catat **Conversion ID** dan **Conversion Label** yang diberikan.
+
+### C. Konfigurasi di Google Tag Manager (GTM)
+1. Buat **Trigger** baru di GTM bertipe *Custom Event* dengan nama Event: `purchase`.
+2. Buat **Tag** baru bertipe *Google Ads Conversion Tracking*.
+3. Masukkan **Conversion ID** dan **Conversion Label** dari langkah B.
+4. Di bagian *Conversion Value*, *Transaction ID*, dan *Currency*, buat dan hubungkan dengan variabel GTM tipe *Data Layer Variable* yang dipetakan dari skrip Next.js (misal: `ecommerce.value`, `ecommerce.transaction_id`, `ecommerce.currency`).
+5. Pastikan *Google Ads Conversion Linker* juga sudah aktif di GTM.
+6. Simpan, klik Publikasikan (*Submit*), dan *Conversion Tracking* tingkat Enterprise Anda sudah berjalan otomatis!
+
+---
+
 ### Penutup
-Infrastruktur 5 tahap di atas adalah rahasia dapur perusahaan rintisan teknologi (SaaS). Jika Anda membangun aplikasi e-commerce baru di masa depan untuk klien lain (Konsep *White-Label*), cukup ulangi langkah persiapan di atas untuk mengambil kunci klien Anda, tempelkan ke Vercel klien tersebut, dan aplikasi secara ajaib akan langsung berfungsi seperti NINOC tanpa perlu mengubah kode pemrograman apa pun!
+Infrastruktur 6 tahap di atas adalah rahasia dapur perusahaan rintisan teknologi (SaaS). Jika Anda membangun aplikasi e-commerce baru di masa depan untuk klien lain (Konsep *White-Label*), cukup ulangi langkah persiapan di atas untuk mengambil kunci klien Anda, tempelkan ke Vercel klien tersebut, dan aplikasi secara ajaib akan langsung berfungsi seperti NINOC tanpa perlu mengubah kode pemrograman apa pun!
