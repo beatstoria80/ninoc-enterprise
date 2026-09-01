@@ -17,6 +17,11 @@ export default function CheckoutViaWhatsAppButton({
 }: CheckoutViaWhatsAppButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
 
+  // Kill switch: hide button when WA Commerce is disabled
+  if (process.env.NEXT_PUBLIC_WA_COMMERCE_ENABLED !== 'true') {
+    return null;
+  }
+
   const handleWhatsAppCheckout = async () => {
     // 1. Get current cart state
     const { items, totalPrice } = useCart.getState();
