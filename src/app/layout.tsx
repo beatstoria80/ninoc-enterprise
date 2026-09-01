@@ -142,7 +142,7 @@ export default async function RootLayout({
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <GoogleAnalytics gaId="AW-10363665188" />
+      <GoogleAnalytics gaId="AW-18363665188" />
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#111111" />

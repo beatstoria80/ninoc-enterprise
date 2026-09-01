@@ -49,6 +49,15 @@ export const trackAddToCart = (
         ]
       }
     });
+
+    // Explicit Google Ads Conversion Snippet for Add To Cart
+    if (typeof (window as any).gtag === 'function') {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-18363665188/wOVYCOWdy9scEKSWvbRE',
+        'value': price * quantity,
+        'currency': 'IDR'
+      });
+    }
   }
 };
 
