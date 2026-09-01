@@ -13,6 +13,18 @@ const nextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      // Google Ads sitelink & common user-typed URL redirects
+      { source: '/contact', destination: '/help', permanent: true },
+      { source: '/hubungi', destination: '/help', permanent: true },
+      { source: '/layanan', destination: '/help', permanent: true },
+      { source: '/tentang', destination: '/about', permanent: true },
+      { source: '/koleksi', destination: '/collections/apparel', permanent: true },
+      { source: '/Koleksi', destination: '/collections/apparel', permanent: true },
+      { source: '/Koleksi/:path*', destination: '/collections/:path*', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
