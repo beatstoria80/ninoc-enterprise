@@ -19,10 +19,23 @@ const nextConfig = {
       { source: '/contact', destination: '/help', permanent: true },
       { source: '/hubungi', destination: '/help', permanent: true },
       { source: '/layanan', destination: '/help', permanent: true },
+      { source: '/bantuan', destination: '/help', permanent: true },
+      { source: '/kontak', destination: '/help', permanent: true },
       { source: '/tentang', destination: '/about', permanent: true },
+      { source: '/tentang-kami', destination: '/about', permanent: true },
       { source: '/koleksi', destination: '/collections/apparel', permanent: true },
       { source: '/Koleksi', destination: '/collections/apparel', permanent: true },
       { source: '/Koleksi/:path*', destination: '/collections/:path*', permanent: true },
+      { source: '/katalog', destination: '/shop', permanent: true },
+      { source: '/afiliasi', destination: '/affiliate', permanent: true },
+      { source: '/jurnal', destination: '/logbook', permanent: true },
+      { source: '/lacak', destination: '/track', permanent: true },
+      { source: '/pengembalian', destination: '/retur', permanent: true },
+      // Indonesian policy page aliases
+      { source: '/kebijakan-pengiriman', destination: '/shipping-policy', permanent: true },
+      { source: '/kebijakan-retur', destination: '/refund-policy', permanent: true },
+      { source: '/kebijakan-privasi', destination: '/privacy-policy', permanent: true },
+      { source: '/syarat-ketentuan', destination: '/legal', permanent: true },
     ];
   },
   async headers() {
