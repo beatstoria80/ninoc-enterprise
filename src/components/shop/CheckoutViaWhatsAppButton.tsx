@@ -6,6 +6,8 @@ import { MessageCircle, Loader2 } from 'lucide-react';
 import { useCart } from '@/store/useCart';
 import { toast } from 'sonner';
 
+import { isFeatureEnabled } from '@/lib/feature-flags';
+
 interface CheckoutViaWhatsAppButtonProps {
   className?: string;
   variant?: 'full' | 'compact';
@@ -18,7 +20,7 @@ export default function CheckoutViaWhatsAppButton({
   const [isLoading, setIsLoading] = useState(false);
 
   // Kill switch: hide button when WA Commerce is disabled
-  if (process.env.NEXT_PUBLIC_WA_COMMERCE_ENABLED !== 'true') {
+  if (!isFeatureEnabled('WA_COMMERCE_ENABLED')) {
     return null;
   }
 

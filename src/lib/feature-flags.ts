@@ -18,8 +18,7 @@ export const FEATURE_FLAGS = {
    *
    * @see implementation_plan.md — Section "Graduation Criteria"
    */
-  WA_COMMERCE_ENABLED:
-    process.env.NEXT_PUBLIC_WA_COMMERCE_ENABLED === 'true',
+  WA_COMMERCE_ENABLED: false, // Temporarily disabled for production until payment is setup
 
   /**
    * WhatsApp Commerce — Sandbox Mode
