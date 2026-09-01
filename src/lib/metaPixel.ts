@@ -20,14 +20,34 @@ export const trackAddToCart = (
   price: number,
   quantity: number
 ) => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'AddToCart', {
-      content_ids: [productId],
-      content_name: productName,
-      content_type: 'product',
-      value: price * quantity,
-      currency: 'IDR',
-      num_items: quantity,
+  if (typeof window !== 'undefined') {
+    if ((window as any).fbq) {
+      (window as any).fbq('track', 'AddToCart', {
+        content_ids: [productId],
+        content_name: productName,
+        content_type: 'product',
+        value: price * quantity,
+        currency: 'IDR',
+        num_items: quantity,
+      });
+    }
+
+    // Google Ads / GA4 DataLayer
+    const dataLayer = (window as any).dataLayer = (window as any).dataLayer || [];
+    dataLayer.push({
+      event: 'add_to_cart',
+      ecommerce: {
+        currency: 'IDR',
+        value: price * quantity,
+        items: [
+          {
+            item_id: productId,
+            item_name: productName,
+            price: price,
+            quantity: quantity
+          }
+        ]
+      }
     });
   }
 };

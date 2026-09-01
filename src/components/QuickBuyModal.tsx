@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT, useHydratedCart, useCartUI } from '@/store/useCart';
 import { supabase } from '@/lib/supabase';
 import { findVariant } from '@/lib/domain/product';
+import { trackAddToCart } from '@/lib/metaPixel';
 
 export default function QuickBuyModal() {
   const router = useRouter();
@@ -192,7 +193,7 @@ export default function QuickBuyModal() {
       setQuickBuyProduct(null);
       return;
     }
-
+    trackAddToCart(String(quickBuyProduct.id), quickBuyProduct.name || 'Untitled', (quickBuyProduct.price || 0) + surcharge, 1);
     setQuickBuyProduct(null);
     router.push('/checkout');
   };
