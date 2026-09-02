@@ -20,7 +20,7 @@ export const POST = withErrorHandler(async (req: Request) => {
     const supabaseAdmin = getSupabaseAdmin();
     const checkoutService = new CheckoutService(supabaseAdmin);
     
-    const { status, payload } = await checkoutService.processCheckout(
+    const result = await checkoutService.processCheckout(
       items,
       customerDetails,
       shippingDetails,
@@ -29,9 +29,14 @@ export const POST = withErrorHandler(async (req: Request) => {
       affiliateCookieValue
     );
 
-    if (status >= 400) {
-        return apiError(payload.error || 'Checkout failed', status, payload);
+    if (!result.success) {
+        let status = 400;
+        if (result.errorType === 'CONFLICT') status = 409;
+        if (result.errorType === 'INTERNAL_ERROR') status = 500;
+        if (result.errorType === 'NOT_FOUND') status = 404;
+
+        return apiError(result.error || 'Checkout failed', status, { ...result.meta, error: result.error });
     }
 
-    return apiSuccess(payload, status);
+    return apiSuccess(result.data, 200);
 });

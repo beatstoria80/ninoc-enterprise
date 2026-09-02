@@ -9,24 +9,27 @@ import { sendCheckoutPendingWA, formatPhoneNumber } from '@/lib/whatsapp';
 import { FlashSaleService } from '@/lib/domain/flashSale';
 import { after } from 'next/server';
 import { WarehouseValidator } from '@/domain/cart/WarehouseValidator';
+import { VoucherRepository } from '@/repositories/VoucherRepository';
+import { AffiliateRepository } from '@/repositories/AffiliateRepository';
+import { DomainResult, DomainSuccess, DomainFailure } from '@/lib/types/domain';
 
-export interface CheckoutProcessResponse {
-  status: number;
-  payload: {
-    token?: string;
-    redirect_url?: string;
-    orderId?: string;
-    orderNumber?: string;
-    error?: string;
-    out_of_stock_item?: string;
-  };
+export interface CheckoutProcessPayload {
+  token?: string;
+  redirect_url?: string;
+  orderId?: string;
+  orderNumber?: string;
 }
-
 export class CheckoutService {
+  private readonly voucherRepo: VoucherRepository;
+  private readonly affiliateRepo: AffiliateRepository;
+
   constructor(
     private readonly supabaseAdmin: SupabaseClient,
     private readonly orderRepo: OrderRepository = new OrderRepository(supabaseAdmin)
-  ) {}
+  ) {
+    this.voucherRepo = new VoucherRepository(supabaseAdmin);
+    this.affiliateRepo = new AffiliateRepository(supabaseAdmin);
+  }
 
   /**
    * SECURITY: Re-validates promo/voucher discount from database.
@@ -41,12 +44,7 @@ export class CheckoutService {
     const upperCode = promoInput.code.toUpperCase();
 
     // 1. Check vouchers table
-    const { data: voucher } = await this.supabaseAdmin
-      .from('vouchers')
-      .select('*')
-      .eq('code', upperCode)
-      .eq('is_active', true)
-      .single();
+    const voucher = await this.voucherRepo.getActiveVoucherByCode(upperCode);
 
     if (voucher) {
       if (voucher.valid_until && new Date(voucher.valid_until) < new Date()) return undefined;
@@ -66,12 +64,7 @@ export class CheckoutService {
     }
 
     // 2. Check affiliates table
-    const { data: affiliate } = await this.supabaseAdmin
-      .from('affiliates')
-      .select('id, customer_discount_type, customer_discount_value, status')
-      .eq('code', upperCode)
-      .eq('status', 'active')
-      .single();
+    const affiliate = await this.affiliateRepo.getActiveAffiliateByCode(upperCode);
 
     if (affiliate) {
       const dType = affiliate.customer_discount_type || 'percentage';
@@ -247,12 +240,13 @@ export class CheckoutService {
     promo: unknown,
     clientIp: string,
     affiliateCookieValue: string | undefined
-  ): Promise<CheckoutProcessResponse> {
+  ): Promise<DomainResult<CheckoutProcessPayload>> {
     
     // 1. Validate & Sanitize Input
     const validation = CheckoutValidator.validateRequest(items as CheckoutItem[], customerDetails, clientIp);
     if (!validation.isValid) {
-      return { status: 400, payload: (validation.errorResponse?.json as { error?: string }) || { error: 'Invalid request input' } };
+      const errMsg = (validation.errorResponse?.json as { error?: string })?.error || 'Invalid request input';
+      return DomainFailure(errMsg, 'VALIDATION_ERROR');
     }
 
     customerDetails.phone = validation.sanitizedPhone!;
@@ -263,10 +257,10 @@ export class CheckoutService {
     const { data: dbProducts, error: dbError } = await this.orderRepo.getProductsByIds(productIds);
 
     if (dbError) {
-      return { status: 500, payload: { error: 'Gangguan koneksi database saat memverifikasi produk. Tim teknis sedang menangani.' } };
+      return DomainFailure('Gangguan koneksi database saat memverifikasi produk. Tim teknis sedang menangani.', 'INTERNAL_ERROR');
     }
     if (!dbProducts || dbProducts.length !== productIds.length) {
-      return { status: 400, payload: { error: 'Beberapa produk di dalam keranjang Anda sudah tidak tersedia di katalog LIVE. Silakan perbarui keranjang Anda.' } };
+      return DomainFailure('Beberapa produk di dalam keranjang Anda sudah tidak tersedia di katalog LIVE. Silakan perbarui keranjang Anda.', 'VALIDATION_ERROR');
     }
 
     // 3. Pricing & Validation
@@ -281,15 +275,15 @@ export class CheckoutService {
     const pricing = PricingEngine.calculateOrderBreakdown(
       sanitizedItems, dbProducts, shippingDetails as any, validatedPromo as any, activeFlashSales
     );
-    if (pricing.error) return { status: 400, payload: { error: pricing.error } };
+    if (pricing.error) return DomainFailure(pricing.error, 'VALIDATION_ERROR');
 
     const stockValidation = StockValidator.validateStock(sanitizedItems, dbProducts);
     if (!stockValidation.isValid) {
-      return { status: 409, payload: { error: stockValidation.error, out_of_stock_item: stockValidation.outOfStockItemId } };
+      return DomainFailure(stockValidation.error || 'Stock error', 'CONFLICT', { out_of_stock_item: stockValidation.outOfStockItemId });
     }
 
     const warehouseValidation = WarehouseValidator.validateWarehouseConflict(sanitizedItems);
-    if (!warehouseValidation.isValid) return { status: 400, payload: { error: warehouseValidation.error } };
+    if (!warehouseValidation.isValid) return DomainFailure(warehouseValidation.error || 'Warehouse conflict', 'VALIDATION_ERROR');
 
     const affiliateId = await this.resolveAffiliateTracking(customerDetails, affiliateCookieValue);
 
@@ -304,7 +298,7 @@ export class CheckoutService {
     const lockResult = await this.applyFlashSaleLocks(flashSaleOrderItems, customerDetails);
     
     if (!lockResult.success) {
-      return { status: 409, payload: { error: lockResult.error } };
+      return DomainFailure(lockResult.error || 'Failed to lock flash sale', 'CONFLICT');
     }
 
     // 5. Create Order
@@ -318,7 +312,7 @@ export class CheckoutService {
 
     if (!orderCreation.success) {
       await this.rollbackFlashSaleLocks(lockResult.reservedItems);
-      return { status: 409, payload: { error: orderCreation.error } };
+      return DomainFailure(orderCreation.error || 'Failed to create order', 'CONFLICT');
     }
 
     // 6. Payment & Async Tasks
@@ -328,14 +322,11 @@ export class CheckoutService {
 
     this.dispatchAsyncTasks(customerDetails, orderId);
 
-    return {
-      status: 200,
-      payload: {
-        token: transaction.token as string,
-        redirect_url: transaction.redirect_url as string,
-        orderId,
-        orderNumber,
-      },
-    };
+    return DomainSuccess({
+      token: transaction.token as string,
+      redirect_url: transaction.redirect_url as string,
+      orderId,
+      orderNumber,
+    });
   }
 }

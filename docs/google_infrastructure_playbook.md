@@ -199,5 +199,36 @@ Kita menggunakan halaman *Checkout Success* (`src/app/payment/success/SuccessCon
 
 ---
 
+## Tahap 7: Panduan Membuat Kampanye Produk Spesifik (Search & Konversi)
+
+Selain menyiapkan infrastruktur, penting untuk mendokumentasikan praktik terbaik (Best Practices) dalam pembuatan *Search Campaign* untuk 1 produk spesifik (berdasarkan kasus konversi belanja yang telah diverifikasi).
+
+### A. Jebakan URL & Kebijakan (Error 404 & Sitelinks)
+- **Final URL Spesifik:** Saat membuat iklan untuk produk spesifik, **jangan** arahkan ke halaman utama (`/`). Arahkan langsung ke halaman produk (contoh: `/shop/kaos-rock-for-people`). Ini menaikkan *Conversion Rate* secara drastis.
+- **Bahaya Aset Sitelink 404:** Google AdsBot sangat ketat. Jika kampanye Anda menggunakan *Sitelink* dengan bahasa Indonesia (contoh: `/katalog`, `/kontak`, `/kebijakan-pengiriman`), pastikan URL tersebut benar-benar ada. Pada arsitektur Next.js, seringkali *route* aslinya menggunakan bahasa Inggris (`/shop`, `/help`, `/shipping-policy`).
+- **Solusi Wajib:** Tambahkan `redirects` permanen (308) di file `next.config.mjs` untuk memetakan URL Indonesia ke URL Inggris. Jika tidak, Google akan mem-blokir iklan Anda dengan peringatan **"Tujuan iklan tidak berfungsi (HTTP:404, Platform: Android)"**.
+
+### B. Menghindari Jebakan "AI Maksimal" & Broad Match
+Google akan merekomendasikan berbagai otomatisasi yang justru bisa membakar anggaran iklan jika tidak diawasi:
+1. **Matikan Perluasan URL Final:** Jika ini menyala, AI Google bisa mengabaikan URL produk spesifik Anda dan membuang pengunjung ke halaman acak. Matikan sakelar **"Optimalkan kampanye Anda dengan AI Maksimal"**.
+2. **Gunakan Phrase Match (Tanda Kutip):** Selalu masukkan kata kunci dengan tanda kutip (contoh: `"kaos distro bandung"`). Abaikan peringatan Google yang menyuruh Anda "*Upgrade ke pencocokan luas (Broad Match)*", karena itu akan mendatangkan klik *junk/spam* dari pencarian yang tidak relevan.
+3. **Isi Penuh Ad Strength:** Masukkan 15 *Headlines*, 4 *Descriptions*, dan minimal 4-8 *Sitelinks* (serta Info Bisnis / Logo) untuk mendapatkan skor *Ad Strength* "Sangat Bagus" (Excellent).
+
+### C. Verifikasi Konversi "Add to Cart"
+Selain `purchase` (yang ditarik via GTM), Google Ads sering meminta sinyal khusus untuk konversi *Menambahkan ke keranjang*.
+- **Solusi Kode:** Di dalam fungsi "Add to Cart" pada *frontend* (contoh: `src/lib/metaPixel.ts`), tambahkan *Event Snippet* spesifik dari Google Ads secara manual menggunakan `window.gtag`.
+  ```typescript
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'conversion', {
+      'send_to': 'AW-18363665188/wOVYCOWdy9scEKSWvbRE', // Sesuaikan ID Anda
+      'value': price * quantity,
+      'currency': 'IDR'
+    });
+  }
+  ```
+- **Verifikasi:** Setelah kode di-*deploy*, buka *website* dan klik tombol "Tambah ke Keranjang" sekali. Status peringatan "Belum diverifikasi" di *dashboard* Google Ads akan otomatis menjadi Hijau (Aktif).
+
+---
+
 ### Penutup
-Infrastruktur 6 tahap di atas adalah rahasia dapur perusahaan rintisan teknologi (SaaS). Jika Anda membangun aplikasi e-commerce baru di masa depan untuk klien lain (Konsep *White-Label*), cukup ulangi langkah persiapan di atas untuk mengambil kunci klien Anda, tempelkan ke Vercel klien tersebut, dan aplikasi secara ajaib akan langsung berfungsi seperti NINOC tanpa perlu mengubah kode pemrograman apa pun!
+Infrastruktur 7 tahap di atas adalah rahasia dapur perusahaan rintisan teknologi (SaaS). Jika Anda membangun aplikasi e-commerce baru di masa depan untuk klien lain (Konsep *White-Label*), cukup ulangi langkah persiapan di atas untuk mengambil kunci klien Anda, tempelkan ke Vercel klien tersebut, dan aplikasi secara ajaib akan langsung berfungsi seperti NINOC tanpa perlu mengubah kode pemrograman apa pun!
