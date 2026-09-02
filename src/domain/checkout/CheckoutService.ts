@@ -48,7 +48,7 @@ export class CheckoutService {
 
     if (voucher) {
       if (voucher.valid_until && new Date(voucher.valid_until) < new Date()) return undefined;
-      if (voucher.max_usage && voucher.usage_count !== undefined && voucher.usage_count >= voucher.max_usage) return undefined;
+      if (voucher.max_usage && voucher.usage_count != null && voucher.usage_count >= voucher.max_usage) return undefined;
       if (voucher.min_order_amount && subtotal < voucher.min_order_amount) return undefined;
 
       let discountAmount = 0;
@@ -244,13 +244,12 @@ export class CheckoutService {
     
     // 1. Validate & Sanitize Input
     const validation = CheckoutValidator.validateRequest(items as CheckoutItem[], customerDetails, clientIp);
-    if (!validation.isValid) {
-      const errMsg = (validation.errorResponse?.json as { error?: string })?.error || 'Invalid request input';
-      return DomainFailure(errMsg, 'VALIDATION_ERROR');
+    if (!validation.success || !validation.data) {
+      return DomainFailure(validation.error || 'Invalid request input', validation.errorType || 'VALIDATION_ERROR', validation.meta);
     }
 
-    customerDetails.phone = validation.sanitizedPhone!;
-    const sanitizedItems = validation.sanitizedItems!;
+    customerDetails.phone = validation.data.sanitizedPhone;
+    const sanitizedItems = validation.data.sanitizedItems;
 
     // 2. Fetch Products
     const productIds = Array.from(new Set(sanitizedItems.map((i: any) => i.id as string)));

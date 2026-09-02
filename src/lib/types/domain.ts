@@ -1,4 +1,4 @@
-export type DomainErrorType = 'VALIDATION_ERROR' | 'NOT_FOUND' | 'CONFLICT' | 'INTERNAL_ERROR' | 'UNAUTHORIZED';
+export type DomainErrorType = 'VALIDATION_ERROR' | 'NOT_FOUND' | 'CONFLICT' | 'INTERNAL_ERROR' | 'UNAUTHORIZED' | 'TOO_MANY_REQUESTS';
 
 export interface DomainResult<T = void> {
   success: boolean;

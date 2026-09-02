@@ -38,5 +38,5 @@ export const POST = withErrorHandler(async (req: Request) => {
         return apiError(result.error || 'Checkout failed', status, { ...result.meta, error: result.error });
     }
 
-    return apiSuccess(result.data, 200);
+    return apiSuccess((result.data as Record<string, any>) || {}, 200);
 });
