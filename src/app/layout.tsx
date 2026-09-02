@@ -142,8 +142,10 @@ export default async function RootLayout({
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <GoogleAnalytics gaId="AW-18363665188" />
+
       <head>
+        {/* Global gtag stub: ensures window.gtag queues events before async script loads */}
+        <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-18363665188');` }} />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#111111" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -296,6 +298,7 @@ export default async function RootLayout({
           <MetaPixel />
         </Suspense>
         <NextTopLoader color="#e8527a" showSpinner={false} height={3} speed={100} crawlSpeed={100} easing="ease-in-out" />
+        <GoogleAnalytics gaId="AW-18363665188" />
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}
         {/* Skip to main content — Accessibility */}
