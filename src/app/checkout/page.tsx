@@ -1115,8 +1115,20 @@ export default function CheckoutPage() {
                   {userId && <p className="text-[9px] text-emerald-600 font-medium mt-1 flex items-center gap-1"><CheckCircle size={9} /> Email default dari akun Anda (bisa diubah)</p>}
                 </div>
                 <div className={cn("bg-white border-t border-l border-ink/40", isMobile ? "px-2 py-1.5" : "p-2.5")}>
-                  <label htmlFor="phone" className={labelClass}>{dict.checkout.phoneRef}</label>
+                  <label htmlFor="phone" className={labelClass}>
+                    NOMOR WHATSAPP <span className="text-rose font-bold">*WAJIB</span>
+                  </label>
                   <input id="phone" required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-transparent text-xs font-semibold uppercase tracking-widest text-ink placeholder:text-ink/50 outline-none" placeholder="0812 3456 7890" />
+                  
+                  {formData.phone.length === 0 ? (
+                    <p className="text-[9px] text-rose font-medium mt-1">⚠️ Wajib diisi untuk pengiriman resi kurir.</p>
+                  ) : (
+                    formData.phone.replace(/\D/g, '').length < 10 || formData.phone.replace(/\D/g, '').length > 15 ? (
+                      <p className="text-[9px] text-rose font-medium mt-1">⚠️ Nomor salah / kurang digit (Terdaftar resmi 10-15 angka).</p>
+                    ) : (
+                      <p className="text-[9px] text-emerald-600 font-medium mt-1 flex items-center gap-1"><CheckCircle size={9} /> Nomor valid.</p>
+                    )
+                  )}
                 </div>
                 <div className={cn("bg-white border-t border-ink/40 col-span-1 md:col-span-2", isMobile ? "px-2 py-1.5" : "p-2.5")}>
                   <label htmlFor="referral_code" className={labelClass}>Promo / Referral Code</label>
