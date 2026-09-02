@@ -56,7 +56,7 @@ export async function getGoogleAdsData(): Promise<GoogleAdsData> {
         metrics.conversions 
       FROM campaign 
       WHERE segments.date DURING THIS_MONTH 
-        AND metrics.cost_micros > 0
+        AND campaign.status IN ('ENABLED', 'PAUSED')
     `;
 
     const response = await customer.query(query);
