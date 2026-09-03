@@ -59,9 +59,17 @@ export async function fetchProductsAction() {
         .order('created_at', { ascending: false });
       
       if (fallbackError) throw fallbackError;
+      
+      if (prodFallback && prodFallback.length === 0) {
+         throw new Error(`DEBUG: URL=${process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0,25)}... KEY=${process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0,10)}...`);
+      }
       return { success: true, data: prodFallback };
     }
     
+    if (prodWithSuppliers && prodWithSuppliers.length === 0) {
+         throw new Error(`DEBUG: URL=${process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0,25)}... KEY=${process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0,10)}...`);
+    }
+
     return { success: true, data: prodWithSuppliers };
   } catch (error: any) {
     console.error('fetchProductsAction error:', error);
