@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle } from 'lucide-react';
+import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import type { MetaAnalyticsData } from '@/actions/metaAnalytics';
+import { cn } from '@/lib/utils';
 
 interface AdsAnalyticsViewProps {
   data: MetaAnalyticsData;
@@ -37,100 +38,218 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
   }
 
   return (
-    <React.Fragment>
-      {/* KPI RIBBON */}
+    <div className="space-y-6">
+      {/* KPI RIBBON - TOP 4 PRIMARY METRICS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        
         {/* Spend */}
-        <div className="bg-white/80 backdrop-blur-md border border-ink/10 rounded-xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
-                <DollarSign size={14} className="text-rose-500" /> Ad Spend
-              </p>
-            </div>
-            <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.totalSpend)}</p>
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <DollarSign size={64} />
           </div>
-          <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5">
-            Total biaya iklan di {getTimeLabel()}
-          </p>
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-6 h-6 rounded-md bg-rose-50 flex items-center justify-center">
+                <DollarSign size={14} className="text-rose-600" />
+              </div>
+              <p className="text-[11px] font-bold text-ink/60 uppercase tracking-wider">Ad Spend</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.totalSpend)}</p>
+          </div>
+          <div className="mt-3 flex items-center justify-between border-t border-ink/5 pt-2">
+            <p className="text-[10px] text-ink/50 font-medium">Total biaya di {getTimeLabel()}</p>
+          </div>
         </div>
 
         {/* ROAS */}
-        <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 border border-emerald-700 rounded-xl p-4 shadow-sm text-white hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[11px] font-bold text-emerald-100 uppercase tracking-wider flex items-center gap-1.5">
-                <Target size={14} className="text-emerald-200" /> ROAS
-              </p>
-            </div>
-            <p className="text-3xl font-mono font-extrabold tracking-tight mt-1">{data.overview.averageRoas.toFixed(2)}x</p>
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 md:p-5 shadow-sm text-white hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Target size={64} />
           </div>
-          <p className="text-[10px] text-emerald-100 mt-2 font-medium border-t border-emerald-400/30 pt-1.5">
-            Return on Ad Spend
-          </p>
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                <Target size={14} className="text-white" />
+              </div>
+              <p className="text-[11px] font-bold text-emerald-50 uppercase tracking-wider">ROAS (Est)</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-mono font-extrabold tracking-tight mt-1">{data.overview.averageRoas.toFixed(2)}x</p>
+          </div>
+          <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2">
+            <p className="text-[10px] text-emerald-100 font-medium">Return on Ad Spend</p>
+            {data.overview.averageRoas >= 3 ? (
+              <span className="flex items-center text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded text-white">Profit <ArrowUpRight size={10} className="ml-0.5"/></span>
+            ) : (
+              <span className="flex items-center text-[10px] font-bold bg-black/20 px-1.5 py-0.5 rounded text-white">Rugi <ArrowDownRight size={10} className="ml-0.5"/></span>
+            )}
+          </div>
         </div>
 
-        {/* Clicks */}
-        <div className="bg-white/80 backdrop-blur-md border border-ink/10 rounded-xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
-                <MousePointer size={14} className="text-blue-500" /> Link Clicks
-              </p>
-            </div>
-            <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.overview.totalClicks.toLocaleString()}</p>
+        {/* CPA (Cost Per Action) */}
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <ShoppingCart size={64} />
           </div>
-          <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5">
-            CTR: {data.overview.averageCtr.toFixed(2)}%
-          </p>
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-6 h-6 rounded-md bg-amber-50 flex items-center justify-center">
+                <ShoppingCart size={14} className="text-amber-600" />
+              </div>
+              <p className="text-[11px] font-bold text-ink/60 uppercase tracking-wider">CPA / CPP</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.cpa)}</p>
+          </div>
+          <div className="mt-3 flex items-center justify-between border-t border-ink/5 pt-2">
+            <p className="text-[10px] text-ink/50 font-medium">Cost per Purchase</p>
+            <p className="text-[10px] font-bold text-ink/80">{data.overview.totalConversions.toLocaleString()} Terjual</p>
+          </div>
         </div>
 
-        {/* Impressions */}
-        <div className="bg-white/80 backdrop-blur-md border border-ink/10 rounded-xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 group flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-[11px] font-bold text-ink/50 uppercase tracking-wider flex items-center gap-1.5">
-                <Eye size={14} className="text-sky-500" /> Impressions
-              </p>
-            </div>
-            <p className="text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">{data.overview.totalImpressions.toLocaleString()}</p>
+        {/* CPM (Cost Per Mille) */}
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Eye size={64} />
           </div>
-          <p className="text-[10px] text-ink/60 mt-2 font-medium border-t border-ink/5 pt-1.5">
-            Jumlah iklan ditampilkan
-          </p>
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-6 h-6 rounded-md bg-sky-50 flex items-center justify-center">
+                <Eye size={14} className="text-sky-600" />
+              </div>
+              <p className="text-[11px] font-bold text-ink/60 uppercase tracking-wider">CPM</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.cpm)}</p>
+          </div>
+          <div className="mt-3 flex items-center justify-between border-t border-ink/5 pt-2">
+            <p className="text-[10px] text-ink/50 font-medium">Cost per 1.000 Impressions</p>
+            <p className="text-[10px] font-bold text-ink/80">{fIDR(data.overview.totalImpressions)} Impr</p>
+          </div>
         </div>
       </div>
 
-      <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm lg:col-span-2">
-        <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-4">
-          <TrendingUp size={16} className="text-blue-600" /> Performa Harian ({getTimeLabel()})
+      {/* SECONDARY METRICS (CPC, CTR, Clicks) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-3 flex items-center gap-3">
+          <div className="p-2 bg-white rounded-lg shadow-sm text-blue-500"><MousePointer size={16}/></div>
+          <div>
+            <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Cost Per Click (CPC)</p>
+            <p className="text-base font-mono font-bold text-ink">Rp {fIDR(data.overview.cpc)}</p>
+          </div>
+        </div>
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-3 flex items-center gap-3">
+          <div className="p-2 bg-white rounded-lg shadow-sm text-purple-500"><Activity size={16}/></div>
+          <div>
+            <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Click Through Rate</p>
+            <p className="text-base font-mono font-bold text-ink">{data.overview.averageCtr.toFixed(2)}%</p>
+          </div>
+        </div>
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-3 flex items-center gap-3">
+          <div className="p-2 bg-white rounded-lg shadow-sm text-indigo-500"><MousePointer size={16}/></div>
+          <div>
+            <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Total Clicks</p>
+            <p className="text-base font-mono font-bold text-ink">{fIDR(data.overview.totalClicks)}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* CHART */}
+      <div className="bg-white border border-ink/10 rounded-2xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+        <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-6">
+          <TrendingUp size={16} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
         </h3>
-        <div className="h-[300px] w-full">
+        <div className="h-[320px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="colorSpend" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
+                  <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
                   <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
                 </linearGradient>
                 <linearGradient id="colorConv" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
                   <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
               <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
-              <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+              <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} tickFormatter={(val) => `Rp${(val/1000000).toFixed(1)}M`} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
               <RechartsTooltip 
-                contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)' }}
+                contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', fontSize: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '12px' }}
+                formatter={(value: number, name: string) => {
+                  if (name === "Ad Spend (Rp)") return [`Rp ${fIDR(value)}`, name];
+                  return [value, name];
+                }}
               />
-              <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpend)" name="Ad Spend (Rp)" />
-              <Area yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} fill="url(#colorConv)" name="Conversions" />
+              <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={3} fill="url(#colorSpend)" name="Ad Spend (Rp)" />
+              <Area yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={3} fill="url(#colorConv)" name="Conversions" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
-    </React.Fragment>
+
+      {/* CAMPAIGN TABLE */}
+      {data.campaigns.length > 0 && (
+        <div className="bg-white border border-ink/10 rounded-2xl shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+          <div className="p-5 border-b border-ink/10 bg-ink/[0.02]">
+            <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+              <Target size={16} className="text-indigo-600" /> Rincian Kampanye
+            </h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-white border-b border-ink/5">
+                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider">Nama Kampanye</th>
+                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider">Status</th>
+                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">Spend</th>
+                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">Pembelian</th>
+                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">CPA</th>
+                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">ROAS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink/5">
+                {data.campaigns.sort((a, b) => b.spend - a.spend).map((camp) => (
+                  <tr key={camp.id} className="hover:bg-ink/[0.01] transition-colors">
+                    <td className="px-5 py-3">
+                      <p className="text-xs font-semibold text-ink line-clamp-1">{camp.name}</p>
+                      <p className="text-[10px] text-ink/50 mt-0.5">{camp.id}</p>
+                    </td>
+                    <td className="px-5 py-3">
+                      <span className={cn(
+                        "px-2 py-0.5 rounded text-[10px] font-bold",
+                        camp.status === 'ACTIVE' ? "bg-emerald-100 text-emerald-700" :
+                        camp.status === 'PAUSED' ? "bg-amber-100 text-amber-700" :
+                        "bg-ink/10 text-ink/60"
+                      )}>
+                        {camp.status}
+                      </span>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <p className="text-xs font-mono font-medium text-ink">Rp {fIDR(camp.spend)}</p>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <p className="text-xs font-mono font-bold text-ink">{camp.conversions}</p>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <p className="text-xs font-mono font-medium text-ink">Rp {fIDR(camp.cpa)}</p>
+                    </td>
+                    <td className="px-5 py-3 text-right">
+                      <span className={cn(
+                        "text-xs font-mono font-bold px-2 py-1 rounded",
+                        camp.roas >= 3 ? "text-emerald-700 bg-emerald-50" : 
+                        camp.roas >= 1.5 ? "text-amber-700 bg-amber-50" :
+                        "text-rose-700 bg-rose-50"
+                      )}>
+                        {camp.roas.toFixed(2)}x
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

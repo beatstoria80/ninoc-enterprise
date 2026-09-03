@@ -10,6 +10,9 @@ export interface MetaCampaign {
   clicks: number;
   conversions: number;
   roas: number;
+  cpa: number;
+  cpc: number;
+  cpm: number;
 }
 
 export interface MetaDemographics {
@@ -27,6 +30,9 @@ export interface MetaAnalyticsData {
     totalConversions: number;
     averageCtr: number;
     averageRoas: number;
+    cpa: number;
+    cpc: number;
+    cpm: number;
   };
   campaigns: MetaCampaign[];
   demographics: MetaDemographics;
@@ -226,7 +232,7 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
   if (!capiToken || !adAccountId) {
     return {
       configured: false,
-      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
+      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0, cpa: 0, cpc: 0, cpm: 0 },
       campaigns: [],
       demographics: { ageGender: [], topLocations: [] },
       trend: []
@@ -253,6 +259,9 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
     const totalConversions = insights ? getPurchasesCount(insights.actions) : 0;
     const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
     const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0;
+    const cpa = totalConversions > 0 ? totalSpend / totalConversions : 0;
+    const cpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
+    const cpm = totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0;
 
     const overview = {
       totalSpend,
@@ -260,7 +269,10 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
       totalClicks,
       totalConversions,
       averageCtr: parseFloat(averageCtr.toFixed(2)),
-      averageRoas: parseFloat(averageRoas.toFixed(2))
+      averageRoas: parseFloat(averageRoas.toFixed(2)),
+      cpa,
+      cpc,
+      cpm
     };
 
     const campaignsData = await metaGraphFetch(
@@ -275,18 +287,26 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
     const campaigns: MetaCampaign[] = (campaignsData.data || []).map((camp: any) => {
       const cInsights = camp.insights?.data?.[0];
       const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+      const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
+      const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
       const cConversions = cInsights ? getPurchasesCount(cInsights.actions) : 0;
       const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+      const cCpa = cConversions > 0 ? cSpend / cConversions : 0;
+      const cCpc = cClicks > 0 ? cSpend / cClicks : 0;
+      const cCpm = cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0;
 
       return {
         id: camp.id,
         name: camp.name,
         status: camp.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED',
         spend: cSpend,
-        impressions: cInsights ? parseInt(cInsights.impressions || 0, 10) : 0,
-        clicks: cInsights ? parseInt(cInsights.clicks || 0, 10) : 0,
+        impressions: cImpressions,
+        clicks: cClicks,
         conversions: cConversions,
-        roas: parseFloat(cRoas.toFixed(2))
+        roas: parseFloat(cRoas.toFixed(2)),
+        cpa: cCpa,
+        cpc: cCpc,
+        cpm: cCpm
       };
     });
 
@@ -318,7 +338,7 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
     return {
       configured: true,
       error: `Failed to fetch data from Meta: ${error.message}`,
-      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0 },
+      overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0, cpa: 0, cpc: 0, cpm: 0 },
       campaigns: [],
       demographics: { ageGender: [], topLocations: [] },
       trend: []
