@@ -236,7 +236,7 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
                 tick={{ fontSize: 10, fill: '#64748b' }} 
                 tickLine={false} 
                 axisLine={false} 
-                tickFormatter={(val) => `Rp${(val/1000).toFixed(0)}k`} 
+                tickFormatter={(val) => `Rp${Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}`} 
               />
               <YAxis 
                 yAxisId="right" 
@@ -244,6 +244,7 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
                 tick={{ fontSize: 10, fill: '#64748b' }} 
                 tickLine={false} 
                 axisLine={false} 
+                tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}
               />
               <RechartsTooltip 
                 contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
