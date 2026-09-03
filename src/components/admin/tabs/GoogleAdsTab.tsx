@@ -114,7 +114,27 @@ export function GoogleAdsTab() {
         </div>
       </div>
 
-      {viewMode === 'ads' && data && <GoogleAdsAnalyticsView data={data} timeFilter={timeFilter} />}
+      {viewMode === 'ads' && data && !data.error && data.configured && <GoogleAdsAnalyticsView data={data} timeFilter={timeFilter} />}
+
+      {viewMode === 'ads' && data && data.error && (
+        <div className="flex flex-col items-center justify-center py-20 bg-rose/5 border border-dashed border-rose/20 rounded-xl p-8 mt-4">
+           <AlertTriangle className="w-12 h-12 text-rose mb-4" />
+           <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Google Ads API Error</h2>
+           <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
+             {data.error}
+           </p>
+        </div>
+      )}
+
+      {viewMode === 'ads' && !data && !loading && (
+        <div className="flex flex-col items-center justify-center py-20 bg-rose/5 border border-dashed border-rose/20 rounded-xl p-8 mt-4">
+           <AlertTriangle className="w-12 h-12 text-rose mb-4" />
+           <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Gagal Memuat Data</h2>
+           <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
+             Terjadi kesalahan internal saat menarik data dari server. Silakan refresh halaman atau hubungi Administrator.
+           </p>
+        </div>
+      )}
       
       {viewMode === 'tracking' && (
         <div className="bg-white border border-ink/10 rounded-xl p-8 flex flex-col items-center justify-center opacity-70">
