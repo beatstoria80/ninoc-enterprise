@@ -1,166 +1,129 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, MousePointerClick, Eye, Target, AlertCircle } from 'lucide-react';
-import { getGoogleAdsData, type GoogleAdsData } from '@/actions/googleAds';
+import { TrendingUp, AlertTriangle, RefreshCw, Globe, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getGoogleAdsData } from '@/actions/googleAds';
+import type { GoogleAdsData } from '@/services/google/types';
+import { GoogleAdsAnalyticsView } from '../google-views/GoogleAdsAnalyticsView';
 
 export function GoogleAdsTab() {
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'ads' | 'tracking'>('ads');
   const [data, setData] = useState<GoogleAdsData | null>(null);
+  const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
 
-  async function loadAdsData() {
+  const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'tracking') => {
+    const filter = filterOverride || timeFilter;
+    const mode = modeOverride || viewMode;
     try {
       setLoading(true);
-      const adsData = await getGoogleAdsData();
-      setData(adsData);
+      if (mode === 'ads') {
+        const res = await getGoogleAdsData(filter);
+        setData(res);
+      }
     } catch (error) {
-      console.error('Error fetching Google Ads data:', error);
+      console.error('Error fetching Google analytics:', error);
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadAdsData();
-  }, []);
-
-  const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    loadData(timeFilter, viewMode);
+  }, [timeFilter, viewMode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 opacity-50">
-        <TrendingUp className="w-8 h-8 animate-pulse text-ink mb-4" />
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-ink">Menghubungkan ke Google Ads API...</p>
+      <div className="flex flex-col items-center justify-center py-24 opacity-70">
+        <TrendingUp className="w-10 h-10 animate-pulse text-blue-600 mb-4" />
+        <p className="text-xs uppercase tracking-widest font-bold text-ink/80">Sinkronisasi Data Google Ads...</p>
+        <p className="text-[11px] text-ink/50 mt-1">Mengambil data metrik terbaru melalui Google Ads API (GAQL)</p>
       </div>
     );
   }
 
-  if (!data) return null;
-
-  const avgCpc = data.totalClicks > 0 ? data.totalSpend / data.totalClicks : 0;
-  const overallCtr = data.totalImpressions > 0 ? (data.totalClicks / data.totalImpressions) * 100 : 0;
+  if (viewMode === 'ads' && data && !data.configured) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 bg-ink/[0.02] border border-dashed border-ink/20 rounded-xl p-8">
+        <AlertTriangle className="w-12 h-12 text-rose mb-4" />
+        <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Google Ads Belum Terhubung</h2>
+        <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
+          Kredensial <strong>Google Ads API</strong> tidak lengkap. Pastikan Anda telah menambahkan \`GOOGLE_ADS_CLIENT_ID\`, \`GOOGLE_ADS_DEVELOPER_TOKEN\`, \`GOOGLE_ADS_REFRESH_TOKEN\` dan \`GOOGLE_ADS_CUSTOMER_ID\` di environment variables.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex-1 overflow-y-auto minimal-scroll space-y-4 w-full pr-2 pb-20">
-      <div className="mb-4 flex items-center justify-between border-b border-ink/10 pb-4">
+    <div className="flex-1 overflow-y-auto minimal-scroll space-y-4 w-full pr-2 pb-24">
+      {/* HEADER & FILTER TABS */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-4">
         <div>
-          <h1 className="text-xl font-medium tracking-tight text-ink flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-rose" />
-            Google Ads Mirror Dashboard
-          </h1>
-          <p className="text-xs md:text-sm text-ink/80 mt-1">
-            Real-time synchronization with your Google Ads account. (THIS_MONTH)
+          <div className="flex items-center gap-2 mb-1">
+            <span className="inline-flex items-center justify-center p-1.5 bg-blue-50 text-blue-600 rounded-md">
+              <Globe className="w-5 h-5" />
+            </span>
+            <h1 className="text-xl font-bold tracking-tight text-ink">
+              Google Ads Analytics
+            </h1>
+          </div>
+          <p className="text-xs md:text-sm text-ink/70">
+            Pantau performa kampanye Google Search, Display, dan PMax Anda secara real-time.
           </p>
+          
+          <div className="flex items-center gap-2 mt-4 bg-ink/[0.03] p-1 rounded-lg w-fit border border-ink/10 overflow-x-auto">
+            <button 
+              onClick={() => setViewMode('ads')}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'ads' ? "bg-white shadow-sm text-blue-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+            >
+              <TrendingUp size={14} /> Paid Ads
+            </button>
+            <button 
+              onClick={() => setViewMode('tracking')}
+              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'tracking' ? "bg-white shadow-sm text-purple-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+            >
+              <Settings size={14} /> Tracking & Integrations
+            </button>
+          </div>
         </div>
-        <div className="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-sm flex items-center gap-1.5 border border-emerald-200">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-          <span className="text-[10px] font-mono font-bold tracking-wider uppercase">API CONNECTED</span>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-1.5 bg-blue-50/50 border border-blue-100 p-1.5 rounded-lg">
+            {(['24h', '7d', '28d', '90d'] as const).map(f => (
+              <button
+                key={f}
+                onClick={() => setTimeFilter(f)}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-xs font-bold transition-all",
+                  timeFilter === f ? "bg-blue-600 text-white shadow-sm" : "text-blue-900/60 hover:text-blue-900 hover:bg-blue-100/50"
+                )}
+              >
+                {f === '24h' ? 'Hari Ini' : f === '7d' ? '7 Hari' : f === '28d' ? '30 Hari' : '3 Bulan'}
+              </button>
+            ))}
+          </div>
+          
+          <button 
+            onClick={() => loadData()} 
+            className="bg-white border border-ink/15 text-ink/80 hover:text-ink hover:border-ink/30 px-3.5 py-2 rounded-lg flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95"
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin" : ""} /> Refresh
+          </button>
         </div>
       </div>
 
-      {/* TOP METRICS GRID */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="bg-ink text-white rounded-md p-3 flex flex-col justify-between shadow-sm">
-          <p className="text-[10px] font-semibold text-white/70 uppercase tracking-wider mb-1 flex items-center gap-1.5"><TrendingUp size={12}/> Total Spend</p>
-          <p className="text-2xl font-mono tracking-tight text-rose">IDR {fIDR(data.totalSpend)}</p>
+      {viewMode === 'ads' && data && <GoogleAdsAnalyticsView data={data} timeFilter={timeFilter} />}
+      
+      {viewMode === 'tracking' && (
+        <div className="bg-white border border-ink/10 rounded-xl p-8 flex flex-col items-center justify-center opacity-70">
+           <Settings className="w-12 h-12 text-ink/30 mb-4" />
+           <p className="text-sm font-bold text-ink">Pengaturan Tracking Google (GTM / AW)</p>
+           <p className="text-xs text-ink/50 mt-1">Akan hadir pada pembaruan berikutnya.</p>
         </div>
-        
-        <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between shadow-sm">
-          <p className="text-[10px] font-semibold text-ink/70 uppercase tracking-wider mb-1 flex items-center gap-1.5"><MousePointerClick size={12}/> Total Clicks</p>
-          <p className="text-2xl font-mono tracking-tight text-ink">{data.totalClicks.toLocaleString()}</p>
-        </div>
-
-        <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between shadow-sm">
-          <p className="text-[10px] font-semibold text-ink/70 uppercase tracking-wider mb-1 flex items-center gap-1.5"><Eye size={12}/> Impressions</p>
-          <p className="text-2xl font-mono tracking-tight text-ink">{data.totalImpressions.toLocaleString()}</p>
-        </div>
-
-        <div className="bg-white border border-ink/10 rounded-md p-3 flex flex-col justify-between shadow-sm">
-          <p className="text-[10px] font-semibold text-ink/70 uppercase tracking-wider mb-1 flex items-center gap-1.5"><Target size={12}/> Conversions</p>
-          <p className="text-2xl font-mono tracking-tight text-emerald-600">{data.totalConversions.toLocaleString()}</p>
-        </div>
-
-        <div className="bg-ink/[0.02] border border-ink/10 rounded-md p-3 flex flex-col justify-between shadow-sm">
-           <div className="flex justify-between items-start mb-1">
-             <p className="text-[10px] font-semibold text-ink/70 uppercase tracking-wider">Avg CPC & CTR</p>
-           </div>
-           <div>
-             <p className="text-lg font-mono tracking-tight text-ink">IDR {fIDR(avgCpc)} <span className="text-[10px] text-ink/50 uppercase">/clk</span></p>
-             <p className="text-sm font-mono tracking-tight text-ink/80 mt-0.5">{overallCtr.toFixed(2)}% <span className="text-[10px] text-ink/50 uppercase">CTR</span></p>
-           </div>
-        </div>
-      </div>
-
-      {/* CAMPAIGN TABLE */}
-      <div className="bg-white border border-ink/10 rounded-md overflow-hidden mt-2 shadow-sm">
-        <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex justify-between items-center">
-          <h2 className="text-xs font-bold uppercase tracking-widest text-ink">Campaign Performance</h2>
-        </div>
-        
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="border-b border-ink/10 bg-white">
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider">Campaign Name</th>
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">Spend (IDR)</th>
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">Clicks</th>
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">Impr.</th>
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">CTR</th>
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-right">Avg CPC</th>
-                <th className="px-3 py-2 text-[10px] font-bold text-ink/60 uppercase tracking-wider text-center">Conv.</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-ink/5">
-              {data.campaigns.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center">
-                    <div className="flex flex-col items-center text-ink/50">
-                      <AlertCircle className="w-6 h-6 mb-2 opacity-50" />
-                      <p className="text-xs font-medium uppercase tracking-widest">Belum ada data kampanye bulan ini</p>
-                      <p className="text-[10px] mt-1">Pastikan iklan Anda sedang berjalan aktif di Google Ads Manager.</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                data.campaigns.sort((a, b) => b.spend - a.spend).map((c, i) => {
-                  const ctr = c.impressions > 0 ? (c.clicks / c.impressions) * 100 : 0;
-                  const cpc = c.clicks > 0 ? c.spend / c.clicks : 0;
-                  return (
-                    <tr key={i} className="hover:bg-ink/[0.01] transition-colors">
-                      <td className="px-3 py-2">
-                        <p className="text-xs font-semibold text-ink">{c.name}</p>
-                        <p className="text-[9px] text-ink/50 uppercase tracking-wider mt-0.5">ID: {c.id}</p>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <p className="text-xs font-mono font-medium text-rose">{fIDR(c.spend)}</p>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <p className="text-xs font-mono text-ink">{c.clicks.toLocaleString()}</p>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <p className="text-xs font-mono text-ink/80">{c.impressions.toLocaleString()}</p>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <p className="text-xs font-mono text-ink/80">{ctr.toFixed(2)}%</p>
-                      </td>
-                      <td className="px-3 py-2 text-right">
-                        <p className="text-xs font-mono text-ink/80">{fIDR(cpc)}</p>
-                      </td>
-                      <td className="px-3 py-2 text-center">
-                        <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-sm text-xs font-mono font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                          {c.conversions}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      )}
+      
     </div>
   );
 }
