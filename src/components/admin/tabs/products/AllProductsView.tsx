@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { Product } from '@/components/admin/types';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
 import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
+import { useAdminProducts } from '@/providers/admin/AdminProductsProvider';
 
 export function AllProductsView({
   products,
@@ -21,6 +22,7 @@ export function AllProductsView({
   toggleFeatured: (p: Product) => void;
   deleteProduct: (id: string) => void;
 }) {
+  const { error } = useAdminProducts();
   const [selectedSupplier, setSelectedSupplier] = React.useState<string>('all');
 
   const uniqueSuppliers = Array.from(new Set(products.filter(p => p.suppliers?.name).map(p => p.suppliers!.name)));
@@ -75,6 +77,13 @@ export function AllProductsView({
           </div>
         </div>
       </div>
+
+      {error && (
+        <div className="shrink-0 p-4 mb-4 bg-red-50 border border-red-200 text-red-600 rounded-lg shadow-sm">
+          <p className="font-bold mb-1">Server Action Error in Products:</p>
+          <pre className="text-xs whitespace-pre-wrap">{error}</pre>
+        </div>
+      )}
 
       {/* Products Grid */}
       <div className="flex-1 min-h-0 overflow-y-auto minimal-scroll pb-2 relative">

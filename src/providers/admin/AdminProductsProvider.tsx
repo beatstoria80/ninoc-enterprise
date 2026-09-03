@@ -7,6 +7,7 @@ import { fetchProductsAction, toggleFeaturedAction, deleteProductAction } from '
 interface AdminProductsContextType {
   products: Product[];
   isLoading: boolean;
+  error: string | null;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   fetchProducts: () => Promise<void>;
@@ -19,15 +20,18 @@ const AdminProductsContext = createContext<AdminProductsContextType | undefined>
 export function AdminProductsProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
+    setError(null);
     const result = await fetchProductsAction();
     if (result.success && result.data) {
       setProducts(result.data as Product[]);
     } else {
       console.error('Failed to fetch products:', result.error);
+      setError(result.error || 'Unknown error');
     }
     setIsLoading(false);
   }, []);
@@ -56,7 +60,7 @@ export function AdminProductsProvider({ children }: { children: ReactNode }) {
 
   return (
     <AdminProductsContext.Provider value={{
-      products, isLoading, searchQuery, setSearchQuery, fetchProducts, toggleFeatured, deleteProduct
+      products, isLoading, error, searchQuery, setSearchQuery, fetchProducts, toggleFeatured, deleteProduct
     }}>
       {children}
     </AdminProductsContext.Provider>
