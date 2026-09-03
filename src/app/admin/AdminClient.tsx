@@ -140,8 +140,49 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   // Sales Analytics state
   const [selectedYear, setSelectedYear] = useState<number>(2026);
-  const [salesChartData, setSalesChartData] = useState<{month: string; sales: number}[]>([]);
-  const [profitChartData, setProfitChartData] = useState<{month: string; profit: number}[]>([]);
+  
+  const { salesChartData, profitChartData } = React.useMemo(() => {
+    if (!orders || orders.length === 0) return { salesChartData: [], profitChartData: [] };
+    
+    const monthlySales = new Map<string, number>();
+    const monthlyProfit = new Map<string, number>();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    months.forEach(month => {
+      monthlySales.set(month, 0);
+      monthlyProfit.set(month, 0);
+    });
+    
+    orders.forEach(order => {
+      if (['paid', 'shipped', 'delivered'].includes(order.status) || order.payment_status === 'success' || order.payment_status === 'settlement') {
+        const orderDate = new Date(order.created_at);
+        if (orderDate.getFullYear() === selectedYear) {
+          const monthStr = months[orderDate.getMonth()];
+          const price = Number(order.total_price) || 0;
+          monthlySales.set(monthStr, (monthlySales.get(monthStr) || 0) + price);
+          
+          let cost = 0;
+          order.order_items?.forEach(item => {
+            const costing = productCostings[item.product_id];
+            if (costing) {
+               const unitCost = (costing.supplier_cost || 0) + (costing.shipping_cost || 0) + (costing.packaging_cost || 0);
+               cost += unitCost * item.quantity;
+            } else {
+               cost += (Number(item.price) * item.quantity) * 0.7; // Fallback 70% cost estimate
+            }
+          });
+          
+          const profit = price - cost;
+          monthlyProfit.set(monthStr, (monthlyProfit.get(monthStr) || 0) + profit);
+        }
+      }
+    });
+    
+    return {
+      salesChartData: months.map(month => ({ month, sales: monthlySales.get(month) || 0 })),
+      profitChartData: months.map(month => ({ month, profit: monthlyProfit.get(month) || 0 }))
+    };
+  }, [orders, productCostings, selectedYear]);
 
   // Online Order tab state
   const [orderTab, setOrderTab] = useState<'all' | 'new' | 'paid' | 'sent' | 'completed' | 'canceled'>('all');
@@ -271,6 +312,8 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       fetchFinancialData();
     });
   }, [fetchData, fetchFinancialData]);
+
+
 
 
   // saveCustomer is now in useAdminCustomers (or we can keep it here if it's not in the provider yet)
