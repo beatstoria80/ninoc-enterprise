@@ -661,4 +661,187 @@ export class MetaAnalyticsService {
       return mock;
     }
   }
+  static async getAdSetsByCampaign(campaignId: string, timeFilter: string = '28d'): Promise<MetaAdSet[]> {
+    const { capiToken, adAccountId } = this.getCredentials();
+    if (!capiToken || !adAccountId) return [];
+    
+    const datePreset = this.getDatePreset(timeFilter);
+    const data = await metaGraphFetch(
+      `${campaignId}/adsets`,
+      capiToken,
+      {
+        date_preset: datePreset,
+        fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,end_time,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
+      }
+    );
+
+    return (data.data || []).map((adset: any) => {
+      const cInsights = adset.insights?.data?.[0];
+      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+      const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
+      const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
+      const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
+      const cConversions = cInsights ? this.getPurchasesCount(cInsights.actions) : 0;
+      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+      const cCpa = cConversions > 0 ? cSpend / cConversions : 0;
+
+      let budget = 'Menggunakan anggaran kampanye';
+      if (adset.daily_budget) budget = `Rp ${(parseInt(adset.daily_budget, 10) / 100).toLocaleString('id-ID')} / harian`;
+      else if (adset.lifetime_budget) budget = `Rp ${(parseInt(adset.lifetime_budget, 10) / 100).toLocaleString('id-ID')} s.masa`;
+
+      return {
+        id: adset.id,
+        campaignId,
+        name: adset.name,
+        status: adset.status as any,
+        deliveryStatus: adset.effective_status || adset.status,
+        budget,
+        endDate: adset.end_time ? new Date(adset.end_time).toLocaleDateString('id-ID') : 'Sedang berjalan',
+        spend: cSpend,
+        reach: cReach,
+        impressions: cImpressions,
+        clicks: cClicks,
+        conversions: cConversions,
+        roas: parseFloat(cRoas.toFixed(2)),
+        cpa: cCpa,
+        cpc: cClicks > 0 ? cSpend / cClicks : 0,
+        cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
+        qualityRanking: cInsights?.quality_ranking || '—',
+        engagementRanking: cInsights?.engagement_rate_ranking || '—',
+        conversionRanking: cInsights?.conversion_rate_ranking || '—'
+      };
+    });
+  }
+
+  static async getAdsByAdSet(adSetId: string, campaignId: string, timeFilter: string = '28d'): Promise<MetaAd[]> {
+    const { capiToken, adAccountId } = this.getCredentials();
+    if (!capiToken || !adAccountId) return [];
+    
+    const datePreset = this.getDatePreset(timeFilter);
+    const data = await metaGraphFetch(
+      `${adSetId}/ads`,
+      capiToken,
+      {
+        date_preset: datePreset,
+        fields: 'id,name,status,effective_status,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
+      }
+    );
+
+    return (data.data || []).map((ad: any) => {
+      const cInsights = ad.insights?.data?.[0];
+      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+      const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
+      const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
+      const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
+      const cConversions = cInsights ? this.getPurchasesCount(cInsights.actions) : 0;
+      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+      
+      return {
+        id: ad.id,
+        adSetId,
+        campaignId,
+        name: ad.name,
+        status: ad.status as any,
+        deliveryStatus: ad.effective_status || ad.status,
+        budget: 'Menggunakan anggaran set iklan',
+        endDate: '—',
+        spend: cSpend,
+        reach: cReach,
+        impressions: cImpressions,
+        clicks: cClicks,
+        conversions: cConversions,
+        roas: parseFloat(cRoas.toFixed(2)),
+        cpa: cConversions > 0 ? cSpend / cConversions : 0,
+        cpc: cClicks > 0 ? cSpend / cClicks : 0,
+        cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
+        qualityRanking: cInsights?.quality_ranking || '—',
+        engagementRanking: cInsights?.engagement_rate_ranking || '—',
+        conversionRanking: cInsights?.conversion_rate_ranking || '—'
+      };
+    });
+  }
+
+  static async getAdInsightsDetail(adId: string, timeFilter: string = '28d') {
+    const { capiToken } = this.getCredentials();
+    if (!capiToken) return null;
+    const datePreset = this.getDatePreset(timeFilter);
+    
+    try {
+      const adData = await metaGraphFetch(
+        adId,
+        capiToken,
+        { fields: 'name,creative{thumbnail_url,body},created_time' }
+      );
+      
+      const insightsData = await metaGraphFetch(
+        `${adId}/insights`,
+        capiToken,
+        {
+          date_preset: datePreset,
+          fields: 'spend,impressions,reach,clicks,actions,inline_link_clicks,video_p50_watched_actions,video_p100_watched_actions,video_play_actions'
+        }
+      );
+      const ins = insightsData.data?.[0] || {};
+      const spend = parseFloat(ins.spend || 0);
+      const conversions = this.getPurchasesCount(ins.actions);
+      
+      // Demographics
+      const demoData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, breakdowns: 'age,gender' });
+      const demographics = (demoData.data || []).map((d: any) => ({
+        age: d.age || 'Unknown',
+        gender: d.gender === 'male' ? 'Laki-laki' : d.gender === 'female' ? 'Perempuan' : 'Non-Biner',
+        value: parseFloat(d.spend || 0)
+      }));
+      
+      // Placements
+      const placeData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, breakdowns: 'publisher_platform,platform_position' });
+      const placements = (placeData.data || []).map((p: any) => ({
+        platform: p.publisher_platform || 'Unknown',
+        placement: p.platform_position || 'Unknown',
+        value: parseInt(p.impressions || 0, 10)
+      }));
+
+      // Locations
+      const locData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, breakdowns: 'region' });
+      const locations = (locData.data || []).map((l: any) => ({
+        region: l.region || 'Unknown',
+        value: parseInt(l.impressions || 0, 10)
+      }));
+
+      return {
+        id: adId,
+        name: adData.name || '',
+        spend,
+        impressions: parseInt(ins.impressions || 0, 10),
+        reach: parseInt(ins.reach || 0, 10),
+        clicks: parseInt(ins.clicks || 0, 10),
+        conversions,
+        cpa: conversions > 0 ? spend / conversions : 0,
+        cpm: parseInt(ins.impressions || 0, 10) > 0 ? (spend / parseInt(ins.impressions || 0, 10)) * 1000 : 0,
+        roas: spend > 0 ? ((conversions * 150000) / spend) : 0,
+        publishedDate: adData.created_time ? new Date(adData.created_time).toLocaleDateString('id-ID') : '',
+        creativeThumbnail: adData.creative?.data?.[0]?.thumbnail_url || '',
+        creativeBody: adData.creative?.data?.[0]?.body || '',
+        dailyBudget: 0,
+        lifetimeBudget: 0,
+        startDate: '',
+        endDate: '',
+        videoPlays: 0,
+        videoThruPlays: 0,
+        videoPlayTimeAvg: 0,
+        videoPlays3s: 0,
+        linkClicks: ins.inline_link_clicks ? parseInt(ins.inline_link_clicks, 10) : 0,
+        ctr: parseInt(ins.impressions || 0, 10) > 0 ? ((parseInt(ins.clicks || 0, 10) / parseInt(ins.impressions || 0, 10)) * 100) : 0,
+        postReactions: 0,
+        pageLikes: 0,
+        trend: [],
+        demographics,
+        placements,
+        locations
+      };
+    } catch (err) {
+      console.error(err);
+      return null;
+    }
+  }
 }

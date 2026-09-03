@@ -28,3 +28,14 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
 export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<MetaOrganicData> {
   return await MetaAnalyticsService.getOrganicDashboard(timeFilter);
 }
+export async function getAdSetsByCampaign(campaignId: string, timeFilter: string = '28d') {
+  return await MetaAnalyticsService.getAdSetsByCampaign(campaignId, timeFilter);
+}
+
+export async function getAdsByAdSet(adSetId: string, campaignId: string, timeFilter: string = '28d') {
+  return await MetaAnalyticsService.getAdsByAdSet(adSetId, campaignId, timeFilter);
+}
+
+export async function getAdInsightsDetail(adId: string, timeFilter: string = '28d') {
+  return await MetaAnalyticsService.getAdInsightsDetail(adId, timeFilter);
+}

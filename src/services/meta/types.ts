@@ -19,6 +19,55 @@ export interface MetaCampaign {
   conversionRanking: string;
 }
 
+export interface MetaAdSet extends MetaCampaign {
+  campaignId: string;
+}
+
+export interface MetaAd extends MetaCampaign {
+  adSetId: string;
+  campaignId: string;
+}
+
+export interface MetaAdInsightsDetail {
+  id: string;
+  name: string;
+  spend: number;
+  impressions: number;
+  reach: number;
+  clicks: number;
+  conversions: number;
+  cpa: number;
+  cpm: number;
+  roas: number;
+  
+  // Specific Detail metrics
+  publishedDate: string;
+  creativeThumbnail: string;
+  creativeBody: string;
+  dailyBudget: number;
+  lifetimeBudget: number;
+  startDate: string;
+  endDate: string;
+  
+  // Advanced Insights
+  videoPlays: number;
+  videoThruPlays: number;
+  videoPlayTimeAvg: number;
+  videoPlays3s: number;
+  linkClicks: number;
+  ctr: number;
+  postReactions: number;
+  pageLikes: number;
+  
+  // Trend
+  trend: { date: string; impressions: number; clicks: number; conversions: number }[];
+  
+  // Breakdowns
+  demographics: { age: string; gender: string; value: number }[];
+  placements: { platform: string; placement: string; value: number }[];
+  locations: { region: string; value: number }[];
+}
+
 export interface MetaDemographics {
   ageGender: { segment: string; percentage: number }[];
   topLocations: { city: string; percentage: number }[];
