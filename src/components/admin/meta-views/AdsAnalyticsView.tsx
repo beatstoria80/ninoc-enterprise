@@ -81,23 +81,23 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3 -mt-2">
       
       {/* HEADER & ACTIONS */}
       <div className="flex items-center justify-end animate-in fade-in slide-in-from-top-2 duration-500">
         <button 
           onClick={handleDownloadCSV} 
-          className="text-[11px] font-bold text-ink/80 bg-white border border-ink/10 shadow-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-ink/[0.02] hover:text-ink transition-colors"
+          className="text-[10px] font-bold text-ink/80 bg-white border border-ink/10 shadow-sm px-2.5 py-1 rounded-md flex items-center gap-1 hover:bg-ink/[0.02] hover:text-ink transition-colors"
         >
-          <Download size={14} /> Download Laporan CSV
+          <Download size={12} /> Download Laporan CSV
         </button>
       </div>
 
       {/* KPI RIBBON - TOP 4 PRIMARY METRICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Spend */}
-        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-lg p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
           <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <DollarSign size={40} />
           </div>
@@ -116,7 +116,7 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
         </div>
 
         {/* ROAS */}
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 md:p-4 shadow-sm text-white hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg p-2.5 md:p-3 shadow-sm text-white hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 p-3 opacity-10">
             <Target size={40} />
           </div>
@@ -140,7 +140,7 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
         </div>
 
         {/* CPA (Cost Per Action) */}
-        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-lg p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
           <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <ShoppingCart size={40} />
           </div>
@@ -160,7 +160,7 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
         </div>
 
         {/* CPM (Cost Per Mille) */}
-        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-lg p-2.5 md:p-3 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
           <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
             <Eye size={40} />
           </div>
@@ -181,23 +181,23 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
       </div>
 
       {/* SECONDARY METRICS (CPC, CTR, Clicks) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-2.5 flex items-center gap-2.5">
-          <div className="p-1.5 bg-white rounded-lg shadow-sm text-blue-500"><MousePointer size={14}/></div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-lg p-2 flex items-center gap-2">
+          <div className="p-1.5 bg-white rounded flex-shrink-0 shadow-sm text-blue-500"><MousePointer size={12}/></div>
           <div>
             <p className="text-[9px] font-bold text-ink/50 uppercase tracking-wider">Cost Per Click</p>
             <p className="text-sm font-mono font-bold text-ink">Rp {fIDR(data.overview.cpc)}</p>
           </div>
         </div>
-        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-2.5 flex items-center gap-2.5">
-          <div className="p-1.5 bg-white rounded-lg shadow-sm text-purple-500"><Activity size={14}/></div>
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-lg p-2 flex items-center gap-2">
+          <div className="p-1.5 bg-white rounded flex-shrink-0 shadow-sm text-purple-500"><Activity size={12}/></div>
           <div>
             <p className="text-[9px] font-bold text-ink/50 uppercase tracking-wider">Click Through Rate</p>
             <p className="text-sm font-mono font-bold text-ink">{data.overview.averageCtr.toFixed(2)}%</p>
           </div>
         </div>
-        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-2.5 flex items-center gap-2.5">
-          <div className="p-1.5 bg-white rounded-lg shadow-sm text-indigo-500"><MousePointer size={14}/></div>
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-lg p-2 flex items-center gap-2">
+          <div className="p-1.5 bg-white rounded flex-shrink-0 shadow-sm text-indigo-500"><MousePointer size={12}/></div>
           <div>
             <p className="text-[9px] font-bold text-ink/50 uppercase tracking-wider">Total Clicks</p>
             <p className="text-sm font-mono font-bold text-ink">{fIDR(data.overview.totalClicks)}</p>

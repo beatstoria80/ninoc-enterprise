@@ -79,9 +79,9 @@ export function MetaAnalyticsTab() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto minimal-scroll space-y-8 w-full pr-2 pb-24">
+    <div className="flex-1 overflow-y-auto minimal-scroll space-y-4 w-full pr-2 pb-24">
       {/* HEADER & FILTER TABS */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-5">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="inline-flex items-center justify-center p-1.5 bg-blue-50 text-blue-600 rounded-md">
