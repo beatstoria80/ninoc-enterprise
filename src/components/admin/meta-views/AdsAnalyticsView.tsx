@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
 import type { MetaAnalyticsData } from '@/actions/metaAnalytics';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +25,49 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
     }
   };
 
+  const handleDownloadCSV = () => {
+    const csvRows = [];
+    csvRows.push(['NINOC Ads Report', `Periode: ${getTimeLabel()}`]);
+    csvRows.push([]);
+    csvRows.push(['Overview']);
+    csvRows.push(['Ad Spend', 'ROAS', 'CPA', 'CPM', 'Total Conversions', 'Total Impressions', 'Total Clicks', 'CPC', 'CTR']);
+    csvRows.push([
+      data.overview.totalSpend,
+      data.overview.averageRoas.toFixed(2),
+      data.overview.cpa,
+      data.overview.cpm,
+      data.overview.totalConversions,
+      data.overview.totalImpressions,
+      data.overview.totalClicks,
+      data.overview.cpc,
+      (data.overview.averageCtr / 100).toFixed(4)
+    ]);
+    csvRows.push([]);
+    csvRows.push(['Trend Performa Harian']);
+    csvRows.push(['Tanggal', 'Spend', 'Conversions']);
+    data.trend.forEach(t => {
+      csvRows.push([t.date, t.spend, t.conversions]);
+    });
+    csvRows.push([]);
+    csvRows.push(['Rincian Kampanye']);
+    csvRows.push(['Nama', 'ID', 'Status', 'Spend', 'Pembelian', 'CPA', 'ROAS']);
+    data.campaigns.forEach(c => {
+      // Escape name quotes and commas just in case
+      const safeName = `"${c.name.replace(/"/g, '""')}"`;
+      csvRows.push([safeName, c.id, c.status, c.spend, c.conversions, c.cpa, c.roas.toFixed(2)]);
+    });
+
+    const csvContent = csvRows.map(e => e.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `NINOC_Ads_Report_${timeFilter}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   if (data.error) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-800 p-4 rounded-xl flex items-start gap-3 shadow-sm">
@@ -38,125 +81,136 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      
+      {/* HEADER & ACTIONS */}
+      <div className="flex items-center justify-end animate-in fade-in slide-in-from-top-2 duration-500">
+        <button 
+          onClick={handleDownloadCSV} 
+          className="text-[11px] font-bold text-ink/80 bg-white border border-ink/10 shadow-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5 hover:bg-ink/[0.02] hover:text-ink transition-colors"
+        >
+          <Download size={14} /> Download Laporan CSV
+        </button>
+      </div>
+
       {/* KPI RIBBON - TOP 4 PRIMARY METRICS */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
         
         {/* Spend */}
-        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <DollarSign size={64} />
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+            <DollarSign size={40} />
           </div>
           <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-6 h-6 rounded-md bg-rose-50 flex items-center justify-center">
-                <DollarSign size={14} className="text-rose-600" />
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className="w-5 h-5 rounded-md bg-rose-50 flex items-center justify-center">
+                <DollarSign size={12} className="text-rose-600" />
               </div>
-              <p className="text-[11px] font-bold text-ink/60 uppercase tracking-wider">Ad Spend</p>
+              <p className="text-[10px] font-bold text-ink/60 uppercase tracking-wider">Ad Spend</p>
             </div>
-            <p className="text-2xl md:text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.totalSpend)}</p>
+            <p className="text-xl md:text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.totalSpend)}</p>
           </div>
-          <div className="mt-3 flex items-center justify-between border-t border-ink/5 pt-2">
-            <p className="text-[10px] text-ink/50 font-medium">Total biaya di {getTimeLabel()}</p>
+          <div className="mt-2 flex items-center justify-between border-t border-ink/5 pt-1.5">
+            <p className="text-[9px] text-ink/50 font-medium uppercase">Total biaya di {getTimeLabel()}</p>
           </div>
         </div>
 
         {/* ROAS */}
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-4 md:p-5 shadow-sm text-white hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Target size={64} />
+        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 md:p-4 shadow-sm text-white hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-3 opacity-10">
+            <Target size={40} />
           </div>
           <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center backdrop-blur-sm">
-                <Target size={14} className="text-white" />
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className="w-5 h-5 rounded-md bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                <Target size={12} className="text-white" />
               </div>
-              <p className="text-[11px] font-bold text-emerald-50 uppercase tracking-wider">ROAS (Est)</p>
+              <p className="text-[10px] font-bold text-emerald-50 uppercase tracking-wider">ROAS (Est)</p>
             </div>
-            <p className="text-2xl md:text-3xl font-mono font-extrabold tracking-tight mt-1">{data.overview.averageRoas.toFixed(2)}x</p>
+            <p className="text-xl md:text-2xl font-mono font-extrabold tracking-tight mt-1">{data.overview.averageRoas.toFixed(2)}x</p>
           </div>
-          <div className="mt-3 flex items-center justify-between border-t border-white/20 pt-2">
-            <p className="text-[10px] text-emerald-100 font-medium">Return on Ad Spend</p>
+          <div className="mt-2 flex items-center justify-between border-t border-white/20 pt-1.5">
+            <p className="text-[9px] text-emerald-100 font-medium uppercase">Return on Ad Spend</p>
             {data.overview.averageRoas >= 3 ? (
-              <span className="flex items-center text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded text-white">Profit <ArrowUpRight size={10} className="ml-0.5"/></span>
+              <span className="flex items-center text-[9px] font-bold bg-white/20 px-1.5 py-0.5 rounded text-white shadow-sm">Profit <ArrowUpRight size={10} className="ml-0.5"/></span>
             ) : (
-              <span className="flex items-center text-[10px] font-bold bg-black/20 px-1.5 py-0.5 rounded text-white">Rugi <ArrowDownRight size={10} className="ml-0.5"/></span>
+              <span className="flex items-center text-[9px] font-bold bg-black/20 px-1.5 py-0.5 rounded text-white shadow-sm">Rugi <ArrowDownRight size={10} className="ml-0.5"/></span>
             )}
           </div>
         </div>
 
         {/* CPA (Cost Per Action) */}
-        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <ShoppingCart size={64} />
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+            <ShoppingCart size={40} />
           </div>
           <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-6 h-6 rounded-md bg-amber-50 flex items-center justify-center">
-                <ShoppingCart size={14} className="text-amber-600" />
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className="w-5 h-5 rounded-md bg-amber-50 flex items-center justify-center">
+                <ShoppingCart size={12} className="text-amber-600" />
               </div>
-              <p className="text-[11px] font-bold text-ink/60 uppercase tracking-wider">CPA / CPP</p>
+              <p className="text-[10px] font-bold text-ink/60 uppercase tracking-wider">CPA / CPP</p>
             </div>
-            <p className="text-2xl md:text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.cpa)}</p>
+            <p className="text-xl md:text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.cpa)}</p>
           </div>
-          <div className="mt-3 flex items-center justify-between border-t border-ink/5 pt-2">
-            <p className="text-[10px] text-ink/50 font-medium">Cost per Purchase</p>
-            <p className="text-[10px] font-bold text-ink/80">{data.overview.totalConversions.toLocaleString()} Terjual</p>
+          <div className="mt-2 flex items-center justify-between border-t border-ink/5 pt-1.5">
+            <p className="text-[9px] text-ink/50 font-medium uppercase">Cost per Purchase</p>
+            <p className="text-[9px] font-bold text-ink/80">{data.overview.totalConversions.toLocaleString()} Terjual</p>
           </div>
         </div>
 
         {/* CPM (Cost Per Mille) */}
-        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-            <Eye size={64} />
+        <div className="bg-white/90 backdrop-blur-md border border-ink/10 rounded-xl p-3 md:p-4 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity">
+            <Eye size={40} />
           </div>
           <div>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <div className="w-6 h-6 rounded-md bg-sky-50 flex items-center justify-center">
-                <Eye size={14} className="text-sky-600" />
+            <div className="flex items-center gap-1.5 mb-1">
+              <div className="w-5 h-5 rounded-md bg-sky-50 flex items-center justify-center">
+                <Eye size={12} className="text-sky-600" />
               </div>
-              <p className="text-[11px] font-bold text-ink/60 uppercase tracking-wider">CPM</p>
+              <p className="text-[10px] font-bold text-ink/60 uppercase tracking-wider">CPM</p>
             </div>
-            <p className="text-2xl md:text-3xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.cpm)}</p>
+            <p className="text-xl md:text-2xl font-mono font-extrabold text-ink tracking-tight mt-1">Rp {fIDR(data.overview.cpm)}</p>
           </div>
-          <div className="mt-3 flex items-center justify-between border-t border-ink/5 pt-2">
-            <p className="text-[10px] text-ink/50 font-medium">Cost per 1.000 Impressions</p>
-            <p className="text-[10px] font-bold text-ink/80">{fIDR(data.overview.totalImpressions)} Impr</p>
+          <div className="mt-2 flex items-center justify-between border-t border-ink/5 pt-1.5">
+            <p className="text-[9px] text-ink/50 font-medium uppercase">Cost per 1.000 Impr</p>
+            <p className="text-[9px] font-bold text-ink/80">{fIDR(data.overview.totalImpressions)} Impr</p>
           </div>
         </div>
       </div>
 
       {/* SECONDARY METRICS (CPC, CTR, Clicks) */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
-        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-3 flex items-center gap-3">
-          <div className="p-2 bg-white rounded-lg shadow-sm text-blue-500"><MousePointer size={16}/></div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-2.5 flex items-center gap-2.5">
+          <div className="p-1.5 bg-white rounded-lg shadow-sm text-blue-500"><MousePointer size={14}/></div>
           <div>
-            <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Cost Per Click (CPC)</p>
-            <p className="text-base font-mono font-bold text-ink">Rp {fIDR(data.overview.cpc)}</p>
+            <p className="text-[9px] font-bold text-ink/50 uppercase tracking-wider">Cost Per Click</p>
+            <p className="text-sm font-mono font-bold text-ink">Rp {fIDR(data.overview.cpc)}</p>
           </div>
         </div>
-        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-3 flex items-center gap-3">
-          <div className="p-2 bg-white rounded-lg shadow-sm text-purple-500"><Activity size={16}/></div>
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-2.5 flex items-center gap-2.5">
+          <div className="p-1.5 bg-white rounded-lg shadow-sm text-purple-500"><Activity size={14}/></div>
           <div>
-            <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Click Through Rate</p>
-            <p className="text-base font-mono font-bold text-ink">{data.overview.averageCtr.toFixed(2)}%</p>
+            <p className="text-[9px] font-bold text-ink/50 uppercase tracking-wider">Click Through Rate</p>
+            <p className="text-sm font-mono font-bold text-ink">{data.overview.averageCtr.toFixed(2)}%</p>
           </div>
         </div>
-        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-3 flex items-center gap-3">
-          <div className="p-2 bg-white rounded-lg shadow-sm text-indigo-500"><MousePointer size={16}/></div>
+        <div className="bg-ink/[0.02] border border-ink/5 rounded-xl p-2.5 flex items-center gap-2.5">
+          <div className="p-1.5 bg-white rounded-lg shadow-sm text-indigo-500"><MousePointer size={14}/></div>
           <div>
-            <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider">Total Clicks</p>
-            <p className="text-base font-mono font-bold text-ink">{fIDR(data.overview.totalClicks)}</p>
+            <p className="text-[9px] font-bold text-ink/50 uppercase tracking-wider">Total Clicks</p>
+            <p className="text-sm font-mono font-bold text-ink">{fIDR(data.overview.totalClicks)}</p>
           </div>
         </div>
       </div>
 
       {/* CHART */}
-      <div className="bg-white border border-ink/10 rounded-2xl p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-        <h3 className="text-sm font-bold text-ink flex items-center gap-2 mb-6">
-          <TrendingUp size={16} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
+      <div className="bg-white border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+        <h3 className="text-xs font-bold text-ink flex items-center gap-2 mb-4">
+          <TrendingUp size={14} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
         </h3>
-        <div className="h-[320px] w-full">
+        <div className="h-[280px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
@@ -170,18 +224,56 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
-              <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
-              <YAxis yAxisId="left" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} tickFormatter={(val) => `Rp${(val/1000000).toFixed(1)}M`} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+              <XAxis 
+                dataKey="date" 
+                tick={{ fontSize: 10, fill: '#64748b' }} 
+                tickLine={false} 
+                axisLine={{ stroke: '#e2e8f0' }} 
+                tickFormatter={(val) => val.split('-').slice(1).join('/')} 
+              />
+              <YAxis 
+                yAxisId="left" 
+                tick={{ fontSize: 10, fill: '#64748b' }} 
+                tickLine={false} 
+                axisLine={false} 
+                tickFormatter={(val) => `Rp${(val/1000).toFixed(0)}k`} 
+              />
+              <YAxis 
+                yAxisId="right" 
+                orientation="right" 
+                tick={{ fontSize: 10, fill: '#64748b' }} 
+                tickLine={false} 
+                axisLine={false} 
+              />
               <RechartsTooltip 
-                contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', fontSize: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '12px' }}
+                contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
                 formatter={(value: any, name: any) => {
                   if (name === "Ad Spend (Rp)" && typeof value === 'number') return [`Rp ${fIDR(value)}`, name];
                   return [value, name];
                 }}
               />
-              <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={3} fill="url(#colorSpend)" name="Ad Spend (Rp)" />
-              <Area yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={3} fill="url(#colorConv)" name="Conversions" />
+              <Area 
+                yAxisId="left" 
+                type="monotone" 
+                dataKey="spend" 
+                stroke="#f43f5e" 
+                strokeWidth={2} 
+                fill="url(#colorSpend)" 
+                name="Ad Spend (Rp)" 
+                dot={data.trend.length === 1 ? { r: 4, fill: "#f43f5e", strokeWidth: 2, stroke: "#fff" } : false}
+                activeDot={{ r: 5, strokeWidth: 0 }}
+              />
+              <Area 
+                yAxisId="right" 
+                type="monotone" 
+                dataKey="conversions" 
+                stroke="#10b981" 
+                strokeWidth={2} 
+                fill="url(#colorConv)" 
+                name="Conversions" 
+                dot={data.trend.length === 1 ? { r: 4, fill: "#10b981", strokeWidth: 2, stroke: "#fff" } : false}
+                activeDot={{ r: 5, strokeWidth: 0 }}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -190,33 +282,33 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
       {/* CAMPAIGN TABLE */}
       {data.campaigns.length > 0 && (
         <div className="bg-white border border-ink/10 rounded-2xl shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
-          <div className="p-5 border-b border-ink/10 bg-ink/[0.02]">
-            <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-              <Target size={16} className="text-indigo-600" /> Rincian Kampanye
+          <div className="p-4 border-b border-ink/10 bg-ink/[0.02]">
+            <h3 className="text-xs font-bold text-ink flex items-center gap-2">
+              <Target size={14} className="text-indigo-600" /> Rincian Kampanye
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-white border-b border-ink/5">
-                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider">Nama Kampanye</th>
-                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider">Status</th>
-                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">Spend</th>
-                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">Pembelian</th>
-                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">CPA</th>
-                  <th className="px-5 py-3 text-[10px] font-bold text-ink/50 uppercase tracking-wider text-right">ROAS</th>
+                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider">Nama Kampanye</th>
+                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">Spend</th>
+                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">Pembelian</th>
+                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">CPA</th>
+                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">ROAS</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {data.campaigns.sort((a, b) => b.spend - a.spend).map((camp) => (
                   <tr key={camp.id} className="hover:bg-ink/[0.01] transition-colors">
-                    <td className="px-5 py-3">
-                      <p className="text-xs font-semibold text-ink line-clamp-1">{camp.name}</p>
-                      <p className="text-[10px] text-ink/50 mt-0.5">{camp.id}</p>
+                    <td className="px-4 py-2">
+                      <p className="text-[11px] font-semibold text-ink line-clamp-1">{camp.name}</p>
+                      <p className="text-[9px] text-ink/40 mt-0.5">{camp.id}</p>
                     </td>
-                    <td className="px-5 py-3">
+                    <td className="px-4 py-2">
                       <span className={cn(
-                        "px-2 py-0.5 rounded text-[10px] font-bold",
+                        "px-1.5 py-0.5 rounded text-[9px] font-bold",
                         camp.status === 'ACTIVE' ? "bg-emerald-100 text-emerald-700" :
                         camp.status === 'PAUSED' ? "bg-amber-100 text-amber-700" :
                         "bg-ink/10 text-ink/60"
@@ -224,18 +316,18 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
                         {camp.status}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-right">
-                      <p className="text-xs font-mono font-medium text-ink">Rp {fIDR(camp.spend)}</p>
+                    <td className="px-4 py-2 text-right">
+                      <p className="text-[11px] font-mono font-medium text-ink">Rp {fIDR(camp.spend)}</p>
                     </td>
-                    <td className="px-5 py-3 text-right">
-                      <p className="text-xs font-mono font-bold text-ink">{camp.conversions}</p>
+                    <td className="px-4 py-2 text-right">
+                      <p className="text-[11px] font-mono font-bold text-ink">{camp.conversions}</p>
                     </td>
-                    <td className="px-5 py-3 text-right">
-                      <p className="text-xs font-mono font-medium text-ink">Rp {fIDR(camp.cpa)}</p>
+                    <td className="px-4 py-2 text-right">
+                      <p className="text-[11px] font-mono font-medium text-ink">Rp {fIDR(camp.cpa)}</p>
                     </td>
-                    <td className="px-5 py-3 text-right">
+                    <td className="px-4 py-2 text-right">
                       <span className={cn(
-                        "text-xs font-mono font-bold px-2 py-1 rounded",
+                        "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded",
                         camp.roas >= 3 ? "text-emerald-700 bg-emerald-50" : 
                         camp.roas >= 1.5 ? "text-amber-700 bg-amber-50" :
                         "text-rose-700 bg-rose-50"
