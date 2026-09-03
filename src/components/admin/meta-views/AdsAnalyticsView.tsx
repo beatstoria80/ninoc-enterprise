@@ -175,8 +175,8 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
               <RechartsTooltip 
                 contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', fontSize: '12px', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '12px' }}
-                formatter={(value: number, name: string) => {
-                  if (name === "Ad Spend (Rp)") return [`Rp ${fIDR(value)}`, name];
+                formatter={(value: any, name: any) => {
+                  if (name === "Ad Spend (Rp)" && typeof value === 'number') return [`Rp ${fIDR(value)}`, name];
                   return [value, name];
                 }}
               />
