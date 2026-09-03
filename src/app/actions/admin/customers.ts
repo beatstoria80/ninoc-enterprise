@@ -7,12 +7,12 @@ async function verifyAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Unauthorized');
   
-  if (user.email === 'admin@ninoc.store') return supabase;
+  if (user.email?.toLowerCase() === 'admin@ninoc.store') return supabase;
 
   const { data: roleData } = await supabase
     .from('admin_roles')
     .select('role')
-    .eq('email', user.email)
+    .eq('email', user.email?.toLowerCase() || '')
     .single();
 
   if (!roleData) throw new Error('Unauthorized');
