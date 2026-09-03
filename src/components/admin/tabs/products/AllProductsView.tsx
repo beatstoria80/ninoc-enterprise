@@ -85,6 +85,13 @@ export function AllProductsView({
         </div>
       )}
 
+      {products.length === 0 && !error && (
+        <div className="shrink-0 p-4 mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg shadow-sm">
+          <p className="font-bold">Debug Info:</p>
+          <p className="text-sm">Server Action executed successfully but returned 0 products. (Database query returned empty array).</p>
+        </div>
+      )}
+
       {/* Products Grid */}
       <div className="flex-1 min-h-0 overflow-y-auto minimal-scroll pb-2 relative">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
