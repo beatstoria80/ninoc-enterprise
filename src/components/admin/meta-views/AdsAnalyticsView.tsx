@@ -280,66 +280,158 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
         </div>
       </div>
 
-      {/* CAMPAIGN TABLE */}
+      {/* META ADS MANAGER CLONE TABLE */}
       {data.campaigns.length > 0 && (
-        <div className="bg-white border border-ink/10 rounded-2xl shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
-          <div className="p-4 border-b border-ink/10 bg-ink/[0.02]">
-            <h3 className="text-xs font-bold text-ink flex items-center gap-2">
-              <Target size={14} className="text-indigo-600" /> Rincian Kampanye
-            </h3>
+        <div className="bg-white border border-ink/10 rounded-xl shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+          
+          {/* Table Toolbar / Tab Header */}
+          <div className="p-3 border-b border-ink/10 bg-ink/[0.02] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button className="bg-white border border-ink/10 shadow-sm px-3 py-1.5 rounded text-[11px] font-bold text-ink flex items-center gap-1.5 hover:bg-ink/[0.02]">
+                <Target size={14} className="text-blue-600" /> Kampanye <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-sm text-[9px] ml-1">{data.campaigns.length} Dipilih</span>
+              </button>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse whitespace-nowrap min-w-[1200px]">
               <thead>
-                <tr className="bg-white border-b border-ink/5">
-                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider">Nama Kampanye</th>
-                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">Spend</th>
-                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">Pembelian</th>
-                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">CPA</th>
-                  <th className="px-4 py-2 text-[9px] font-bold text-ink/50 uppercase tracking-wider text-right">ROAS</th>
+                <tr className="bg-white border-b border-ink/10">
+                  {/* Sticky Left Column */}
+                  <th className="sticky left-0 bg-white z-10 px-3 py-2 border-r border-ink/10 min-w-[250px] max-w-[300px]">
+                    <div className="flex items-center gap-3">
+                      <input type="checkbox" className="rounded border-ink/20 text-blue-600 focus:ring-blue-500 w-3 h-3 cursor-pointer" defaultChecked />
+                      <div className="flex-1 text-[10px] font-semibold text-ink/70 flex items-center gap-1">Nama Kampanye <ArrowDownRight size={10} className="text-ink/40" /></div>
+                    </div>
+                  </th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[120px]">
+                    <div className="flex flex-col">
+                      <span className="flex items-center gap-1 text-blue-600 cursor-pointer hover:underline">Penayangan <ArrowDownRight size={10} /></span>
+                    </div>
+                  </th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[80px]">Tindakan</th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[100px] text-right">Hasil <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[120px] text-right">Biaya per hasil <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[150px]">Anggaran <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[130px] text-right">Jumlah dibelanjakan <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[100px] text-right">Impresi <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[100px] text-right">Jangkauan <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[120px]">Berakhir <ArrowDownRight size={10} className="inline opacity-50" /></th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[120px] text-center">Peringkat Kualitas</th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[120px] text-center">Peringkat Interaksi</th>
+                  <th className="px-3 py-2 text-[10px] font-semibold text-ink/70 min-w-[120px] text-center">Peringkat Konversi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/5">
                 {data.campaigns.sort((a, b) => b.spend - a.spend).map((camp) => (
-                  <tr key={camp.id} className="hover:bg-ink/[0.01] transition-colors">
-                    <td className="px-4 py-2">
-                      <p className="text-[11px] font-semibold text-ink line-clamp-1">{camp.name}</p>
-                      <p className="text-[9px] text-ink/40 mt-0.5">{camp.id}</p>
-                    </td>
-                    <td className="px-4 py-2">
-                      <span className={cn(
-                        "px-1.5 py-0.5 rounded text-[9px] font-bold",
-                        camp.status === 'ACTIVE' ? "bg-emerald-100 text-emerald-700" :
-                        camp.status === 'PAUSED' ? "bg-amber-100 text-amber-700" :
-                        "bg-ink/10 text-ink/60"
+                  <tr key={camp.id} className="hover:bg-blue-50/30 transition-colors group">
+                    {/* Sticky Name Column */}
+                    <td className="sticky left-0 bg-white group-hover:bg-[#f8fafc] z-10 px-3 py-2.5 border-r border-ink/5 flex items-center gap-3">
+                      <input type="checkbox" className="rounded border-ink/20 text-blue-600 focus:ring-blue-500 w-3 h-3 cursor-pointer" defaultChecked />
+                      
+                      {/* Toggle Switch Replica */}
+                      <button className={cn(
+                        "w-7 h-4 rounded-full relative transition-colors shadow-inner flex-shrink-0",
+                        camp.status === 'ACTIVE' ? "bg-blue-500" : "bg-ink/20"
                       )}>
-                        {camp.status}
-                      </span>
+                        <span className={cn(
+                          "absolute top-0.5 left-0.5 bg-white w-3 h-3 rounded-full shadow transition-transform",
+                          camp.status === 'ACTIVE' ? "translate-x-3" : "translate-x-0"
+                        )} />
+                      </button>
+
+                      <div className="flex-1 overflow-hidden">
+                        <p className="text-[11px] font-semibold text-blue-600 hover:underline cursor-pointer truncate" title={camp.name}>{camp.name}</p>
+                        <p className="text-[9px] text-ink/40 mt-0.5 truncate flex items-center gap-1">
+                          <Eye size={9} /> ID: {camp.id}
+                        </p>
+                      </div>
                     </td>
-                    <td className="px-4 py-2 text-right">
+
+                    {/* Delivery Status */}
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className={cn(
+                          "w-2 h-2 rounded-full",
+                          camp.deliveryStatus === 'ACTIVE' ? "bg-emerald-500" :
+                          camp.deliveryStatus === 'PAUSED' ? "bg-ink/30" :
+                          "bg-rose-500"
+                        )} />
+                        <span className="text-[11px] font-medium text-ink/80 capitalize">
+                          {camp.deliveryStatus.toLowerCase()}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Tindakan */}
+                    <td className="px-3 py-2.5 text-[11px] text-ink/40 text-center">—</td>
+
+                    {/* Hasil (Conversions) */}
+                    <td className="px-3 py-2.5 text-right">
+                      <p className="text-[11px] font-semibold text-ink">{camp.conversions}</p>
+                      {camp.conversions > 0 && <p className="text-[8px] text-ink/50 mt-0.5">Pembelian</p>}
+                    </td>
+
+                    {/* Cost Per Result */}
+                    <td className="px-3 py-2.5 text-right">
+                      {camp.cpa > 0 ? (
+                        <>
+                          <p className="text-[11px] font-mono font-medium text-ink">Rp {fIDR(camp.cpa)}</p>
+                          <p className="text-[8px] text-ink/50 mt-0.5">Per Pembelian</p>
+                        </>
+                      ) : (
+                        <span className="text-[11px] text-ink/40">—</span>
+                      )}
+                    </td>
+
+                    {/* Budget */}
+                    <td className="px-3 py-2.5">
+                      <p className="text-[11px] text-ink/80 max-w-[140px] truncate" title={camp.budget}>{camp.budget}</p>
+                    </td>
+
+                    {/* Amount Spent */}
+                    <td className="px-3 py-2.5 text-right">
                       <p className="text-[11px] font-mono font-medium text-ink">Rp {fIDR(camp.spend)}</p>
                     </td>
-                    <td className="px-4 py-2 text-right">
-                      <p className="text-[11px] font-mono font-bold text-ink">{camp.conversions}</p>
+
+                    {/* Impressions */}
+                    <td className="px-3 py-2.5 text-right">
+                      <p className="text-[11px] font-mono text-ink">{camp.impressions.toLocaleString('id-ID')}</p>
                     </td>
-                    <td className="px-4 py-2 text-right">
-                      <p className="text-[11px] font-mono font-medium text-ink">Rp {fIDR(camp.cpa)}</p>
+
+                    {/* Reach */}
+                    <td className="px-3 py-2.5 text-right">
+                      <p className="text-[11px] font-mono text-ink">{camp.reach > 0 ? camp.reach.toLocaleString('id-ID') : '—'}</p>
                     </td>
-                    <td className="px-4 py-2 text-right">
-                      <span className={cn(
-                        "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded",
-                        camp.roas >= 3 ? "text-emerald-700 bg-emerald-50" : 
-                        camp.roas >= 1.5 ? "text-amber-700 bg-amber-50" :
-                        "text-rose-700 bg-rose-50"
-                      )}>
-                        {camp.roas.toFixed(2)}x
-                      </span>
+
+                    {/* Ends */}
+                    <td className="px-3 py-2.5">
+                      <p className="text-[11px] text-ink/80">{camp.endDate}</p>
+                    </td>
+
+                    {/* Quality Ranking */}
+                    <td className="px-3 py-2.5 text-center">
+                      <span className="text-[11px] text-ink/60">{camp.qualityRanking}</span>
+                    </td>
+
+                    {/* Engagement Rate Ranking */}
+                    <td className="px-3 py-2.5 text-center">
+                      <span className="text-[11px] text-ink/60">{camp.engagementRanking}</span>
+                    </td>
+
+                    {/* Conversion Rate Ranking */}
+                    <td className="px-3 py-2.5 text-center">
+                      <span className="text-[11px] text-ink/60">{camp.conversionRanking}</span>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+          
+          {/* Table Footer */}
+          <div className="px-4 py-2 bg-ink/[0.01] border-t border-ink/5 flex items-center justify-between text-[10px] text-ink/50 font-medium">
+            <p>Hasil dari {data.campaigns.length} kampanye</p>
           </div>
         </div>
       )}

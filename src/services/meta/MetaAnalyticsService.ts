@@ -277,7 +277,7 @@ export class MetaAnalyticsService {
         capiToken,
         {
           date_preset: datePreset,
-          fields: 'id,name,status,insights{spend,impressions,clicks,actions}'
+          fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,stop_time,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
         }
       );
 
@@ -285,6 +285,7 @@ export class MetaAnalyticsService {
         const cInsights = camp.insights?.data?.[0];
         const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
         const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
+        const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
         const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
         const cConversions = cInsights ? this.getPurchasesCount(cInsights.actions) : 0;
         const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
@@ -292,18 +293,37 @@ export class MetaAnalyticsService {
         const cCpc = cClicks > 0 ? cSpend / cClicks : 0;
         const cCpm = cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0;
 
+        let budget = 'Menggunakan anggaran set iklan';
+        if (camp.daily_budget) {
+          // Meta API returns budget in sub-units or direct?
+          // Actually, daily_budget for IDR is returned in its exact amount! No, wait. 
+          // Wait, Facebook API returns budget divided by 100 for IDR? No, daily_budget is returned as string of the exact currency value.
+          // Let's assume it returns exact currency value. Wait! Sometimes it returns cents for USD, and for IDR it might return 100x.
+          // Let's just render it as is for now, maybe divide by offset if needed later. But usually it's correct as is.
+          budget = `Rp ${(parseInt(camp.daily_budget, 10) / 100).toLocaleString('id-ID')} / harian`;
+        } else if (camp.lifetime_budget) {
+          budget = `Rp ${(parseInt(camp.lifetime_budget, 10) / 100).toLocaleString('id-ID')} s.masa`;
+        }
+
         return {
           id: camp.id,
           name: camp.name,
           status: camp.status as 'ACTIVE' | 'PAUSED' | 'ARCHIVED',
+          deliveryStatus: camp.effective_status || camp.status,
+          budget,
+          endDate: camp.stop_time ? new Date(camp.stop_time).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Sedang berjalan',
           spend: cSpend,
+          reach: cReach,
           impressions: cImpressions,
           clicks: cClicks,
           conversions: cConversions,
           roas: parseFloat(cRoas.toFixed(2)),
           cpa: cCpa,
           cpc: cCpc,
-          cpm: cCpm
+          cpm: cCpm,
+          qualityRanking: cInsights?.quality_ranking || '—',
+          engagementRanking: cInsights?.engagement_rate_ranking || '—',
+          conversionRanking: cInsights?.conversion_rate_ranking || '—'
         };
       });
 

@@ -2,7 +2,11 @@ export interface MetaCampaign {
   id: string;
   name: string;
   status: 'ACTIVE' | 'PAUSED' | 'ARCHIVED';
+  deliveryStatus: string;
+  budget: string;
+  endDate: string;
   spend: number;
+  reach: number;
   impressions: number;
   clicks: number;
   conversions: number;
@@ -10,6 +14,9 @@ export interface MetaCampaign {
   cpa: number;
   cpc: number;
   cpm: number;
+  qualityRanking: string;
+  engagementRanking: string;
+  conversionRanking: string;
 }
 
 export interface MetaDemographics {
