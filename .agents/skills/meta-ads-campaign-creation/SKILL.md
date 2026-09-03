@@ -5,7 +5,12 @@ description: Panduan Definitif dan Flow Pemecahan Masalah (Troubleshooting) untu
 
 # Meta Ads Campaign Creation & Troubleshooting Guide
 
-Panduan ini mendokumentasikan prosedur standar dan *edge-cases* yang terjadi selama proses pembuatan kampanye iklan Meta (Facebook/Instagram Ads) untuk proyek `ninoc-enterprise`. Agen harus merujuk pada dokumen ini saat memandu pengguna meluncurkan iklan baru agar terhindar dari *error* umum Meta.
+Panduan ini mendokumentasikan prosedur standar dan *edge-cases* yang terjadi selama proses pembuatan kampanye iklan Meta (Facebook/Instagram Ads) untuk proyek `ninoc-enterprise`. 
+
+> [!IMPORTANT]
+> Untuk masalah izin tingkat lanjut seperti Error (#200) Permission Denied, pembuatan Akun Iklan baru di Business Manager, dan pengaturan hierarki Pixel ke Akun Iklan, wajib merujuk pada skill baru: [meta-ads-troubleshooting](file:///d:/ninoc-enterprise/.agents/skills/meta-ads-troubleshooting/SKILL.md).
+
+Agen harus merujuk pada dokumen ini saat memandu pengguna meluncurkan iklan baru agar terhindar dari *error* umum Meta.
 
 ## 1. Strategi Pembuatan Meta Pixel (Set Data)
 Jangan menyarankan pembuatan Pixel melalui **Business Settings** jika pengguna sedang berada di tengah proses pembuatan iklan di **Ads Manager**, karena sering terjadi masalah sinkronisasi *Ad Account* (Pixel tidak muncul).
