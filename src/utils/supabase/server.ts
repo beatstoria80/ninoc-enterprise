@@ -42,8 +42,8 @@ export async function createAdminClient() {
         persistSession: false,
       },
       global: {
-        fetch: (url, options) => {
-          return fetch(url, { ...options, cache: 'no-store' });
+        fetch: (url: RequestInfo | URL, options?: RequestInit) => {
+          return fetch(url.toString(), { ...options, cache: 'no-store' });
         }
       }
     }

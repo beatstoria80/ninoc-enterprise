@@ -36,9 +36,9 @@ export async function fetchProductsAction() {
       {
         auth: { persistSession: false },
         global: {
-          fetch: (url, options) => {
+          fetch: (url: RequestInfo | URL, options?: RequestInit) => {
             // Add a timestamp query param to aggressively bust any Vercel/Supabase Edge caching
-            const bustUrl = new URL(url);
+            const bustUrl = new URL(url.toString());
             bustUrl.searchParams.append('bust', Date.now().toString());
             return fetch(bustUrl.toString(), { ...options, cache: 'no-store' });
           }
