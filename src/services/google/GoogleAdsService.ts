@@ -108,11 +108,11 @@ export class GoogleAdsService {
 
           campaigns.push({
             id: row.campaign?.id?.toString() || 'unknown',
-            name: row.campaign?.name || 'Unnamed Campaign',
+            name: String(row.campaign?.name || 'Unnamed Campaign'),
             status: String(row.campaign?.status || 'UNKNOWN') as any,
             deliveryStatus: String(row.campaign?.status || 'UNKNOWN'),
-            budget: budgetStr,
-            endDate: row.campaign?.end_date || 'Sedang berjalan',
+            budget: String(budgetStr),
+            endDate: String(row.campaign?.end_date || 'Sedang berjalan'),
             spend: spendIdr,
             clicks,
             impressions,
@@ -121,7 +121,7 @@ export class GoogleAdsService {
             cpa,
             cpc,
             cpm,
-            searchImpressionShare: row.metrics?.search_impression_share || '—'
+            searchImpressionShare: String(row.metrics?.search_impression_share || '—')
           });
         });
       }
@@ -139,7 +139,7 @@ export class GoogleAdsService {
       
       const trendResponse = await customer.query(trendQuery);
       const trend = (trendResponse || []).map((row: any) => ({
-        date: row.segments?.date || '',
+        date: String(row.segments?.date || ''),
         spend: Number(row.metrics?.cost_micros || 0) / 1000000,
         conversions: Number(row.metrics?.conversions || 0)
       }));
@@ -170,7 +170,7 @@ export class GoogleAdsService {
       console.error("Google Ads API Fetch Error:", error);
       return {
         configured: true,
-        error: `Failed to fetch data from Google Ads: ${error.message}`,
+        error: String(`Failed to fetch data from Google Ads: ${error?.message || error}`),
         overview: { totalSpend: 0, totalImpressions: 0, totalClicks: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0, cpa: 0, cpc: 0, cpm: 0 },
         campaigns: [],
         trend: []
