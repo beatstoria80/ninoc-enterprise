@@ -26,7 +26,25 @@ async function verifyAdmin() {
 
 export async function fetchProductsAction() {
   try {
-    const supabase = await verifyAdmin();
+    await verifyAdmin();
+    
+    // Create an explicit, raw client to guarantee no cache and no RLS
+    const { createClient } = require('@supabase/supabase-js');
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      {
+        auth: { persistSession: false },
+        global: {
+          fetch: (url, options) => {
+            // Add a timestamp query param to aggressively bust any Vercel/Supabase Edge caching
+            const bustUrl = new URL(url);
+            bustUrl.searchParams.append('bust', Date.now().toString());
+            return fetch(bustUrl.toString(), { ...options, cache: 'no-store' });
+          }
+        }
+      }
+    );
     
     const { data: prodWithSuppliers, error: prodError } = await supabase
       .from('products')

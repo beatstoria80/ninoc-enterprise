@@ -89,6 +89,7 @@ export function AllProductsView({
         <div className="shrink-0 p-4 mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg shadow-sm">
           <p className="font-bold">Debug Info:</p>
           <p className="text-sm">Server Action executed successfully but returned 0 products. (Database query returned empty array).</p>
+          <p className="text-xs text-yellow-600 mt-2">Build/Render Time: {new Date().toISOString()}</p>
         </div>
       )}
 
