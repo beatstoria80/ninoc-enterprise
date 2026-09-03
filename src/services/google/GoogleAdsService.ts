@@ -359,7 +359,7 @@ export class GoogleAdsService {
         roas,
         publishedDate: '—', // Hard to get from GAQL without creating very complex queries
         creativeThumbnail: '', // Mocked or left empty
-        creativeBody: row.ad_group_ad?.ad?.type || 'Ad',
+        creativeBody: String(row.ad_group_ad?.ad?.type || 'Ad'),
         creativeTitle: row.ad_group_ad?.ad?.name || 'Google Ad',
         creativeFinalUrl: finalUrl,
         dailyBudget: 0,

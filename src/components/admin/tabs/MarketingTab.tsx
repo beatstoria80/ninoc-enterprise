@@ -13,7 +13,7 @@ export function MarketingTab() {
     grossProfit: 0,
     marketingSpend: 0,
     inventoryValue: 0,
-    googleAds: { totalSpend: 0, totalClicks: 0, totalImpressions: 0, totalConversions: 0, campaigns: [] } as GoogleAdsData,
+    googleAds: { configured: false, overview: { totalSpend: 0, totalClicks: 0, totalImpressions: 0, totalConversions: 0, averageCtr: 0, averageRoas: 0, cpa: 0, cpc: 0, cpm: 0 }, campaigns: [], trend: [] } as GoogleAdsData,
     netProfit: 0,
     roas: 0,
     vouchers: {
@@ -109,7 +109,7 @@ export function MarketingTab() {
           <div className="text-[11px] text-ink/70 mt-2 space-y-1">
             <p className="flex justify-between border-b border-ink/5 pb-0.5"><span>Internal Vouchers:</span> <span>IDR {fIDR(metrics.vouchers.totalDiscountGiven)}</span></p>
             <p className="flex justify-between border-b border-ink/5 pb-0.5"><span>Affiliate Comm:</span> <span>IDR {fIDR(metrics.affiliates.totalCommission)}</span></p>
-            <p className="flex justify-between font-semibold text-rose/90"><span>Google Ads Spend:</span> <span>IDR {fIDR(metrics.googleAds.totalSpend)}</span></p>
+            <p className="flex justify-between font-semibold text-rose/90"><span>Google Ads Spend:</span> <span>IDR {fIDR(metrics.googleAds.overview?.totalSpend || 0)}</span></p>
           </div>
         </div>
 

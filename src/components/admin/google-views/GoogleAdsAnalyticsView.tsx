@@ -119,7 +119,7 @@ export function GoogleAdsAnalyticsView({ data, timeFilter }: { data: GoogleAdsDa
                 <Tooltip 
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontSize: '12px' }}
                   labelFormatter={(val) => new Date(val).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                  formatter={(value: any, name: string) => {
+                  formatter={(value: any, name: any) => {
                     if (name === 'spend') return [`Rp ${fIDR(value)}`, 'Biaya (Spend)'];
                     if (name === 'conversions') return [value, 'Konversi'];
                     return [value, name];

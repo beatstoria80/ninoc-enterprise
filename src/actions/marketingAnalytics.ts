@@ -258,7 +258,7 @@ export async function getMarketingAnalyticsData(): Promise<MarketingDashboardDat
   const totalGrossProfit = totalRev - totalCogs;
   
   // Google Ads Spend Processing
-  const googleAdsSpend = Number(googleAds?.totalSpend) || 0;
+  const googleAdsSpend = Number(googleAds?.overview?.totalSpend) || 0;
   
   // Total marketing cost now includes Google Ads spend!
   const totalMarketingCost = vDiscount + aCommission + googleAdsSpend;
