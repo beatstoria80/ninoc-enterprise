@@ -154,7 +154,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
     });
     
     orders.forEach(order => {
-      if (['paid', 'shipped', 'delivered'].includes(order.status) || order.payment_status === 'success' || order.payment_status === 'settlement') {
+      if (['paid', 'shipped', 'delivered'].includes(order.status) || order.payment_status === 'success') {
         const orderDate = new Date(order.created_at);
         if (orderDate.getFullYear() === selectedYear) {
           const monthStr = months[orderDate.getMonth()];
@@ -168,7 +168,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                const unitCost = (costing.supplier_cost || 0) + (costing.shipping_cost || 0) + (costing.packaging_cost || 0);
                cost += unitCost * item.quantity;
             } else {
-               cost += (Number(item.price) * item.quantity) * 0.7; // Fallback 70% cost estimate
+               cost += (Number(item.price_at_purchase) * item.quantity) * 0.7; // Fallback 70% cost estimate
             }
           });
           
