@@ -665,10 +665,11 @@ export class MetaAnalyticsService {
     }
   }
   static async getAdSetsByCampaign(campaignId: string, timeFilter: string = '28d'): Promise<MetaAdSet[]> {
-    const { capiToken, adAccountId } = this.getCredentials();
+    const capiToken = process.env.META_CAPI_TOKEN;
+    const adAccountId = process.env.META_AD_ACCOUNT_ID;
     if (!capiToken || !adAccountId) return [];
     
-    const datePreset = this.getDatePreset(timeFilter);
+    const datePreset = this.getAdsDatePreset(timeFilter);
     const data = await metaGraphFetch(
       `${campaignId}/adsets`,
       capiToken,
@@ -717,10 +718,11 @@ export class MetaAnalyticsService {
   }
 
   static async getAdsByAdSet(adSetId: string, campaignId: string, timeFilter: string = '28d'): Promise<MetaAd[]> {
-    const { capiToken, adAccountId } = this.getCredentials();
+    const capiToken = process.env.META_CAPI_TOKEN;
+    const adAccountId = process.env.META_AD_ACCOUNT_ID;
     if (!capiToken || !adAccountId) return [];
     
-    const datePreset = this.getDatePreset(timeFilter);
+    const datePreset = this.getAdsDatePreset(timeFilter);
     const data = await metaGraphFetch(
       `${adSetId}/ads`,
       capiToken,
@@ -765,9 +767,9 @@ export class MetaAnalyticsService {
   }
 
   static async getAdInsightsDetail(adId: string, timeFilter: string = '28d') {
-    const { capiToken } = this.getCredentials();
+    const capiToken = process.env.META_CAPI_TOKEN;
     if (!capiToken) return null;
-    const datePreset = this.getDatePreset(timeFilter);
+    const datePreset = this.getAdsDatePreset(timeFilter);
     
     try {
       const adData = await metaGraphFetch(
