@@ -91,9 +91,9 @@ export class MetaAnalyticsService {
           // Wait, Facebook API returns budget divided by 100 for IDR? No, daily_budget is returned as string of the exact currency value.
           // Let's assume it returns exact currency value. Wait! Sometimes it returns cents for USD, and for IDR it might return 100x.
           // Let's just render it as is for now, maybe divide by offset if needed later. But usually it's correct as is.
-          budget = `Rp ${(parseInt(camp.daily_budget, 10)).toLocaleString('id-ID')} / harian`;
+          budget = `Rp ${(parseInt(camp.daily_budget, 10) || 0).toLocaleString('id-ID')} / harian`;
         } else if (camp.lifetime_budget) {
-          budget = `Rp ${(parseInt(camp.lifetime_budget, 10)).toLocaleString('id-ID')} s.masa`;
+          budget = `Rp ${(parseInt(camp.lifetime_budget, 10) || 0).toLocaleString('id-ID')} s.masa`;
         }
 
         return {
@@ -458,51 +458,56 @@ export class MetaAnalyticsService {
     if (!capiToken || !adAccountId) return [];
     
     const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
-    const data = await metaGraphFetch(
-      `${campaignId}/adsets`,
-      capiToken,
-      {
-        date_preset: datePreset,
-        fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,end_time,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
-      }
-    );
+    try {
+      const data = await metaGraphFetch(
+        `${campaignId}/adsets`,
+        capiToken,
+        {
+          date_preset: datePreset,
+          fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,end_time,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
+        }
+      );
 
-    return (data.data || []).map((adset: any) => {
-      const cInsights = adset.insights?.data?.[0];
-      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
-      const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
-      const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
-      const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
-      const cConversions = cInsights ? MetaMetricsCalculator.getPurchasesCount(cInsights.actions) : 0;
-      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
-      const cCpa = cConversions > 0 ? cSpend / cConversions : 0;
+      return (data.data || []).map((adset: any) => {
+        const cInsights = adset.insights?.data?.[0];
+        const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+        const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
+        const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
+        const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
+        const cConversions = cInsights ? MetaMetricsCalculator.getPurchasesCount(cInsights.actions) : 0;
+        const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+        const cCpa = cConversions > 0 ? cSpend / cConversions : 0;
 
-      let budget = 'Menggunakan anggaran kampanye';
-      if (adset.daily_budget) budget = `Rp ${(parseInt(adset.daily_budget, 10)).toLocaleString('id-ID')} / harian`;
-      else if (adset.lifetime_budget) budget = `Rp ${(parseInt(adset.lifetime_budget, 10)).toLocaleString('id-ID')} s.masa`;
+        let budget = 'Menggunakan anggaran kampanye';
+        if (adset.daily_budget) budget = `Rp ${(parseInt(adset.daily_budget, 10) || 0).toLocaleString('id-ID')} / harian`;
+        else if (adset.lifetime_budget) budget = `Rp ${(parseInt(adset.lifetime_budget, 10) || 0).toLocaleString('id-ID')} s.masa`;
 
-      return {
-        id: adset.id,
-        campaignId,
-        name: adset.name,
-        status: adset.status as any,
-        deliveryStatus: adset.effective_status || adset.status,
-        budget,
-        endDate: adset.end_time ? new Date(adset.end_time).toLocaleDateString('id-ID') : 'Sedang berjalan',
-        spend: cSpend,
-        reach: cReach,
-        impressions: cImpressions,
-        clicks: cClicks,
-        conversions: cConversions,
-        roas: parseFloat(cRoas.toFixed(2)),
-        cpa: cCpa,
-        cpc: cClicks > 0 ? cSpend / cClicks : 0,
-        cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
-        qualityRanking: cInsights?.quality_ranking || '—',
-        engagementRanking: cInsights?.engagement_rate_ranking || '—',
-        conversionRanking: cInsights?.conversion_rate_ranking || '—'
-      };
-    });
+        return {
+          id: adset.id,
+          campaignId,
+          name: adset.name,
+          status: adset.status as any,
+          deliveryStatus: adset.effective_status || adset.status,
+          budget,
+          endDate: adset.end_time ? new Date(adset.end_time).toLocaleDateString('id-ID') : 'Sedang berjalan',
+          spend: cSpend,
+          reach: cReach,
+          impressions: cImpressions,
+          clicks: cClicks,
+          conversions: cConversions,
+          roas: parseFloat(cRoas.toFixed(2)),
+          cpa: cCpa,
+          cpc: cClicks > 0 ? cSpend / cClicks : 0,
+          cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
+          qualityRanking: cInsights?.quality_ranking || '—',
+          engagementRanking: cInsights?.engagement_rate_ranking || '—',
+          conversionRanking: cInsights?.conversion_rate_ranking || '—'
+        };
+      });
+    } catch (error: any) {
+      console.error("Meta API Fetch Error in getAdSetsByCampaign:", error);
+      return [];
+    }
   }
 
   static async getAdsByAdSet(adSetId: string, campaignId: string, timeFilter: string = '28d'): Promise<MetaAd[]> {
@@ -511,47 +516,52 @@ export class MetaAnalyticsService {
     if (!capiToken || !adAccountId) return [];
     
     const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
-    const data = await metaGraphFetch(
-      `${adSetId}/ads`,
-      capiToken,
-      {
-        date_preset: datePreset,
-        fields: 'id,name,status,effective_status,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
-      }
-    );
+    try {
+      const data = await metaGraphFetch(
+        `${adSetId}/ads`,
+        capiToken,
+        {
+          date_preset: datePreset,
+          fields: 'id,name,status,effective_status,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
+        }
+      );
 
-    return (data.data || []).map((ad: any) => {
-      const cInsights = ad.insights?.data?.[0];
-      const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
-      const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
-      const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
-      const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
-      const cConversions = cInsights ? MetaMetricsCalculator.getPurchasesCount(cInsights.actions) : 0;
-      const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
-      
-      return {
-        id: ad.id,
-        adSetId,
-        campaignId,
-        name: ad.name,
-        status: ad.status as any,
-        deliveryStatus: ad.effective_status || ad.status,
-        budget: 'Menggunakan anggaran set iklan',
-        endDate: '—',
-        spend: cSpend,
-        reach: cReach,
-        impressions: cImpressions,
-        clicks: cClicks,
-        conversions: cConversions,
-        roas: parseFloat(cRoas.toFixed(2)),
-        cpa: cConversions > 0 ? cSpend / cConversions : 0,
-        cpc: cClicks > 0 ? cSpend / cClicks : 0,
-        cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
-        qualityRanking: cInsights?.quality_ranking || '—',
-        engagementRanking: cInsights?.engagement_rate_ranking || '—',
-        conversionRanking: cInsights?.conversion_rate_ranking || '—'
-      };
-    });
+      return (data.data || []).map((ad: any) => {
+        const cInsights = ad.insights?.data?.[0];
+        const cSpend = cInsights ? parseFloat(cInsights.spend || 0) : 0;
+        const cImpressions = cInsights ? parseInt(cInsights.impressions || 0, 10) : 0;
+        const cReach = cInsights ? parseInt(cInsights.reach || 0, 10) : 0;
+        const cClicks = cInsights ? parseInt(cInsights.clicks || 0, 10) : 0;
+        const cConversions = cInsights ? MetaMetricsCalculator.getPurchasesCount(cInsights.actions) : 0;
+        const cRoas = cSpend > 0 && cConversions > 0 ? ((cConversions * 150000) / cSpend) : 0;
+        
+        return {
+          id: ad.id,
+          adSetId,
+          campaignId,
+          name: ad.name,
+          status: ad.status as any,
+          deliveryStatus: ad.effective_status || ad.status,
+          budget: 'Menggunakan anggaran set iklan',
+          endDate: '—',
+          spend: cSpend,
+          reach: cReach,
+          impressions: cImpressions,
+          clicks: cClicks,
+          conversions: cConversions,
+          roas: parseFloat(cRoas.toFixed(2)),
+          cpa: cConversions > 0 ? cSpend / cConversions : 0,
+          cpc: cClicks > 0 ? cSpend / cClicks : 0,
+          cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
+          qualityRanking: cInsights?.quality_ranking || '—',
+          engagementRanking: cInsights?.engagement_rate_ranking || '—',
+          conversionRanking: cInsights?.conversion_rate_ranking || '—'
+        };
+      });
+    } catch (error: any) {
+      console.error("Meta API Fetch Error in getAdsByAdSet:", error);
+      return [];
+    }
   }
 
   static async getAdInsightsDetail(adId: string, timeFilter: string = '28d') {

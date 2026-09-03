@@ -49,7 +49,11 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
     );
   }
 
-  const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const fIDR = (num: any) => {
+    const validNum = Number(num);
+    if (isNaN(validNum) || validNum == null) return '0';
+    return validNum.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
   return (
     <div className="fixed inset-y-0 right-0 w-full md:w-[800px] bg-[#f0f2f5] shadow-2xl z-50 flex flex-col animate-in slide-in-from-right duration-300 border-l border-ink/10">

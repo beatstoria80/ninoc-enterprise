@@ -16,7 +16,11 @@ export function MetaAdsTable({ data, timeFilter }: { data: MetaAnalyticsData; ti
   const [loadingMap, setLoadingMap] = useState<Record<string, boolean>>({});
   const [selectedAdId, setSelectedAdId] = useState<string | null>(null);
 
-  const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const fIDR = (num: any) => {
+    const validNum = Number(num);
+    if (isNaN(validNum) || validNum == null) return '0';
+    return validNum.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  };
 
   const toggleCampaign = async (campaignId: string) => {
     const newExpanded = new Set(expandedCampaigns);
