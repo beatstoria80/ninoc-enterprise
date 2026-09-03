@@ -233,9 +233,9 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                   </div>
                 </div>
                 <div className="p-3 border-t border-ink/5 bg-ink/[0.02]">
-                  <p className="text-[10px] font-bold text-ink">NINOC.STORE</p>
+                  <p className="text-[10px] font-bold text-ink">{data.creativeLinkCaption || 'NINOC.STORE'}</p>
                   <h4 className="text-[12px] font-bold text-ink mt-0.5">{data.creativeTitle || data.name || 'Ad Creative'}</h4>
-                  <p className="text-[10px] text-ink/50 mt-0.5">Diskon Spesial Hari Ini</p>
+                  <p className="text-[10px] text-ink/50 mt-0.5">{data.creativeLinkDescription || ''}</p>
                 </div>
               </div>
             </div>

@@ -573,7 +573,7 @@ export class MetaAnalyticsService {
       const adData = await metaGraphFetch(
         adId,
         capiToken,
-        { fields: 'name,creative{thumbnail_url,image_url,body,title,name},created_time' }
+        { fields: 'name,creative{thumbnail_url,image_url,body,title,name,object_story_spec},campaign{daily_budget,lifetime_budget,start_time,stop_time},adset{daily_budget,lifetime_budget,start_time,end_time},created_time' }
       );
       
       const insightsData = await metaGraphFetch(
@@ -611,6 +611,18 @@ export class MetaAnalyticsService {
         value: parseInt(l.impressions || 0, 10)
       }));
 
+      const postReactions = ins.actions?.find((a: any) => a.action_type === 'post_reaction')?.value || 0;
+      const pageLikes = ins.actions?.find((a: any) => a.action_type === 'like')?.value || 0;
+      const videoPlays = ins.video_play_actions?.find((a: any) => a.action_type === 'video_play')?.value || 0;
+      const videoThruPlays = ins.video_p100_watched_actions?.find((a: any) => a.action_type === 'video_p100_watched_actions')?.value || 0;
+      
+      const linkCaption = adData.creative?.data?.[0]?.object_story_spec?.link_data?.caption || 'NINOC.STORE';
+      const linkDescription = adData.creative?.data?.[0]?.object_story_spec?.link_data?.description || 'Diskon Spesial Hari Ini';
+
+      // Fallback budget from adset then campaign
+      const dBudget = adData.adset?.daily_budget || adData.campaign?.daily_budget || 0;
+      const lBudget = adData.adset?.lifetime_budget || adData.campaign?.lifetime_budget || 0;
+
       return {
         id: adId,
         name: adData.name || '',
@@ -627,18 +639,20 @@ export class MetaAnalyticsService {
         creativeBody: adData.creative?.data?.[0]?.body || '',
         creativeTitle: adData.creative?.data?.[0]?.title || adData.creative?.data?.[0]?.name || adData.name || '',
         creativePageName: 'NINOC STORE', // Page name requires an extra fetch to the page edge, fallback to default store name for now
-        dailyBudget: 0,
-        lifetimeBudget: 0,
-        startDate: '',
-        endDate: '',
-        videoPlays: 0,
-        videoThruPlays: 0,
+        creativeLinkCaption: linkCaption,
+        creativeLinkDescription: linkDescription,
+        dailyBudget: parseInt(dBudget, 10) || 0,
+        lifetimeBudget: parseInt(lBudget, 10) || 0,
+        startDate: adData.adset?.start_time || adData.campaign?.start_time || '',
+        endDate: adData.adset?.end_time || adData.campaign?.stop_time || '',
+        videoPlays: parseInt(videoPlays, 10) || 0,
+        videoThruPlays: parseInt(videoThruPlays, 10) || 0,
         videoPlayTimeAvg: 0,
-        videoPlays3s: 0,
+        videoPlays3s: parseInt(ins.video_p50_watched_actions?.[0]?.value || 0, 10),
         linkClicks: ins.inline_link_clicks ? parseInt(ins.inline_link_clicks, 10) : 0,
         ctr: parseInt(ins.impressions || 0, 10) > 0 ? ((parseInt(ins.clicks || 0, 10) / parseInt(ins.impressions || 0, 10)) * 100) : 0,
-        postReactions: 0,
-        pageLikes: 0,
+        postReactions: parseInt(postReactions, 10) || 0,
+        pageLikes: parseInt(pageLikes, 10) || 0,
         trend: [],
         demographics,
         placements,

@@ -46,6 +46,8 @@ export interface MetaAdInsightsDetail {
   creativeBody: string;
   creativeTitle?: string;
   creativePageName?: string;
+  creativeLinkCaption?: string;
+  creativeLinkDescription?: string;
   dailyBudget: number;
   lifetimeBudget: number;
   startDate: string;
