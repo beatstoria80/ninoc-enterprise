@@ -10,7 +10,10 @@ export type {
   MetaAnalyticsData, 
   SocialMediaItem, 
   PlatformMetrics, 
-  MetaOrganicData 
+  MetaOrganicData,
+  MetaAdSet,
+  MetaAd,
+  MetaAdInsightsDetail
 } from '@/services/meta/types';
 
 /**

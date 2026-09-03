@@ -4,7 +4,10 @@ import type {
   MetaOrganicData, 
   PlatformMetrics, 
   MetaDemographics, 
-  MetaCampaign 
+  MetaCampaign,
+  MetaAdSet,
+  MetaAd,
+  MetaAdInsightsDetail
 } from './types';
 
 export class MetaAnalyticsService {
