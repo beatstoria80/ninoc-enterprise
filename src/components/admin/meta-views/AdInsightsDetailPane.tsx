@@ -213,12 +213,12 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                 <div className="p-3 flex items-center gap-2 border-b border-ink/5">
                   <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-[10px]">N</div>
                   <div>
-                    <p className="text-[11px] font-bold text-ink">NINOC STORE</p>
+                    <p className="text-[11px] font-bold text-ink">{data.creativePageName || 'NINOC STORE'}</p>
                     <p className="text-[9px] text-ink/50">Bersponsor</p>
                   </div>
                 </div>
                 <div className="p-3 text-[11px] text-ink/80 whitespace-pre-wrap leading-relaxed">
-                  {data.creativeBody || 'Belanja sekarang untuk promo eksklusif!'}
+                  {data.creativeBody || ''}
                 </div>
                 <div className="w-full aspect-square bg-ink/5 relative group cursor-pointer overflow-hidden">
                   {data.creativeThumbnail ? (
@@ -234,7 +234,7 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                 </div>
                 <div className="p-3 border-t border-ink/5 bg-ink/[0.02]">
                   <p className="text-[10px] font-bold text-ink">NINOC.STORE</p>
-                  <h4 className="text-[12px] font-bold text-ink mt-0.5">Kaos Original NINOC</h4>
+                  <h4 className="text-[12px] font-bold text-ink mt-0.5">{data.creativeTitle || data.name || 'Ad Creative'}</h4>
                   <p className="text-[10px] text-ink/50 mt-0.5">Diskon Spesial Hari Ini</p>
                 </div>
               </div>

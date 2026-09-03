@@ -44,6 +44,8 @@ export interface MetaAdInsightsDetail {
   publishedDate: string;
   creativeThumbnail: string;
   creativeBody: string;
+  creativeTitle?: string;
+  creativePageName?: string;
   dailyBudget: number;
   lifetimeBudget: number;
   startDate: string;

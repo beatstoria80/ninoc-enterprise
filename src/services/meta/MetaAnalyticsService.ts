@@ -573,7 +573,7 @@ export class MetaAnalyticsService {
       const adData = await metaGraphFetch(
         adId,
         capiToken,
-        { fields: 'name,creative{thumbnail_url,body},created_time' }
+        { fields: 'name,creative{thumbnail_url,image_url,body,title,name},created_time' }
       );
       
       const insightsData = await metaGraphFetch(
@@ -623,8 +623,10 @@ export class MetaAnalyticsService {
         cpm: parseInt(ins.impressions || 0, 10) > 0 ? (spend / parseInt(ins.impressions || 0, 10)) * 1000 : 0,
         roas: spend > 0 ? ((conversions * 150000) / spend) : 0,
         publishedDate: adData.created_time ? new Date(adData.created_time).toLocaleDateString('id-ID') : '',
-        creativeThumbnail: adData.creative?.data?.[0]?.thumbnail_url || '',
+        creativeThumbnail: adData.creative?.data?.[0]?.thumbnail_url || adData.creative?.data?.[0]?.image_url || '',
         creativeBody: adData.creative?.data?.[0]?.body || '',
+        creativeTitle: adData.creative?.data?.[0]?.title || adData.creative?.data?.[0]?.name || adData.name || '',
+        creativePageName: 'NINOC STORE', // Page name requires an extra fetch to the page edge, fallback to default store name for now
         dailyBudget: 0,
         lifetimeBudget: 0,
         startDate: '',
