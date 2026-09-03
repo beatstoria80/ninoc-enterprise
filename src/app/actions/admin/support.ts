@@ -1,13 +1,15 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
+import { createClient, createAdminClient } from '@/utils/supabase/server';
 
 async function verifyAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Unauthorized');
   
-  if (user.email?.toLowerCase() === 'admin@ninoc.store') return { supabase, user };
+  if (user.email?.toLowerCase() === 'admin@ninoc.store') {
+    return { supabase: await createAdminClient(), user };
+  }
 
   const { data: roleData } = await supabase
     .from('admin_roles')
@@ -17,7 +19,7 @@ async function verifyAdmin() {
 
   if (!roleData) throw new Error('Unauthorized');
   
-  return { supabase, user };
+  return { supabase: await createAdminClient(), user };
 }
 
 export async function fetchSupportTicketsAction() {

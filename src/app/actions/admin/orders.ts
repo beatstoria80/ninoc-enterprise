@@ -1,6 +1,6 @@
 'use server';
 
-import { createClient } from '@/utils/supabase/server';
+import { createClient, createAdminClient } from '@/utils/supabase/server';
 import { OrderStatus } from '@/components/admin/types';
 
 async function verifyAdmin() {
@@ -8,7 +8,9 @@ async function verifyAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Unauthorized');
   
-  if (user.email?.toLowerCase() === 'admin@ninoc.store') return supabase;
+  if (user.email?.toLowerCase() === 'admin@ninoc.store') {
+    return await createAdminClient();
+  }
 
   const { data: roleData } = await supabase
     .from('admin_roles')
@@ -18,7 +20,7 @@ async function verifyAdmin() {
 
   if (!roleData) throw new Error('Unauthorized');
   
-  return supabase;
+  return await createAdminClient();
 }
 
 export async function fetchOrdersAction(limit = 100) {
