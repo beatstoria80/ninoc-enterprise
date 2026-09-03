@@ -91,9 +91,9 @@ export class MetaAnalyticsService {
           // Wait, Facebook API returns budget divided by 100 for IDR? No, daily_budget is returned as string of the exact currency value.
           // Let's assume it returns exact currency value. Wait! Sometimes it returns cents for USD, and for IDR it might return 100x.
           // Let's just render it as is for now, maybe divide by offset if needed later. But usually it's correct as is.
-          budget = `Rp ${(parseInt(camp.daily_budget, 10) / 100).toLocaleString('id-ID')} / harian`;
+          budget = `Rp ${(parseInt(camp.daily_budget, 10)).toLocaleString('id-ID')} / harian`;
         } else if (camp.lifetime_budget) {
-          budget = `Rp ${(parseInt(camp.lifetime_budget, 10) / 100).toLocaleString('id-ID')} s.masa`;
+          budget = `Rp ${(parseInt(camp.lifetime_budget, 10)).toLocaleString('id-ID')} s.masa`;
         }
 
         return {
@@ -478,8 +478,8 @@ export class MetaAnalyticsService {
       const cCpa = cConversions > 0 ? cSpend / cConversions : 0;
 
       let budget = 'Menggunakan anggaran kampanye';
-      if (adset.daily_budget) budget = `Rp ${(parseInt(adset.daily_budget, 10) / 100).toLocaleString('id-ID')} / harian`;
-      else if (adset.lifetime_budget) budget = `Rp ${(parseInt(adset.lifetime_budget, 10) / 100).toLocaleString('id-ID')} s.masa`;
+      if (adset.daily_budget) budget = `Rp ${(parseInt(adset.daily_budget, 10)).toLocaleString('id-ID')} / harian`;
+      else if (adset.lifetime_budget) budget = `Rp ${(parseInt(adset.lifetime_budget, 10)).toLocaleString('id-ID')} s.masa`;
 
       return {
         id: adset.id,

@@ -13,7 +13,7 @@ interface AdsAnalyticsViewProps {
 }
 
 export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
-  const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fIDR = (num: number) => num.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
   const getTimeLabel = () => {
     switch (timeFilter) {
