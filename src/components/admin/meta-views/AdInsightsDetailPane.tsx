@@ -137,8 +137,27 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between items-end mb-1">
-                    <p className="text-[11px] text-ink/70">Klik Tautan</p>
-                    <p className="text-sm font-semibold text-ink">{data.linkClicks}</p>
+                    <p className="text-[11px] text-ink/70">Reaksi Postingan</p>
+                    <p className="text-sm font-semibold text-ink">{data.postReactions}</p>
+                  </div>
+                  <div className="w-full bg-ink/5 h-1.5 rounded-full overflow-hidden mb-3">
+                    <div className="bg-[#38bdf8] h-full" style={{ width: `${Math.min((data.postReactions / (data.postReactions + data.linkClicks + 1)) * 100, 100)}%` }} />
+                  </div>
+
+                  <div className="flex justify-between items-end mb-1">
+                    <p className="text-[11px] text-ink/70">Suka Halaman (Page Likes)</p>
+                    <p className="text-sm font-semibold text-ink">{data.pageLikes}</p>
+                  </div>
+                  <div className="w-full bg-ink/5 h-1.5 rounded-full overflow-hidden mb-3">
+                    <div className="bg-[#3b82f6] h-full" style={{ width: `${Math.min((data.pageLikes / (data.pageLikes + data.postReactions + 1)) * 100, 100)}%` }} />
+                  </div>
+
+                  <div className="flex justify-between items-end mb-1">
+                    <p className="text-[11px] text-ink/70">Pemutaran Video (Plays)</p>
+                    <p className="text-sm font-semibold text-ink">{data.videoPlays}</p>
+                  </div>
+                  <div className="w-full bg-ink/5 h-1.5 rounded-full overflow-hidden">
+                    <div className="bg-[#8b5cf6] h-full" style={{ width: `${Math.min((data.videoThruPlays / (data.videoPlays + 1)) * 100, 100)}%` }} />
                   </div>
                 </div>
                 
