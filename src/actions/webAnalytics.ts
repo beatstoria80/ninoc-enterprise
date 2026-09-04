@@ -488,22 +488,24 @@ export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId
 
     const ecommerceData = await getEcommerceAnalytics(timeFilter, allGa4Pages, supplierId);
 
-    return {
+    const result = {
       configured: true,
       ga4: ga4Data,
       gsc: gscData,
       ecommerce: ecommerceData,
     };
+    return JSON.parse(JSON.stringify(result));
 
   } catch (error) {
     console.error('Error fetching Web Analytics data:', error);
     const ecommerceData = await getEcommerceAnalytics(timeFilter, [], supplierId);
-    return {
+    const fallbackResult = {
       configured: true,
       ga4: null,
       gsc: null,
       ecommerce: ecommerceData,
       error: 'Google Analytics/Search Console API error. Please check logs.',
     };
+    return JSON.parse(JSON.stringify(fallbackResult));
   }
 }

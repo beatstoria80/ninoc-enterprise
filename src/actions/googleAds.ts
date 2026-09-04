@@ -12,17 +12,21 @@ export type { GoogleAdsData, GoogleAdGroup, GoogleAd, GoogleAdInsightsDetail };
 export type { GoogleAdsCampaign } from '@/services/google/types';
 
 export async function getGoogleAdsData(timeFilter: string = '28d'): Promise<GoogleAdsData> {
-  return GoogleAdsService.getDashboardOverview(timeFilter);
+  const data = await GoogleAdsService.getDashboardOverview(timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function getGoogleAdGroups(campaignId: string, timeFilter: string = '28d'): Promise<GoogleAdGroup[]> {
-  return GoogleAdsService.getAdGroupsByCampaign(campaignId, timeFilter);
+  const data = await GoogleAdsService.getAdGroupsByCampaign(campaignId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function getGoogleAds(adGroupId: string, campaignId: string, timeFilter: string = '28d'): Promise<GoogleAd[]> {
-  return GoogleAdsService.getAdsByAdGroup(adGroupId, campaignId, timeFilter);
+  const data = await GoogleAdsService.getAdsByAdGroup(adGroupId, campaignId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function getGoogleAdDetail(adId: string, timeFilter: string = '28d'): Promise<GoogleAdInsightsDetail | null> {
-  return GoogleAdsService.getAdInsightsDetail(adId, timeFilter);
+  const data = await GoogleAdsService.getAdInsightsDetail(adId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }

@@ -21,7 +21,8 @@ export type {
  * Delegates the heavy lifting and business logic to MetaAnalyticsService.
  */
 export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<MetaAnalyticsData> {
-  return await MetaAnalyticsService.getDashboardOverview(timeFilter);
+  const data = await MetaAnalyticsService.getDashboardOverview(timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
 
 /**
@@ -29,16 +30,21 @@ export async function getMetaAnalyticsData(timeFilter: string = '28d'): Promise<
  * Delegates the heavy lifting and business logic to MetaAnalyticsService.
  */
 export async function getMetaOrganicData(timeFilter: string = '28d'): Promise<MetaOrganicData> {
-  return await MetaAnalyticsService.getOrganicDashboard(timeFilter);
+  const data = await MetaAnalyticsService.getOrganicDashboard(timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
+
 export async function getAdSetsByCampaign(campaignId: string, timeFilter: string = '28d') {
-  return await MetaAnalyticsService.getAdSetsByCampaign(campaignId, timeFilter);
+  const data = await MetaAnalyticsService.getAdSetsByCampaign(campaignId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function getAdsByAdSet(adSetId: string, campaignId: string, timeFilter: string = '28d') {
-  return await MetaAnalyticsService.getAdsByAdSet(adSetId, campaignId, timeFilter);
+  const data = await MetaAnalyticsService.getAdsByAdSet(adSetId, campaignId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }
 
 export async function getAdInsightsDetail(adId: string, timeFilter: string = '28d') {
-  return await MetaAnalyticsService.getAdInsightsDetail(adId, timeFilter);
+  const data = await MetaAnalyticsService.getAdInsightsDetail(adId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
 }

@@ -290,5 +290,6 @@ export async function getMarketingAnalyticsData(): Promise<MarketingDashboardDat
     }
   };
 
-  return { metrics, topVouchers: vTop, topAffiliates: aTop };
+  const result = { metrics, topVouchers: vTop, topAffiliates: aTop };
+  return JSON.parse(JSON.stringify(result));
 }
