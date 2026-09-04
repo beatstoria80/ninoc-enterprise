@@ -3,22 +3,7 @@
 import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import { getAppUrl } from '@/lib/utils';
 
-export interface MetaTrackingStatus {
-  pixelId: string | null;
-  capiTokenExists: boolean;
-  pageId: string | null;
-  adAccountId: string | null;
-  catalog: {
-    feedUrl: string;
-    totalProductsSynced: number;
-    lastSynced: string;
-  };
-  supportedEvents: {
-    name: string;
-    clientSide: boolean;
-    serverSide: boolean;
-  }[];
-}
+import { type MetaTrackingStatus } from '@/types/metaTracking';
 
 export async function getMetaTrackingStatus(): Promise<MetaTrackingStatus> {
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID || null;

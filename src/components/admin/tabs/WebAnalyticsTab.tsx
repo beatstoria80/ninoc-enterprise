@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor, Package, ShoppingBag, DollarSign, Award, Zap, Tag, ArrowUpRight, CheckCircle2 } from 'lucide-react';
-import { type WebAnalyticsData } from '@/actions/webAnalytics';
+import { type WebAnalyticsData } from '@/types/analytics';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 

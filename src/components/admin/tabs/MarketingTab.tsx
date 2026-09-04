@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { TrendingUp, Ticket, Shield, Users, ArrowUpRight, ArrowDownRight, PackageOpen, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 // Removed Server Action imports
-import { type GoogleAdsData, type GoogleAdsCampaign } from '@/actions/googleAds';
+import type { GoogleAdsData, GoogleAdsCampaign } from '@/services/google/types';
 
 export function MarketingTab() {
   const [loading, setLoading] = useState(true);

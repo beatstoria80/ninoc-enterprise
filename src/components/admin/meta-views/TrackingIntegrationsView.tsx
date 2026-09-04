@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Database, Link, CheckCircle2, XCircle, Zap, Copy } from 'lucide-react';
-import type { MetaTrackingStatus } from '@/actions/metaTracking';
+import type { MetaTrackingStatus } from '@/types/metaTracking';
 
 interface TrackingIntegrationsViewProps {
   data: MetaTrackingStatus;

@@ -3,18 +3,6 @@
 import { MetaAnalyticsService } from '@/services/meta/MetaAnalyticsService';
 import type { MetaAnalyticsData, MetaOrganicData } from '@/services/meta/types';
 
-// Export types so that other files importing from actions/metaAnalytics still work
-export type { 
-  MetaCampaign, 
-  MetaDemographics, 
-  MetaAnalyticsData, 
-  SocialMediaItem, 
-  PlatformMetrics, 
-  MetaOrganicData,
-  MetaAdSet,
-  MetaAd,
-  MetaAdInsightsDetail
-} from '@/services/meta/types';
 
 /**
  * Controller Action for Ads Dashboard.

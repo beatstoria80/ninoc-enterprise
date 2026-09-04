@@ -3,7 +3,7 @@
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
-import type { MetaAnalyticsData } from '@/actions/metaAnalytics';
+import type { MetaAnalyticsData } from '@/services/meta/types';
 import { cn } from '@/lib/utils';
 import { MetaAdsTable } from './MetaAdsTable';
 

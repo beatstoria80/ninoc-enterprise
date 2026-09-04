@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Users, AlertTriangle, RefreshCw, Target, Globe, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getMetaAnalyticsData, getMetaOrganicData, type MetaAnalyticsData, type MetaOrganicData } from '@/actions/metaAnalytics';
-import { getMetaTrackingStatus, type MetaTrackingStatus } from '@/actions/metaTracking';
+import type { MetaAnalyticsData, MetaOrganicData } from '@/services/meta/types';
+import { type MetaTrackingStatus } from '@/types/metaTracking';
 import { AdsAnalyticsView } from '../meta-views/AdsAnalyticsView';
 import { OrganicAnalyticsView } from '../meta-views/OrganicAnalyticsView';
 import { TrackingIntegrationsView } from '../meta-views/TrackingIntegrationsView';

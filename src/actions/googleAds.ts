@@ -8,8 +8,6 @@ import type {
   GoogleAdInsightsDetail 
 } from '@/services/google/types';
 
-export type { GoogleAdsData, GoogleAdGroup, GoogleAd, GoogleAdInsightsDetail };
-export type { GoogleAdsCampaign } from '@/services/google/types';
 
 export async function getGoogleAdsData(timeFilter: string = '28d'): Promise<GoogleAdsData> {
   const data = await GoogleAdsService.getDashboardOverview(timeFilter);

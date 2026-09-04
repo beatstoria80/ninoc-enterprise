@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Users, Globe, Camera, MonitorSmartphone, Heart, MessageCircle, ImageIcon, AlertCircle, TrendingUp, BarChart3, CalendarDays, Lightbulb, Sparkles, Eye, Share2, Bookmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { MetaOrganicData } from '@/actions/metaAnalytics';
+import type { MetaOrganicData } from '@/services/meta/types';
 
 interface OrganicAnalyticsViewProps {
   data: MetaOrganicData;

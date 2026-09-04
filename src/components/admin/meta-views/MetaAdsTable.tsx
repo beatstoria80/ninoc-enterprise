@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Eye, ArrowDownRight, ChevronRight, ChevronDown, AlignLeft, Layers, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import type { MetaAnalyticsData } from '@/actions/metaAnalytics';
+import type { MetaAnalyticsData } from '@/services/meta/types';
 import type { MetaAdSet, MetaAd } from '@/services/meta/types';
 import { getAdSetsByCampaign, getAdsByAdSet } from '@/actions/metaAnalytics';
 import { AdInsightsDetailPane } from './AdInsightsDetailPane';
