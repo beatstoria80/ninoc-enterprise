@@ -57,9 +57,10 @@ export async function fetchProductsAction() {
       
       if (fallbackError) throw fallbackError;
       
-    if (prodFallback) {
-      // Return empty array gracefully instead of throwing error
-      return { success: true, data: prodFallback };
+      if (prodFallback) {
+        // Return empty array gracefully instead of throwing error
+        return { success: true, data: prodFallback };
+      }
     }
     
     return { success: true, data: prodWithSuppliers || [] };
