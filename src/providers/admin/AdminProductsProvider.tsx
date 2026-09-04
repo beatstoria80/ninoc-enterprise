@@ -26,17 +26,23 @@ export function AdminProductsProvider({ children }: { children: ReactNode }) {
   const fetchProducts = useCallback(async () => {
     setIsLoading(true);
     setError(null);
-    const result = await fetchProductsAction();
-    if (result.success && result.data) {
-      setProducts(result.data as Product[]);
-      if ((result as any).debugContext) {
-        setError(`DEBUG CONTEXT: ${(result as any).debugContext}`);
+    try {
+      const result = await fetchProductsAction();
+      if (result.success && result.data) {
+        setProducts(result.data as Product[]);
+        if ((result as any).debugContext) {
+          setError(`DEBUG CONTEXT: ${(result as any).debugContext}`);
+        }
+      } else {
+        console.error('Failed to fetch products:', result.error);
+        setError(result.error || 'Unknown error');
       }
-    } else {
-      console.error('Failed to fetch products:', result.error);
-      setError(result.error || 'Unknown error');
+    } catch (err: any) {
+      console.error('SILENT CRASH IN SERVER ACTION:', err);
+      setError(`SILENT CRASH: ${err.message || String(err)}`);
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const toggleFeatured = useCallback(async (product: Product) => {
