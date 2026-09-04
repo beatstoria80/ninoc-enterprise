@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle, RefreshCw, Eye, Clock, Globe, FileText, Layers, TrendingUp, BarChart2, MapPin, Smartphone, Share2, Flag, Monitor, Package, ShoppingBag, DollarSign, Award, Zap, Tag, ArrowUpRight, CheckCircle2 } from 'lucide-react';
-import { getWebAnalyticsData, type WebAnalyticsData } from '@/actions/webAnalytics';
+import { type WebAnalyticsData } from '@/actions/webAnalytics';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 
@@ -89,8 +89,16 @@ export function WebAnalyticsTab() {
     const sId = typeof supplierIdOverride === 'string' ? supplierIdOverride : selectedSupplierId;
     try {
       setLoading(true);
-      const res = await getWebAnalyticsData(filter, sId);
-      setData(res);
+      const url = new URL('/api/admin/web-analytics', window.location.origin);
+      url.searchParams.set('filter', filter);
+      if (sId !== 'all') url.searchParams.set('supplierId', sId);
+      
+      const res = await fetch(url.toString(), { cache: 'no-store' });
+      const result = await res.json();
+      
+      if (result.success) {
+        setData(result.data);
+      }
     } catch (error) {
       console.error('Error fetching analytics:', error);
     } finally {

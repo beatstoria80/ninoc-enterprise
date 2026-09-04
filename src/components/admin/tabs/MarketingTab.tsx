@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Ticket, Shield, Users, ArrowUpRight, ArrowDownRight, PackageOpen, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { getMarketingAnalyticsData } from '@/actions/marketingAnalytics';
+// Removed Server Action imports
 import { type GoogleAdsData, type GoogleAdsCampaign } from '@/actions/googleAds';
 
 export function MarketingTab() {
@@ -42,10 +42,14 @@ export function MarketingTab() {
     async function loadData() {
       try {
         setLoading(true);
-        const data = await getMarketingAnalyticsData();
-        setMetrics(data.metrics);
-        setTopVouchers(data.topVouchers);
-        setTopAffiliates(data.topAffiliates);
+        const res = await fetch('/api/admin/marketing', { cache: 'no-store' });
+        const result = await res.json();
+        
+        if (result.success) {
+          setMetrics(result.data.metrics);
+          setTopVouchers(result.data.topVouchers);
+          setTopAffiliates(result.data.topAffiliates);
+        }
       } catch (err) {
         console.error(err);
       } finally {

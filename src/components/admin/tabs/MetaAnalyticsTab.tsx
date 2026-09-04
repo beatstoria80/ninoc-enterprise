@@ -23,14 +23,17 @@ export function MetaAnalyticsTab() {
     try {
       setLoading(true);
       if (mode === 'ads') {
-        const res = await getMetaAnalyticsData(filter);
-        setData(res);
+        const response = await fetch(`/api/admin/meta-ads?filter=${filter}`, { cache: 'no-store' });
+        const res = await response.json();
+        if (res.success) setData(res.data);
       } else if (mode === 'organic') {
-        const orgRes = await getMetaOrganicData(filter);
-        setOrganicData(orgRes);
+        const response = await fetch(`/api/admin/meta-organic?filter=${filter}`, { cache: 'no-store' });
+        const res = await response.json();
+        if (res.success) setOrganicData(res.data);
       } else if (mode === 'tracking') {
-        const trkRes = await getMetaTrackingStatus();
-        setTrackingData(trkRes);
+        const response = await fetch(`/api/admin/meta-tracking`, { cache: 'no-store' });
+        const res = await response.json();
+        if (res.success) setTrackingData(res.data);
       }
     } catch (error) {
       console.error('Error fetching Meta analytics:', error);
