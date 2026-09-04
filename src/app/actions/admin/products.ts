@@ -30,14 +30,21 @@ export async function fetchProductsAction() {
     
     // Create an explicit, raw client to guarantee no cache and no RLS
     const { createClient } = require('@supabase/supabase-js');
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!url || !key) {
+      return { success: true, data: [], debugContext: `Missing ENV! URL: ${!!url}, KEY: ${!!key}` };
+    }
+
     const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
+      url,
+      key,
       {
         auth: { persistSession: false },
         global: {
           fetch: (url: RequestInfo | URL, options?: RequestInit) => {
-            return fetch(url.toString(), { ...options, cache: 'no-store' });
+            return fetch(url.toString(), { ...options, cache: 'no-store', next: { revalidate: 0 } });
           }
         }
       }
@@ -58,11 +65,17 @@ export async function fetchProductsAction() {
       if (fallbackError) throw fallbackError;
       
       if (prodFallback) {
-        // Return empty array gracefully instead of throwing error
+        if (prodFallback.length === 0) {
+           return { success: true, data: prodFallback, debugContext: `prodFallback returned 0. URL used: ${url}` };
+        }
         return { success: true, data: prodFallback };
       }
     }
     
+    if (prodWithSuppliers && prodWithSuppliers.length === 0) {
+      return { success: true, data: [], debugContext: `prodWithSuppliers returned 0. URL used: ${url}, Error: ${prodError?.message || 'none'}` };
+    }
+
     return { success: true, data: prodWithSuppliers || [] };
   } catch (error: any) {
     console.error('fetchProductsAction error:', error);

@@ -29,6 +29,9 @@ export function AdminProductsProvider({ children }: { children: ReactNode }) {
     const result = await fetchProductsAction();
     if (result.success && result.data) {
       setProducts(result.data as Product[]);
+      if ((result as any).debugContext) {
+        setError(`DEBUG CONTEXT: ${(result as any).debugContext}`);
+      }
     } else {
       console.error('Failed to fetch products:', result.error);
       setError(result.error || 'Unknown error');
