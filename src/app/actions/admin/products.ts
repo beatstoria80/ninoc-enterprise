@@ -72,11 +72,16 @@ export async function fetchProductsAction() {
       }
     }
     
-    if (prodWithSuppliers && prodWithSuppliers.length === 0) {
-      return { success: true, data: [], debugContext: `prodWithSuppliers returned 0. URL used: ${url}, Error: ${prodError?.message || 'none'}` };
+    const finalData = prodWithSuppliers || [];
+    if (finalData.length === 0) {
+      return { 
+        success: true, 
+        data: [], 
+        debugContext: `FALLTHROUGH: prodWithSuppliers was ${JSON.stringify(prodWithSuppliers)}. Error was ${JSON.stringify(prodError)}` 
+      };
     }
 
-    return { success: true, data: prodWithSuppliers || [] };
+    return { success: true, data: finalData };
   } catch (error: any) {
     console.error('fetchProductsAction error:', error);
     return { success: false, error: error.message };
