@@ -81,7 +81,9 @@ export async function fetchProductsAction() {
       };
     }
 
-    return { success: true, data: finalData };
+    // Force strict serialization to strip any hidden prototypes or non-serializable objects that crash Next.js Server Actions
+    const safeData = JSON.parse(JSON.stringify(finalData));
+    return { success: true, data: safeData };
   } catch (error: any) {
     console.error('fetchProductsAction error:', error);
     return { success: false, error: error.message };
