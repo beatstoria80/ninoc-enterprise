@@ -201,17 +201,61 @@ export function BannersTab() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="border border-ink/20 p-4 flex flex-col items-center justify-center text-center">
-                  <span className="text-[10px] font-bold uppercase mb-2">Desktop (16:9)</span>
-                  <input type="file" accept="image/*" onChange={e => setDesktopFile(e.target.files?.[0] || null)} className="text-[9px] w-full" />
+                {/* Desktop Upload */}
+                <div className="border border-ink/20 p-4 flex flex-col items-center justify-center text-center relative overflow-hidden group min-h-[120px]">
+                  {desktopFile ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={URL.createObjectURL(desktopFile)} alt="Desktop preview" className="absolute inset-0 w-full h-full object-cover z-0" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col items-center justify-center">
+                        <button onClick={() => setDesktopFile(null)} className="text-white bg-red-500/80 p-2 rounded-full hover:bg-red-500"><X size={16} /></button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon size={24} className="text-ink/20 mb-2" />
+                      <span className="text-[10px] font-bold uppercase mb-2">Desktop (16:9)</span>
+                      <input type="file" accept="image/*" onChange={e => setDesktopFile(e.target.files?.[0] || null)} className="text-[9px] w-full max-w-[150px]" />
+                    </>
+                  )}
                 </div>
-                <div className="border border-ink/20 p-4 flex flex-col items-center justify-center text-center">
-                  <span className="text-[10px] font-bold uppercase mb-2">Tablet (4:3)</span>
-                  <input type="file" accept="image/*" onChange={e => setTabletFile(e.target.files?.[0] || null)} className="text-[9px] w-full" />
+
+                {/* Tablet Upload */}
+                <div className="border border-ink/20 p-4 flex flex-col items-center justify-center text-center relative overflow-hidden group min-h-[120px]">
+                  {tabletFile ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={URL.createObjectURL(tabletFile)} alt="Tablet preview" className="absolute inset-0 w-full h-full object-cover z-0" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col items-center justify-center">
+                        <button onClick={() => setTabletFile(null)} className="text-white bg-red-500/80 p-2 rounded-full hover:bg-red-500"><X size={16} /></button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon size={24} className="text-ink/20 mb-2" />
+                      <span className="text-[10px] font-bold uppercase mb-2">Tablet (4:3)</span>
+                      <input type="file" accept="image/*" onChange={e => setTabletFile(e.target.files?.[0] || null)} className="text-[9px] w-full max-w-[150px]" />
+                    </>
+                  )}
                 </div>
-                <div className="border border-ink/20 p-4 flex flex-col items-center justify-center text-center">
-                  <span className="text-[10px] font-bold uppercase mb-2">Mobile (9:16)</span>
-                  <input type="file" accept="image/*" onChange={e => setMobileFile(e.target.files?.[0] || null)} className="text-[9px] w-full" />
+
+                {/* Mobile Upload */}
+                <div className="border border-ink/20 p-4 flex flex-col items-center justify-center text-center relative overflow-hidden group min-h-[120px]">
+                  {mobileFile ? (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={URL.createObjectURL(mobileFile)} alt="Mobile preview" className="absolute inset-0 w-full h-full object-cover z-0" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex flex-col items-center justify-center">
+                        <button onClick={() => setMobileFile(null)} className="text-white bg-red-500/80 p-2 rounded-full hover:bg-red-500"><X size={16} /></button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <ImageIcon size={24} className="text-ink/20 mb-2" />
+                      <span className="text-[10px] font-bold uppercase mb-2">Mobile (9:16)</span>
+                      <input type="file" accept="image/*" onChange={e => setMobileFile(e.target.files?.[0] || null)} className="text-[9px] w-full max-w-[150px]" />
+                    </>
+                  )}
                 </div>
               </div>
             </div>
