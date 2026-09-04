@@ -33,7 +33,8 @@ export async function fetchOrdersAction(limit = 100) {
       .limit(limit);
       
     if (error) throw error;
-    return { success: true, data: orderData };
+    const safeData = JSON.parse(JSON.stringify(orderData || []));
+    return { success: true, data: safeData };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

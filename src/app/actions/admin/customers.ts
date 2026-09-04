@@ -31,7 +31,8 @@ export async function fetchCustomersAction() {
       .order('customer_number', { ascending: true });
       
     if (error) throw error;
-    return { success: true, data: customerData };
+    const safeData = JSON.parse(JSON.stringify(customerData || []));
+    return { success: true, data: safeData };
   } catch (error: any) {
     return { success: false, error: error.message };
   }

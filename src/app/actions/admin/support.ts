@@ -46,7 +46,10 @@ export async function fetchSupportTicketsAction() {
 
     if (msgError) throw msgError;
 
-    return { success: true, tickets: ticketsData, messages: allMessages };
+    const safeTickets = JSON.parse(JSON.stringify(ticketsData || []));
+    const safeMessages = JSON.parse(JSON.stringify(allMessages || []));
+
+    return { success: true, tickets: safeTickets, messages: safeMessages };
   } catch (error: any) {
     return { success: false, error: error.message };
   }
