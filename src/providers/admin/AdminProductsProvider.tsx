@@ -27,12 +27,11 @@ export function AdminProductsProvider({ children }: { children: ReactNode }) {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await fetchProductsAction();
+      const response = await fetch('/api/admin/products', { cache: 'no-store' });
+      const result = await response.json();
+      
       if (result.success && result.data) {
         setProducts(result.data as Product[]);
-        if ((result as any).debugContext) {
-          setError(`DEBUG CONTEXT: ${(result as any).debugContext}`);
-        }
       } else {
         console.error('Failed to fetch products:', result.error);
         setError(result.error || 'Unknown error');
