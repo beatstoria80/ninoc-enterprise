@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient, createAdminClient } from '@/utils/supabase/server';
 
 // Constants for DRY and Maintainability
 const VALID_ORDER_STATUSES = ['paid', 'delivered', 'shipped'];
@@ -10,6 +10,7 @@ const WIB_OFFSET_MS = 7 * 60 * 60 * 1000; // GMT+7
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient();
+    const adminSupabase = await createAdminClient();
     
     // 1. AUTHENTICATION & ADMIN ROLE AUTHORIZATION
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
     const monthWibStart = new Date(Date.UTC(nowWib.getUTCFullYear(), nowWib.getUTCMonth(), 1, -7, 0, 0, 0));
 
     // 3. FETCH AGGREGATED COUNT
-    const { count, error: countError } = await supabase
+    const { count, error: countError } = await adminSupabase
       .from('orders')
       .select('id', { count: 'exact', head: true })
       .in('status', VALID_ORDER_STATUSES)
@@ -66,7 +67,7 @@ export async function GET(req: NextRequest) {
       const from = i * PAGE_SIZE;
       const to = (i + 1) * PAGE_SIZE - 1;
       
-      const { data, error } = await supabase
+      const { data, error } = await adminSupabase
         .from('orders')
         .select('total_price, created_at')
         .in('status', VALID_ORDER_STATUSES)
