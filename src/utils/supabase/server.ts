@@ -43,7 +43,9 @@ export async function createAdminClient() {
       },
       global: {
         fetch: (url: RequestInfo | URL, options?: RequestInit) => {
-          return fetch(url.toString(), { ...options, cache: 'no-store' });
+          const bustUrl = new URL(url.toString());
+          bustUrl.searchParams.append('bust', Date.now().toString());
+          return fetch(bustUrl.toString(), { ...options, cache: 'no-store' });
         }
       }
     }
