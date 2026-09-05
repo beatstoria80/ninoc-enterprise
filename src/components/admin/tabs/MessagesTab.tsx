@@ -684,7 +684,9 @@ export function MessagesTab({
                   )}
                   <div className="flex justify-between items-start mb-2 gap-2">
                     <span className="text-sm font-bold text-ink uppercase truncate pr-2 flex-1">{session.customer_name}</span>
-                    <span className="text-xs text-ink/60 font-mono shrink-0">{new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="text-[10px] text-ink/60 font-mono shrink-0 font-medium">
+                      {new Date(session.last_message_time).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • {new Date(session.last_message_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-1.5 mb-2.5">
@@ -1134,8 +1136,8 @@ export function MessagesTab({
                       {msg.message}
                     </div>
                     <div className={cn("mt-1.5 flex items-center gap-2 px-1", msg.sender === 'admin' ? "flex-row-reverse" : "flex-row")}>
-                      <span className="text-xs text-ink/50 font-mono">
-                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      <span className="text-[10px] text-ink/50 font-mono font-medium">
+                        {new Date(msg.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                       {msg.sender === 'admin' && (
                         <span className={cn("text-xs font-bold uppercase tracking-wider", msg.is_read ? "text-emerald-600" : "text-ink/40")}>
