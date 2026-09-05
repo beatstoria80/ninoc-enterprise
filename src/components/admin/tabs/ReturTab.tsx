@@ -279,8 +279,10 @@ function ReturDetail({ retur, onClose, onRefresh }: {
         </div>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-4 md:p-5 space-y-5">
+      {/* Split View Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Detail Column */}
+        <div className="flex-[3] overflow-y-auto p-4 md:p-5 space-y-5 minimal-scroll pr-4 md:pr-6">
         
         {/* Timeline Navigation */}
         <div className="w-full">
@@ -754,9 +756,12 @@ function ReturDetail({ retur, onClose, onRefresh }: {
             </div>
           </div>
         </div>
-
-        {/* Dispute Center Chat */}
-        <ReturDisputeChat returId={retur.id} />
+        </div> {/* CLOSE flex-[3] */}
+        
+        {/* Chat Column */}
+        <div className="flex-[2] bg-ink/[0.02] border-l border-ink/10 p-4 flex flex-col h-full min-w-[350px]">
+          <ReturDisputeChat returId={retur.id} isReadOnly={['rejected', 'completed', 'cancelled'].includes(status)} />
+        </div>
       </div>
 
       {/* Footer Action Buttons */}
