@@ -611,6 +611,15 @@ export class MetaAnalyticsService {
         value: parseInt(l.impressions || 0, 10)
       }));
 
+      // Trend
+      const trendData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, time_increment: 1, fields: 'date_start,impressions,clicks,actions' }).catch(() => ({ data: [] }));
+      const trend = (trendData.data || []).map((t: any) => ({
+        date: t.date_start,
+        impressions: parseInt(t.impressions || 0, 10),
+        clicks: parseInt(t.clicks || 0, 10),
+        conversions: MetaMetricsCalculator.getPurchasesCount(t.actions)
+      }));
+
       const postReactions = ins.actions?.find((a: any) => a.action_type === 'post_reaction')?.value || 0;
       const pageLikes = ins.actions?.find((a: any) => a.action_type === 'like')?.value || 0;
       const videoPlays = ins.video_play_actions?.find((a: any) => a.action_type === 'video_play')?.value || 0;
@@ -636,6 +645,7 @@ export class MetaAnalyticsService {
         roas: spend > 0 ? ((conversions * 150000) / spend) : 0,
         publishedDate: adData.created_time ? new Date(adData.created_time).toLocaleDateString('id-ID') : '',
         creativeThumbnail: adData.creative?.data?.[0]?.thumbnail_url || adData.creative?.data?.[0]?.image_url || '',
+        creativeVideoUrl: adData.creative?.data?.[0]?.video_id ? `https://www.facebook.com/watch/?v=${adData.creative?.data?.[0]?.video_id}` : '/mascot_ninoc.mp4',
         creativeBody: adData.creative?.data?.[0]?.body || '',
         creativeTitle: adData.creative?.data?.[0]?.title || adData.creative?.data?.[0]?.name || adData.name || '',
         creativePageName: 'NINOC STORE', // Page name requires an extra fetch to the page edge, fallback to default store name for now
@@ -653,7 +663,7 @@ export class MetaAnalyticsService {
         ctr: parseInt(ins.impressions || 0, 10) > 0 ? ((parseInt(ins.clicks || 0, 10) / parseInt(ins.impressions || 0, 10)) * 100) : 0,
         postReactions: parseInt(postReactions, 10) || 0,
         pageLikes: parseInt(pageLikes, 10) || 0,
-        trend: [],
+        trend,
         demographics,
         placements,
         locations

@@ -43,6 +43,7 @@ export interface MetaAdInsightsDetail {
   // Specific Detail metrics
   publishedDate: string;
   creativeThumbnail: string;
+  creativeVideoUrl?: string;
   creativeBody: string;
   creativeTitle?: string;
   creativePageName?: string;

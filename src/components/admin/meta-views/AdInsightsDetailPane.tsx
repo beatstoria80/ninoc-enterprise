@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose: () => void }) {
   const [data, setData] = useState<MetaAdInsightsDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   
   // State for complex chart toggles
   const [activeMetrics, setActiveMetrics] = useState({
@@ -324,35 +325,50 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                 </div>
                 
                 {/* Meta Video / Image Mockup */}
-                <div className="w-full aspect-square bg-black relative group cursor-pointer overflow-hidden border-y border-ink/5 flex items-center justify-center">
-                  {data.creativeThumbnail ? (
-                    <img src={data.creativeThumbnail} alt="Ad Creative" className="w-full h-full object-cover opacity-90" />
+                <div 
+                  className="w-full aspect-square bg-black relative group cursor-pointer overflow-hidden border-y border-ink/5 flex items-center justify-center"
+                  onClick={() => setIsVideoPlaying(true)}
+                >
+                  {isVideoPlaying && data.creativeVideoUrl ? (
+                    <video 
+                      src={data.creativeVideoUrl} 
+                      autoPlay 
+                      controls 
+                      className="w-full h-full object-cover"
+                      poster={data.creativeThumbnail}
+                    />
                   ) : (
-                    <div className="w-full h-full bg-[#1c1e21] flex items-center justify-center"></div>
+                    <>
+                      {data.creativeThumbnail ? (
+                        <img src={data.creativeThumbnail} alt="Ad Creative" className="w-full h-full object-cover opacity-90" />
+                      ) : (
+                        <div className="w-full h-full bg-[#1c1e21] flex items-center justify-center"></div>
+                      )}
+                      
+                      {/* Video Player UI Overlay */}
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-14 h-14 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/90 border border-white/20 shadow-lg group-hover:scale-110 transition-transform">
+                          <Play size={24} className="ml-1" fill="currentColor" />
+                        </div>
+                      </div>
+                      
+                      {/* Sound & Expand */}
+                      <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                        <div className="bg-black/50 backdrop-blur-sm p-1.5 rounded-full text-white/90">
+                          <Volume2 size={14} />
+                        </div>
+                        <div className="bg-black/50 backdrop-blur-sm p-1.5 rounded-full text-white/90">
+                          <Maximize2 size={14} />
+                        </div>
+                      </div>
+                      
+                      {/* Progress Bar Mockup */}
+                      <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
+                        <div className="h-full bg-white/80 w-1/3"></div>
+                      </div>
+                    </>
                   )}
-                  
-                  {/* Video Player UI Overlay */}
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-14 h-14 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/90 border border-white/20 shadow-lg group-hover:scale-110 transition-transform">
-                      <Play size={24} className="ml-1" fill="currentColor" />
-                    </div>
-                  </div>
-                  
-                  {/* Sound & Expand */}
-                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                    <div className="bg-black/50 backdrop-blur-sm p-1.5 rounded-full text-white/90">
-                      <Volume2 size={14} />
-                    </div>
-                    <div className="bg-black/50 backdrop-blur-sm p-1.5 rounded-full text-white/90">
-                      <Maximize2 size={14} />
-                    </div>
-                  </div>
-                  
-                  {/* Progress Bar Mockup */}
-                  <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
-                    <div className="h-full bg-white/80 w-1/3"></div>
-                  </div>
                 </div>
                 
                 {/* Meta Call to Action Strip */}
@@ -369,7 +385,7 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                 
                 {/* Meta Interactions (Reactions) */}
                 <div className="px-4 py-2.5 flex items-center justify-between border-b border-[#ced0d4]/50">
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 shrink-0">
                     <div className="flex -space-x-1">
                       <div className="w-5 h-5 bg-[#1877f2] rounded-full flex items-center justify-center text-white ring-2 ring-white z-20">
                         <ThumbsUp size={10} fill="currentColor" />
@@ -380,9 +396,9 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                     </div>
                     <span className="text-[13px] text-[#65676b] hover:underline cursor-pointer">{data.postReactions.toLocaleString('id-ID')}</span>
                   </div>
-                  <div className="text-[13px] text-[#65676b] flex gap-3">
-                    <span className="hover:underline cursor-pointer">{(data.postReactions / 3).toFixed(0)} Komentar</span>
-                    <span className="hover:underline cursor-pointer">{(data.postReactions / 8).toFixed(0)} Kali dibagikan</span>
+                  <div className="text-[12px] text-[#65676b] flex gap-2">
+                    <span className="hover:underline cursor-pointer truncate">{(data.postReactions / 3).toFixed(0)} Komentar</span>
+                    <span className="hover:underline cursor-pointer truncate">{(data.postReactions / 8).toFixed(0)} Dibagikan</span>
                   </div>
                 </div>
                 
