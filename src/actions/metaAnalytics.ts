@@ -32,6 +32,11 @@ export async function getAdsByAdSet(adSetId: string, campaignId: string, timeFil
   return JSON.parse(JSON.stringify(data));
 }
 
+export async function getCampaignTrendAction(campaignId: string, timeFilter: string = '28d') {
+  const data = await MetaAnalyticsService.getCampaignTrend(campaignId, timeFilter);
+  return JSON.parse(JSON.stringify(data));
+}
+
 export async function getAdInsightsDetail(adId: string, timeFilter: string = '28d') {
   const data = await MetaAnalyticsService.getAdInsightsDetail(adId, timeFilter);
   return JSON.parse(JSON.stringify(data));

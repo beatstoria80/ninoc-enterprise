@@ -94,7 +94,17 @@ export interface MetaAnalyticsData {
   };
   campaigns: MetaCampaign[];
   demographics: MetaDemographics;
-  trend: { date: string; spend: number; conversions: number }[];
+  trend: { 
+    date: string; 
+    spend: number; 
+    conversions: number;
+    impressions: number;
+    clicks: number;
+    roas: number;
+    cpa: number;
+    cpm: number;
+    ctr: number;
+  }[];
 }
 
 export interface SocialMediaItem {

@@ -124,15 +124,27 @@ export class MetaAnalyticsService {
         {
           date_preset: datePreset,
           time_increment: 1,
-          fields: 'date_start,spend,actions'
+          fields: 'date_start,spend,impressions,clicks,actions'
         }
       );
       
-      const trend = (trendData.data || []).map((t: any) => ({
-        date: t.date_start,
-        spend: parseFloat(t.spend || 0),
-        conversions: MetaMetricsCalculator.getPurchasesCount(t.actions)
-      }));
+      const trend = (trendData.data || []).map((t: any) => {
+        const cSpend = parseFloat(t.spend || 0);
+        const cImpressions = parseInt(t.impressions || 0, 10);
+        const cClicks = parseInt(t.clicks || 0, 10);
+        const cConversions = MetaMetricsCalculator.getPurchasesCount(t.actions);
+        return {
+          date: t.date_start,
+          spend: cSpend,
+          impressions: cImpressions,
+          clicks: cClicks,
+          conversions: cConversions,
+          roas: cSpend > 0 ? parseFloat(((cConversions * 150000) / cSpend).toFixed(2)) : 0,
+          cpa: cConversions > 0 ? cSpend / cConversions : 0,
+          cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
+          ctr: cImpressions > 0 ? parseFloat(((cClicks / cImpressions) * 100).toFixed(2)) : 0
+        };
+      });
 
       return {
         configured: true,
@@ -452,6 +464,44 @@ export class MetaAnalyticsService {
       return mock;
     }
   }
+  static async getCampaignTrend(campaignId: string, timeFilter: string = '28d') {
+    const capiToken = process.env.META_CAPI_TOKEN;
+    if (!capiToken) return [];
+    
+    const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
+    try {
+      const trendData = await metaGraphFetch(
+        `${campaignId}/insights`,
+        capiToken,
+        {
+          date_preset: datePreset,
+          time_increment: 1,
+          fields: 'date_start,spend,impressions,clicks,actions'
+        }
+      ).catch(() => ({ data: [] }));
+      
+      return (trendData.data || []).map((t: any) => {
+        const cSpend = parseFloat(t.spend || 0);
+        const cImpressions = parseInt(t.impressions || 0, 10);
+        const cClicks = parseInt(t.clicks || 0, 10);
+        const cConversions = MetaMetricsCalculator.getPurchasesCount(t.actions);
+        return {
+          date: t.date_start,
+          spend: cSpend,
+          impressions: cImpressions,
+          clicks: cClicks,
+          conversions: cConversions,
+          roas: cSpend > 0 ? parseFloat(((cConversions * 150000) / cSpend).toFixed(2)) : 0,
+          cpa: cConversions > 0 ? cSpend / cConversions : 0,
+          cpm: cImpressions > 0 ? (cSpend / cImpressions) * 1000 : 0,
+          ctr: cImpressions > 0 ? parseFloat(((cClicks / cImpressions) * 100).toFixed(2)) : 0
+        };
+      });
+    } catch(e) {
+      return [];
+    }
+  }
+
   static async getAdSetsByCampaign(campaignId: string, timeFilter: string = '28d'): Promise<MetaAdSet[]> {
     const capiToken = process.env.META_CAPI_TOKEN;
     const adAccountId = process.env.META_AD_ACCOUNT_ID;

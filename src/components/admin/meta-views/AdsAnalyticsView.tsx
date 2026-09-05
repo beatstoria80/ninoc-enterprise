@@ -1,11 +1,12 @@
 "use client";
 
-import React from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight, Download } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight, Download, Loader2 } from 'lucide-react';
 import type { MetaAnalyticsData } from '@/services/meta/types';
 import { cn } from '@/lib/utils';
 import { MetaAdsTable } from './MetaAdsTable';
+import { getCampaignTrendAction } from '@/actions/metaAnalytics';
 
 interface AdsAnalyticsViewProps {
   data: MetaAnalyticsData;
@@ -13,6 +14,43 @@ interface AdsAnalyticsViewProps {
 }
 
 export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
+  const [selectedCampaign, setSelectedCampaign] = useState<string>('all');
+  const [fetchedTrend, setFetchedTrend] = useState<any>(null);
+  const [loadingTrend, setLoadingTrend] = useState(false);
+  const [activeMetrics, setActiveMetrics] = useState({
+    spend: true,
+    conversions: true,
+    impressions: false,
+    clicks: false,
+    roas: false,
+    cpa: false,
+    cpm: false,
+    ctr: false
+  });
+
+  const trendData = selectedCampaign === 'all' ? data.trend : (fetchedTrend || []);
+
+  useEffect(() => {
+    if (selectedCampaign === 'all') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFetchedTrend(null);
+      return;
+    }
+    let active = true;
+    setLoadingTrend(true);
+    getCampaignTrendAction(selectedCampaign, timeFilter).then(res => {
+      if (active) {
+        setFetchedTrend(res);
+        setLoadingTrend(false);
+      }
+    });
+    return () => { active = false; };
+  }, [selectedCampaign, timeFilter]);
+
+  const toggleMetric = (metric: keyof typeof activeMetrics) => {
+    setActiveMetrics(prev => ({ ...prev, [metric]: !prev[metric] }));
+  };
+
   const fIDR = (num: any) => {
     const validNum = Number(num);
     if (isNaN(validNum) || validNum == null) return '0';
@@ -57,7 +95,6 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
     csvRows.push(['Rincian Kampanye']);
     csvRows.push(['Nama', 'ID', 'Status', 'Spend', 'Pembelian', 'CPA', 'ROAS']);
     data.campaigns.forEach(c => {
-      // Escape name quotes and commas just in case
       const safeName = `"${c.name.replace(/"/g, '""')}"`;
       csvRows.push([safeName, c.id, c.status, c.spend, c.conversions, c.cpa, c.roas.toFixed(2)]);
     });
@@ -212,76 +249,128 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
 
       {/* CHART */}
       <div className="bg-white border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-        <h3 className="text-xs font-bold text-ink flex items-center gap-2 mb-4">
-          <TrendingUp size={14} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
-        </h3>
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
+          <h3 className="text-xs font-bold text-ink flex items-center gap-2">
+            <TrendingUp size={14} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
+          </h3>
+          <div className="flex items-center gap-2">
+            <select 
+              className="text-[11px] border border-ink/10 rounded-md px-2 py-1.5 bg-white text-ink shadow-sm max-w-[200px] md:max-w-xs focus:ring-2 focus:ring-blue-500 outline-none"
+              value={selectedCampaign}
+              onChange={e => setSelectedCampaign(e.target.value)}
+            >
+              <option value="all">Keseluruhan Kampanye</option>
+              {data.campaigns.map(c => (
+                <option key={c.id} value={c.id}>{c.name} {c.status !== 'ACTIVE' ? `(${c.status})` : ''}</option>
+              ))}
+            </select>
+            {loadingTrend && <Loader2 size={14} className="animate-spin text-ink/50" />}
+          </div>
+        </div>
+
+        {/* Custom Legend / Toggles */}
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          <button 
+            onClick={() => toggleMetric('spend')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.spend ? "bg-rose-50 text-rose-700 border-rose-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-rose-500"></span> Spend</button>
+          <button 
+            onClick={() => toggleMetric('conversions')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.conversions ? "bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-emerald-500"></span> Pembelian</button>
+          <button 
+            onClick={() => toggleMetric('impressions')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.impressions ? "bg-sky-50 text-sky-700 border-sky-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-sky-500"></span> Impressions</button>
+          <button 
+            onClick={() => toggleMetric('clicks')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.clicks ? "bg-amber-50 text-amber-700 border-amber-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-amber-500"></span> Clicks</button>
+          <button 
+            onClick={() => toggleMetric('roas')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.roas ? "bg-teal-50 text-teal-700 border-teal-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-teal-500"></span> ROAS</button>
+          <button 
+            onClick={() => toggleMetric('cpa')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.cpa ? "bg-orange-50 text-orange-700 border-orange-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-orange-500"></span> CPA</button>
+          <button 
+            onClick={() => toggleMetric('cpm')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.cpm ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-indigo-500"></span> CPM</button>
+          <button 
+            onClick={() => toggleMetric('ctr')}
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.ctr ? "bg-purple-50 text-purple-700 border-purple-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-purple-500"></span> CTR</button>
+        </div>
+
         <div className="h-[280px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorSpend" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
-                  <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
-                </linearGradient>
-                <linearGradient id="colorConv" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.0}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
-              <XAxis 
-                dataKey="date" 
-                tick={{ fontSize: 10, fill: '#64748b' }} 
-                tickLine={false} 
-                axisLine={{ stroke: '#e2e8f0' }} 
-                tickFormatter={(val) => val.split('-').slice(1).join('/')} 
-              />
-              <YAxis 
-                yAxisId="left" 
-                tick={{ fontSize: 10, fill: '#64748b' }} 
-                tickLine={false} 
-                axisLine={false} 
-                tickFormatter={(val) => `Rp${Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}`} 
-              />
-              <YAxis 
-                yAxisId="right" 
-                orientation="right" 
-                tick={{ fontSize: 10, fill: '#64748b' }} 
-                tickLine={false} 
-                axisLine={false} 
-                tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}
-              />
-              <RechartsTooltip 
-                contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
-                formatter={(value: any, name: any) => {
-                  if (name === "Ad Spend (Rp)" && typeof value === 'number') return [`Rp ${fIDR(value)}`, name];
-                  return [value, name];
-                }}
-              />
-              <Area 
-                yAxisId="left" 
-                type="monotone" 
-                dataKey="spend" 
-                stroke="#f43f5e" 
-                strokeWidth={2} 
-                fill="url(#colorSpend)" 
-                name="Ad Spend (Rp)" 
-                dot={data.trend.length === 1 ? { r: 4, fill: "#f43f5e", strokeWidth: 2, stroke: "#fff" } : false}
-                activeDot={{ r: 5, strokeWidth: 0 }}
-              />
-              <Area 
-                yAxisId="right" 
-                type="monotone" 
-                dataKey="conversions" 
-                stroke="#10b981" 
-                strokeWidth={2} 
-                fill="url(#colorConv)" 
-                name="Conversions" 
-                dot={data.trend.length === 1 ? { r: 4, fill: "#10b981", strokeWidth: 2, stroke: "#fff" } : false}
-                activeDot={{ r: 5, strokeWidth: 0 }}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
+          {!loadingTrend && trendData && trendData.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorSpend" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 10, fill: '#64748b' }} 
+                  tickLine={false} 
+                  axisLine={{ stroke: '#e2e8f0' }} 
+                  tickFormatter={(val) => val.split('-').slice(1).join('/')} 
+                />
+                
+                {/* Left Y Axis for large currency/counts (Spend, CPA, CPM, Impressions) */}
+                <YAxis 
+                  yAxisId="left" 
+                  tick={{ fontSize: 10, fill: '#64748b' }} 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)} 
+                />
+                {/* Right Y Axis for small counts/rates (Conversions, ROAS, CTR) */}
+                <YAxis 
+                  yAxisId="right" 
+                  orientation="right" 
+                  tick={{ fontSize: 10, fill: '#64748b' }} 
+                  tickLine={false} 
+                  axisLine={false} 
+                  tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}
+                />
+                
+                <RechartsTooltip 
+                  contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
+                  formatter={(value: any, name: any) => {
+                    if (name === "spend" || name === "cpa" || name === "cpm") return [`Rp ${fIDR(value)}`, name.toUpperCase()];
+                    if (name === "roas") return [`${Number(value).toFixed(2)}x`, 'ROAS'];
+                    if (name === "ctr") return [`${Number(value).toFixed(2)}%`, 'CTR'];
+                    if (name === "conversions") return [value.toLocaleString('id-ID'), 'Pembelian'];
+                    if (name === "impressions") return [value.toLocaleString('id-ID'), 'Impressions'];
+                    if (name === "clicks") return [value.toLocaleString('id-ID'), 'Clicks'];
+                    return [value, name];
+                  }}
+                  labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                />
+                
+                {activeMetrics.spend && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpend)" name="spend" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                {activeMetrics.conversions && <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="conversions" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                {activeMetrics.impressions && <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} dot={false} name="impressions" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                {activeMetrics.clicks && <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2} dot={false} name="clicks" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                {activeMetrics.roas && <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#14b8a6" strokeWidth={2} dot={false} name="roas" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                {activeMetrics.cpa && <Line yAxisId="left" type="monotone" dataKey="cpa" stroke="#f97316" strokeWidth={2} dot={false} name="cpa" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                {activeMetrics.cpm && <Line yAxisId="left" type="monotone" dataKey="cpm" stroke="#6366f1" strokeWidth={2} dot={false} name="cpm" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                {activeMetrics.ctr && <Line yAxisId="right" type="monotone" dataKey="ctr" stroke="#a855f7" strokeWidth={2} dot={false} name="ctr" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+              </ComposedChart>
+            </ResponsiveContainer>
+          ) : (
+             <div className="w-full h-full flex items-center justify-center text-ink/30 text-xs bg-ink/[0.02] rounded-lg border border-dashed border-ink/10">
+               {loadingTrend ? "Memuat data kampanye..." : "Data tren harian belum tersedia"}
+             </div>
+          )}
         </div>
       </div>
 
