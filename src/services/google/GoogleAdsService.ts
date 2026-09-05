@@ -14,6 +14,7 @@ export class GoogleAdsService {
     const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
     const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN;
     const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
+    const loginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
 
     if (!clientId || !clientSecret || !developerToken || !refreshToken || !customerId) {
       return null;
@@ -27,6 +28,7 @@ export class GoogleAdsService {
 
     return client.Customer({
       customer_id: customerId,
+      login_customer_id: loginCustomerId || undefined,
       refresh_token: refreshToken,
     });
   }
