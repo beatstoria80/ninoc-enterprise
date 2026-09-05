@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { X, ExternalLink, Play, Clock, MousePointer, ThumbsUp, MessageCircle, DollarSign } from 'lucide-react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import { X, ExternalLink, Play, Clock, MousePointer, ThumbsUp, MessageCircle, DollarSign, MoreHorizontal, Globe, Volume2, MessageSquare, Share2, Maximize2 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell, ComposedChart, Line } from 'recharts';
 import { getAdInsightsDetail } from '@/actions/metaAnalytics';
 import type { MetaAdInsightsDetail } from '@/services/meta/types';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,17 @@ import { cn } from '@/lib/utils';
 export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose: () => void }) {
   const [data, setData] = useState<MetaAdInsightsDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  
+  // State for complex chart toggles
+  const [activeMetrics, setActiveMetrics] = useState({
+    impressions: true,
+    clicks: true,
+    conversions: true,
+  });
+
+  const toggleMetric = (metric: keyof typeof activeMetrics) => {
+    setActiveMetrics(prev => ({ ...prev, [metric]: !prev[metric] }));
+  };
 
   useEffect(() => {
     let active = true;
@@ -79,16 +90,16 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
         </a>
       </div>
 
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 md:p-5 space-y-4 md:space-y-5">
         
         {/* Top Grid: Sinopsis & Preview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
           
-          <div className="md:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 md:space-y-5">
             
             {/* Sinopsis Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-5">
-              <h3 className="text-[13px] font-bold text-ink mb-4 border-b border-ink/5 pb-3">Sinopsis</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-4 md:p-5">
+              <h3 className="text-[13px] font-bold text-ink mb-3 md:mb-4 border-b border-ink/5 pb-2.5 md:pb-3">Sinopsis</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div>
                   <p className="text-[11px] font-semibold text-ink/70">Pembelian</p>
@@ -105,35 +116,92 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
               </div>
             </div>
 
-            {/* Tayangan Chart Card */}
-            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-5">
-              <h3 className="text-[13px] font-bold text-ink mb-4 flex items-center gap-2">Tayangan</h3>
-              <div className="h-48 w-full mt-2">
+            {/* Kompleks Analitik Chart Card */}
+            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-4 md:p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 md:mb-4 gap-3">
+                <h3 className="text-[13px] font-bold text-ink flex items-center gap-2">Tren Performa Harian</h3>
+                
+                {/* Custom Legend / Toggles */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button 
+                    onClick={() => toggleMetric('impressions')}
+                    className={cn(
+                      "px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1.5 transition-colors border",
+                      activeMetrics.impressions ? "bg-sky-50 text-sky-700 border-sky-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10"
+                    )}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-sky-500"></span> Tayangan
+                  </button>
+                  <button 
+                    onClick={() => toggleMetric('clicks')}
+                    className={cn(
+                      "px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1.5 transition-colors border",
+                      activeMetrics.clicks ? "bg-amber-50 text-amber-700 border-amber-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10"
+                    )}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-amber-500"></span> Klik Tautan
+                  </button>
+                  <button 
+                    onClick={() => toggleMetric('conversions')}
+                    className={cn(
+                      "px-2 py-1 rounded text-[10px] font-bold flex items-center gap-1.5 transition-colors border",
+                      activeMetrics.conversions ? "bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10"
+                    )}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span> Pembelian
+                  </button>
+                </div>
+              </div>
+
+              <div className="h-48 md:h-56 w-full mt-2">
                 {data.trend && data.trend.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data.trend} margin={{ top: 5, right: 0, left: 0, bottom: 0 }}>
+                    <ComposedChart data={data.trend} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorImp" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.25}/>
+                          <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis dataKey="date" tick={{fontSize: 10, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
-                      <YAxis tick={{fontSize: 10, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                      <Area type="monotone" dataKey="impressions" stroke="#3b82f6" strokeWidth={2} fill="url(#colorImp)" />
-                    </AreaChart>
+                      <XAxis dataKey="date" tick={{fontSize: 10, fill: '#94a3b8'}} axisLine={{ stroke: '#e2e8f0' }} tickLine={false} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                      
+                      {/* Left Y-Axis for Impressions & Clicks (Large numbers) */}
+                      <YAxis yAxisId="left" tick={{fontSize: 10, fill: '#94a3b8'}} axisLine={false} tickLine={false} tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact' }).format(val)} />
+                      {/* Right Y-Axis for Conversions (Small numbers) */}
+                      <YAxis yAxisId="right" orientation="right" tick={{fontSize: 10, fill: '#94a3b8'}} axisLine={false} tickLine={false} />
+                      
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontSize: '11px' }}
+                        labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                        formatter={(value: any, name: any) => {
+                          if (name === 'impressions') return [value.toLocaleString(), 'Tayangan'];
+                          if (name === 'clicks') return [value.toLocaleString(), 'Klik Tautan'];
+                          if (name === 'conversions') return [value.toLocaleString(), 'Pembelian'];
+                          return [value, name];
+                        }}
+                      />
+                      
+                      {activeMetrics.impressions && (
+                        <Area yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} fill="url(#colorImp)" name="impressions" activeDot={{ r: 4, strokeWidth: 0 }} />
+                      )}
+                      {activeMetrics.clicks && (
+                        <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2.5} dot={false} name="clicks" activeDot={{ r: 4, strokeWidth: 0 }} />
+                      )}
+                      {activeMetrics.conversions && (
+                        <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2.5} dot={false} name="conversions" activeDot={{ r: 4, strokeWidth: 0 }} />
+                      )}
+                    </ComposedChart>
                   </ResponsiveContainer>
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-ink/30 text-xs">Data trend belum tersedia</div>
+                  <div className="w-full h-full flex items-center justify-center text-ink/30 text-xs bg-ink/[0.02] rounded-lg border border-dashed border-ink/10">Data tren harian belum tersedia</div>
                 )}
               </div>
             </div>
 
             {/* Interaksi Postingan */}
-            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-5 space-y-5">
-              <h3 className="text-[13px] font-bold text-ink border-b border-ink/5 pb-3">Interaksi Postingan</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-4 md:p-5 space-y-4 md:space-y-5">
+              <h3 className="text-[13px] font-bold text-ink border-b border-ink/5 pb-2.5 md:pb-3">Interaksi Postingan</h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex justify-between items-end mb-1">
@@ -175,8 +243,8 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
             </div>
 
             {/* Demografi & Pemirsa */}
-            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-5">
-              <h3 className="text-[13px] font-bold text-ink mb-4 border-b border-ink/5 pb-3">Pemirsa (Demografi)</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-4 md:p-5">
+              <h3 className="text-[13px] font-bold text-ink mb-3 md:mb-4 border-b border-ink/5 pb-2.5 md:pb-3">Pemirsa (Demografi)</h3>
               <div className="h-48 w-full mt-4">
                 {data.demographics && data.demographics.length > 0 ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -199,12 +267,12 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
             </div>
 
           </div>
-
-          <div className="md:col-span-1 space-y-6">
+          
+          <div className="lg:col-span-1 space-y-4 md:space-y-5">
             
             {/* Detail Iklan */}
-            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-5 space-y-4">
-              <h3 className="text-[13px] font-bold text-ink border-b border-ink/5 pb-3">Detail Iklan <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded ml-1">Aktif</span></h3>
+            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-4 md:p-5 space-y-3 md:space-y-4">
+              <h3 className="text-[13px] font-bold text-ink border-b border-ink/5 pb-2.5 md:pb-3">Detail Iklan <span className="text-[9px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded ml-1">Aktif</span></h3>
               
               <div className="space-y-3">
                 <div className="flex gap-2">
@@ -225,36 +293,110 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
               </div>
             </div>
 
-            {/* Pratinjau Iklan */}
-            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-5">
-              <h3 className="text-[13px] font-bold text-ink border-b border-ink/5 pb-3 mb-4">Pratinjau Iklan</h3>
-              <div className="border border-ink/10 rounded-lg overflow-hidden bg-white shadow-sm">
-                <div className="p-3 flex items-center gap-2 border-b border-ink/5">
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-[10px]">N</div>
-                  <div>
-                    <p className="text-[11px] font-bold text-ink">{data.creativePageName || 'NINOC STORE'}</p>
-                    <p className="text-[9px] text-ink/50">Bersponsor</p>
-                  </div>
-                </div>
-                <div className="p-3 text-[11px] text-ink/80 whitespace-pre-wrap leading-relaxed">
-                  {data.creativeBody || ''}
-                </div>
-                <div className="w-full aspect-square bg-ink/5 relative group cursor-pointer overflow-hidden">
-                  {data.creativeThumbnail ? (
-                    <img src={data.creativeThumbnail} alt="Ad Creative" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-ink/20">
-                      <Play size={32} />
+            {/* Pratinjau Iklan - Realistic Meta Ads Clone */}
+            <div className="bg-white rounded-xl shadow-sm border border-ink/5 p-4 md:p-5">
+              <h3 className="text-[13px] font-bold text-ink border-b border-ink/5 pb-2.5 md:pb-3 mb-3 md:mb-4">Pratinjau Iklan (Facebook Feed)</h3>
+              
+              <div className="border border-ink/10 rounded-lg overflow-hidden bg-white shadow-sm font-sans max-w-[400px] mx-auto">
+                {/* Meta Post Header */}
+                <div className="p-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-700 font-bold text-sm shrink-0 border border-ink/5">
+                      {data.creativePageName ? data.creativePageName.charAt(0).toUpperCase() : 'N'}
                     </div>
+                    <div>
+                      <p className="text-[14px] font-bold text-[#1c1e21] leading-tight hover:underline cursor-pointer">{data.creativePageName || 'NINOC STORE'}</p>
+                      <div className="flex items-center gap-1 text-[12px] text-[#65676b] mt-0.5">
+                        <span>Bersponsor</span>
+                        <span aria-hidden="true"> · </span>
+                        <Globe size={12} className="text-[#65676b]" />
+                      </div>
+                    </div>
+                  </div>
+                  <button className="text-[#65676b] hover:bg-ink/5 p-1.5 rounded-full transition-colors">
+                    <MoreHorizontal size={20} />
+                  </button>
+                </div>
+                
+                {/* Meta Post Body */}
+                <div className="px-3 pb-3 text-[14px] text-[#050505] whitespace-pre-wrap leading-normal font-normal">
+                  {data.creativeBody || 'Temukan koleksi terbaru NINOC STORE sekarang! Bebas ongkir ke seluruh Indonesia. ✨'}
+                </div>
+                
+                {/* Meta Video / Image Mockup */}
+                <div className="w-full aspect-square bg-black relative group cursor-pointer overflow-hidden border-y border-ink/5 flex items-center justify-center">
+                  {data.creativeThumbnail ? (
+                    <img src={data.creativeThumbnail} alt="Ad Creative" className="w-full h-full object-cover opacity-90" />
+                  ) : (
+                    <div className="w-full h-full bg-[#1c1e21] flex items-center justify-center"></div>
                   )}
-                  <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur text-white text-[10px] px-2 py-1 rounded-full font-bold flex items-center gap-1">
-                    <ExternalLink size={10} /> Belanja Sekarang
+                  
+                  {/* Video Player UI Overlay */}
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-14 h-14 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center text-white/90 border border-white/20 shadow-lg group-hover:scale-110 transition-transform">
+                      <Play size={24} className="ml-1" fill="currentColor" />
+                    </div>
+                  </div>
+                  
+                  {/* Sound & Expand */}
+                  <div className="absolute bottom-3 right-3 flex items-center gap-2">
+                    <div className="bg-black/50 backdrop-blur-sm p-1.5 rounded-full text-white/90">
+                      <Volume2 size={14} />
+                    </div>
+                    <div className="bg-black/50 backdrop-blur-sm p-1.5 rounded-full text-white/90">
+                      <Maximize2 size={14} />
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar Mockup */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
+                    <div className="h-full bg-white/80 w-1/3"></div>
                   </div>
                 </div>
-                <div className="p-3 border-t border-ink/5 bg-ink/[0.02]">
-                  <p className="text-[10px] font-bold text-ink">{data.creativeLinkCaption || 'NINOC.STORE'}</p>
-                  <h4 className="text-[12px] font-bold text-ink mt-0.5">{data.creativeTitle || data.name || 'Ad Creative'}</h4>
-                  <p className="text-[10px] text-ink/50 mt-0.5">{data.creativeLinkDescription || ''}</p>
+                
+                {/* Meta Call to Action Strip */}
+                <div className="px-4 py-2 bg-[#f0f2f5] flex items-center justify-between border-b border-ink/5 hover:bg-[#e4e6eb] cursor-pointer transition-colors">
+                  <div className="max-w-[70%]">
+                    <p className="text-[12px] text-[#65676b] uppercase tracking-wider">{data.creativeLinkCaption || 'NINOC.STORE'}</p>
+                    <h4 className="text-[15px] font-bold text-[#1c1e21] mt-0.5 truncate">{data.creativeTitle || data.name || 'Belanja Sekarang - Diskon Spesial'}</h4>
+                    <p className="text-[13px] text-[#65676b] mt-0.5 truncate">{data.creativeLinkDescription || ''}</p>
+                  </div>
+                  <div className="bg-[#e4e6eb] hover:bg-[#d8dadf] text-[#050505] font-bold text-[14px] px-4 py-1.5 rounded-md transition-colors shrink-0">
+                    Belanja Sekarang
+                  </div>
+                </div>
+                
+                {/* Meta Interactions (Reactions) */}
+                <div className="px-4 py-2.5 flex items-center justify-between border-b border-[#ced0d4]/50">
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex -space-x-1">
+                      <div className="w-5 h-5 bg-[#1877f2] rounded-full flex items-center justify-center text-white ring-2 ring-white z-20">
+                        <ThumbsUp size={10} fill="currentColor" />
+                      </div>
+                      <div className="w-5 h-5 bg-[#f51a2c] rounded-full flex items-center justify-center text-white ring-2 ring-white z-10">
+                        <span className="text-[14px] leading-none mb-0.5 ml-0.5">❤️</span>
+                      </div>
+                    </div>
+                    <span className="text-[13px] text-[#65676b] hover:underline cursor-pointer">{data.postReactions.toLocaleString('id-ID')}</span>
+                  </div>
+                  <div className="text-[13px] text-[#65676b] flex gap-3">
+                    <span className="hover:underline cursor-pointer">{(data.postReactions / 3).toFixed(0)} Komentar</span>
+                    <span className="hover:underline cursor-pointer">{(data.postReactions / 8).toFixed(0)} Kali dibagikan</span>
+                  </div>
+                </div>
+                
+                {/* Meta Action Buttons */}
+                <div className="px-1 py-1 flex items-center justify-between text-[#65676b] font-semibold text-[14px]">
+                  <button className="flex-1 flex items-center justify-center gap-2 py-2 hover:bg-ink/5 rounded-md transition-colors">
+                    <ThumbsUp size={18} /> Suka
+                  </button>
+                  <button className="flex-1 flex items-center justify-center gap-2 py-2 hover:bg-ink/5 rounded-md transition-colors">
+                    <MessageSquare size={18} /> Komentari
+                  </button>
+                  <button className="flex-1 flex items-center justify-center gap-2 py-2 hover:bg-ink/5 rounded-md transition-colors">
+                    <Share2 size={18} /> Bagikan
+                  </button>
                 </div>
               </div>
             </div>
