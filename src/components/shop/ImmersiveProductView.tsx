@@ -273,7 +273,7 @@ export default function ImmersiveProductView({
           </div>
 
           {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
-          <div className="hidden lg:flex lg:w-[320px] xl:w-[360px] 2xl:w-[400px] shrink-0 h-full bg-white flex-col justify-center pl-6 lg:pl-8 xl:pl-10 pr-6 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex lg:w-[320px] xl:w-[360px] 2xl:w-[400px] shrink-0 h-full bg-white flex-col justify-center pl-6 lg:pl-12 xl:pl-20 2xl:pl-24 pr-6 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -480,7 +480,7 @@ export default function ImmersiveProductView({
 
           {/* RIGHT COLUMN: ACTION PANEL (Unified details & checkout) */}
           <div className={cn(
-            "lg:w-[320px] xl:w-[360px] 2xl:w-[400px] bg-white flex flex-col pl-5 pr-5 lg:pl-6 lg:pr-8 xl:pr-10 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar transition-transform duration-300",
+            "lg:w-[320px] xl:w-[360px] 2xl:w-[400px] bg-white flex flex-col pl-5 pr-5 lg:pl-6 lg:pr-12 xl:pr-20 2xl:pr-24 py-10 justify-end lg:justify-center shrink-0 overflow-y-auto no-scrollbar transition-transform duration-300",
             !isMobileCheckoutOpen && "translate-y-full lg:translate-y-0 hidden lg:flex",
             isMobileCheckoutOpen && "absolute bottom-0 left-0 right-0 z-[200] max-h-[85vh] rounded-t-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.3)] pb-safe"
           )}>
