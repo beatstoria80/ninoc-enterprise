@@ -59,7 +59,7 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
   }, [scene, heroState]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5 min-h-[320px] md:min-h-[45vw] lg:min-h-[42vw] 2xl:min-h-[720px]">
+    <div className="relative w-full overflow-hidden bg-white border-b border-ink/5 min-h-[300px] md:min-h-[40vw] lg:min-h-[38vw] 2xl:min-h-[680px]">
       <AnimatePresence>
         {heroState === 'intro' ? (
           <motion.section 
