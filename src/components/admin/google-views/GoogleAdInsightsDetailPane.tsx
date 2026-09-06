@@ -7,6 +7,8 @@ import { getGoogleAdDetail } from '@/actions/googleAds';
 import type { GoogleAdInsightsDetail } from '@/services/google/types';
 import { cn } from '@/lib/utils';
 
+import Image from 'next/image';
+
 export function GoogleAdInsightsDetailPane({ adId, onClose }: { adId: string; onClose: () => void }) {
   const [data, setData] = useState<GoogleAdInsightsDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -193,7 +195,7 @@ export function GoogleAdInsightsDetailPane({ adId, onClose }: { adId: string; on
               <div className="p-3 border border-ink/10 rounded-lg bg-white shadow-sm flex flex-col gap-1.5 hover:shadow-md transition-shadow cursor-pointer">
                 <div className="flex items-center gap-2">
                    <div className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center shrink-0 border border-slate-200">
-                     <img src="/assets/favicon.ico" alt="NINOC" className="w-3 h-3" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                     <Image src="/assets/favicon.ico" alt="NINOC" width={12} height={12} className="w-3 h-3 object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
                    </div>
                    <div className="flex flex-col">
                      <span className="text-[11px] font-medium text-ink leading-none">NINOC STORE</span>

@@ -6,6 +6,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { getAdInsightsDetail } from '@/actions/metaAnalytics';
 import type { MetaAdInsightsDetail } from '@/services/meta/types';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose: () => void }) {
   const [data, setData] = useState<MetaAdInsightsDetail | null>(null);
@@ -74,9 +75,9 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
       <div className="px-6 py-4 bg-white border-b border-ink/10 flex items-center justify-between shadow-sm z-10 sticky top-0">
         <div className="flex items-center gap-3">
           <button onClick={onClose} className="p-2 hover:bg-ink/5 rounded-full text-ink/60 transition-colors -ml-2"><X size={20} /></button>
-          <div className="w-10 h-10 bg-ink/5 rounded-md overflow-hidden flex items-center justify-center border border-ink/10 shrink-0">
+          <div className="w-10 h-10 bg-ink/5 rounded-md overflow-hidden flex items-center justify-center border border-ink/10 shrink-0 relative">
             {data.creativeThumbnail ? (
-              <img src={data.creativeThumbnail} alt="Thumbnail" className="w-full h-full object-cover" />
+              <Image src={data.creativeThumbnail} alt="Thumbnail" fill className="object-cover" unoptimized />
             ) : (
               <Play size={16} className="text-ink/30" />
             )}
@@ -340,7 +341,7 @@ export function AdInsightsDetailPane({ adId, onClose }: { adId: string; onClose:
                   ) : (
                     <>
                       {data.creativeThumbnail ? (
-                        <img src={data.creativeThumbnail} alt="Ad Creative" className="w-full h-full object-cover opacity-90" />
+                        <Image src={data.creativeThumbnail} alt="Ad Creative" fill className="object-cover opacity-90" unoptimized />
                       ) : (
                         <div className="w-full h-full bg-[#1c1e21] flex items-center justify-center"></div>
                       )}
