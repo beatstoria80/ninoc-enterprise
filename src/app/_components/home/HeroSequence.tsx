@@ -184,7 +184,7 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
                     }}
                     className="absolute inset-0 w-full h-full"
                   >
-                    <Image src="/banner_ninoc_1.png" alt="NINOC Intro" fill sizes="100vw" className="object-cover object-[center_20%]" priority />
+                    <Image src="/banner_ninoc_1.png" alt="NINOC Intro" fill sizes="100vw" className="object-cover object-[center_10%]" priority />
                   </motion.div>
 
                   {/* SPEC label */}
@@ -252,7 +252,7 @@ export default function HeroSequence({ dict, isReturningVisitor, scene }: HeroSe
               transition={{ duration: 1.2, ease: [0.23, 1, 0.32, 1] }}
               className="absolute inset-0 w-full h-full"
             >
-              <Image src="/banner_ninoc_1.png" alt="NINOC STORE" fill sizes="100vw" className="object-cover object-[center_20%]" priority />
+              <Image src="/banner_ninoc_1.png" alt="NINOC STORE" fill sizes="100vw" className="object-cover object-[center_10%]" priority />
             </motion.div>
 
             {/* Subtle gradient */}
