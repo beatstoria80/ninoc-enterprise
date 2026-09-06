@@ -387,10 +387,10 @@ export default function ImmersiveProductView({
              </div>
 
              {/* Mobile UI/UX Polish: Interactive Variant & Size Selection (Below Photo) */}
-             <div className="lg:hidden w-full px-5 pb-3 pt-2 flex flex-col items-start justify-center shrink-0 z-20 pointer-events-auto gap-3">
+             <div className="lg:hidden w-full px-4 pb-1 pt-1 flex flex-col items-start justify-center shrink-0 z-20 pointer-events-auto gap-1.5">
                {/* First Row: Colors */}
                {availableColors.length > 0 && (
-                 <div className="flex flex-wrap items-center gap-2">
+                 <div className="flex flex-wrap items-center gap-1.5">
                    {availableColors.map(color => {
                      const isSelected = selectedColor === color;
                      const colorImg = colorGalleryMap[color.toUpperCase()]?.main;
@@ -403,20 +403,20 @@ export default function ImmersiveProductView({
                            if (setActiveImageIndex) setActiveImageIndex(0);
                          }}
                          className={cn(
-                           "flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-sm transition-all duration-300",
+                           "flex items-center gap-1 px-2 py-1 rounded-full border shadow-sm transition-all duration-300",
                            isSelected 
                              ? "bg-ink text-white border-ink" 
                              : "bg-white text-ink/80 border-ink/10 hover:border-ink/30"
                          )}
                        >
                          {colorImg ? (
-                           <div className="w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 border border-current">
-                             <Image src={colorImg} alt={color} width={14} height={14} className="w-full h-full object-cover" unoptimized />
+                           <div className="w-3 h-3 rounded-full overflow-hidden shrink-0 border border-current">
+                             <Image src={colorImg} alt={color} width={12} height={12} className="w-full h-full object-cover" unoptimized />
                            </div>
                          ) : (
-                           <span className={cn("w-2 h-2 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500 animate-pulse")} />
+                           <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500 animate-pulse")} />
                          )}
-                         <span className="text-[10px] uppercase font-bold tracking-[0.1em]">{color}</span>
+                         <span className="text-[9px] uppercase font-bold tracking-wider">{color}</span>
                        </button>
                      );
                    })}
@@ -425,7 +425,7 @@ export default function ImmersiveProductView({
 
                {/* Second Row: Sizes */}
                {hasSizes && availableSizes.length > 0 && (
-                 <div className="flex flex-wrap items-center gap-2">
+                 <div className="flex flex-wrap items-center gap-1.5">
                    {availableSizes.map(size => {
                      const isSelected = selectedSize === size;
                      const sizeVariant = safeVariants.find((v: any) => 
@@ -440,7 +440,7 @@ export default function ImmersiveProductView({
                          onClick={() => !isOutOfStock && setSelectedSize(size)}
                          disabled={isOutOfStock}
                          className={cn(
-                           "min-w-[44px] h-8 flex items-center justify-center rounded-full border text-[10px] font-bold uppercase tracking-wider transition-all duration-300 relative overflow-hidden",
+                           "min-w-[36px] h-7 flex items-center justify-center rounded-full border text-[9px] font-bold uppercase tracking-wider transition-all duration-300 relative overflow-hidden",
                            isSelected 
                              ? "bg-ink text-white border-ink" 
                              : "bg-white text-ink/80 border-ink/10 hover:border-ink/30",
@@ -461,17 +461,17 @@ export default function ImmersiveProductView({
              </div>
 
              {/* Mobile Action Bar: Ulasan & Bagikan — BELOW photo, horizontal, NOT overlay */}
-             <div className="lg:hidden relative z-[100] flex items-center justify-center gap-4 py-1.5 bg-white border-t border-ink/5 shrink-0">
+             <div className="lg:hidden relative z-[100] flex items-center justify-center gap-3 py-1 bg-white border-t border-ink/5 shrink-0">
                <button 
                  onClick={() => {
                    if (onOpenReviews) onOpenReviews();
                  }}
-                 className="flex items-center gap-1.5 text-ink/60 active:text-rose transition-colors px-2 py-1"
+                 className="flex items-center gap-1 text-ink/60 active:text-rose transition-colors px-2 py-1"
                >
-                 <Star strokeWidth={1.5} size={14} />
-                 <span className="text-[9px] font-bold uppercase tracking-wider">Ulasan</span>
+                 <Star strokeWidth={1.5} size={12} />
+                 <span className="text-[8px] font-bold uppercase tracking-wider">Ulasan</span>
                </button>
-               <div className="w-px h-3.5 bg-ink/10" />
+               <div className="w-px h-3 bg-ink/10" />
                <button 
                  onClick={async () => {
                    if (navigator.share) {
@@ -489,10 +489,10 @@ export default function ImmersiveProductView({
                      alert('Link disalin ke clipboard!');
                    }
                  }}
-                 className="flex items-center gap-1.5 text-ink/60 active:text-rose transition-colors px-2 py-1"
+                 className="flex items-center gap-1 text-ink/60 active:text-rose transition-colors px-2 py-1"
                >
-                 <Share2 strokeWidth={1.5} size={14} />
-                 <span className="text-[9px] font-bold uppercase tracking-wider">Bagikan</span>
+                 <Share2 strokeWidth={1.5} size={12} />
+                 <span className="text-[8px] font-bold uppercase tracking-wider">Bagikan</span>
                </button>
              </div>
                
