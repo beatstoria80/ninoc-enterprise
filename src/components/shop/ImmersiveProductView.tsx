@@ -386,6 +386,26 @@ export default function ImmersiveProductView({
                </AnimatePresence>
              </div>
 
+             {/* Mobile UI/UX Polish: Active Variant & Size Display (Below Photo) */}
+             <div className="lg:hidden w-full px-4 pb-2 pt-1 flex flex-col items-center justify-center shrink-0 z-20 pointer-events-none">
+               <motion.div 
+                 initial={{ opacity: 0, y: 5 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 key={`${currentImmersiveVariantName}-${selectedSize}`}
+                 className="flex flex-wrap items-center justify-center gap-2"
+               >
+                 <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-ink/10 shadow-sm pointer-events-auto">
+                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                   <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-ink/90">{currentImmersiveVariantName}</span>
+                 </div>
+                 {hasSizes && selectedSize && (
+                   <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-ink/10 shadow-sm pointer-events-auto">
+                     <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-ink/90">SIZE {selectedSize}</span>
+                   </div>
+                 )}
+               </motion.div>
+             </div>
+
              {/* Mobile Action Bar: Ulasan & Bagikan — BELOW photo, horizontal, NOT overlay */}
              <div className="lg:hidden relative z-[100] flex items-center justify-center gap-4 py-1.5 bg-white border-t border-ink/5 shrink-0">
                <button 
