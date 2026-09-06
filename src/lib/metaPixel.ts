@@ -3,14 +3,20 @@ export const trackViewContent = (
   productName: string,
   price: number
 ) => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'ViewContent', {
+  if (typeof window !== 'undefined') {
+    const payload = {
       content_ids: [productId],
       content_name: productName,
       content_type: 'product',
       value: price,
       currency: 'IDR',
-    });
+    };
+    if ((window as any).fbq) {
+      (window as any).fbq('track', 'ViewContent', payload);
+    } else {
+      (window as any)._fbq_queue = (window as any)._fbq_queue || [];
+      (window as any)._fbq_queue.push(['track', 'ViewContent', payload]);
+    }
   }
 };
 
@@ -21,15 +27,19 @@ export const trackAddToCart = (
   quantity: number
 ) => {
   if (typeof window !== 'undefined') {
+    const payload = {
+      content_ids: [productId],
+      content_name: productName,
+      content_type: 'product',
+      value: price * quantity,
+      currency: 'IDR',
+      num_items: quantity,
+    };
     if ((window as any).fbq) {
-      (window as any).fbq('track', 'AddToCart', {
-        content_ids: [productId],
-        content_name: productName,
-        content_type: 'product',
-        value: price * quantity,
-        currency: 'IDR',
-        num_items: quantity,
-      });
+      (window as any).fbq('track', 'AddToCart', payload);
+    } else {
+      (window as any)._fbq_queue = (window as any)._fbq_queue || [];
+      (window as any)._fbq_queue.push(['track', 'AddToCart', payload]);
     }
 
     // Google Ads / GA4 DataLayer
@@ -66,17 +76,24 @@ export const trackPurchase = (
   totalValue: number,
   items: Array<{ id: string; quantity: number }>
 ) => {
-  if (typeof window !== 'undefined' && (window as any).fbq) {
+  if (typeof window !== 'undefined') {
     const contentIds = items.map((item) => item.id);
     const numItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-    (window as any).fbq('track', 'Purchase', {
+    const payload = {
       content_ids: contentIds,
       content_type: 'product',
       value: totalValue,
       currency: 'IDR',
       num_items: numItems,
       order_id: orderId,
-    });
+    };
+
+    if ((window as any).fbq) {
+      (window as any).fbq('track', 'Purchase', payload);
+    } else {
+      (window as any)._fbq_queue = (window as any)._fbq_queue || [];
+      (window as any)._fbq_queue.push(['track', 'Purchase', payload]);
+    }
   }
 };

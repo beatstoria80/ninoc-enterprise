@@ -79,7 +79,7 @@ export class OrderProcessor {
       // B. Fetch order items for supplier ledgers & affiliate commissions
       const { data: orderItems } = await supabaseAdmin
         .from('order_items')
-        .select('id, supplier_id, supplier_hpp, price_at_purchase, quantity, products ( supplier_id, affiliate_eligible )')
+        .select('id, product_id, supplier_id, supplier_hpp, price_at_purchase, quantity, products ( supplier_id, affiliate_eligible )')
         .eq('order_id', orderId);
 
       // C. Supplier Ledgers Distribution (Double-Entry Virtual Inventory)
@@ -231,11 +231,11 @@ export class OrderProcessor {
         currency: 'IDR',
         email: customerEmail,
         phone: formattedPhone || phone,
-        items: Array.isArray(existingOrder.items) 
-          ? existingOrder.items.map((item: any) => ({
-              id: item.product_id || 'UNKNOWN',
+        items: orderItems && orderItems.length > 0
+          ? orderItems.map((item: any) => ({
+              id: String(item.product_id),
               quantity: item.quantity || 1,
-              item_price: item.price || 0,
+              item_price: item.price_at_purchase || 0,
             }))
           : [],
       });

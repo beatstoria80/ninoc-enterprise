@@ -37,6 +37,13 @@ export default function MetaPixel() {
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '${FB_PIXEL_ID}');
           fbq('track', 'PageView');
+          
+          if (window._fbq_queue && window._fbq_queue.length > 0) {
+            window._fbq_queue.forEach(function(event) {
+              fbq.apply(null, event);
+            });
+            window._fbq_queue = [];
+          }
         `,
       }}
     />
