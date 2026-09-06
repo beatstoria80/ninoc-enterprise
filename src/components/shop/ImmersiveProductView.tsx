@@ -368,7 +368,7 @@ export default function ImmersiveProductView({
                            setActiveImage(prev => (prev > 0 ? prev - 1 : images.length - 1));
                          }
                        }}
-                       className="absolute inset-0 flex items-center justify-center pt-24 pb-4 px-2 lg:p-6 cursor-grab active:cursor-grabbing"
+                       className="absolute inset-0 flex items-center justify-center pt-14 pb-0 px-0 lg:p-6 cursor-grab active:cursor-grabbing"
                        style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
                      >
                        <div className="relative w-full h-full max-w-4xl mx-auto flex items-center justify-center">
