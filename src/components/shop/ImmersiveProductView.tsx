@@ -335,7 +335,7 @@ export default function ImmersiveProductView({
           {/* CENTER COLUMN: HUGE DRAGGABLE PHOTO (Perfectly Centered) */}
           <div className="w-full h-full lg:flex-1 shrink-0 lg:shrink bg-white relative flex flex-col lg:flex-row overflow-hidden select-none">
              {/* Photo Area - takes remaining space above bottom bar on mobile */}
-             <div className="no-drag relative w-full flex-1 overflow-hidden flex items-start lg:items-center justify-center pt-24 lg:pt-0">
+             <div className="no-drag relative w-full flex-1 overflow-hidden flex items-start lg:items-center justify-center">
                <AnimatePresence>
                  {images.map((img, idx) => {
                    const offset = idx - activeImage;
@@ -368,7 +368,7 @@ export default function ImmersiveProductView({
                            setActiveImage(prev => (prev > 0 ? prev - 1 : images.length - 1));
                          }
                        }}
-                       className="absolute inset-0 flex items-center justify-center p-0 lg:p-6 cursor-grab active:cursor-grabbing"
+                       className="absolute inset-0 flex items-center justify-center pt-24 pb-4 px-2 lg:p-6 cursor-grab active:cursor-grabbing"
                        style={{ pointerEvents: offset === 0 ? 'auto' : 'none' }}
                      >
                        <div className="relative w-full h-full max-w-4xl mx-auto flex items-center justify-center">
@@ -386,24 +386,78 @@ export default function ImmersiveProductView({
                </AnimatePresence>
              </div>
 
-             {/* Mobile UI/UX Polish: Active Variant & Size Display (Below Photo) */}
-             <div className="lg:hidden w-full px-4 pb-2 pt-1 flex flex-col items-center justify-center shrink-0 z-20 pointer-events-none">
-               <motion.div 
-                 initial={{ opacity: 0, y: 5 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 key={`${currentImmersiveVariantName}-${selectedSize}`}
-                 className="flex flex-wrap items-center justify-center gap-2"
-               >
-                 <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-ink/10 shadow-sm pointer-events-auto">
-                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                   <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-ink/90">{currentImmersiveVariantName}</span>
+             {/* Mobile UI/UX Polish: Interactive Variant & Size Selection (Below Photo) */}
+             <div className="lg:hidden w-full px-5 pb-3 pt-2 flex flex-col items-start justify-center shrink-0 z-20 pointer-events-auto gap-3">
+               {/* First Row: Colors */}
+               {availableColors.length > 0 && (
+                 <div className="flex flex-wrap items-center gap-2">
+                   {availableColors.map(color => {
+                     const isSelected = selectedColor === color;
+                     const colorImg = colorGalleryMap[color.toUpperCase()]?.main;
+                     return (
+                       <button
+                         key={color}
+                         onClick={() => {
+                           setSelectedColor(color);
+                           setActiveImage(0);
+                           if (setActiveImageIndex) setActiveImageIndex(0);
+                         }}
+                         className={cn(
+                           "flex items-center gap-1.5 px-3 py-1.5 rounded-full border shadow-sm transition-all duration-300",
+                           isSelected 
+                             ? "bg-ink text-white border-ink" 
+                             : "bg-white text-ink/80 border-ink/10 hover:border-ink/30"
+                         )}
+                       >
+                         {colorImg ? (
+                           <div className="w-3.5 h-3.5 rounded-full overflow-hidden shrink-0 border border-current">
+                             <Image src={colorImg} alt={color} width={14} height={14} className="w-full h-full object-cover" unoptimized />
+                           </div>
+                         ) : (
+                           <span className={cn("w-2 h-2 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500 animate-pulse")} />
+                         )}
+                         <span className="text-[10px] uppercase font-bold tracking-[0.1em]">{color}</span>
+                       </button>
+                     );
+                   })}
                  </div>
-                 {hasSizes && selectedSize && (
-                   <div className="flex items-center gap-1.5 bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-ink/10 shadow-sm pointer-events-auto">
-                     <span className="text-[9px] uppercase font-bold tracking-[0.15em] text-ink/90">SIZE {selectedSize}</span>
-                   </div>
-                 )}
-               </motion.div>
+               )}
+
+               {/* Second Row: Sizes */}
+               {hasSizes && availableSizes.length > 0 && (
+                 <div className="flex flex-wrap items-center gap-2">
+                   {availableSizes.map(size => {
+                     const isSelected = selectedSize === size;
+                     const sizeVariant = safeVariants.find((v: any) => 
+                       v?.size?.toUpperCase() === size?.toUpperCase() && 
+                       (!selectedColor ? true : v?.color?.toUpperCase() === selectedColor?.toUpperCase())
+                     );
+                     const isOutOfStock = sizeVariant && typeof sizeVariant.stock_quantity === 'number' && sizeVariant.stock_quantity === 0;
+
+                     return (
+                       <button
+                         key={size}
+                         onClick={() => !isOutOfStock && setSelectedSize(size)}
+                         disabled={isOutOfStock}
+                         className={cn(
+                           "min-w-[44px] h-8 flex items-center justify-center rounded-full border text-[10px] font-bold uppercase tracking-wider transition-all duration-300 relative overflow-hidden",
+                           isSelected 
+                             ? "bg-ink text-white border-ink" 
+                             : "bg-white text-ink/80 border-ink/10 hover:border-ink/30",
+                           isOutOfStock && "opacity-30 cursor-not-allowed"
+                         )}
+                       >
+                         {size}
+                         {isOutOfStock && (
+                           <div className="absolute inset-0 flex items-center justify-center opacity-40">
+                             <div className="w-full h-px bg-current rotate-45 transform origin-center" />
+                           </div>
+                         )}
+                       </button>
+                     );
+                   })}
+                 </div>
+               )}
              </div>
 
              {/* Mobile Action Bar: Ulasan & Bagikan — BELOW photo, horizontal, NOT overlay */}
