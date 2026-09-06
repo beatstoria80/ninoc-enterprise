@@ -177,7 +177,8 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
     imageDescriptionItems,
     currentImageDesc,
     availableColors,
-    selectedVariant
+    selectedVariant,
+    activeImageVariantName
   } = useProductMetadata({
     product,
     effectiveColor,
@@ -302,10 +303,10 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <motion.h4 variants={textVariants} className="text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] text-ink/60">
                     {dict.product.description}
                   </motion.h4>
-                  {(effectiveColor || currentImageDesc) && (
+                  {(activeImageVariantName || currentImageDesc) && (
                     <span className="inline-flex items-center gap-1.5 px-2 py-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded text-[9px] font-bold uppercase tracking-widest">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      {effectiveColor || `${product?.variant_label || 'Series'} #${activeImageIndex + 1}`}
+                      {activeImageVariantName}
                     </span>
                   )}
                 </div>

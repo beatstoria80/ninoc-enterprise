@@ -232,6 +232,22 @@ export function useProductMetadata({
     );
   }, [product, hasSizes, effectiveSize, effectiveColor]);
 
+  const activeImageVariantName = useMemo(() => {
+    if (!product || !images || images.length === 0) return effectiveColor;
+    const currentUrl = images[activeImageIndex];
+    if (!currentUrl) return effectiveColor;
+
+    const matchedEntry = Object.entries(colorGalleryMap).find(([_, g]) => {
+      return [g.main, g.p1, g.p2, g.p3, g.p4, g.p5, g.p6, g.p7, g.p8, g.p9, g.p10, g.p11, g.p12, g.p13, g.p14, g.p15].includes(currentUrl);
+    });
+
+    if (matchedEntry) {
+      return matchedEntry[0];
+    }
+    
+    return effectiveColor || `${product?.variant_label || 'Series'} #${activeImageIndex + 1}`;
+  }, [images, activeImageIndex, colorGalleryMap, effectiveColor, product]);
+
   return {
     isPants,
     isFnBCat,
@@ -247,6 +263,7 @@ export function useProductMetadata({
     imageDescriptionItems,
     currentImageDesc,
     availableColors,
-    selectedVariant
+    selectedVariant,
+    activeImageVariantName
   };
 }
