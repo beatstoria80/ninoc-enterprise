@@ -273,21 +273,21 @@ export default function ImmersiveProductView({
           </div>
 
           {/* LEFT COLUMN: DESCRIPTION (Flexible Width on Desktop) */}
-          <div className="hidden lg:flex lg:w-[340px] xl:w-[400px] 2xl:w-[460px] shrink-0 h-full bg-white flex-col justify-center pl-6 lg:pl-16 xl:pl-24 2xl:pl-32 lg:pr-6 xl:pr-8 2xl:pr-10 overflow-y-auto no-scrollbar">
+          <div className="hidden lg:flex lg:w-[340px] xl:w-[400px] 2xl:w-[460px] shrink-0 h-full bg-white flex-col justify-center pl-6 lg:pl-8 xl:pl-12 2xl:pl-16 pr-6 lg:pr-8 xl:pr-12 2xl:pr-16 overflow-y-auto no-scrollbar">
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="space-y-4"
+              className="space-y-6"
             >
               <div>
-                <div className="text-[9px] uppercase tracking-widest text-ink/40 mb-1.5">
+                <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-ink/40 mb-3">
                   {product.category || 'Apparel'}
                 </div>
-                <h1 className="text-lg font-display font-medium uppercase italic tracking-tighter leading-none mb-1.5">
+                <h1 className="text-xl xl:text-2xl 2xl:text-3xl font-display font-semibold uppercase tracking-tight leading-[1.15] mb-3 text-ink/90">
                   {product.name}
                 </h1>
-                <p className="text-xs font-bold italic text-ink/80">
+                <p className="text-sm font-semibold text-ink/70">
                   IDR {(product.price + currentSurcharge).toLocaleString('id-ID')}
                 </p>
               </div>
@@ -301,28 +301,28 @@ export default function ImmersiveProductView({
                   transition={{ duration: 0.18, ease: 'easeOut' }}
                 >
                   {currentImmersiveDesc ? (
-                    <div className="p-3 bg-ink/[0.02] border-l-2 border-emerald-600 rounded-r-lg">
-                      <div className="flex items-center gap-1.5 mb-1.5">
+                    <div className="p-4 bg-ink/[0.02] border-l-[3px] border-emerald-500 rounded-r-xl">
+                      <div className="flex items-center gap-2 mb-2">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">
+                        <span className="text-[9px] uppercase tracking-widest font-bold text-emerald-600">
                           {currentImmersiveVariantName}
                         </span>
                       </div>
-                      <p className="text-xs leading-relaxed text-ink/80 font-medium whitespace-pre-wrap">
+                      <p className="text-[13px] leading-[1.7] text-ink/70 font-medium whitespace-pre-wrap">
                         {currentImmersiveDesc}
                       </p>
                     </div>
                   ) : localizedDescription ? (
-                    <div className="space-y-1.5">
+                    <div className="space-y-2">
                       {selectedColor && (
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2 mb-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          <span className="text-[8px] uppercase tracking-widest font-bold text-emerald-700">
+                          <span className="text-[9px] uppercase tracking-widest font-bold text-emerald-600">
                             {selectedColor}
                           </span>
                         </div>
                       )}
-                      <p className="text-xs leading-relaxed text-ink/70 whitespace-pre-wrap">
+                      <p className="text-[13px] leading-[1.7] text-ink/70 font-medium whitespace-pre-wrap">
                         {localizedDescription}
                       </p>
                     </div>
