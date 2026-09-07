@@ -1,30 +1,63 @@
 import React, { useMemo } from 'react';
 import { Product } from '@/types/shop';
 import Image from 'next/image';
-import { PackagePlus, Package } from 'lucide-react';
+import { PackagePlus, Package, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface VolumePromosViewProps {
   products: Product[];
 }
 
 export default function VolumePromosView({ products }: VolumePromosViewProps) {
-  // Filter products that have bundle promos
   const bundleProducts = useMemo(() => {
-    return products.filter((p) => p.bundle_min_qty != null && p.bundle_min_qty > 0 && p.bundle_discount_amount != null && p.bundle_discount_amount > 0)
-      .sort((a, b) => (b.bundle_discount_amount || 0) - (a.bundle_discount_amount || 0));
+    return products
+      .filter((p) => p.bundle_min_qty != null && p.bundle_min_qty > 0 && p.bundle_discount_amount != null && p.bundle_discount_amount > 0)
+      .sort((a, b) => {
+        // Active first, conflicted last
+        const aConflict = a.original_price ? 1 : 0;
+        const bConflict = b.original_price ? 1 : 0;
+        if (aConflict !== bConflict) return aConflict - bConflict;
+        return (b.bundle_discount_amount || 0) - (a.bundle_discount_amount || 0);
+      });
   }, [products]);
+
+  const stats = useMemo(() => {
+    let active = 0, conflict = 0;
+    for (const p of bundleProducts) {
+      if (p.original_price) conflict++;
+      else active++;
+    }
+    return { total: bundleProducts.length, active, conflict };
+  }, [bundleProducts]);
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      {/* Header Stats */}
+      {/* Header Stats — fill all 3 columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-purple-700/60 font-semibold mb-0.5">Total Promo Grosir</p>
-            <p className="text-2xl font-display font-semibold italic text-purple-700">{bundleProducts.length}</p>
+            <p className="text-2xl font-display font-semibold italic text-purple-700">{stats.total}</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700">
             <PackagePlus size={18} />
+          </div>
+        </div>
+        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-emerald-600/60 font-semibold mb-0.5">Aktif (Tanpa Konflik)</p>
+            <p className="text-2xl font-display font-semibold italic text-emerald-700">{stats.active}</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <CheckCircle size={18} />
+          </div>
+        </div>
+        <div className="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-red-600/60 font-semibold mb-0.5">Nonaktif (Konflik Diskon)</p>
+            <p className="text-2xl font-display font-semibold italic text-red-600">{stats.conflict}</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+            <AlertTriangle size={18} />
           </div>
         </div>
       </div>
@@ -52,15 +85,15 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
                 </tr>
               ) : (
                 bundleProducts.map((product) => {
-                  const conflict = product.original_price ? true : false;
+                  const hasConflict = !!product.original_price;
 
                   return (
-                    <tr key={product.id} className={`hover:bg-gray-50 transition-colors ${conflict ? 'opacity-50' : ''}`}>
+                    <tr key={product.id} className={`hover:bg-gray-50 transition-colors ${hasConflict ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative border border-ink/5">
                             {product.image_url ? (
-                              <Image src={product.image_url} alt={product.name} fill className="object-cover" />
+                              <Image src={product.image_url} alt={product.name} fill className="object-cover" sizes="40px" />
                             ) : (
                               <Package size={16} className="absolute inset-0 m-auto text-ink/20" />
                             )}
@@ -87,7 +120,7 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
                         </span>
                       </td>
                       <td className="px-4 py-2.5">
-                        {conflict ? (
+                        {hasConflict ? (
                           <div className="flex flex-col gap-0.5">
                             <span className="inline-flex items-center px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest bg-red-50 text-red-600 w-fit">
                               Nonaktif (Konflik)

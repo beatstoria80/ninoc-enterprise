@@ -1,38 +1,80 @@
 import React, { useMemo } from 'react';
 import { Product } from '@/types/shop';
 import Image from 'next/image';
-import { Tag, CalendarClock, ExternalLink, Package } from 'lucide-react';
+import { Tag, Package, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { isDiscountActive } from '@/lib/domain/product';
 
 interface DiscountPeriodsViewProps {
   products: Product[];
 }
 
+/**
+ * Determines discount status category for sorting and display.
+ * Uses isDiscountActive as the single source of truth, then further classifies pending/expired.
+ */
+function getDiscountStatus(product: Product): 'active' | 'pending' | 'expired' {
+  if (isDiscountActive(product)) return 'active';
+  
+  const now = new Date();
+  const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
+  if (start && now < start) return 'pending';
+  return 'expired';
+}
+
+const STATUS_CONFIG = {
+  active:  { label: 'Aktif',      className: 'bg-emerald-50 text-emerald-600', icon: CheckCircle, sortOrder: 0 },
+  pending: { label: 'Mendatang',  className: 'bg-amber-50 text-amber-600',     icon: Clock,       sortOrder: 1 },
+  expired: { label: 'Berakhir',   className: 'bg-gray-100 text-gray-500',      icon: XCircle,     sortOrder: 2 },
+} as const;
+
 export default function DiscountPeriodsView({ products }: DiscountPeriodsViewProps) {
-  // Filter products that have original_price set
   const discountProducts = useMemo(() => {
-    return products.filter((p) => p.original_price != null && p.original_price > 0)
-      .sort((a, b) => {
-        // Sort by those currently active, then by those upcoming, then by those expired
-        const now = new Date();
-        const aStart = a.discount_start_date ? new Date(a.discount_start_date) : null;
-        const bStart = b.discount_start_date ? new Date(b.discount_start_date) : null;
-        return (aStart?.getTime() || 0) - (bStart?.getTime() || 0);
-      });
+    return products
+      .filter((p) => p.original_price != null && p.original_price > 0)
+      .map((p) => ({ ...p, _status: getDiscountStatus(p) }))
+      .sort((a, b) => STATUS_CONFIG[a._status].sortOrder - STATUS_CONFIG[b._status].sortOrder);
   }, [products]);
 
-  const now = new Date();
+  // Compute summary stats inside useMemo to avoid re-computation
+  const stats = useMemo(() => {
+    let active = 0, pending = 0, expired = 0;
+    for (const p of discountProducts) {
+      if (p._status === 'active') active++;
+      else if (p._status === 'pending') pending++;
+      else expired++;
+    }
+    return { total: discountProducts.length, active, pending, expired };
+  }, [discountProducts]);
 
   return (
     <div className="flex flex-col h-full space-y-4">
-      {/* Header Stats */}
+      {/* Header Stats — fill all 3 columns */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div className="bg-rose/5 border border-rose/10 p-3 rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-rose/60 font-semibold mb-0.5">Total Produk Diskon</p>
-            <p className="text-2xl font-display font-semibold italic text-rose">{discountProducts.length}</p>
+            <p className="text-2xl font-display font-semibold italic text-rose">{stats.total}</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center text-rose">
             <Tag size={18} />
+          </div>
+        </div>
+        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-emerald-600/60 font-semibold mb-0.5">Sedang Aktif</p>
+            <p className="text-2xl font-display font-semibold italic text-emerald-700">{stats.active}</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <CheckCircle size={18} />
+          </div>
+        </div>
+        <div className="bg-amber-50 border border-amber-100 p-3 rounded-xl flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-amber-600/60 font-semibold mb-0.5">Mendatang / Berakhir</p>
+            <p className="text-2xl font-display font-semibold italic text-amber-700">{stats.pending + stats.expired}</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+            <Clock size={18} />
           </div>
         </div>
       </div>
@@ -62,9 +104,7 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                 discountProducts.map((product) => {
                   const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
                   const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
-                  const isActive = (!start || now >= start) && (!end || now <= end);
-                  const isPending = start && now < start;
-                  const isExpired = end && now > end;
+                  const statusCfg = STATUS_CONFIG[product._status];
 
                   return (
                     <tr key={product.id} className="hover:bg-gray-50 transition-colors">
@@ -72,7 +112,7 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative border border-ink/5">
                             {product.image_url ? (
-                              <Image src={product.image_url} alt={product.name} fill className="object-cover" />
+                              <Image src={product.image_url} alt={product.name} fill className="object-cover" sizes="40px" />
                             ) : (
                               <Package size={16} className="absolute inset-0 m-auto text-ink/20" />
                             )}
@@ -93,7 +133,7 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                           Rp {product.price.toLocaleString('id-ID')}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-4 py-2.5" suppressHydrationWarning>
                         <div className="flex flex-col gap-0.5">
                           {start || end ? (
                             <>
@@ -112,12 +152,8 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                         </div>
                       </td>
                       <td className="px-4 py-2.5">
-                        <span className={`inline-flex items-center px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${
-                          isActive ? 'bg-emerald-50 text-emerald-600' :
-                          isPending ? 'bg-amber-50 text-amber-600' :
-                          'bg-gray-100 text-gray-500'
-                        }`}>
-                          {isActive ? 'Aktif' : isPending ? 'Mendatang' : 'Berakhir'}
+                        <span className={`inline-flex items-center px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${statusCfg.className}`}>
+                          {statusCfg.label}
                         </span>
                       </td>
                     </tr>

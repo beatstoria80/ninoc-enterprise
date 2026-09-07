@@ -171,7 +171,10 @@ export class PricingEngine {
       // Apply Bundle/Volume Discount if eligible and NOT a flash sale AND NOT a regular discount product
       if (!flashSaleMatch && !dbProduct.original_price && dbProduct.bundle_min_qty && dbProduct.bundle_discount_amount && item.quantity >= dbProduct.bundle_min_qty) {
         const bundleMultiplier = Math.floor(item.quantity / dbProduct.bundle_min_qty);
-        const totalBundleDiscount = bundleMultiplier * Number(dbProduct.bundle_discount_amount);
+        const rawBundleDiscount = bundleMultiplier * Number(dbProduct.bundle_discount_amount);
+        // Safety cap: discount can never exceed the item subtotal to prevent negative pricing
+        const itemSubtotal = finalItemPrice * item.quantity;
+        const totalBundleDiscount = Math.min(rawBundleDiscount, itemSubtotal);
         
         if (totalBundleDiscount > 0) {
           domainItems.push({

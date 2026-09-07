@@ -1097,7 +1097,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
           {activeTab === 'affiliates' && <AffiliatesTab />}
 
           {activeTab === 'marketing' && <MarketingTab />}
-          {activeTab === 'programs' && <ProgramsTab products={products} setProducts={setProducts as any} adminUser={adminUser as any} />}
+          {activeTab === 'programs' && <ProgramsTab products={products} />}
           {activeTab === 'banners' && <BannersTab />}
 
           {activeTab === 'settings' && <SettingsTab />}
