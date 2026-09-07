@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Product } from '@/types/shop';
+import { Product } from '@/components/admin/types';
 import Image from 'next/image';
 import { PackagePlus, Package, AlertTriangle, CheckCircle } from 'lucide-react';
 

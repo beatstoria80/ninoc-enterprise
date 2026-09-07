@@ -4,7 +4,7 @@ import { Gift, Zap, Tag, PackagePlus } from 'lucide-react';
 import { FlashSaleTab } from './FlashSaleTab';
 import DiscountPeriodsView from './programs/DiscountPeriodsView';
 import VolumePromosView from './programs/VolumePromosView';
-import { Product } from '@/types/shop';
+import { Product } from '@/components/admin/types';
 
 interface ProgramsTabProps {
   products: Product[];
