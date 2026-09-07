@@ -90,6 +90,15 @@ function ProductCard({ product }: { product: Product }) {
                 {product.price_tag}
               </div>
             )}
+
+            {/* Discount Badge - Top Right (below price_tag if exists) */}
+            {product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' && (
+              <div className={`absolute ${product.price_tag ? 'top-10 md:top-8' : 'top-2'} right-2 z-10 bg-orange-500 text-white px-2 py-1 rounded-[2px] shadow-md`}>
+                <span className="text-[10px] md:text-[8px] font-bold leading-none">
+                  -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="p-2.5 md:p-2 flex flex-col flex-grow justify-between gap-2 md:gap-1.5">

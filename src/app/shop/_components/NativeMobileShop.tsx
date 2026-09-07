@@ -71,6 +71,24 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
           </div>
         )}
 
+        {/* Discount Badge - Top Right */}
+        {(() => {
+          const now = new Date();
+          const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
+          const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
+          const isWithinPeriod = (!start || now >= start) && (!end || now <= end);
+          if (product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && isWithinPeriod) {
+            return (
+              <div className="absolute top-1.5 right-1.5 z-10 bg-orange-500 text-white px-1.5 py-0.5 rounded-[2px] shadow-md">
+                <span className="text-[9px] font-bold leading-none">
+                  -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
+                </span>
+              </div>
+            );
+          }
+          return null;
+        })()}
+
         {/* Quick Add Button (appears on touch) */}
         <div className="absolute bottom-2 right-2 z-10">
           <button onClick={handleQuickBuy} className="w-8 h-8 bg-white/90 backdrop-blur-md rounded-none flex items-center justify-center border border-ink/10 shadow-sm active:scale-90 transition-all text-ink hover:text-white hover:bg-ink">

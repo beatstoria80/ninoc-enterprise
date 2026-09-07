@@ -41,6 +41,14 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
                   <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 768px) 120px, 160px" />
                 </div>
                 <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                {/* Discount Badge - Top Right */}
+                {p.original_price && p.original_price > (p.price || 0) && p.price_tag !== 'REDEEM' && (
+                  <div className="absolute top-1.5 right-1.5 z-10 bg-orange-500 text-white px-1.5 py-0.5 rounded-[2px] shadow-md">
+                    <span className="text-[8px] font-bold leading-none">
+                      -{Math.round(((p.original_price - (p.price || 0)) / p.original_price) * 100)}%
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="space-y-1 px-1">
                 <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>
