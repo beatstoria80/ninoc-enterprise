@@ -221,6 +221,121 @@ export function ProductModal(props: any) {
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 text-ink/70"
                         />
                       </div>
+                    </div>
+
+                    {/* e-Commerce Standard Discount Calculator UI */}
+                    <div className="bg-gray-50/50 p-2.5 rounded-lg border border-gray-100 flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+                          <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                          <rect x="8" y="8" width="8" height="2"></rect>
+                          <path d="M8 14h.01"></path>
+                          <path d="M12 14h.01"></path>
+                          <path d="M16 14h.01"></path>
+                        </svg>
+                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-wider">Kalkulator Diskon Cepat:</span>
+                      </div>
+                      <div className="flex gap-1.5">
+                        {[10, 20, 30, 40, 50, 70].map(discount => (
+                          <button
+                            key={discount}
+                            type="button"
+                            onClick={() => {
+                              const basePrice = productForm.original_price || (productForm.price ? parseInt(productForm.price.toString()) : 0);
+                              if (basePrice > 0) {
+                                if (!productForm.original_price) {
+                                  // Set original price backwards if it's empty
+                                  const normalPrice = Math.round(basePrice / (1 - discount / 100));
+                                  setProductForm({ ...productForm, original_price: normalPrice });
+                                } else {
+                                  // Set final price based on original price
+                                  const finalPrice = Math.round(basePrice * (1 - discount / 100));
+                                  setProductForm({ ...productForm, price: finalPrice.toString() });
+                                }
+                              }
+                            }}
+                            className="px-2 py-1 bg-white shadow-sm border border-gray-200 text-[10px] font-semibold text-ink/70 rounded hover:border-rose hover:text-rose transition-all active:scale-95"
+                          >
+                            {discount}%
+                          </button>
+                        ))}
+                      </div>
+                      <div className="text-[10px] text-gray-400 ml-auto flex items-center gap-1">
+                        {productForm.original_price && productForm.price && productForm.original_price > parseInt(productForm.price.toString()) ? (
+                           <>
+                             <span className="italic">Diskon saat ini:</span>
+                             <span className="font-bold text-rose px-1.5 py-0.5 bg-rose/10 rounded">
+                               {Math.round(((productForm.original_price - parseInt(productForm.price.toString())) / productForm.original_price) * 100)}%
+                             </span>
+                           </>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    {/* Discount Period (Start & End Date/Time) */}
+                    <div className="bg-amber-50/50 p-2.5 rounded-lg border border-amber-200/50 space-y-2">
+                      <div className="flex items-center gap-1.5">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <span className="text-[9px] font-bold text-amber-700 uppercase tracking-wider">Periode Diskon (Opsional)</span>
+                        {productForm.discount_start_date || productForm.discount_end_date ? (
+                          <button
+                            type="button"
+                            onClick={() => setProductForm({ ...productForm, discount_start_date: null, discount_end_date: null })}
+                            className="ml-auto text-[9px] font-medium text-red-400 hover:text-red-600 transition-colors uppercase tracking-wider"
+                          >
+                            ✕ Hapus Periode
+                          </button>
+                        ) : (
+                          <span className="ml-auto text-[9px] text-amber-500/70 italic">Kosongkan jika diskon berlaku terus-menerus</span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-wider text-amber-700/70 mb-1 font-semibold">Mulai Diskon</label>
+                          <input
+                            type="datetime-local"
+                            value={productForm.discount_start_date ? new Date(productForm.discount_start_date).toISOString().slice(0, 16) : ''}
+                            onChange={(e) => setProductForm({ ...productForm, discount_start_date: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                            className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-[11px] focus:outline-none focus:border-amber-400 bg-white text-ink/80"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[9px] uppercase tracking-wider text-amber-700/70 mb-1 font-semibold">Berakhir Diskon</label>
+                          <input
+                            type="datetime-local"
+                            value={productForm.discount_end_date ? new Date(productForm.discount_end_date).toISOString().slice(0, 16) : ''}
+                            onChange={(e) => setProductForm({ ...productForm, discount_end_date: e.target.value ? new Date(e.target.value).toISOString() : null })}
+                            className="w-full px-2 py-1.5 border border-amber-200 rounded-lg text-[11px] focus:outline-none focus:border-amber-400 bg-white text-ink/80"
+                          />
+                        </div>
+                      </div>
+                      {/* Active status indicator */}
+                      {productForm.discount_start_date || productForm.discount_end_date ? (
+                        <div className="flex items-center gap-1.5 pt-1">
+                          {(() => {
+                            const now = new Date();
+                            const start = productForm.discount_start_date ? new Date(productForm.discount_start_date) : null;
+                            const end = productForm.discount_end_date ? new Date(productForm.discount_end_date) : null;
+                            const isActive = (!start || now >= start) && (!end || now <= end);
+                            const isPending = start && now < start;
+                            const isExpired = end && now > end;
+                            return (
+                              <>
+                                <span className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500 animate-pulse' : isPending ? 'bg-amber-400' : 'bg-red-400'}`}></span>
+                                <span className={`text-[9px] font-semibold uppercase tracking-wider ${isActive ? 'text-emerald-600' : isPending ? 'text-amber-600' : 'text-red-500'}`}>
+                                  {isActive ? '● Diskon Sedang Aktif' : isPending ? '◐ Menunggu Jadwal Mulai' : isExpired ? '○ Diskon Sudah Berakhir' : ''}
+                                </span>
+                              </>
+                            );
+                          })()}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3">
                       <div>
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Kategori Spesifik Pillar</label>
                         <select

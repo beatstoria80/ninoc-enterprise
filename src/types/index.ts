@@ -35,6 +35,8 @@ export interface Product {
   description_en?: string | null;
   price: number;
   original_price?: number | null;
+  discount_start_date?: string | null;
+  discount_end_date?: string | null;
   category: CategoryType;
   sub_category?: string | null;
   image_url: string | null;

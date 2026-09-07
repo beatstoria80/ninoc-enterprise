@@ -271,25 +271,42 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <motion.div variants={textVariants} className="flex flex-wrap items-center gap-3 mt-1.5 mb-1">
                   <div className="flex flex-col gap-1">
-                    {product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' ? (
-                      <>
-                        <p className={cn("text-lg md:text-xl lg:text-2xl font-display font-bold italic tracking-tight", product.price_tag !== 'REDEEM' ? 'text-rose' : 'text-rose')}>
-                          IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    {(() => {
+                      // Check if discount is active based on period
+                      const now = new Date();
+                      const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
+                      const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
+                      const isWithinPeriod = (!start || now >= start) && (!end || now <= end);
+                      const hasDiscount = product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' && isWithinPeriod;
+                      
+                      if (hasDiscount) {
+                        return (
+                          <>
+                            <p className={cn("text-lg md:text-xl lg:text-2xl font-display font-bold italic tracking-tight text-rose")}>
+                              IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                            </p>
+                            <div className="flex items-center gap-2">
+                              <span className="bg-rose/10 text-rose px-1.5 py-0.5 rounded-[2px] text-[10px] md:text-[11px] font-bold leading-none">
+                                {Math.round(((product.original_price! - (product.price || 0)) / product.original_price!) * 100)}%
+                              </span>
+                              <span className="line-through text-ink/40 text-xs md:text-[13px] font-medium not-italic leading-none">
+                                IDR {product.original_price!.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                              </span>
+                            </div>
+                            {end && (
+                              <span className="text-[9px] text-amber-600 font-medium mt-0.5">
+                                Promo berakhir {end.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            )}
+                          </>
+                        );
+                      }
+                      return (
+                        <p className={cn("text-lg md:text-xl lg:text-2xl font-display font-bold italic tracking-tight", product.price_tag !== 'REDEEM' ? 'text-emerald-700' : 'text-rose')}>
+                          IDR {(product.original_price && product.original_price > (product.price || 0) && !isWithinPeriod ? product.original_price : product.price)?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                         </p>
-                        <div className="flex items-center gap-2">
-                          <span className="bg-rose/10 text-rose px-1.5 py-0.5 rounded-[2px] text-[10px] md:text-[11px] font-bold leading-none">
-                            {Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
-                          </span>
-                          <span className="line-through text-ink/40 text-xs md:text-[13px] font-medium not-italic leading-none">
-                            IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <p className={cn("text-lg md:text-xl lg:text-2xl font-display font-bold italic tracking-tight", product.price_tag !== 'REDEEM' ? 'text-emerald-700' : 'text-rose')}>
-                        IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                      </p>
-                    )}
+                      );
+                    })()}
                   </div>
                   
                   {product.price_tag && (

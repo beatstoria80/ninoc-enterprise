@@ -16,6 +16,8 @@ export interface Product {
   description: string;
   price: number;
   original_price?: number | null;
+  discount_start_date?: string | null;
+  discount_end_date?: string | null;
   variants?: ProductVariant[];
 }
 

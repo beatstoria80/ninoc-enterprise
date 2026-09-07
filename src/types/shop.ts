@@ -6,6 +6,8 @@ export interface Product {
   description_en?: string;
   price: number;
   original_price?: number | null;
+  discount_start_date?: string | null;
+  discount_end_date?: string | null;
   image_url: string;
   image_alt?: string | null;
   category: string;

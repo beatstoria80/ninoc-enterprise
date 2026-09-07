@@ -42,6 +42,8 @@ export interface Product {
   model_info?: string | null;
   price: number;
   original_price?: number | null;
+  discount_start_date?: string | null;
+  discount_end_date?: string | null;
   category: string;
   sub_category?: string | null;
   image_url: string | null;
