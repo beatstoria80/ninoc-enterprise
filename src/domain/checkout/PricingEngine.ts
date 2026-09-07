@@ -14,6 +14,9 @@ export interface DatabaseProduct {
   stock_quantity?: number | null;
   stock?: number | null;
   supplier_id?: string | null;
+  original_price?: number | null;
+  bundle_min_qty?: number | null;
+  bundle_discount_amount?: number | null;
   product_costings?: Array<{ supplier_base_price?: number; supplier_surcharge_cost?: number; ninoc_markup?: number }> | any;
   variants?: Array<{ id: string; size?: string | null; color?: string | null; stock_quantity?: number | null }>;
 }
