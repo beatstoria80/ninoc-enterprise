@@ -87,15 +87,26 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
             {product.price_tag}
           </p>
         )}
-        <div className="flex flex-col">
-          {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && (
-            <span className="line-through text-ink/40 text-[9px] md:text-[8px] font-medium not-italic leading-none mb-0.5">
-              IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-            </span>
+        <div className="flex flex-col gap-0.5 mt-0.5">
+          {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') ? (
+            <>
+              <p className={cn("text-base md:text-[12px] font-display font-bold italic", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-rose')}>
+                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </p>
+              <div className="flex items-center gap-1.5">
+                <span className="bg-rose/10 text-rose px-1 py-[1px] rounded-[2px] text-[8px] font-bold leading-none">
+                  {Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
+                </span>
+                <span className="line-through text-ink/40 text-[9px] md:text-[8px] font-medium not-italic leading-none">
+                  IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                </span>
+              </div>
+            </>
+          ) : (
+            <p className={cn("text-base md:text-[12px] font-display font-bold italic", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-emerald-700')}>
+              IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </p>
           )}
-          <p className={cn("text-base md:text-[12px] font-display font-bold italic pt-0.5", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-emerald-700')}>
-            IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-          </p>
         </div>
       </div>
     </motion.div>

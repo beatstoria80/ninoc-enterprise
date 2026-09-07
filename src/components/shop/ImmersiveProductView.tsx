@@ -504,15 +504,26 @@ export default function ImmersiveProductView({
                </div>
                
                {/* Product Info */}
-               <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2">
-                 {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && (
-                   <span className="line-through text-ink/40 text-[9px] font-medium not-italic leading-none mb-0.5">
-                     Rp {product.original_price.toLocaleString('id-ID')}
+               <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2 gap-0.5">
+                 {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') ? (
+                   <>
+                     <span className={cn("font-bold text-sm leading-none", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-rose')}>
+                       Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
+                     </span>
+                     <div className="flex items-center gap-1.5 mb-1">
+                       <span className="bg-rose/10 text-rose px-1 py-[1px] rounded-[2px] text-[8px] font-bold leading-none">
+                         {Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
+                       </span>
+                       <span className="line-through text-ink/40 text-[9px] font-medium not-italic leading-none">
+                         Rp {product.original_price.toLocaleString('id-ID')}
+                       </span>
+                     </div>
+                   </>
+                 ) : (
+                   <span className={cn("font-bold text-sm leading-none mb-1", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-ink')}>
+                     Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
                    </span>
                  )}
-                 <span className={cn("font-bold text-sm leading-none mb-1", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-ink')}>
-                   Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
-                 </span>
                  <span className="text-[10px] text-gray-600 truncate leading-tight font-medium">
                    {product.name}
                  </span>
