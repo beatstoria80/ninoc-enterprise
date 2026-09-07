@@ -231,9 +231,7 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
                   <span className="flex items-center gap-1 text-xs md:text-[9px] text-amber-400 uppercase tracking-widest font-medium">
                     <Calendar size={10} /> Coming Soon
                   </span>
-                ) : (
-                  <span className="text-xs md:text-[9px] text-white/50 uppercase tracking-widest">Archived</span>
-                )}
+                ) : null}
               </div>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-display italic uppercase tracking-tight text-white mb-4">
                 {collection.name}
@@ -270,20 +268,24 @@ export default function CollectionLandingClient({ slug, initialCollection, initi
 
       {/* 3. PRODUCT GRID */}
       <section className="shrink-0 bg-white z-10 relative h-[45vh] md:h-[50vh] max-h-[400px] min-h-[300px]">
-        <div className="max-w-[1800px] mx-auto px-4 md:px-12 py-4 h-full flex flex-col">
+        <div className="max-w-[1800px] mx-auto py-4 h-full flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               variants={productGridVariants}
               initial="hidden"
               animate="visible"
-              className="flex-1 flex items-start gap-3 md:gap-6 overflow-x-auto no-scrollbar pb-2"
+              className="flex-1 flex items-start gap-3 md:gap-6 overflow-x-auto no-scrollbar pb-2 px-4 md:px-12"
             >
               {products.length > 0 ? (
-                products.map((product) => (
-                  <div key={product.id} className="h-full w-[160px] md:w-[200px] shrink-0">
-                    <ProductCard product={product} />
-                  </div>
-                ))
+                <>
+                  {products.map((product) => (
+                    <div key={product.id} className="h-full w-[160px] md:w-[200px] shrink-0">
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                  {/* Spacer to prevent the last card from getting cut off at maximum scroll */}
+                  <div className="w-1 md:w-4 shrink-0" />
+                </>
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center text-center">
                   <Package size={24} className="mx-auto mb-3 text-ink/20" />
