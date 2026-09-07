@@ -219,7 +219,11 @@ export function ProductModal(props: any) {
                             const val = e.target.value;
                             const newSpecs = [...(productForm.specifications || [])];
                             const jenisIdx = newSpecs.findIndex(s => s.label === 'Jenis Pakaian');
-                            if (jenisIdx >= 0) newSpecs[jenisIdx].value = val;
+                            if (jenisIdx >= 0) {
+                              newSpecs[jenisIdx].value = val;
+                            } else if (!isFnB && !isObjects) {
+                              newSpecs.push({ label: 'Jenis Pakaian', value: val });
+                            }
                             setProductForm({ ...productForm, category: val, sub_category: val, specifications: newSpecs } as any);
                           }}
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
@@ -267,40 +271,6 @@ export function ProductModal(props: any) {
                             return combined.map(c => (
                               <option key={c.id || c.slug} value={c.slug}>{c.name}</option>
                             ));
-
-                            return isFnB ? (
-                              <>
-                                <option value="coffee">Biji Kopi / Roasted Beans</option>
-                                <option value="pastry">Pastry & Bakery</option>
-                                <option value="rtd">Minuman RTD / Beverages</option>
-                                <option value="snack">Camilan / Gourmet Snacks</option>
-                              </>
-                            ) : isObjects ? (
-                              <>
-                                <option value="utilities">Utilities & Alat Tulis</option>
-                                <option value="home">Peralatan Rumah / Home Goods</option>
-                                <option value="kitchen">Kitchen & Dining</option>
-                                <option value="collectibles">Seni / Collectibles</option>
-                              </>
-                            ) : (
-                              <>
-                                <option value="unisex">Unisex</option>
-                                <option value="kaos">Kaos / T-Shirt</option>
-                                <option value="hoodie">Hoodie / Pullover</option>
-                                <option value="sweater">Sweater / Crewneck</option>
-                                <option value="kemeja">Kemeja / Flannel</option>
-                                <option value="jaket">Jaket & Outerwear</option>
-                                <option value="celana-panjang">Celana Panjang / Trousers / Cargo</option>
-                                <option value="celana-pendek">Celana Pendek / Shorts</option>
-                                <option value="pakaian">Atasan Standar / Regular</option>
-                                <option value="pakaian-pria">Pakaian Pria</option>
-                                <option value="pakaian-wanita">Pakaian Wanita</option>
-                                <option value="celana">Celana / Bawahan (Umum)</option>
-                                <option value="outerwear">Outerwear / Jaket (Umum)</option>
-                                <option value="aksesoris">Aksesoris</option>
-                                <option value="archive">Arsip / Studio Edition</option>
-                              </>
-                            );
                           })()}
                         </select>
                       </div>
@@ -482,41 +452,6 @@ export function ProductModal(props: any) {
                                 <option value="Slim Fit / Tapered">Slim Fit / Tapered</option>
                                 <option value="Cropped Fit">Cropped Fit</option>
                                 <option value="Athletic / Muscle Fit">Athletic / Muscle Fit</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Jenis Pakaian / Sub-Category (Atasan & Bawahan)</label>
-                              <select
-                                value={(productForm as any).sub_category || productForm.category || 'kaos'}
-                                onChange={(e) => {
-                                  const val = e.target.value;
-                                  const newSpecs = [...(productForm.specifications || [])];
-                                  const jenisIndex = newSpecs.findIndex(s => s.label === 'Jenis Pakaian');
-                                  if (jenisIndex >= 0) {
-                                    newSpecs[jenisIndex].value = val;
-                                  } else {
-                                    newSpecs.push({ label: 'Jenis Pakaian', value: val });
-                                  }
-                                  setProductForm({
-                                    ...productForm,
-                                    category: val,
-                                    sub_category: val,
-                                    specifications: newSpecs
-                                  } as any);
-                                }}
-                                className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 bg-white font-medium"
-                              >
-                                <option value="kaos">Kaos / T-Shirt (Atasan)</option>
-                                <option value="hoodie">Hoodie / Pullover (Atasan)</option>
-                                <option value="sweater">Sweater / Crewneck (Atasan)</option>
-                                <option value="kemeja">Kemeja / Flannel (Atasan)</option>
-                                <option value="jaket">Jaket & Outerwear (Atasan)</option>
-                                <option value="celana-panjang">Celana Panjang / Cargo / Trousers (Bawahan)</option>
-                                <option value="celana-pendek">Celana Pendek / Shorts (Bawahan)</option>
-                                <option value="rok-dress">Rok & Dress (Bawahan)</option>
-                                <option value="aksesoris">Aksesoris / Headwear & Bags</option>
-                                <option value="unisex">Unisex / Couple Set</option>
-                                <option value="archive">Arsip / Studio Edition</option>
                               </select>
                             </div>
                           </div>
