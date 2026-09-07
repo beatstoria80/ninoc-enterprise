@@ -1447,18 +1447,17 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                     <span>Logistics</span>
                     <span className="text-gray-900 font-mono">+ IDR {(() => {
                       const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-                      const tax = Math.round(sub * 0.11);
                       const platform = 2500;
-                      const shipping = selectedOrder.total_price - sub - tax - platform;
+                      let shipping = selectedOrder.shipping_address?.shipping_cost;
+                      if (typeof shipping !== 'number') {
+                        shipping = selectedOrder.total_price - sub - platform;
+                      }
                       return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
                     })()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>VAT (11%)</span>
-                    <span className="text-gray-900 font-mono">+ IDR {(() => {
-                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-                      return Math.round(sub * 0.11).toLocaleString('id-ID');
-                    })()}</span>
+                    <span>PPN (11%)</span>
+                    <span className="text-gray-500 font-mono text-[9px] uppercase tracking-widest bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">Termasuk</span>
                   </div>
                   <div className="flex justify-between pb-2 border-b border-gray-100">
                     <span>Platform Fee</span>
