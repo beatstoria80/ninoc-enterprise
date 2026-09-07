@@ -133,3 +133,27 @@ export const getSafeStockQuantity = (variantOrProduct: any): number => {
   }
   return parseInt(variantOrProduct.stock_quantity) || 0;
 };
+
+/**
+ * Checks if a product's discount is currently active based on original_price, price, and schedule.
+ */
+export function isDiscountActive(product: {
+  original_price?: number | null;
+  price?: number | null;
+  discount_start_date?: string | null;
+  discount_end_date?: string | null;
+  price_tag?: string | null;
+} | null | undefined): boolean {
+  if (!product) return false;
+  const { original_price, price, discount_start_date, discount_end_date, price_tag } = product;
+
+  if (!original_price || !price || original_price <= price || price_tag?.includes('REDEEM')) {
+    return false;
+  }
+
+  const now = new Date();
+  const start = discount_start_date ? new Date(discount_start_date) : null;
+  const end = discount_end_date ? new Date(discount_end_date) : null;
+
+  return (!start || now >= start) && (!end || now <= end);
+}
