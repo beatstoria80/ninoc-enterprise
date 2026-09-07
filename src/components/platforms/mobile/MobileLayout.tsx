@@ -249,13 +249,18 @@ export default function MobileLayout({
       setIsOpeningSequence(false);
       setIsNavVisible(true);
     };
+    const handleOpenSearch = () => {
+      setIsSearchOpen(true);
+    };
     
     window.addEventListener('hide-mobile-nav', handleHide);
     window.addEventListener('show-mobile-nav', handleShow);
+    window.addEventListener('open-search', handleOpenSearch);
     
     return () => {
       window.removeEventListener('hide-mobile-nav', handleHide);
       window.removeEventListener('show-mobile-nav', handleShow);
+      window.removeEventListener('open-search', handleOpenSearch);
     };
   }, []);
 

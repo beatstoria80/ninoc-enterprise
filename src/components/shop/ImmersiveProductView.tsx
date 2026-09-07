@@ -258,15 +258,15 @@ export default function ImmersiveProductView({
           </button>
 
           {/* Mobile Top Header Navigation */}
-          <div className="lg:hidden absolute top-0 left-0 right-0 z-[100] flex justify-between items-start p-4 pointer-events-none">
-            <button onClick={onClose} className="pointer-events-auto w-10 h-10 flex items-center justify-center text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm rounded-full">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <div className="lg:hidden absolute top-0 left-0 right-0 z-[100] flex justify-between items-start pt-2 px-3 pointer-events-none">
+            <button onClick={onClose} className="pointer-events-auto w-8 h-8 flex items-center justify-center text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm rounded-full mt-1">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
-            <div className="flex flex-col items-end gap-3 pointer-events-auto mt-1 mr-1">
-              <div className="flex gap-4 text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm px-3 py-2 rounded-full pointer-events-auto">
-                <button onClick={() => { onClose(); window.dispatchEvent(new CustomEvent('open-search')); }}><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
+            <div className="flex flex-col items-end gap-2 pointer-events-auto mt-1">
+              <div className="flex items-center justify-center text-ink drop-shadow-sm bg-white/50 backdrop-blur-sm w-8 h-8 rounded-full pointer-events-auto">
+                <button onClick={() => { onClose(); setTimeout(() => window.dispatchEvent(new CustomEvent('open-search')), 100); }} className="w-full h-full flex items-center justify-center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button>
               </div>
-              <div className="px-3 py-1 bg-white/50 backdrop-blur-md rounded-full text-[10px] font-bold text-ink drop-shadow-sm border border-white/20 mt-1">
+              <div className="px-2.5 py-1 bg-white/50 backdrop-blur-md rounded-full text-[9px] font-bold text-ink drop-shadow-sm border border-white/20">
                 {activeImage + 1}/{images.length}
               </div>
             </div>
