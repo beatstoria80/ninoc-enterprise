@@ -4,10 +4,12 @@ import { Gift, Zap, Tag, PackagePlus } from 'lucide-react';
 import { FlashSaleTab } from './FlashSaleTab';
 import DiscountPeriodsView from './programs/DiscountPeriodsView';
 import VolumePromosView from './programs/VolumePromosView';
+import PromoBuilderModal from '../modals/PromoBuilderModal';
 import { Product } from '@/components/admin/types';
 
 interface ProgramsTabProps {
   products: Product[];
+  onRefreshProducts: () => void;
 }
 
 const ANIMATION_VARIANTS = {
@@ -24,8 +26,9 @@ const TABS = [
 
 type SubTab = typeof TABS[number]['id'];
 
-export default function ProgramsTab({ products }: ProgramsTabProps) {
+export default function ProgramsTab({ products, onRefreshProducts }: ProgramsTabProps) {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('flash');
+  const [promoMode, setPromoMode] = useState<'discount' | 'volume' | null>(null);
 
   return (
     <div className="flex flex-col h-full bg-gray-50/50 relative overflow-hidden">
@@ -79,12 +82,33 @@ export default function ProgramsTab({ products }: ProgramsTabProps) {
           >
             <div className="p-6 h-full min-h-full">
               {activeSubTab === 'flash' && <FlashSaleTab />}
-              {activeSubTab === 'discount' && <DiscountPeriodsView products={products} />}
-              {activeSubTab === 'volume' && <VolumePromosView products={products} />}
+              {activeSubTab === 'discount' && (
+                <DiscountPeriodsView 
+                  products={products} 
+                  onCreatePromo={() => setPromoMode('discount')}
+                  onRefresh={onRefreshProducts}
+                />
+              )}
+              {activeSubTab === 'volume' && (
+                <VolumePromosView 
+                  products={products}
+                  onCreatePromo={() => setPromoMode('volume')}
+                  onRefresh={onRefreshProducts}
+                />
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* PROMO BUILDER MODAL */}
+      <PromoBuilderModal
+        isOpen={promoMode !== null}
+        onClose={() => setPromoMode(null)}
+        mode={promoMode || 'discount'}
+        products={products}
+        onComplete={onRefreshProducts}
+      />
     </div>
   );
 }

@@ -1,18 +1,22 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Product } from '@/components/admin/types';
 import Image from 'next/image';
-import { PackagePlus, Package, AlertTriangle, CheckCircle } from 'lucide-react';
+import { PackagePlus, Package, AlertTriangle, CheckCircle, Plus, Trash2 } from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
 
 interface VolumePromosViewProps {
   products: Product[];
+  onCreatePromo: () => void;
+  onRefresh: () => void;
 }
 
-export default function VolumePromosView({ products }: VolumePromosViewProps) {
+export default function VolumePromosView({ products, onCreatePromo, onRefresh }: VolumePromosViewProps) {
+  const supabase = createClient();
+
   const bundleProducts = useMemo(() => {
     return products
       .filter((p) => p.bundle_min_qty != null && p.bundle_min_qty > 0 && p.bundle_discount_amount != null && p.bundle_discount_amount > 0)
       .sort((a, b) => {
-        // Active first, conflicted last
         const aConflict = a.original_price ? 1 : 0;
         const bConflict = b.original_price ? 1 : 0;
         if (aConflict !== bConflict) return aConflict - bConflict;
@@ -29,10 +33,21 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
     return { total: bundleProducts.length, active, conflict };
   }, [bundleProducts]);
 
+  const handleStopPromo = useCallback(async (product: Product) => {
+    if (!confirm(`Hentikan promo volume untuk "${product.name}"?`)) return;
+
+    await supabase.from('products').update({
+      bundle_min_qty: null,
+      bundle_discount_amount: null,
+    }).eq('id', product.id);
+
+    onRefresh();
+  }, [supabase, onRefresh]);
+
   return (
     <div className="flex flex-col h-full space-y-4">
-      {/* Header Stats — fill all 3 columns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {/* Header Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-purple-700/60 font-semibold mb-0.5">Total Promo Grosir</p>
@@ -53,13 +68,26 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
         </div>
         <div className="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center justify-between">
           <div>
-            <p className="text-[10px] uppercase tracking-wider text-red-600/60 font-semibold mb-0.5">Nonaktif (Konflik Diskon)</p>
+            <p className="text-[10px] uppercase tracking-wider text-red-600/60 font-semibold mb-0.5">Nonaktif (Konflik)</p>
             <p className="text-2xl font-display font-semibold italic text-red-600">{stats.conflict}</p>
           </div>
           <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
             <AlertTriangle size={18} />
           </div>
         </div>
+        {/* CREATE PROMO BUTTON */}
+        <button
+          onClick={onCreatePromo}
+          className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-3 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-purple-500/20 active:scale-[0.98]"
+        >
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold mb-0.5">Tambah Produk</p>
+            <p className="text-sm font-display font-semibold italic uppercase">+ Buat Promo</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Plus size={20} strokeWidth={3} />
+          </div>
+        </button>
       </div>
 
       {/* Table Area */}
@@ -73,14 +101,16 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Syarat Pembelian</th>
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Total Diskon (Rp)</th>
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Status Promo</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider w-16">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
               {bundleProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-ink/40">
+                  <td colSpan={6} className="px-4 py-12 text-center text-ink/40">
                     <Package size={24} className="mx-auto mb-2 opacity-50" />
                     <p className="text-xs uppercase tracking-widest font-medium">Tidak ada promo volume/grosir</p>
+                    <p className="text-[10px] text-ink/30 mt-1">Klik &quot;+ Buat Promo&quot; untuk menambahkan produk ke program grosir</p>
                   </td>
                 </tr>
               ) : (
@@ -88,7 +118,7 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
                   const hasConflict = !!product.original_price;
 
                   return (
-                    <tr key={product.id} className={`hover:bg-gray-50 transition-colors ${hasConflict ? 'opacity-50' : ''}`}>
+                    <tr key={product.id} className={`hover:bg-gray-50 transition-colors group ${hasConflict ? 'opacity-50' : ''}`}>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative border border-ink/5">
@@ -132,6 +162,15 @@ export default function VolumePromosView({ products }: VolumePromosViewProps) {
                             Aktif
                           </span>
                         )}
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <button
+                          onClick={() => handleStopPromo(product)}
+                          title="Hentikan Promo"
+                          className="p-1.5 rounded-lg text-ink/20 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </td>
                     </tr>
                   );

@@ -93,7 +93,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   const [adminUser, setAdminUser] = useState<{ id: string; email?: string; role?: string } | null>(initialUser);
   
   // Hooks for Data
-  const { products, toggleFeatured, deleteProduct } = useAdminProducts();
+  const { products, toggleFeatured, deleteProduct, fetchProducts } = useAdminProducts();
   const { orders, setOrders, pendingOrdersCount } = useAdminOrders();
   const { customers, fetchCustomers, pendingReturnsCount } = useAdminCustomers();
   const { chatSessions, activeChatSession, setActiveChatSession, fetchChatSessions, sendMessage } = useAdminSupport();
@@ -1097,7 +1097,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
           {activeTab === 'affiliates' && <AffiliatesTab />}
 
           {activeTab === 'marketing' && <MarketingTab />}
-          {activeTab === 'programs' && <ProgramsTab products={products} />}
+          {activeTab === 'programs' && <ProgramsTab products={products} onRefreshProducts={fetchProducts} />}
           {activeTab === 'banners' && <BannersTab />}
 
           {activeTab === 'settings' && <SettingsTab />}

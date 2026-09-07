@@ -1,17 +1,16 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Product } from '@/components/admin/types';
 import Image from 'next/image';
-import { Tag, Package, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { Tag, Package, CheckCircle, Clock, XCircle, Plus, Trash2 } from 'lucide-react';
 import { isDiscountActive } from '@/lib/domain/product';
+import { createClient } from '@/utils/supabase/client';
 
 interface DiscountPeriodsViewProps {
   products: Product[];
+  onCreatePromo: () => void;
+  onRefresh: () => void;
 }
 
-/**
- * Determines discount status category for sorting and display.
- * Uses isDiscountActive as the single source of truth, then further classifies pending/expired.
- */
 function getDiscountStatus(product: Product): 'active' | 'pending' | 'expired' {
   if (isDiscountActive(product)) return 'active';
   
@@ -27,7 +26,9 @@ const STATUS_CONFIG = {
   expired: { label: 'Berakhir',   className: 'bg-gray-100 text-gray-500',      icon: XCircle,     sortOrder: 2 },
 } as const;
 
-export default function DiscountPeriodsView({ products }: DiscountPeriodsViewProps) {
+export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh }: DiscountPeriodsViewProps) {
+  const supabase = createClient();
+
   const discountProducts = useMemo(() => {
     return products
       .filter((p) => p.original_price != null && p.original_price > 0)
@@ -35,7 +36,6 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
       .sort((a, b) => STATUS_CONFIG[a._status].sortOrder - STATUS_CONFIG[b._status].sortOrder);
   }, [products]);
 
-  // Compute summary stats inside useMemo to avoid re-computation
   const stats = useMemo(() => {
     let active = 0, pending = 0, expired = 0;
     for (const p of discountProducts) {
@@ -46,10 +46,23 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
     return { total: discountProducts.length, active, pending, expired };
   }, [discountProducts]);
 
+  const handleStopDiscount = useCallback(async (product: Product) => {
+    if (!confirm(`Hentikan diskon untuk "${product.name}"? Harga akan dikembalikan ke harga coret (Rp ${product.original_price?.toLocaleString('id-ID')}).`)) return;
+
+    await supabase.from('products').update({
+      price: product.original_price,
+      original_price: null,
+      discount_start_date: null,
+      discount_end_date: null,
+    }).eq('id', product.id);
+
+    onRefresh();
+  }, [supabase, onRefresh]);
+
   return (
     <div className="flex flex-col h-full space-y-4">
-      {/* Header Stats — fill all 3 columns */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      {/* Header Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <div className="bg-rose/5 border border-rose/10 p-3 rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-rose/60 font-semibold mb-0.5">Total Produk Diskon</p>
@@ -77,6 +90,19 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
             <Clock size={18} />
           </div>
         </div>
+        {/* CREATE PROMO BUTTON */}
+        <button
+          onClick={onCreatePromo}
+          className="bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white p-3 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-rose-500/20 active:scale-[0.98]"
+        >
+          <div>
+            <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold mb-0.5">Tambah Produk</p>
+            <p className="text-sm font-display font-semibold italic uppercase">+ Buat Promo</p>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Plus size={20} strokeWidth={3} />
+          </div>
+        </button>
       </div>
 
       {/* Table Area */}
@@ -90,14 +116,16 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Harga Diskon</th>
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Jadwal Periode</th>
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Status</th>
+                <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider w-16">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/5">
               {discountProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-ink/40">
+                  <td colSpan={6} className="px-4 py-12 text-center text-ink/40">
                     <Package size={24} className="mx-auto mb-2 opacity-50" />
                     <p className="text-xs uppercase tracking-widest font-medium">Tidak ada produk diskon</p>
+                    <p className="text-[10px] text-ink/30 mt-1">Klik &quot;+ Buat Promo&quot; untuk menambahkan produk ke program diskon</p>
                   </td>
                 </tr>
               ) : (
@@ -105,9 +133,10 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                   const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
                   const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
                   const statusCfg = STATUS_CONFIG[product._status];
+                  const discountPct = product.original_price ? Math.round(((product.original_price - product.price) / product.original_price) * 100) : 0;
 
                   return (
-                    <tr key={product.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={product.id} className="hover:bg-gray-50 transition-colors group">
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative border border-ink/5">
@@ -129,9 +158,14 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                         </span>
                       </td>
                       <td className="px-4 py-2.5">
-                        <span className="text-[11px] font-semibold text-rose">
-                          Rp {product.price.toLocaleString('id-ID')}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[11px] font-semibold text-rose">
+                            Rp {product.price.toLocaleString('id-ID')}
+                          </span>
+                          {discountPct > 0 && (
+                            <span className="text-[9px] font-bold text-white bg-rose px-1.5 py-0.5 rounded">-{discountPct}%</span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-4 py-2.5" suppressHydrationWarning>
                         <div className="flex flex-col gap-0.5">
@@ -155,6 +189,15 @@ export default function DiscountPeriodsView({ products }: DiscountPeriodsViewPro
                         <span className={`inline-flex items-center px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${statusCfg.className}`}>
                           {statusCfg.label}
                         </span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <button
+                          onClick={() => handleStopDiscount(product)}
+                          title="Hentikan Diskon"
+                          className="p-1.5 rounded-lg text-ink/20 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <Trash2 size={14} />
+                        </button>
                       </td>
                     </tr>
                   );
