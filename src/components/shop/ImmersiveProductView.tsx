@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus, ShoppingBag, Star, Share2, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import { Product } from '@/types/shop';
+import { isDiscountActive } from '@/lib/domain/product';
 import { useHydratedCart } from '@/store/useCart';
 import { useCart, SURCHARGE_SIZES, SIZE_SURCHARGE_AMOUNT } from '@/store/useCart';
 import { clsx, type ClassValue } from 'clsx';
@@ -504,25 +505,21 @@ export default function ImmersiveProductView({
                </div>
                
                {/* Product Info */}
-               <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2 gap-0.5">
+               <div suppressHydrationWarning className="flex-1 flex flex-col justify-center overflow-hidden pr-2 gap-0.5">
                  {(() => {
-                   const now = new Date();
-                   const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
-                   const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
-                   const isWithinPeriod = (!start || now >= start) && (!end || now <= end);
-                   const hasDiscount = product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && isWithinPeriod;
+                   const hasDiscount = isDiscountActive(product);
 
                    if (hasDiscount) {
                      return (
                        <>
-                         <span className={cn("font-bold text-sm leading-none text-rose")}>
+                         <span suppressHydrationWarning className={cn("font-bold text-sm leading-none text-rose")}>
                            Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
                          </span>
-                         <div className="flex items-center gap-1.5 mb-1">
-                           <span className="bg-rose/10 text-rose px-1 py-[1px] rounded-[2px] text-[8px] font-bold leading-none">
+                         <div suppressHydrationWarning className="flex items-center gap-1.5 mb-1">
+                           <span suppressHydrationWarning className="bg-rose/10 text-rose px-1 py-[1px] rounded-[2px] text-[8px] font-bold leading-none">
                              {Math.round(((product.original_price! - product.price) / product.original_price!) * 100)}%
                            </span>
-                           <span className="line-through text-ink/40 text-[9px] font-medium not-italic leading-none">
+                           <span suppressHydrationWarning className="line-through text-ink/40 text-[9px] font-medium not-italic leading-none">
                              Rp {product.original_price!.toLocaleString('id-ID')}
                            </span>
                          </div>
@@ -530,7 +527,7 @@ export default function ImmersiveProductView({
                      );
                    }
                    return (
-                     <span className={cn("font-bold text-sm leading-none mb-1", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-ink')}>
+                     <span suppressHydrationWarning className={cn("font-bold text-sm leading-none mb-1", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-ink')}>
                        Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
                      </span>
                    );

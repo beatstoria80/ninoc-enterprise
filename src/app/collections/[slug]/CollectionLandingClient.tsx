@@ -9,6 +9,7 @@ import { getProductStock } from '@/lib/utils';
 import { Collection, Product } from '@/components/admin/types';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
 import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
+import { isDiscountActive } from '@/lib/domain/product';
 
 // ═══════════════════════════════════════════════════════════════
 // ANIMATION ENGINE
@@ -92,13 +93,19 @@ function ProductCard({ product }: { product: Product }) {
             )}
 
             {/* Discount Badge - Top Right (below price_tag if exists) */}
-            {product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' && (
-              <div className={`absolute ${product.price_tag ? 'top-10 md:top-8' : 'top-2'} right-2 z-10 bg-orange-500 text-white px-2 py-1 rounded-[2px] shadow-md`}>
-                <span className="text-[10px] md:text-[8px] font-bold leading-none">
-                  -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
-                </span>
-              </div>
-            )}
+            {(() => {
+              const hasDiscount = isDiscountActive(product);
+              if (hasDiscount) {
+                return (
+                  <div suppressHydrationWarning className={`absolute ${product.price_tag ? 'top-10 md:top-8' : 'top-2'} right-2 z-10 bg-orange-500 text-white px-2 py-1 rounded-[2px] shadow-md`}>
+                    <span suppressHydrationWarning className="text-[10px] md:text-[8px] font-bold leading-none">
+                      -{Math.round(((product.original_price! - (product.price || 0)) / product.original_price!) * 100)}%
+                    </span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
 
           <div className="p-2.5 md:p-2 flex flex-col flex-grow justify-between gap-2 md:gap-1.5">
@@ -120,15 +127,21 @@ function ProductCard({ product }: { product: Product }) {
                   </span>
                 </div>
               )}
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  {product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' && (
-                    <span className="line-through text-ink/40 text-[10px] md:text-[8px] lg:text-[8.5px] font-medium not-italic leading-none mb-0.5">
-                      IDR {product.original_price.toLocaleString('id-ID')}
-                    </span>
-                  )}
-                  <div className="flex items-center gap-1.5">
-                    <div className="text-sm md:text-[9px] lg:text-[10px] font-display font-semibold italic text-rose leading-none">
+              <div suppressHydrationWarning className="flex items-center justify-between">
+                <div suppressHydrationWarning className="flex flex-col">
+                  {(() => {
+                    const hasDiscount = isDiscountActive(product);
+                    if (hasDiscount) {
+                      return (
+                        <span suppressHydrationWarning className="line-through text-ink/40 text-[10px] md:text-[8px] lg:text-[8.5px] font-medium not-italic leading-none mb-0.5">
+                          IDR {product.original_price!.toLocaleString('id-ID')}
+                        </span>
+                      );
+                    }
+                    return null;
+                  })()}
+                  <div suppressHydrationWarning className="flex items-center gap-1.5">
+                    <div suppressHydrationWarning className="text-sm md:text-[9px] lg:text-[10px] font-display font-semibold italic text-rose leading-none">
                       {product.price_tag === 'REDEEM' ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
                     </div>
                   </div>

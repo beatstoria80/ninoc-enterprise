@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { ShoppingBag } from 'lucide-react';
+import { isDiscountActive } from '@/lib/domain/product';
 import { useHydratedCart } from '@/store/useCart';
 import { useRouter } from 'next/navigation';
 
@@ -73,15 +74,12 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
 
         {/* Discount Badge - Top Right */}
         {(() => {
-          const now = new Date();
-          const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
-          const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
-          const isWithinPeriod = (!start || now >= start) && (!end || now <= end);
-          if (product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && isWithinPeriod) {
+          const hasDiscount = isDiscountActive(product);
+          if (hasDiscount) {
             return (
-              <div className="absolute top-1.5 right-1.5 z-10 bg-orange-500 text-white px-1.5 py-0.5 rounded-[2px] shadow-md">
-                <span className="text-[9px] font-bold leading-none">
-                  -{Math.round(((product.original_price - product.price) / product.original_price) * 100)}%
+              <div suppressHydrationWarning className="absolute top-1.5 right-1.5 z-10 bg-orange-500 text-white px-1.5 py-0.5 rounded-[2px] shadow-md">
+                <span suppressHydrationWarning className="text-[9px] font-bold leading-none">
+                  -{Math.round(((product.original_price! - product.price) / product.original_price!) * 100)}%
                 </span>
               </div>
             );
@@ -107,25 +105,21 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
             {product.price_tag}
           </p>
         )}
-        <div className="flex flex-col gap-0.5 mt-0.5">
+        <div suppressHydrationWarning className="flex flex-col gap-0.5 mt-0.5">
           {(() => {
-            const now = new Date();
-            const start = product.discount_start_date ? new Date(product.discount_start_date) : null;
-            const end = product.discount_end_date ? new Date(product.discount_end_date) : null;
-            const isWithinPeriod = (!start || now >= start) && (!end || now <= end);
-            const hasDiscount = product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && isWithinPeriod;
+            const hasDiscount = isDiscountActive(product);
 
             if (hasDiscount) {
               return (
                 <>
-                  <p className={cn("text-base md:text-[12px] font-display font-bold italic text-rose")}>
+                  <p suppressHydrationWarning className={cn("text-base md:text-[12px] font-display font-bold italic text-rose")}>
                     IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </p>
-                  <div className="flex items-center gap-1.5">
-                    <span className="bg-rose/10 text-rose px-1 py-[1px] rounded-[2px] text-[8px] font-bold leading-none">
+                  <div suppressHydrationWarning className="flex items-center gap-1.5">
+                    <span suppressHydrationWarning className="bg-rose/10 text-rose px-1 py-[1px] rounded-[2px] text-[8px] font-bold leading-none">
                       {Math.round(((product.original_price! - product.price) / product.original_price!) * 100)}%
                     </span>
-                    <span className="line-through text-ink/40 text-[9px] md:text-[8px] font-medium not-italic leading-none">
+                    <span suppressHydrationWarning className="line-through text-ink/40 text-[9px] md:text-[8px] font-medium not-italic leading-none">
                       IDR {product.original_price!.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                     </span>
                   </div>
@@ -133,7 +127,7 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
               );
             }
             return (
-              <p className={cn("text-base md:text-[12px] font-display font-bold italic", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-emerald-700')}>
+              <p suppressHydrationWarning className={cn("text-base md:text-[12px] font-display font-bold italic", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-emerald-700')}>
                 IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
               </p>
             );
