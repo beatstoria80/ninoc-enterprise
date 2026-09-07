@@ -8,6 +8,8 @@ export interface Product {
   original_price?: number | null;
   discount_start_date?: string | null;
   discount_end_date?: string | null;
+  bundle_min_qty?: number | null;
+  bundle_discount_amount?: number | null;
   image_url: string;
   image_alt?: string | null;
   category: string;

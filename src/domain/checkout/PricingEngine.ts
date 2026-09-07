@@ -28,6 +28,8 @@ export interface ProcessedOrderItem {
   supplier_id?: string | null;
   supplier_hpp?: number;
   ninoc_markup?: number;
+  bundle_min_qty?: number | null;
+  bundle_discount_amount?: number | null;
 }
 
 export interface PricingPolicyConfig {
@@ -162,6 +164,22 @@ export class PricingEngine {
         flash_sale_item_id: flashSaleItemId,
         flash_sale_max_qty: flashSaleMatch ? flashSaleMatch.max_qty_per_user : null
       });
+
+      // Apply Bundle/Volume Discount if eligible and NOT a flash sale AND NOT a regular discount product
+      if (!flashSaleMatch && !dbProduct.original_price && dbProduct.bundle_min_qty && dbProduct.bundle_discount_amount && item.quantity >= dbProduct.bundle_min_qty) {
+        const bundleMultiplier = Math.floor(item.quantity / dbProduct.bundle_min_qty);
+        const totalBundleDiscount = bundleMultiplier * Number(dbProduct.bundle_discount_amount);
+        
+        if (totalBundleDiscount > 0) {
+          domainItems.push({
+            id: `BUNDLE_${item.id}`,
+            price: -totalBundleDiscount,
+            quantity: 1,
+            name: `Promo Beli ${dbProduct.bundle_min_qty} (${dbProduct.name})`.substring(0, this.policy.maxItemNameLength),
+          });
+          calculatedGrossAmount -= totalBundleDiscount;
+        }
+      }
     }
 
     // Sort dbOrderItems by product_id and variant_id to guarantee deterministic row-level lock ordering

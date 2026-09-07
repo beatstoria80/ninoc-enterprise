@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Upload, Trash2, Edit2, Plus, ArrowRightLeft, Download, ToggleRight, ToggleLeft, Save, Search, PanelRightClose } from "lucide-react";
+import { X, Upload, Trash2, Edit2, Plus, ArrowRightLeft, Download, ToggleRight, ToggleLeft, Save, Search, PanelRightClose, GripVertical, Check, Info, CalendarClock, PackagePlus } from "lucide-react";
 import Image from "next/image";
 import { isFnBDepartment, isObjectsDepartment } from "@/lib/departmentDomain";
 import { compressImage, forceDownloadImage } from "@/lib/utils/imageUtils";
@@ -333,6 +333,60 @@ export function ProductModal(props: any) {
                           })()}
                         </div>
                       ) : null}
+                    </div>
+
+                    {/* BUNDLE / VOLUME PROMO SECTION */}
+                    <div className={cn("p-2 rounded-lg border flex flex-col gap-2 transition-colors", 
+                      productForm.original_price ? "bg-gray-50 border-gray-100 opacity-60" : "bg-purple-50/50 border-purple-100"
+                    )}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <PackagePlus size={14} className={productForm.original_price ? "text-gray-400" : "text-purple-600"} />
+                          <label className={cn("block text-[10px] uppercase tracking-wider font-semibold", 
+                            productForm.original_price ? "text-gray-400" : "text-purple-700/80"
+                          )}>Volume Promo / Grosir (Potongan Langsung)</label>
+                        </div>
+                        {productForm.bundle_min_qty && !productForm.original_price ? (
+                          <button
+                            type="button"
+                            onClick={() => setProductForm({ ...productForm, bundle_min_qty: null, bundle_discount_amount: null })}
+                            className="text-[8px] uppercase tracking-wider font-semibold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-1.5 py-0.5 rounded transition-colors"
+                          >
+                            Hapus Promo
+                          </button>
+                        ) : null}
+                      </div>
+                      
+                      {productForm.original_price ? (
+                        <p className="text-[9px] text-gray-400 leading-tight">
+                          ❌ Promo Volume tidak dapat diaktifkan karena produk ini sedang mengikuti program Diskon Coret.
+                        </p>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[9px] uppercase tracking-wider text-purple-700/70 mb-1 font-semibold">Minimal Beli (Qty)</label>
+                            <input
+                              type="number"
+                              min="2"
+                              placeholder="Misal: 2"
+                              value={productForm.bundle_min_qty || ''}
+                              onChange={(e) => setProductForm({ ...productForm, bundle_min_qty: e.target.value ? parseInt(e.target.value) : null })}
+                              className="w-full px-2 py-1.5 border border-purple-200 rounded-lg text-xs focus:outline-none focus:border-purple-400 bg-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[9px] uppercase tracking-wider text-purple-700/70 mb-1 font-semibold">Total Diskon (Rp)</label>
+                            <input
+                              type="number"
+                              min="0"
+                              placeholder="Misal: 25000"
+                              value={productForm.bundle_discount_amount || ''}
+                              onChange={(e) => setProductForm({ ...productForm, bundle_discount_amount: e.target.value ? parseFloat(e.target.value) : null })}
+                              className="w-full px-2 py-1.5 border border-purple-200 rounded-lg text-xs focus:outline-none focus:border-purple-400 bg-white"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid grid-cols-1 gap-3">

@@ -532,10 +532,25 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     </span>
                   )}
                 </motion.div>
-                <motion.div variants={textVariants} className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
-                  <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={remainingStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
-                  <span className="text-sm md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
-                  <button onClick={() => setQuantity(displayQuantity + 1)} disabled={remainingStock === 0 || displayQuantity >= remainingStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
+
+                {/* Bundle Promo Badge */}
+                {product.bundle_min_qty && product.bundle_discount_amount && !product.original_price && (
+                  <motion.div variants={textVariants} className="mb-4">
+                    <div className="inline-flex items-center gap-1.5 bg-purple-50 border border-purple-100 text-purple-700 px-2.5 py-1.5 rounded-md shadow-sm">
+                      <span className="text-sm">🎁</span>
+                      <span className="text-[10px] md:text-xs font-semibold leading-tight">
+                        Spesial! Beli {product.bundle_min_qty} Diskon Langsung Rp {product.bundle_discount_amount.toLocaleString('id-ID')}
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
+                <motion.div variants={textVariants} className="mt-1">
+                  <div className="flex items-center gap-2 w-fit border border-ink/10 px-3 py-2 rounded-none bg-white">
+                    <button onClick={() => setQuantity(Math.max(1, displayQuantity - 1))} disabled={remainingStock === 0 || displayQuantity <= 1} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Minus size={14} strokeWidth={2} /></button>
+                    <span className="text-sm md:text-sm lg:text-sm font-medium w-10 text-center text-ink">{displayQuantity}</span>
+                    <button onClick={() => setQuantity(displayQuantity + 1)} disabled={remainingStock === 0 || displayQuantity >= remainingStock} className="w-6 h-6 flex items-center justify-center transition-all text-ink/60 hover:text-rose disabled:opacity-30"><Plus size={14} strokeWidth={2} /></button>
+                  </div>
                 </motion.div>
               </div>
 

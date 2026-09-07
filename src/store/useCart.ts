@@ -25,6 +25,8 @@ export interface CartItem {
   warehouse_id?: string | null;
   origin_postal_code?: string;
   warehouse_name?: string;
+  bundle_min_qty?: number | null;
+  bundle_discount_amount?: number | null;
 }
 
 interface CartStore {
@@ -38,7 +40,14 @@ interface CartStore {
 }
 
 const calculateTotal = (items: CartItem[]) => {
-  return items.reduce((acc, item) => acc + ((item.price + (item.size_surcharge || 0)) * item.quantity), 0);
+  return items.reduce((acc, item) => {
+    let itemTotal = (item.price + (item.size_surcharge || 0)) * item.quantity;
+    if (item.bundle_min_qty && item.bundle_discount_amount && item.quantity >= item.bundle_min_qty) {
+      const bundleMultiplier = Math.floor(item.quantity / item.bundle_min_qty);
+      itemTotal -= (bundleMultiplier * item.bundle_discount_amount);
+    }
+    return acc + itemTotal;
+  }, 0);
 };
 
 export const useCart = create<CartStore>()(
@@ -72,6 +81,8 @@ export const useCart = create<CartStore>()(
                   warehouse_id: product.warehouse_id ?? existingItem.warehouse_id,
                   origin_postal_code: product.origin_postal_code ?? existingItem.origin_postal_code,
                   warehouse_name: product.warehouse_name ?? existingItem.warehouse_name,
+                  bundle_min_qty: product.bundle_min_qty ?? existingItem.bundle_min_qty,
+                  bundle_discount_amount: product.bundle_discount_amount ?? existingItem.bundle_discount_amount,
                   size_surcharge: sizeSurcharge ?? existingItem.size_surcharge
                 }
               : item

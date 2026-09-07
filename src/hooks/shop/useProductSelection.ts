@@ -85,6 +85,8 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
       warehouse_id: product.warehouse_id,
       origin_postal_code: product.warehouses?.postal_code,
       warehouse_name: product.warehouses?.city ? `Fasilitas ${product.warehouses.city}` : (product.warehouses?.name || undefined),
+      bundle_min_qty: product.bundle_min_qty,
+      bundle_discount_amount: product.bundle_discount_amount,
     }, effectiveSize, effectiveColor, sizeSurcharge, qtyToAdd, availableStock);
     
     if (result && (result as any).success === false) {
@@ -108,6 +110,8 @@ export function useProductSelection(initialProduct: any, initialReviews: any[]) 
           warehouse_id: product.warehouse_id,
           origin_postal_code: product.warehouses?.postal_code,
           warehouse_name: newWarehouseName,
+          bundle_min_qty: product.bundle_min_qty,
+          bundle_discount_amount: product.bundle_discount_amount,
         },
         options: {
           size: effectiveSize || undefined,
