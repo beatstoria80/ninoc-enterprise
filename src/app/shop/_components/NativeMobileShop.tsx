@@ -18,6 +18,7 @@ interface ProductCardProps {
   name: string;
   slug: string;
   price: number;
+  original_price?: number | null;
   image_url: string;
   category: string;
   index: number;
