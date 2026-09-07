@@ -86,9 +86,16 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
             {product.price_tag}
           </p>
         )}
-        <p className="text-base md:text-[12px] font-display font-bold italic text-emerald-700 pt-0.5">
-          IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-        </p>
+        <div className="flex flex-col">
+          {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && (
+            <span className="line-through text-ink/40 text-[9px] md:text-[8px] font-medium not-italic leading-none mb-0.5">
+              IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+            </span>
+          )}
+          <p className={cn("text-base md:text-[12px] font-display font-bold italic pt-0.5", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-emerald-700')}>
+            IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+          </p>
+        </div>
       </div>
     </motion.div>
   );

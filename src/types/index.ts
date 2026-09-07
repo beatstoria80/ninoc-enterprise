@@ -34,6 +34,7 @@ export interface Product {
   description: string | null;
   description_en?: string | null;
   price: number;
+  original_price?: number | null;
   category: CategoryType;
   sub_category?: string | null;
   image_url: string | null;

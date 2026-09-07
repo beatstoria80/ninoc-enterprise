@@ -200,15 +200,25 @@ export function ProductModal(props: any) {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Harga (IDR)</label>
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Harga Final (IDR)</label>
                         <input
                           type="text"
                           value={productForm.price}
                           onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                           placeholder="e.g. 149000"
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 font-semibold text-ink"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Harga Normal (Coret)</label>
+                        <input
+                          type="text"
+                          value={productForm.original_price || ''}
+                          onChange={(e) => setProductForm({ ...productForm, original_price: e.target.value ? parseInt(e.target.value, 10) : null })}
+                          placeholder="e.g. 199000 (Opsional)"
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 text-ink/70"
                         />
                       </div>
                       <div>

@@ -112,9 +112,16 @@ function ProductCard({ product }: { product: Product }) {
                 </div>
               )}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <div className="text-sm md:text-[9px] lg:text-[10px] font-display font-semibold italic text-rose">
-                    {product.price_tag === 'REDEEM' ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+                <div className="flex flex-col">
+                  {product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' && (
+                    <span className="line-through text-ink/40 text-[10px] md:text-[8px] lg:text-[8.5px] font-medium not-italic leading-none mb-0.5">
+                      IDR {product.original_price.toLocaleString('id-ID')}
+                    </span>
+                  )}
+                  <div className="flex items-center gap-1.5">
+                    <div className="text-sm md:text-[9px] lg:text-[10px] font-display font-semibold italic text-rose leading-none">
+                      {product.price_tag === 'REDEEM' ? `${(product.price ?? 0).toLocaleString('id-ID')} PTS` : `IDR ${(product.price ?? 0).toLocaleString('id-ID')}`}
+                    </div>
                   </div>
                 </div>
                 <div

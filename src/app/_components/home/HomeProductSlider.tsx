@@ -79,7 +79,7 @@ function PressButton({ children, className = '', onClick, href, whileHover, whil
 }
 
 interface Product {
-  id: string; name: string; price: number; image_url?: string; slug: string; category?: CategoryType; price_tag?: string | null;
+  id: string; name: string; price: number; original_price?: number | null; image_url?: string; slug: string; category?: CategoryType; price_tag?: string | null;
 }
 
 function ProductCard({ product, index }: { product: Product, index: number }) {
@@ -176,13 +176,20 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
               </div>
             )}
             <div className="flex items-center justify-between">
-              <motion.p
-                className="text-xs md:text-[12px] font-display font-medium italic text-ink whitespace-nowrap leading-none"
-                animate={{ scale: isHovered ? 1.02 : 1 }}
-                transition={{ duration: DURATION.fast }}
-              >
-                IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-              </motion.p>
+              <div className="flex flex-col">
+                {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && (
+                  <span className="line-through text-ink/40 text-[9px] md:text-[10px] font-medium not-italic leading-none mb-0.5">
+                    IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                  </span>
+                )}
+                <motion.p
+                  className={cn("text-xs md:text-[12px] font-display font-medium italic whitespace-nowrap leading-none", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-ink')}
+                  animate={{ scale: isHovered ? 1.02 : 1 }}
+                  transition={{ duration: DURATION.fast }}
+                >
+                  IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                </motion.p>
+              </div>
 
               <div className="flex gap-1.5 relative z-10">
                 <motion.div

@@ -270,9 +270,16 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                 <motion.h1 variants={textVariants} className="text-base md:text-base lg:text-lg font-display font-medium italic tracking-tighter text-ink leading-normal uppercase mb-1">{product.name}</motion.h1>
 
                 <motion.div variants={textVariants} className="flex flex-wrap items-center gap-3 mt-0.5">
-                  <p className="text-base md:text-sm lg:text-base font-display font-semibold italic text-emerald-700">
-                    IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                  </p>
+                  <div className="flex flex-col">
+                    {product.original_price && product.original_price > (product.price || 0) && product.price_tag !== 'REDEEM' && (
+                      <span className="line-through text-ink/40 text-[11px] md:text-xs lg:text-[13px] font-medium not-italic leading-none mb-0.5">
+                        IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </span>
+                    )}
+                    <p className={cn("text-base md:text-sm lg:text-base font-display font-semibold italic", product.price_tag !== 'REDEEM' ? 'text-emerald-700' : 'text-rose')}>
+                      IDR {product.price?.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                    </p>
+                  </div>
                   
                   {product.price_tag && (
                     <div className="flex items-center gap-1.5 border border-rose/20 px-2.5 py-0.5 bg-rose/[0.02] ml-auto">

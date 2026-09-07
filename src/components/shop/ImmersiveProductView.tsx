@@ -505,7 +505,12 @@ export default function ImmersiveProductView({
                
                {/* Product Info */}
                <div className="flex-1 flex flex-col justify-center overflow-hidden pr-2">
-                 <span className="text-ink font-bold text-sm leading-none mb-1">
+                 {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && (
+                   <span className="line-through text-ink/40 text-[9px] font-medium not-italic leading-none mb-0.5">
+                     Rp {product.original_price.toLocaleString('id-ID')}
+                   </span>
+                 )}
+                 <span className={cn("font-bold text-sm leading-none mb-1", product.price_tag && !product.price_tag.includes('REDEEM') ? 'text-rose' : 'text-ink')}>
                    Rp {(product.price + currentSurcharge).toLocaleString('id-ID')}
                  </span>
                  <span className="text-[10px] text-gray-600 truncate leading-tight font-medium">

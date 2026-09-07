@@ -41,6 +41,7 @@ export interface Product {
   measurements?: { size: string; chest?: string; shoulder?: string; sleeve?: string; waist?: string; length: string; leg_opening?: string; thigh?: string; hip?: string }[] | null;
   model_info?: string | null;
   price: number;
+  original_price?: number | null;
   category: string;
   sub_category?: string | null;
   image_url: string | null;

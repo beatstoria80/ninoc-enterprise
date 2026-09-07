@@ -12,6 +12,10 @@ export interface ProductVariant {
 export interface Product {
   id: string;
   name: string;
+  slug: string;
+  description: string;
+  price: number;
+  original_price?: number | null;
   variants?: ProductVariant[];
 }
 
