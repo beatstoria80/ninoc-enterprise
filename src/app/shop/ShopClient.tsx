@@ -10,6 +10,7 @@ import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { getProductStock } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { isDiscountActive } from '@/lib/domain/product';
 import { useDevice } from '@/app/checkout/_components/useDevice';
 import ImageLightbox from '@/components/ImageLightbox';
 import { getDictionaryByLocale, Locale } from '@/lib/i18n';
@@ -234,8 +235,20 @@ function MobileShopView({ filterSystem, dict, activeFlashSales }: { filterSystem
                         {FlashSaleService.evaluateFlashSalePricing(product.id, null, activeFlashSales) ? (
                           <FlashSaleBadge />
                         ) : (
-                          <div className="absolute top-2 left-2 bg-ink text-white px-2 py-1 text-[8px] font-medium uppercase tracking-[0.25em] shadow-sm">
-                            {product.badge_text || 'STUDIO'}
+                          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10 pointer-events-none">
+                            <div className="bg-ink text-white px-2 py-1 text-[8px] font-medium uppercase tracking-[0.25em] shadow-sm w-max">
+                              {product.badge_text || 'STUDIO'}
+                            </div>
+                            {isDiscountActive(product) && product.original_price && (
+                              <div className="bg-rose text-white px-2 py-1 text-[8px] font-bold uppercase tracking-[0.25em] shadow-sm w-max">
+                                SALE -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+                              </div>
+                            )}
+                            {product.bundle_min_qty && product.bundle_discount_amount && !isDiscountActive(product) && (
+                              <div className="bg-amber-500 text-white px-2 py-1 text-[8px] font-bold uppercase tracking-[0.25em] shadow-sm w-max">
+                                GROSIR
+                              </div>
+                            )}
                           </div>
                         )}
                         
@@ -259,9 +272,22 @@ function MobileShopView({ filterSystem, dict, activeFlashSales }: { filterSystem
                                 {(product.price ?? 0).toLocaleString('id-ID')} PTS
                               </span>
                             ) : (
-                              <span className="text-[11px] font-display font-bold italic text-emerald-700">
-                                IDR {(product.price ?? 0).toLocaleString('id-ID')}
-                              </span>
+                              <div className="flex flex-col">
+                                {isDiscountActive(product) && product.original_price ? (
+                                  <>
+                                    <span className="text-[9px] font-medium text-ink/40 line-through -mb-0.5">
+                                      IDR {(product.original_price ?? 0).toLocaleString('id-ID')}
+                                    </span>
+                                    <span className="text-[11px] font-display font-bold italic text-rose">
+                                      IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="text-[11px] font-display font-bold italic text-emerald-700">
+                                    IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                                  </span>
+                                )}
+                              </div>
                             )}
                             <div
                               role="button"
@@ -365,8 +391,20 @@ function DesktopShopView({ filterSystem, dict, activeFlashSales }: { filterSyste
                            <FlashSaleBadge />
                         </div>
                       ) : (
-                        <div className="absolute top-0 left-0 bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] z-10 shadow-sm pointer-events-none">
-                          {product.badge_text || 'STUDIO EDITION'}
+                        <div className="absolute top-0 left-0 flex flex-col gap-1.5 z-10 pointer-events-none w-full">
+                          <div className="bg-ink text-white px-2 py-1 text-[10px] md:text-[7px] font-medium uppercase tracking-[0.3em] shadow-sm w-max">
+                            {product.badge_text || 'STUDIO EDITION'}
+                          </div>
+                          {isDiscountActive(product) && product.original_price && (
+                            <div className="bg-rose text-white px-2 py-1 text-[10px] md:text-[7px] font-bold uppercase tracking-[0.3em] shadow-sm w-max">
+                              SALE -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+                            </div>
+                          )}
+                          {product.bundle_min_qty && product.bundle_discount_amount && !isDiscountActive(product) && (
+                            <div className="bg-amber-500 text-white px-2 py-1 text-[10px] md:text-[7px] font-bold uppercase tracking-[0.3em] shadow-sm w-max">
+                              GROSIR
+                            </div>
+                          )}
                         </div>
                       )}
 
@@ -405,8 +443,21 @@ function DesktopShopView({ filterSystem, dict, activeFlashSales }: { filterSyste
                                 {(product.price ?? 0).toLocaleString('id-ID')} PTS
                               </div>
                             ) : (
-                              <div className="text-base md:text-sm font-display font-bold italic text-emerald-700">
-                                IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                              <div className="flex flex-col">
+                                {isDiscountActive(product) && product.original_price ? (
+                                  <>
+                                    <span className="text-[10px] font-medium text-ink/40 line-through -mb-1">
+                                      IDR {(product.original_price ?? 0).toLocaleString('id-ID')}
+                                    </span>
+                                    <div className="text-base md:text-sm font-display font-bold italic text-rose">
+                                      IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="text-base md:text-sm font-display font-bold italic text-emerald-700">
+                                    IDR {(product.price ?? 0).toLocaleString('id-ID')}
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>

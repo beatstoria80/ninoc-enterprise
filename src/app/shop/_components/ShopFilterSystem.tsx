@@ -25,6 +25,11 @@ export interface ShopProduct {
   perspective2?: string | null;
   perspective3?: string | null;
   perspective4?: string | null;
+  original_price?: number | null;
+  discount_start_date?: string | null;
+  discount_end_date?: string | null;
+  bundle_min_qty?: number | null;
+  bundle_discount_amount?: number | null;
   specifications?: Array<{ label: string; value: string }> | null;
   variants?: Array<{
     id?: string;
