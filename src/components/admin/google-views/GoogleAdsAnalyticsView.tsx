@@ -79,62 +79,50 @@ export function GoogleAdsAnalyticsView({
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20">
       
-      {/* Top Metrics Grid - Compact & Data Dense */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="bg-blue-600 text-white rounded-lg p-3 shadow-sm flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 blur-xl group-hover:bg-white/20 transition-colors" />
-          <p className="text-[10px] font-bold text-white/80 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><DollarSign size={12}/> Biaya Iklan</p>
-          <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight font-medium">Rp {fIDR(dynamicOverview.totalSpend)}</p>
-          </div>
-        </div>
-
-        <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
-          <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Target size={12}/> Konversi</p>
-          <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-emerald-600 font-medium">{dynamicOverview.totalConversions.toLocaleString('id-ID')}</p>
-            <p className="text-[9px] text-ink/40 font-mono">Rp {fIDR(dynamicOverview.cpa)} CPA</p>
-          </div>
-        </div>
-
-        <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
-          <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MousePointerClick size={12}/> Klik</p>
-          <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-ink font-medium">{dynamicOverview.totalClicks.toLocaleString('id-ID')}</p>
-            <p className="text-[9px] text-ink/40 font-mono">Rp {fIDR(dynamicOverview.cpc)} CPC</p>
-          </div>
-        </div>
-
-        <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
-          <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Eye size={12}/> Tayangan</p>
-          <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-ink font-medium">{dynamicOverview.totalImpressions.toLocaleString('id-ID')}</p>
-            <p className="text-[9px] text-ink/40 font-mono">Rp {fIDR(dynamicOverview.cpm)} CPM</p>
-          </div>
-        </div>
-
-        <div className="bg-emerald-50/50 border border-emerald-100 rounded-lg p-3 shadow-sm flex flex-col justify-between relative overflow-hidden">
-          <p className="text-[10px] font-bold text-emerald-800/60 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">Avg ROAS & CTR</p>
-          <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-emerald-700 font-medium">{dynamicOverview.averageRoas.toFixed(1)}x</p>
-            <p className="text-[10px] font-bold text-emerald-600/70 mt-1">{dynamicOverview.averageCtr.toFixed(2)}%</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Trend Chart */}
-      <div className="bg-white border border-ink/10 rounded-xl p-5 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h3 className="text-sm font-bold text-ink flex items-center gap-2">
-              <Activity size={16} className="text-blue-600" />
-              Performa Google Ads
-            </h3>
-            <p className="text-[11px] text-ink/60 mt-1">Tren Biaya (Spend) vs Konversi</p>
-          </div>
-        </div>
+      {/* Native Google Ads Chart UI */}
+      <div className="bg-white border border-ink/10 rounded-xl shadow-sm overflow-hidden mb-6">
         
-        <div className="h-72 w-full">
+        {/* 4 Colored Metric Blocks (Legend & Header) */}
+        <div className="flex w-full overflow-x-auto">
+          {/* Blue - Klik */}
+          <div className="flex-1 min-w-[140px] bg-[#1a73e8] text-white p-4 border-r border-white/10 flex flex-col justify-between">
+            <div className="flex items-center gap-1 opacity-90 mb-3">
+              <MousePointerClick size={12} />
+              <p className="text-[11px] font-medium tracking-wide uppercase">Klik</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-light">{dynamicOverview.totalClicks.toLocaleString('id-ID')}</p>
+          </div>
+          
+          {/* Red - Tayangan */}
+          <div className="flex-1 min-w-[140px] bg-[#d93025] text-white p-4 border-r border-white/10 flex flex-col justify-between">
+            <div className="flex items-center gap-1 opacity-90 mb-3">
+              <Eye size={12} />
+              <p className="text-[11px] font-medium tracking-wide uppercase">Tayangan</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-light">{dynamicOverview.totalImpressions.toLocaleString('id-ID')}</p>
+          </div>
+
+          {/* Yellow - Biaya */}
+          <div className="flex-1 min-w-[140px] bg-[#f29900] text-white p-4 border-r border-white/10 flex flex-col justify-between">
+            <div className="flex items-center gap-1 opacity-90 mb-3">
+              <DollarSign size={12} />
+              <p className="text-[11px] font-medium tracking-wide uppercase">Biaya</p>
+            </div>
+            <p className="text-xl md:text-2xl font-light">Rp {fIDR(dynamicOverview.totalSpend)}</p>
+          </div>
+
+          {/* Green - CTR */}
+          <div className="flex-1 min-w-[140px] bg-[#188038] text-white p-4 flex flex-col justify-between">
+            <div className="flex items-center gap-1 opacity-90 mb-3">
+              <Activity size={12} />
+              <p className="text-[11px] font-medium tracking-wide uppercase">CTR</p>
+            </div>
+            <p className="text-2xl md:text-3xl font-light">{dynamicOverview.averageCtr.toFixed(2)}%</p>
+          </div>
+        </div>
+
+        {/* The Graph */}
+        <div className="p-4 pt-8 h-[320px] w-full">
           {dynamicTrend && dynamicTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={dynamicTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
