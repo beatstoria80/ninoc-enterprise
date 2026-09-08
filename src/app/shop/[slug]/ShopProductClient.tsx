@@ -253,11 +253,14 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
           />
 
           {/* Combined Product Info & Options Column */}
-          <div className="col-span-1 grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-4 lg:gap-6 xl:gap-10 w-full relative">
+          <div 
+            className="col-span-1 grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-4 lg:gap-6 xl:gap-10 w-full relative"
+            style={photoHeight > 0 && !isMobile ? { maxHeight: photoHeight, overflow: 'hidden' } : undefined}
+          >
             {/* Column 3: Product Info */}
             <motion.div 
               variants={columnVariants} 
-              className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0"
+              className="flex flex-col pt-2 pb-0 lg:py-1 lg:pl-0 lg:overflow-y-auto lg:custom-scrollbar"
             >
             <div className="space-y-0.5 lg:space-y-1 h-full flex flex-col">
               <div className="shrink-0 space-y-0.5 lg:space-y-1">
@@ -402,50 +405,46 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
 
                 <div className="mt-1">
                   {activeInfoTab === 'specs' && (
-                    <div className="max-h-[280px] lg:max-h-[320px] overflow-y-auto custom-scrollbar pr-2">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
-                        {displaySpecs.map((spec: any, idx: number) => (
-                          <div key={idx} className="flex justify-between items-start border-b border-ink/10 py-1.5 gap-3">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-ink/70 shrink-0 min-w-[95px]">{spec.label}</span>
-                            <span className="text-[11px] font-normal text-right text-ink leading-relaxed break-words">{spec.value}</span>
-                          </div>
-                        ))}
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                      {displaySpecs.map((spec: any, idx: number) => (
+                        <div key={idx} className="flex justify-between items-start border-b border-ink/10 py-1.5 gap-3">
+                          <span className="text-[11px] font-bold uppercase tracking-wider text-ink/70 shrink-0 min-w-[95px]">{spec.label}</span>
+                          <span className="text-[11px] font-normal text-right text-ink leading-relaxed break-words">{spec.value}</span>
+                        </div>
+                      ))}
                     </div>
                   )}
                   {activeInfoTab === 'measurement' && (
-                    <div className="max-h-[280px] lg:max-h-[320px] overflow-y-auto custom-scrollbar pr-2">
-                      <div className="space-y-1.5 w-full overflow-x-auto no-scrollbar pb-1">
-                        <div className="grid gap-2 md:gap-3 text-[10px] md:text-xs font-semibold border-b border-ink/20 pb-1.5 mb-1.5 min-w-[320px] grid-cols-[32px_1fr_1fr_1.5fr_2.5fr]">
-                          <span className="text-ink/80">SIZE</span>
-                          <span className="text-ink/80 text-center">{isPants ? 'WAIST' : 'CHEST'}</span>
-                          <span className="text-ink/80 text-center">LENGTH</span>
-                          <span className="text-ink/80 text-center">{isPants ? 'THIGH/HIP' : 'SHLDR/SLV'}</span>
-                          <span className="text-ink/80 text-right whitespace-nowrap">FIT REC.</span>
-                        </div>
-                        {displayMeasurements.map((m: any, idx: number) => {
-                          const wh = getWeightAndHeight(m.size);
-                          const isSelected = effectiveSize && m.size.toUpperCase() === effectiveSize.toUpperCase();
-                          const col3 = isPants 
-                            ? `${m.thigh || '-'} / ${m.hip || '-'}`
-                            : `${m.shoulder || '-'} / ${m.sleeve || '-'}`;
-                          return (
-                            <div key={idx} className={cn(
-                              "grid gap-2 md:gap-3 items-center py-2 border-b last:border-0 transition-colors min-w-[320px] grid-cols-[32px_1fr_1fr_1.5fr_2.5fr]",
-                              isSelected ? "border-ink/20 bg-ink/5" : "border-ink/10 hover:border-ink/20 hover:bg-ink/[0.02]"
-                            )}>
-                              <span className={cn("text-xs md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/90")}>{m.size}</span>
-                              <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{isPants ? (m.waist || '-') : (m.chest || '-')}</span>
-                              <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{m.length || '-'}</span>
-                              <span className={cn("text-[11px] md:text-[10px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{col3}</span>
-                              <span className={cn("text-[11px] md:text-[10px] font-mono tracking-wider text-right whitespace-nowrap", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{wh.w} / {wh.h}</span>
-                            </div>
-                          );
-                        })}
-                        {displayModelInfo && (
-                          <p className="text-[11px] md:text-[9px] text-ink/60 mt-1 uppercase font-medium italic">* {displayModelInfo}</p>
-                        )}
+                    <div className="space-y-1.5 w-full overflow-x-auto no-scrollbar pb-1">
+                      <div className="grid gap-2 md:gap-3 text-[10px] md:text-xs font-semibold border-b border-ink/20 pb-1.5 mb-1.5 min-w-[320px] grid-cols-[32px_1fr_1fr_1.5fr_2.5fr]">
+                        <span className="text-ink/80">SIZE</span>
+                        <span className="text-ink/80 text-center">{isPants ? 'WAIST' : 'CHEST'}</span>
+                        <span className="text-ink/80 text-center">LENGTH</span>
+                        <span className="text-ink/80 text-center">{isPants ? 'THIGH/HIP' : 'SHLDR/SLV'}</span>
+                        <span className="text-ink/80 text-right whitespace-nowrap">FIT REC.</span>
                       </div>
+                      {displayMeasurements.map((m: any, idx: number) => {
+                        const wh = getWeightAndHeight(m.size);
+                        const isSelected = effectiveSize && m.size.toUpperCase() === effectiveSize.toUpperCase();
+                        const col3 = isPants 
+                          ? `${m.thigh || '-'} / ${m.hip || '-'}`
+                          : `${m.shoulder || '-'} / ${m.sleeve || '-'}`;
+                        return (
+                          <div key={idx} className={cn(
+                            "grid gap-2 md:gap-3 items-center py-2 border-b last:border-0 transition-colors min-w-[320px] grid-cols-[32px_1fr_1fr_1.5fr_2.5fr]",
+                            isSelected ? "border-ink/20 bg-ink/5" : "border-ink/10 hover:border-ink/20 hover:bg-ink/[0.02]"
+                          )}>
+                            <span className={cn("text-xs md:text-xs font-bold", isSelected ? "text-ink" : "text-ink/90")}>{m.size}</span>
+                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{isPants ? (m.waist || '-') : (m.chest || '-')}</span>
+                            <span className={cn("text-xs md:text-[11px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{m.length || '-'}</span>
+                            <span className={cn("text-[11px] md:text-[10px] font-mono tracking-wider text-center", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{col3}</span>
+                            <span className={cn("text-[11px] md:text-[10px] font-mono tracking-wider text-right whitespace-nowrap", isSelected ? "text-ink font-semibold" : "text-ink font-medium")}>{wh.w} / {wh.h}</span>
+                          </div>
+                        );
+                      })}
+                      {displayModelInfo && (
+                        <p className="text-[11px] md:text-[9px] text-ink/60 mt-1 uppercase font-medium italic">* {displayModelInfo}</p>
+                      )}
                     </div>
                   )}
                 </div>
