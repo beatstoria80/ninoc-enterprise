@@ -72,6 +72,14 @@ export class GoogleAdsService {
   }
 
   private static getDatePreset(timeFilter: string): string {
+    if (timeFilter.startsWith('range:')) {
+      const [, start, end] = timeFilter.split(':');
+      if (start && end) {
+        // e.g. "BETWEEN '2026-08-01' AND '2026-08-15'"
+        return `BETWEEN '${start}' AND '${end}'`;
+      }
+    }
+    
     switch (timeFilter) {
       case '24h': return 'TODAY';
       case '7d': return 'LAST_7_DAYS';

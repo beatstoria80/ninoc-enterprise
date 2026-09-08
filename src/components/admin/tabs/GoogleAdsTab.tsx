@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { TrendingUp, AlertTriangle, RefreshCw, Globe, Settings } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { TrendingUp, AlertTriangle, RefreshCw, Globe, Settings, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getGoogleAdsData } from '@/actions/googleAds';
 import type { GoogleAdsData } from '@/services/google/types';
@@ -11,8 +11,31 @@ export function GoogleAdsTab() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'ads' | 'tracking'>('ads');
   const [data, setData] = useState<GoogleAdsData | null>(null);
-  const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
+  const [timeFilter, setTimeFilter] = useState<string>('28d');
   const [selectedCampaignIds, setSelectedCampaignIds] = useState<Set<string>>(new Set());
+  
+  // Custom Date Picker State
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowDatePicker(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const applyCustomDate = () => {
+    if (customStart && customEnd) {
+      setTimeFilter(`range:${customStart}:${customEnd}`);
+      setShowDatePicker(false);
+    }
+  };
 
   const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'tracking') => {
     const filter = filterOverride || timeFilter;
@@ -98,19 +121,64 @@ export function GoogleAdsTab() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-blue-50/50 border border-blue-100 p-1.5 rounded-lg">
-            {(['24h', '7d', '28d', '90d'] as const).map(f => (
-              <button
-                key={f}
-                onClick={() => setTimeFilter(f)}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-xs font-bold transition-all",
-                  timeFilter === f ? "bg-blue-600 text-white shadow-sm" : "text-blue-900/60 hover:text-blue-900 hover:bg-blue-100/50"
-                )}
-              >
-                {f === '24h' ? 'Hari Ini' : f === '7d' ? '7 Hari' : f === '28d' ? '30 Hari' : '3 Bulan'}
-              </button>
-            ))}
+          <div className="relative" ref={pickerRef}>
+            <button 
+              onClick={() => setShowDatePicker(!showDatePicker)}
+              className="flex items-center gap-2 bg-white border border-ink/15 text-ink/80 px-3.5 py-2 rounded-lg text-xs font-bold hover:border-ink/30 transition-all shadow-sm active:scale-95"
+            >
+              <Calendar size={14} className="text-blue-600" />
+              {timeFilter.startsWith('range:') 
+                ? `${timeFilter.split(':')[1]} - ${timeFilter.split(':')[2]}`
+                : (timeFilter === '24h' ? 'Hari Ini' : timeFilter === '7d' ? '7 Hari Terakhir' : timeFilter === '28d' ? '30 Hari Terakhir' : '3 Bulan Terakhir')
+              }
+            </button>
+            
+            {showDatePicker && (
+              <div className="absolute right-0 mt-2 p-3 bg-white border border-ink/10 rounded-xl shadow-xl z-50 w-64 animate-in fade-in slide-in-from-top-2">
+                <div className="flex flex-col gap-2 mb-3">
+                  <p className="text-[10px] uppercase tracking-widest text-ink/50 font-bold mb-1">Pilih Cepat</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(['24h', '7d', '28d', '90d'] as const).map(f => (
+                      <button
+                        key={f}
+                        onClick={() => { setTimeFilter(f); setShowDatePicker(false); }}
+                        className={cn(
+                          "px-2 py-1.5 rounded text-[11px] font-bold transition-all text-center border",
+                          timeFilter === f ? "bg-blue-50 text-blue-700 border-blue-200 shadow-sm" : "bg-gray-50 text-ink/70 border-transparent hover:bg-gray-100"
+                        )}
+                      >
+                        {f === '24h' ? 'Hari Ini' : f === '7d' ? '7 Hari' : f === '28d' ? '30 Hari' : '3 Bulan'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="border-t border-ink/5 pt-3">
+                  <p className="text-[10px] uppercase tracking-widest text-ink/50 font-bold mb-2">Rentang Kustom</p>
+                  <div className="flex flex-col gap-2">
+                    <input 
+                      type="date" 
+                      value={customStart}
+                      onChange={e => setCustomStart(e.target.value)}
+                      className="w-full px-2 py-1.5 border border-ink/15 rounded text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                    <input 
+                      type="date" 
+                      value={customEnd}
+                      onChange={e => setCustomEnd(e.target.value)}
+                      className="w-full px-2 py-1.5 border border-ink/15 rounded text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                    <button 
+                      onClick={applyCustomDate}
+                      disabled={!customStart || !customEnd}
+                      className="mt-1 w-full bg-blue-600 text-white rounded-lg py-2 text-xs font-bold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Terapkan Rentang
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <button 

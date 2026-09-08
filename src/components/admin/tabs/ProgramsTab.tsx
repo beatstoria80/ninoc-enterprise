@@ -29,6 +29,17 @@ type SubTab = typeof TABS[number]['id'];
 export default function ProgramsTab({ products, onRefreshProducts }: ProgramsTabProps) {
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('flash');
   const [promoMode, setPromoMode] = useState<'discount' | 'volume' | null>(null);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const handleCreatePromo = (mode: 'discount' | 'volume') => {
+    setEditingProduct(null);
+    setPromoMode(mode);
+  };
+
+  const handleEditPromo = (mode: 'discount' | 'volume', product: Product) => {
+    setEditingProduct(product);
+    setPromoMode(mode);
+  };
 
   return (
     <div className="flex flex-col h-full bg-gray-50/50 relative overflow-hidden">
@@ -85,14 +96,16 @@ export default function ProgramsTab({ products, onRefreshProducts }: ProgramsTab
               {activeSubTab === 'discount' && (
                 <DiscountPeriodsView 
                   products={products} 
-                  onCreatePromo={() => setPromoMode('discount')}
+                  onCreatePromo={() => handleCreatePromo('discount')}
+                  onEditPromo={(product) => handleEditPromo('discount', product)}
                   onRefresh={onRefreshProducts}
                 />
               )}
               {activeSubTab === 'volume' && (
                 <VolumePromosView 
                   products={products}
-                  onCreatePromo={() => setPromoMode('volume')}
+                  onCreatePromo={() => handleCreatePromo('volume')}
+                  onEditPromo={(product) => handleEditPromo('volume', product)}
                   onRefresh={onRefreshProducts}
                 />
               )}
@@ -104,9 +117,13 @@ export default function ProgramsTab({ products, onRefreshProducts }: ProgramsTab
       {/* PROMO BUILDER MODAL */}
       <PromoBuilderModal
         isOpen={promoMode !== null}
-        onClose={() => setPromoMode(null)}
+        onClose={() => {
+          setPromoMode(null);
+          setEditingProduct(null);
+        }}
         mode={promoMode || 'discount'}
         products={products}
+        editingProduct={editingProduct}
         onComplete={onRefreshProducts}
       />
     </div>

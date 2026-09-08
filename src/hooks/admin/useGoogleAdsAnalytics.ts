@@ -49,10 +49,23 @@ export function useGoogleAdsAnalytics(
     }, {} as Record<string, { spend: number; conversions: number; clicks: number; impressions: number }>);
 
     const result = [];
-    const daysCount = timeFilter === '7d' ? 7 : timeFilter === '28d' ? 30 : timeFilter === '90d' ? 90 : timeFilter === '24h' ? 1 : 30;
-    const today = new Date();
+    let daysCount = 30;
+    let baseDate = new Date(); // Use today as base by default
+
+    if (timeFilter.startsWith('range:')) {
+      const [, startStr, endStr] = timeFilter.split(':');
+      if (startStr && endStr) {
+        const start = new Date(startStr);
+        const end = new Date(endStr);
+        daysCount = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+        baseDate = end;
+      }
+    } else {
+      daysCount = timeFilter === '7d' ? 7 : timeFilter === '28d' ? 30 : timeFilter === '90d' ? 90 : timeFilter === '24h' ? 1 : 30;
+    }
+
     for (let i = daysCount - 1; i >= 0; i--) {
-      const d = new Date(today);
+      const d = new Date(baseDate);
       d.setDate(d.getDate() - i);
       const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       

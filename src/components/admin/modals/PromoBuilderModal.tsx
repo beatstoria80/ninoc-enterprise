@@ -14,6 +14,7 @@ interface PromoBuilderModalProps {
   onClose: () => void;
   mode: PromoMode;
   products: Product[];
+  editingProduct?: Product | null;
   onComplete: () => void;
 }
 
@@ -28,7 +29,7 @@ interface VolumeConfig {
   bundle_discount_amount: string;
 }
 
-export default function PromoBuilderModal({ isOpen, onClose, mode, products, onComplete }: PromoBuilderModalProps) {
+export default function PromoBuilderModal({ isOpen, onClose, mode, products, editingProduct, onComplete }: PromoBuilderModalProps) {
   const supabase = createClient();
   const [step, setStep] = useState<1 | 2>(1);
   const [search, setSearch] = useState('');
@@ -47,12 +48,46 @@ export default function PromoBuilderModal({ isOpen, onClose, mode, products, onC
     bundle_discount_amount: '25000',
   });
 
+  React.useEffect(() => {
+    if (isOpen && editingProduct) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStep(2);
+      setSelectedIds(new Set([editingProduct.id]));
+      if (mode === 'discount') {
+        const start = editingProduct.discount_start_date ? new Date(editingProduct.discount_start_date) : null;
+        const end = editingProduct.discount_end_date ? new Date(editingProduct.discount_end_date) : null;
+
+        // Convert dates to local datetime string for input type="datetime-local"
+        const toLocalStr = (d: Date) => {
+          const pad = (n: number) => String(n).padStart(2, '0');
+          return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        };
+
+        setDiscountConfig({
+          original_price: editingProduct.original_price?.toString() || '',
+          discount_start_date: start ? toLocalStr(start) : '',
+          discount_end_date: end ? toLocalStr(end) : '',
+        });
+      } else {
+        setVolumeConfig({
+          bundle_min_qty: editingProduct.bundle_min_qty?.toString() || '2',
+          bundle_discount_amount: editingProduct.bundle_discount_amount?.toString() || '25000',
+        });
+      }
+    } else if (isOpen && !editingProduct) {
+      setStep(1);
+      setSelectedIds(new Set());
+    }
+  }, [isOpen, editingProduct, mode]);
+
   const eligibleProducts = useMemo(() => {
     return products.filter(p => {
+      // Allow editing product to be eligible even if it has properties
+      if (editingProduct && p.id === editingProduct.id) return true;
       if (mode === 'discount') return !p.bundle_min_qty;
       return !p.original_price;
     });
-  }, [products, mode]);
+  }, [products, mode, editingProduct]);
 
   const filteredProducts = useMemo(() => {
     if (!search.trim()) return eligibleProducts;
@@ -182,10 +217,10 @@ export default function PromoBuilderModal({ isOpen, onClose, mode, products, onC
               </div>
               <div>
                 <h2 className="text-sm font-display font-semibold italic uppercase tracking-tight text-ink">
-                  {isDiscount ? 'Buat Program Diskon' : 'Buat Program Volume / Grosir'}
+                  {editingProduct ? (isDiscount ? 'Edit Program Diskon' : 'Edit Program Volume / Grosir') : (isDiscount ? 'Buat Program Diskon' : 'Buat Program Volume / Grosir')}
                 </h2>
                 <p className="text-[10px] text-ink/50 uppercase tracking-widest">
-                  Step {step}/2 — {step === 1 ? 'Pilih Produk' : 'Konfigurasi'}
+                  {editingProduct ? 'Step Konfigurasi' : `Step ${step}/2 — ${step === 1 ? 'Pilih Produk' : 'Konfigurasi'}`}
                 </p>
               </div>
             </div>
@@ -466,12 +501,16 @@ export default function PromoBuilderModal({ isOpen, onClose, mode, products, onC
               </div>
 
               <div className="px-6 py-3 border-t border-gray-100 flex items-center justify-between">
-                <button
-                  onClick={() => setStep(1)}
-                  className="px-4 py-2 text-xs font-semibold text-ink/60 hover:text-ink transition-colors uppercase tracking-wider"
-                >
-                  ← Kembali
-                </button>
+                {!editingProduct ? (
+                  <button
+                    onClick={() => setStep(1)}
+                    className="px-4 py-2 text-xs font-semibold text-ink/60 hover:text-ink transition-colors uppercase tracking-wider"
+                  >
+                    ← Kembali
+                  </button>
+                ) : (
+                  <div></div>
+                )}
                 <button
                   onClick={handleSave}
                   disabled={isSaving || (isDiscount && !quickDiscount && !discountConfig.original_price)}

@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback } from 'react';
 import { Product } from '@/components/admin/types';
 import Image from 'next/image';
-import { Tag, Package, CheckCircle, Clock, XCircle, Plus, Trash2 } from 'lucide-react';
+import { Tag, Package, CheckCircle, Clock, XCircle, Plus, Trash2, Edit2 } from 'lucide-react';
 import { isDiscountActive } from '@/lib/domain/product';
 import { createClient } from '@/utils/supabase/client';
 
@@ -191,13 +191,22 @@ export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh
                         </span>
                       </td>
                       <td className="px-2 py-1.5 md:px-4 md:py-2.5">
-                        <button
-                          onClick={() => handleStopDiscount(product)}
-                          title="Hentikan Diskon"
-                          className="p-1.5 rounded-lg text-ink/20 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <Trash2 size={14} />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => onEditPromo(product)}
+                            title="Edit Diskon"
+                            className="p-1.5 rounded-lg text-ink/40 hover:text-blue-500 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleStopDiscount(product)}
+                            title="Hentikan Diskon"
+                            className="p-1.5 rounded-lg text-ink/20 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
