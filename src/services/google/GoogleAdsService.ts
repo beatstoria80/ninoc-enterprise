@@ -88,8 +88,16 @@ export class GoogleAdsService {
         const end = new Date();
         const start = new Date();
         start.setDate(end.getDate() - 90);
-        const toStr = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        return `BETWEEN '${toStr(start)}' AND '${toStr(end)}'`;
+        // Robust timezone formatting for Indonesia (WIB/UTC+7)
+        // en-CA locale natively outputs YYYY-MM-DD
+        const formatWIB = (d: Date) => new Intl.DateTimeFormat('en-CA', { 
+          timeZone: 'Asia/Jakarta', 
+          year: 'numeric', 
+          month: '2-digit', 
+          day: '2-digit' 
+        }).format(d);
+        
+        return `BETWEEN '${formatWIB(start)}' AND '${formatWIB(end)}'`;
       }
       case 'all': return 'ALL_TIME';
       default: return 'LAST_30_DAYS';
