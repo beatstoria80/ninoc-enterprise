@@ -58,6 +58,12 @@ export class GoogleAdsService {
       developer_token: developerToken,
     });
 
+    console.log('[GoogleAdsService] Authenticating with:', {
+      customer_id: customerId,
+      login_customer_id: loginCustomerId,
+      hasRefreshToken: !!refreshToken
+    });
+
     return client.Customer({
       customer_id: customerId,
       login_customer_id: loginCustomerId,
@@ -97,8 +103,6 @@ export class GoogleAdsService {
           campaign.id, 
           campaign.name, 
           campaign.status,
-          campaign.start_date,
-          campaign.end_date,
           metrics.cost_micros, 
           metrics.clicks, 
           metrics.impressions, 
@@ -146,7 +150,7 @@ export class GoogleAdsService {
             status: String(row.campaign?.status || 'UNKNOWN') as any,
             deliveryStatus: String(row.campaign?.status || 'UNKNOWN'),
             budget: String(budgetStr),
-            endDate: String(row.campaign?.end_date || 'Sedang berjalan'),
+            endDate: 'Sedang berjalan',
             spend: spendIdr,
             clicks,
             impressions,
