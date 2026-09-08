@@ -12,6 +12,7 @@ export function GoogleAdsTab() {
   const [viewMode, setViewMode] = useState<'ads' | 'tracking'>('ads');
   const [data, setData] = useState<GoogleAdsData | null>(null);
   const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
+  const [selectedCampaignIds, setSelectedCampaignIds] = useState<Set<string>>(new Set());
 
   const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'tracking') => {
     const filter = filterOverride || timeFilter;
@@ -21,6 +22,16 @@ export function GoogleAdsTab() {
       if (mode === 'ads') {
         const res = await getGoogleAdsData(filter);
         setData(res);
+        // Initialize selection with all campaigns if it's the first load or if all were previously selected
+        setSelectedCampaignIds(prev => {
+           if (prev.size === 0) return new Set(res.campaigns.map(c => c.id));
+           // Remove IDs that no longer exist in the new data
+           const newSet = new Set(prev);
+           newSet.forEach(id => {
+             if (!res.campaigns.find(c => c.id === id)) newSet.delete(id);
+           });
+           return newSet;
+        });
       }
     } catch (error) {
       console.error('Error fetching Google analytics:', error);
@@ -114,7 +125,14 @@ export function GoogleAdsTab() {
         </div>
       </div>
 
-      {viewMode === 'ads' && data && !data.error && data.configured && <GoogleAdsAnalyticsView data={data} timeFilter={timeFilter} />}
+      {viewMode === 'ads' && data && !data.error && data.configured && (
+        <GoogleAdsAnalyticsView 
+          data={data} 
+          timeFilter={timeFilter} 
+          selectedCampaignIds={selectedCampaignIds}
+          setSelectedCampaignIds={setSelectedCampaignIds}
+        />
+      )}
 
       {viewMode === 'ads' && data && data.error && (
         <div className="flex flex-col items-center justify-center py-20 bg-rose/5 border border-dashed border-rose/20 rounded-xl p-8 mt-4">

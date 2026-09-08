@@ -7,7 +7,17 @@ import type { GoogleAdsData, GoogleAdGroup, GoogleAd } from '@/services/google/t
 import { getGoogleAdGroups, getGoogleAds } from '@/actions/googleAds';
 import { GoogleAdInsightsDetailPane } from './GoogleAdInsightsDetailPane';
 
-export function GoogleAdsTable({ data, timeFilter }: { data: GoogleAdsData; timeFilter: string }) {
+export function GoogleAdsTable({ 
+  data, 
+  timeFilter,
+  selectedCampaignIds,
+  setSelectedCampaignIds
+}: { 
+  data: GoogleAdsData; 
+  timeFilter: string;
+  selectedCampaignIds: Set<string>;
+  setSelectedCampaignIds: React.Dispatch<React.SetStateAction<Set<string>>>;
+}) {
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(new Set());
   const [expandedAdGroups, setExpandedAdGroups] = useState<Set<string>>(new Set());
   const [loadedAdGroups, setLoadedAdGroups] = useState<Record<string, GoogleAdGroup[]>>({});
@@ -90,7 +100,19 @@ export function GoogleAdsTable({ data, timeFilter }: { data: GoogleAdsData; time
           "sticky left-0 group-hover:bg-blue-50/50 z-10 px-3 py-2.5 border-r border-ink/5 flex items-center gap-3",
           isCampaign ? "bg-white" : isAdGroup ? "bg-[#f8fafc]" : "bg-[#f1f5f9]"
         )}>
-          <input type="checkbox" className="rounded border-ink/20 text-blue-600 focus:ring-blue-500 w-3 h-3 cursor-pointer" defaultChecked={isCampaign} />
+          <input 
+            type="checkbox" 
+            className={cn("rounded border-ink/20 text-blue-600 focus:ring-blue-500 w-3 h-3 cursor-pointer", !isCampaign && "opacity-0 cursor-default")} 
+            checked={isCampaign ? selectedCampaignIds.has(item.id) : false} 
+            onChange={(e) => {
+              if (!isCampaign) return;
+              const newSet = new Set(selectedCampaignIds);
+              if (e.target.checked) newSet.add(item.id);
+              else newSet.delete(item.id);
+              setSelectedCampaignIds(newSet);
+            }}
+            disabled={!isCampaign}
+          />
           
           <div className="flex-1 overflow-hidden flex items-center gap-1.5" style={{ paddingLeft: `${level * 16}px` }}>
             {!isAd && (
@@ -196,7 +218,7 @@ export function GoogleAdsTable({ data, timeFilter }: { data: GoogleAdsData; time
         <div className="p-3 border-b border-ink/10 bg-ink/[0.02] flex items-center justify-between">
           <div className="flex items-center gap-2">
             <button className="bg-white border border-ink/10 shadow-sm px-3 py-1.5 rounded text-[11px] font-bold text-ink flex items-center gap-1.5 hover:bg-ink/[0.02]">
-              <Layers size={14} className="text-blue-600" /> Kampanye Google <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-sm text-[9px] ml-1">{data.campaigns.length} Dipilih</span>
+              <Layers size={14} className="text-blue-600" /> Kampanye Google <span className="bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-sm text-[9px] ml-1">{selectedCampaignIds.size} Dipilih</span>
             </button>
           </div>
         </div>

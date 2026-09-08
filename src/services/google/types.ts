@@ -67,5 +67,5 @@ export interface GoogleAdsData {
     cpm: number;
   };
   campaigns: GoogleAdsCampaign[];
-  trend: { date: string; spend: number; conversions: number }[];
+  trend: { date: string; spend: number; conversions: number; campaignId?: string }[];
 }
