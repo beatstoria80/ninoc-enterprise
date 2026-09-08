@@ -33,8 +33,8 @@ export default function ProgramsTab({ products, onRefreshProducts }: ProgramsTab
   return (
     <div className="flex flex-col h-full bg-gray-50/50 relative overflow-hidden">
       {/* HEADER SECTION */}
-      <div className="bg-white border-b border-ink/5 px-3 py-3 md:px-6 md:py-5 flex-none z-10 shadow-sm relative">
-        <div className="flex flex-col gap-1 mb-3 md:mb-6">
+      <div className="bg-white border-b border-ink/5 px-2 py-2 md:px-6 md:py-5 flex-none z-10 shadow-sm relative">
+        <div className="flex flex-col gap-1 mb-2 md:mb-6">
           <div className="flex items-center gap-2">
             <Gift className="text-rose w-5 h-5" />
             <h2 className="text-lg font-display font-semibold italic tracking-tight text-ink uppercase">
@@ -80,7 +80,7 @@ export default function ProgramsTab({ products, onRefreshProducts }: ProgramsTab
             transition={{ duration: 0.2 }}
             className="absolute inset-0 overflow-y-auto"
           >
-            <div className="p-2 md:p-6 h-full min-h-full">
+            <div className="p-1 md:p-6 h-full min-h-full">
               {activeSubTab === 'flash' && <FlashSaleTab />}
               {activeSubTab === 'discount' && (
                 <DiscountPeriodsView 

@@ -15,7 +15,7 @@ export function FlashSaleTab() {
   }, []);
 
   return (
-    <div className="space-y-3 md:space-y-6">
+    <div className="space-y-1.5 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold text-ink">Flash Sale Manager</h2>
@@ -33,10 +33,10 @@ export function FlashSaleTab() {
         <table className="w-full text-left text-xs whitespace-nowrap min-w-[600px]">
           <thead className="bg-ink/[0.02] text-ink/60 border-b border-ink/5 uppercase tracking-wider font-medium text-[10px]">
             <tr>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Nama Kampanye</th>
-              <th className="px-4 py-3">Mulai</th>
-              <th className="px-4 py-3">Berakhir</th>
+              <th className="px-2 py-1.5 md:px-4 md:py-3">Status</th>
+              <th className="px-2 py-1.5 md:px-4 md:py-3">Nama Kampanye</th>
+              <th className="px-2 py-1.5 md:px-4 md:py-3">Mulai</th>
+              <th className="px-2 py-1.5 md:px-4 md:py-3">Berakhir</th>
               <th className="px-4 py-3 text-right">Aksi</th>
             </tr>
           </thead>
@@ -55,7 +55,7 @@ export function FlashSaleTab() {
                 
                 return (
                   <tr key={s.id} className="hover:bg-ink/[0.01]">
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-1.5 md:px-4 md:py-3">
                       {!s.is_active ? (
                         <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[9px] font-bold uppercase">Non-Aktif</span>
                       ) : isRunning ? (
@@ -69,7 +69,7 @@ export function FlashSaleTab() {
                     <td className="px-4 py-3 font-semibold text-ink">{s.title}</td>
                     <td className="px-4 py-3 font-mono text-ink/80">{new Date(s.start_time).toLocaleString('id-ID')}</td>
                     <td className="px-4 py-3 font-mono text-ink/80">{new Date(s.end_time).toLocaleString('id-ID')}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-1.5 md:px-4 md:py-3">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => actions.toggleActive(s.id, s.is_active)} className={`p-1.5 rounded hover:bg-ink/5 ${s.is_active ? 'text-amber-500' : 'text-emerald-500'}`} title={s.is_active ? "Nonaktifkan" : "Aktifkan"}>
                           {s.is_active ? <Square size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}

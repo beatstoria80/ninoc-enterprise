@@ -1,11 +1,12 @@
 "use client";
 
-import React from 'react';
-import { TrendingUp, MousePointerClick, Eye, Target, DollarSign, Activity } from 'lucide-react';
+import React, { useState } from 'react';
+import { TrendingUp, MousePointerClick, Eye, Target, DollarSign, Activity, CheckCircle2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '@/lib/utils';
 import type { GoogleAdsData } from '@/services/google/types';
 import { GoogleAdsTable } from './GoogleAdsTable';
+import { useGoogleAdsAnalytics } from '@/hooks/admin/useGoogleAdsAnalytics';
 
 export function GoogleAdsAnalyticsView({ 
   data, 
@@ -24,57 +25,25 @@ export function GoogleAdsAnalyticsView({
     return validNum.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
 
-  const filteredCampaigns = data.campaigns.filter(c => selectedCampaignIds.has(c.id));
-  
-  const totalSpend = filteredCampaigns.reduce((sum, c) => sum + c.spend, 0);
-  const totalConversions = filteredCampaigns.reduce((sum, c) => sum + c.conversions, 0);
-  const totalClicks = filteredCampaigns.reduce((sum, c) => sum + c.clicks, 0);
-  const totalImpressions = filteredCampaigns.reduce((sum, c) => sum + c.impressions, 0);
-  
-  const cpa = totalConversions > 0 ? totalSpend / totalConversions : 0;
-  const cpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
-  const cpm = totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0;
-  const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-  const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0;
+  const [activeMetrics, setActiveMetrics] = useState<Set<string>>(new Set(['clicks', 'impressions', 'spend', 'ctr']));
 
-  const dynamicOverview = {
-    totalSpend,
-    totalConversions,
-    totalClicks,
-    totalImpressions,
-    cpa,
-    cpc,
-    cpm,
-    averageCtr,
-    averageRoas
+  const toggleMetric = (metric: string) => {
+    setActiveMetrics(prev => {
+      const next = new Set(prev);
+      if (next.has(metric)) {
+        if (next.size > 1) next.delete(metric); // Keep at least one active
+      } else {
+        next.add(metric);
+      }
+      return next;
+    });
   };
 
-  const dynamicTrend = React.useMemo(() => {
-    const filteredPoints = data.trend.filter(t => selectedCampaignIds.has(t.campaignId || ''));
-    
-    const aggregated = filteredPoints.reduce((acc, t) => {
-      if (!acc[t.date]) acc[t.date] = { spend: 0, conversions: 0 };
-      acc[t.date].spend += t.spend;
-      acc[t.date].conversions += t.conversions;
-      return acc;
-    }, {} as Record<string, { spend: number; conversions: number }>);
-
-    const result = [];
-    const daysCount = timeFilter === '7d' ? 7 : timeFilter === '28d' ? 30 : timeFilter === '90d' ? 90 : timeFilter === '24h' ? 1 : 30;
-    const today = new Date();
-    for (let i = daysCount - 1; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      
-      result.push({
-        date: dateStr,
-        spend: aggregated[dateStr]?.spend || 0,
-        conversions: aggregated[dateStr]?.conversions || 0
-      });
-    }
-    return result;
-  }, [data.trend, selectedCampaignIds, timeFilter]);
+  const { filteredCampaigns, dynamicOverview, dynamicTrend } = useGoogleAdsAnalytics(
+    data,
+    selectedCampaignIds,
+    timeFilter
+  );
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20">
@@ -85,7 +54,14 @@ export function GoogleAdsAnalyticsView({
         {/* 4 Colored Metric Blocks (Legend & Header) */}
         <div className="flex w-full overflow-x-auto">
           {/* Blue - Klik */}
-          <div className="flex-1 min-w-[140px] bg-[#1a73e8] text-white p-4 border-r border-white/10 flex flex-col justify-between">
+          <div 
+            onClick={() => toggleMetric('clicks')}
+            className={cn(
+              "flex-1 min-w-[140px] bg-[#1a73e8] text-white p-4 border-r border-white/10 flex flex-col justify-between cursor-pointer transition-all hover:opacity-100 relative",
+              !activeMetrics.has('clicks') && "opacity-40 saturate-50 hover:opacity-70"
+            )}
+          >
+            {activeMetrics.has('clicks') && <CheckCircle2 size={16} className="absolute top-3 right-3 text-white/50" />}
             <div className="flex items-center gap-1 opacity-90 mb-3">
               <MousePointerClick size={12} />
               <p className="text-[11px] font-medium tracking-wide uppercase">Klik</p>
@@ -94,7 +70,14 @@ export function GoogleAdsAnalyticsView({
           </div>
           
           {/* Red - Tayangan */}
-          <div className="flex-1 min-w-[140px] bg-[#d93025] text-white p-4 border-r border-white/10 flex flex-col justify-between">
+          <div 
+            onClick={() => toggleMetric('impressions')}
+            className={cn(
+              "flex-1 min-w-[140px] bg-[#d93025] text-white p-4 border-r border-white/10 flex flex-col justify-between cursor-pointer transition-all hover:opacity-100 relative",
+              !activeMetrics.has('impressions') && "opacity-40 saturate-50 hover:opacity-70"
+            )}
+          >
+            {activeMetrics.has('impressions') && <CheckCircle2 size={16} className="absolute top-3 right-3 text-white/50" />}
             <div className="flex items-center gap-1 opacity-90 mb-3">
               <Eye size={12} />
               <p className="text-[11px] font-medium tracking-wide uppercase">Tayangan</p>
@@ -103,7 +86,14 @@ export function GoogleAdsAnalyticsView({
           </div>
 
           {/* Yellow - Biaya */}
-          <div className="flex-1 min-w-[140px] bg-[#f29900] text-white p-4 border-r border-white/10 flex flex-col justify-between">
+          <div 
+            onClick={() => toggleMetric('spend')}
+            className={cn(
+              "flex-1 min-w-[140px] bg-[#f29900] text-white p-4 border-r border-white/10 flex flex-col justify-between cursor-pointer transition-all hover:opacity-100 relative",
+              !activeMetrics.has('spend') && "opacity-40 saturate-50 hover:opacity-70"
+            )}
+          >
+            {activeMetrics.has('spend') && <CheckCircle2 size={16} className="absolute top-3 right-3 text-white/50" />}
             <div className="flex items-center gap-1 opacity-90 mb-3">
               <DollarSign size={12} />
               <p className="text-[11px] font-medium tracking-wide uppercase">Biaya</p>
@@ -112,7 +102,14 @@ export function GoogleAdsAnalyticsView({
           </div>
 
           {/* Green - CTR */}
-          <div className="flex-1 min-w-[140px] bg-[#188038] text-white p-4 flex flex-col justify-between">
+          <div 
+            onClick={() => toggleMetric('ctr')}
+            className={cn(
+              "flex-1 min-w-[140px] bg-[#188038] text-white p-4 flex flex-col justify-between cursor-pointer transition-all hover:opacity-100 relative",
+              !activeMetrics.has('ctr') && "opacity-40 saturate-50 hover:opacity-70"
+            )}
+          >
+            {activeMetrics.has('ctr') && <CheckCircle2 size={16} className="absolute top-3 right-3 text-white/50" />}
             <div className="flex items-center gap-1 opacity-90 mb-3">
               <Activity size={12} />
               <p className="text-[11px] font-medium tracking-wide uppercase">CTR</p>
@@ -128,12 +125,24 @@ export function GoogleAdsAnalyticsView({
               <AreaChart data={dynamicTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorSpendG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2563eb" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#f29900" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#f29900" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorConvG" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#059669" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#9333ea" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#9333ea" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorClicksG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#1a73e8" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#1a73e8" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorImpG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#d93025" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#d93025" stopOpacity={0}/>
+                  </linearGradient>
+                  <linearGradient id="colorCtrG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#188038" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#188038" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -162,7 +171,8 @@ export function GoogleAdsAnalyticsView({
                   tick={{fontSize: 10, fill: '#64748b'}} 
                   axisLine={false} 
                   tickLine={false}
-                  width={30}
+                  tickFormatter={(val) => new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(val)}
+                  width={40}
                 />
                 <Tooltip 
                   contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', fontSize: '12px' }}
@@ -170,11 +180,17 @@ export function GoogleAdsAnalyticsView({
                   formatter={(value: any, name: any) => {
                     if (name === 'spend') return [`Rp ${fIDR(value)}`, 'Biaya (Spend)'];
                     if (name === 'conversions') return [value, 'Konversi'];
+                    if (name === 'clicks') return [value.toLocaleString('id-ID'), 'Klik'];
+                    if (name === 'impressions') return [value.toLocaleString('id-ID'), 'Tayangan'];
+                    if (name === 'ctr') return [`${Number(value).toFixed(2)}%`, 'CTR'];
                     return [value, name];
                   }}
                 />
-                <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#2563eb" strokeWidth={2} fill="url(#colorSpendG)" name="spend" />
-                <Area yAxisId="right" type="monotone" dataKey="conversions" stroke="#059669" strokeWidth={2} fill="url(#colorConvG)" name="conversions" />
+                {activeMetrics.has('spend') && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f29900" strokeWidth={2} fill="url(#colorSpendG)" name="spend" />}
+                {activeMetrics.has('clicks') && <Area yAxisId="right" type="monotone" dataKey="clicks" stroke="#1a73e8" strokeWidth={2} fill="url(#colorClicksG)" name="clicks" />}
+                {activeMetrics.has('impressions') && <Area yAxisId="right" type="monotone" dataKey="impressions" stroke="#d93025" strokeWidth={2} fill="url(#colorImpG)" name="impressions" />}
+                {activeMetrics.has('ctr') && <Area yAxisId="right" type="monotone" dataKey="ctr" stroke="#188038" strokeWidth={2} fill="url(#colorCtrG)" name="ctr" />}
+                {activeMetrics.has('conversions') && <Area yAxisId="right" type="monotone" dataKey="conversions" stroke="#9333ea" strokeWidth={2} fill="url(#colorConvG)" name="conversions" />}
               </AreaChart>
             </ResponsiveContainer>
           ) : (

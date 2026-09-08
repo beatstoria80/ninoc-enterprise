@@ -45,47 +45,47 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
   }, [supabase, onRefresh]);
 
   return (
-    <div className="flex flex-col h-full space-y-2 md:space-y-4">
+    <div className="flex flex-col h-full space-y-1 md:space-y-4">
       {/* Header Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-        <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl flex items-center justify-between">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3">
+        <div className="bg-purple-50 border border-purple-100 p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-purple-700/60 font-semibold mb-0.5">Total Promo Grosir</p>
-            <p className="text-2xl font-display font-semibold italic text-purple-700">{stats.total}</p>
+            <p className="text-xl md:text-2xl font-display font-semibold italic text-purple-700">{stats.total}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700">
-            <PackagePlus size={18} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-700">
+            <PackagePlus size={16} className="md:w-[18px] md:h-[18px]" />
           </div>
         </div>
-        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center justify-between">
+        <div className="bg-emerald-50 border border-emerald-100 p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-emerald-600/60 font-semibold mb-0.5">Aktif (Tanpa Konflik)</p>
-            <p className="text-2xl font-display font-semibold italic text-emerald-700">{stats.active}</p>
+            <p className="text-xl md:text-2xl font-display font-semibold italic text-emerald-700">{stats.active}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-            <CheckCircle size={18} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <CheckCircle size={16} className="md:w-[18px] md:h-[18px]" />
           </div>
         </div>
-        <div className="bg-red-50 border border-red-100 p-3 rounded-xl flex items-center justify-between">
+        <div className="bg-red-50 border border-red-100 p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-red-600/60 font-semibold mb-0.5">Nonaktif (Konflik)</p>
-            <p className="text-2xl font-display font-semibold italic text-red-600">{stats.conflict}</p>
+            <p className="text-xl md:text-2xl font-display font-semibold italic text-red-600">{stats.conflict}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
-            <AlertTriangle size={18} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-red-100 flex items-center justify-center text-red-600">
+            <AlertTriangle size={16} className="md:w-[18px] md:h-[18px]" />
           </div>
         </div>
         {/* CREATE PROMO BUTTON */}
         <button
           onClick={onCreatePromo}
-          className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-2 md:p-3 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-purple-500/20 active:scale-[0.98] col-span-2 md:col-span-1"
+          className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between transition-all shadow-lg shadow-purple-500/20 active:scale-[0.98] col-span-2 md:col-span-1"
         >
           <div>
             <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold mb-0.5">Tambah Produk</p>
             <p className="text-sm font-display font-semibold italic uppercase">+ Buat Promo</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-            <Plus size={20} strokeWidth={3} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Plus size={20} strokeWidth={3} className="w-5 h-5" />
           </div>
         </button>
       </div>
@@ -119,7 +119,7 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
 
                   return (
                     <tr key={product.id} className={`hover:bg-gray-50 transition-colors group ${hasConflict ? 'opacity-50' : ''}`}>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative border border-ink/5">
                             {product.image_url ? (
@@ -134,22 +134,22 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <span className="text-[11px] font-semibold text-ink/80">
                           Rp {product.price.toLocaleString('id-ID')}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <span className="inline-flex items-center px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[10px] font-bold">
                           Minimal Beli {product.bundle_min_qty}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <span className="text-[11px] font-bold text-emerald-600">
                           - Rp {product.bundle_discount_amount?.toLocaleString('id-ID')}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         {hasConflict ? (
                           <div className="flex flex-col gap-0.5">
                             <span className="inline-flex items-center px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest bg-red-50 text-red-600 w-fit">
@@ -163,7 +163,7 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <button
                           onClick={() => handleStopPromo(product)}
                           title="Hentikan Promo"

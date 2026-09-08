@@ -82,6 +82,22 @@ export class GoogleAdsService {
     }
   }
 
+  private static readonly ESTIMATED_AOV_IDR = 150000;
+
+  private static parseMetrics(row: any) {
+    const spendIdr = Number(row.metrics?.cost_micros || 0) / 1000000;
+    const clicks = Number(row.metrics?.clicks || 0);
+    const impressions = Number(row.metrics?.impressions || 0);
+    const conversions = Number(row.metrics?.conversions || 0);
+    
+    const roas = spendIdr > 0 && conversions > 0 ? ((conversions * this.ESTIMATED_AOV_IDR) / spendIdr) : 0;
+    const cpa = conversions > 0 ? spendIdr / conversions : 0;
+    const cpc = clicks > 0 ? spendIdr / clicks : 0;
+    const cpm = impressions > 0 ? (spendIdr / impressions) * 1000 : 0;
+
+    return { spendIdr, clicks, impressions, conversions, roas, cpa, cpc, cpm };
+  }
+
   static async getDashboardOverview(timeFilter: string = '28d'): Promise<GoogleAdsData> {
     const customer = this.getCustomer();
     
@@ -97,7 +113,6 @@ export class GoogleAdsService {
     const datePreset = this.getDatePreset(timeFilter);
 
     try {
-      // 1. Get Campaign Level Performance
       const campaignQuery = `
         SELECT 
           campaign.id, 
@@ -114,7 +129,25 @@ export class GoogleAdsService {
           AND campaign.status IN ('ENABLED', 'PAUSED')
       `;
 
-      const campaignResponse = await customer.query(campaignQuery);
+      const trendQuery = `
+        SELECT 
+          segments.date,
+          campaign.id,
+          metrics.cost_micros,
+          metrics.conversions,
+          metrics.clicks,
+          metrics.impressions
+        FROM campaign
+        WHERE segments.date DURING ${datePreset}
+          AND campaign.status IN ('ENABLED', 'PAUSED')
+        ORDER BY segments.date ASC
+      `;
+
+      // Parallelize independent API calls to Google Ads
+      const [campaignResponse, trendResponse] = await Promise.all([
+        customer.query(campaignQuery),
+        customer.query(trendQuery)
+      ]);
       
       let totalSpend = 0;
       let totalClicks = 0;
@@ -124,20 +157,12 @@ export class GoogleAdsService {
 
       if (campaignResponse && campaignResponse.length > 0) {
         campaignResponse.forEach((row: any) => {
-          const spendIdr = Number(row.metrics?.cost_micros || 0) / 1000000;
-          const clicks = Number(row.metrics?.clicks || 0);
-          const impressions = Number(row.metrics?.impressions || 0);
-          const conversions = Number(row.metrics?.conversions || 0);
+          const metrics = this.parseMetrics(row);
           
-          totalSpend += spendIdr;
-          totalClicks += clicks;
-          totalImpressions += impressions;
-          totalConversions += conversions;
-
-          const roas = spendIdr > 0 && conversions > 0 ? ((conversions * 150000) / spendIdr) : 0;
-          const cpa = conversions > 0 ? spendIdr / conversions : 0;
-          const cpc = clicks > 0 ? spendIdr / clicks : 0;
-          const cpm = impressions > 0 ? (spendIdr / impressions) * 1000 : 0;
+          totalSpend += metrics.spendIdr;
+          totalClicks += metrics.clicks;
+          totalImpressions += metrics.impressions;
+          totalConversions += metrics.conversions;
           
           let budgetStr = 'N/A';
           if (row.campaign_budget?.amount_micros) {
@@ -159,43 +184,30 @@ export class GoogleAdsService {
             deliveryStatus: mappedStatus,
             budget: String(budgetStr),
             endDate: 'Sedang berjalan',
-            spend: spendIdr,
-            clicks,
-            impressions,
-            conversions,
-            roas: parseFloat(roas.toFixed(2)),
-            cpa,
-            cpc,
-            cpm,
+            spend: metrics.spendIdr,
+            clicks: metrics.clicks,
+            impressions: metrics.impressions,
+            conversions: metrics.conversions,
+            roas: parseFloat(metrics.roas.toFixed(2)),
+            cpa: metrics.cpa,
+            cpc: metrics.cpc,
+            cpm: metrics.cpm,
             searchImpressionShare: String(row.metrics?.search_impression_share || '—')
           });
         });
       }
-
-      // 2. Get Trend Data per Campaign
-      const trendQuery = `
-        SELECT 
-          segments.date,
-          campaign.id,
-          metrics.cost_micros,
-          metrics.conversions
-        FROM campaign
-        WHERE segments.date DURING ${datePreset}
-          AND campaign.status IN ('ENABLED', 'PAUSED')
-        ORDER BY segments.date ASC
-      `;
-      
-      const trendResponse = await customer.query(trendQuery);
       
       const trend = (trendResponse || []).map((row: any) => ({
         date: String(row.segments?.date || ''),
         campaignId: String(row.campaign?.id || ''),
         spend: Number(row.metrics?.cost_micros || 0) / 1000000,
-        conversions: Number(row.metrics?.conversions || 0)
+        conversions: Number(row.metrics?.conversions || 0),
+        clicks: Number(row.metrics?.clicks || 0),
+        impressions: Number(row.metrics?.impressions || 0)
       }));
 
       const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
-      const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0;
+      const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * this.ESTIMATED_AOV_IDR) / totalSpend) : 0;
       const overallCpa = totalConversions > 0 ? totalSpend / totalConversions : 0;
       const overallCpc = totalClicks > 0 ? totalSpend / totalClicks : 0;
       const overallCpm = totalImpressions > 0 ? (totalSpend / totalImpressions) * 1000 : 0;
@@ -265,12 +277,7 @@ export class GoogleAdsService {
       const response = await customer.query(query);
 
       return (response || []).map((row: any) => {
-        const spendIdr = Number(row.metrics?.cost_micros || 0) / 1000000;
-        const clicks = Number(row.metrics?.clicks || 0);
-        const impressions = Number(row.metrics?.impressions || 0);
-        const conversions = Number(row.metrics?.conversions || 0);
-        const roas = spendIdr > 0 && conversions > 0 ? ((conversions * 150000) / spendIdr) : 0;
-        const cpa = conversions > 0 ? spendIdr / conversions : 0;
+        const metrics = this.parseMetrics(row);
 
         return {
           id: row.ad_group?.id?.toString() || 'unknown',
@@ -280,14 +287,14 @@ export class GoogleAdsService {
           deliveryStatus: String(row.ad_group?.status || 'UNKNOWN'),
           budget: 'Mengikuti Kampanye',
           endDate: '—',
-          spend: spendIdr,
-          impressions,
-          clicks,
-          conversions,
-          roas: parseFloat(roas.toFixed(2)),
-          cpa,
-          cpc: clicks > 0 ? spendIdr / clicks : 0,
-          cpm: impressions > 0 ? (spendIdr / impressions) * 1000 : 0,
+          spend: metrics.spendIdr,
+          impressions: metrics.impressions,
+          clicks: metrics.clicks,
+          conversions: metrics.conversions,
+          roas: parseFloat(metrics.roas.toFixed(2)),
+          cpa: metrics.cpa,
+          cpc: metrics.cpc,
+          cpm: metrics.cpm,
           searchImpressionShare: row.metrics?.search_impression_share || '—'
         };
       });
@@ -320,12 +327,7 @@ export class GoogleAdsService {
       const response = await customer.query(query);
 
       return (response || []).map((row: any) => {
-        const spendIdr = Number(row.metrics?.cost_micros || 0) / 1000000;
-        const clicks = Number(row.metrics?.clicks || 0);
-        const impressions = Number(row.metrics?.impressions || 0);
-        const conversions = Number(row.metrics?.conversions || 0);
-        const roas = spendIdr > 0 && conversions > 0 ? ((conversions * 150000) / spendIdr) : 0;
-        const cpa = conversions > 0 ? spendIdr / conversions : 0;
+        const metrics = this.parseMetrics(row);
 
         return {
           id: row.ad_group_ad?.ad?.id?.toString() || 'unknown',
@@ -336,14 +338,14 @@ export class GoogleAdsService {
           deliveryStatus: String(row.ad_group_ad?.status || 'UNKNOWN'),
           budget: 'Mengikuti Grup Iklan',
           endDate: '—',
-          spend: spendIdr,
-          impressions,
-          clicks,
-          conversions,
-          roas: parseFloat(roas.toFixed(2)),
-          cpa,
-          cpc: clicks > 0 ? spendIdr / clicks : 0,
-          cpm: impressions > 0 ? (spendIdr / impressions) * 1000 : 0,
+          spend: metrics.spendIdr,
+          impressions: metrics.impressions,
+          clicks: metrics.clicks,
+          conversions: metrics.conversions,
+          roas: parseFloat(metrics.roas.toFixed(2)),
+          cpa: metrics.cpa,
+          cpc: metrics.cpc,
+          cpm: metrics.cpm,
           searchImpressionShare: '—'
         };
       });

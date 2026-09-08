@@ -60,47 +60,47 @@ export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh
   }, [supabase, onRefresh]);
 
   return (
-    <div className="flex flex-col h-full space-y-2 md:space-y-4">
+    <div className="flex flex-col h-full space-y-1 md:space-y-4">
       {/* Header Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-        <div className="bg-rose/5 border border-rose/10 p-3 rounded-xl flex items-center justify-between">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3">
+        <div className="bg-rose/5 border border-rose/10 p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-rose/60 font-semibold mb-0.5">Total Produk Diskon</p>
-            <p className="text-2xl font-display font-semibold italic text-rose">{stats.total}</p>
+            <p className="text-xl md:text-2xl font-display font-semibold italic text-rose">{stats.total}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-rose/10 flex items-center justify-center text-rose">
-            <Tag size={18} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-rose/10 flex items-center justify-center text-rose">
+            <Tag size={16} className="md:w-[18px] md:h-[18px]" />
           </div>
         </div>
-        <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center justify-between">
+        <div className="bg-emerald-50 border border-emerald-100 p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-emerald-600/60 font-semibold mb-0.5">Sedang Aktif</p>
-            <p className="text-2xl font-display font-semibold italic text-emerald-700">{stats.active}</p>
+            <p className="text-xl md:text-2xl font-display font-semibold italic text-emerald-700">{stats.active}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-            <CheckCircle size={18} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+            <CheckCircle size={16} className="md:w-[18px] md:h-[18px]" />
           </div>
         </div>
-        <div className="bg-amber-50 border border-amber-100 p-3 rounded-xl flex items-center justify-between">
+        <div className="bg-amber-50 border border-amber-100 p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-amber-600/60 font-semibold mb-0.5">Mendatang / Berakhir</p>
-            <p className="text-2xl font-display font-semibold italic text-amber-700">{stats.pending + stats.expired}</p>
+            <p className="text-xl md:text-2xl font-display font-semibold italic text-amber-700">{stats.pending + stats.expired}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-            <Clock size={18} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+            <Clock size={16} className="md:w-[18px] md:h-[18px]" />
           </div>
         </div>
         {/* CREATE PROMO BUTTON */}
         <button
           onClick={onCreatePromo}
-          className="bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white p-2 md:p-3 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-rose-500/20 active:scale-[0.98] col-span-2 md:col-span-1"
+          className="bg-gradient-to-br from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white p-2 md:p-3 rounded-lg md:rounded-xl flex items-center justify-between transition-all shadow-lg shadow-rose-500/20 active:scale-[0.98] col-span-2 md:col-span-1"
         >
           <div>
             <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold mb-0.5">Tambah Produk</p>
             <p className="text-sm font-display font-semibold italic uppercase">+ Buat Promo</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-            <Plus size={20} strokeWidth={3} />
+          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Plus size={20} strokeWidth={3} className="w-5 h-5" />
           </div>
         </button>
       </div>
@@ -137,7 +137,7 @@ export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh
 
                   return (
                     <tr key={product.id} className="hover:bg-gray-50 transition-colors group">
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 relative border border-ink/5">
                             {product.image_url ? (
@@ -152,12 +152,12 @@ export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <span className="text-[11px] font-medium text-ink/60 line-through">
                           Rp {product.original_price?.toLocaleString('id-ID')}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <div className="flex items-center gap-1.5">
                           <span className="text-[11px] font-semibold text-rose">
                             Rp {product.price.toLocaleString('id-ID')}
@@ -167,7 +167,7 @@ export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-2.5" suppressHydrationWarning>
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5" suppressHydrationWarning>
                         <div className="flex flex-col gap-0.5">
                           {start || end ? (
                             <>
@@ -185,12 +185,12 @@ export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <span className={`inline-flex items-center px-2 py-1 rounded text-[9px] font-bold uppercase tracking-widest ${statusCfg.className}`}>
                           {statusCfg.label}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-2 py-1.5 md:px-4 md:py-2.5">
                         <button
                           onClick={() => handleStopDiscount(product)}
                           title="Hentikan Diskon"
