@@ -45,9 +45,9 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
   }, [supabase, onRefresh]);
 
   return (
-    <div className="flex flex-col h-full space-y-4">
+    <div className="flex flex-col h-full space-y-2 md:space-y-4">
       {/* Header Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
         <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wider text-purple-700/60 font-semibold mb-0.5">Total Promo Grosir</p>
@@ -78,7 +78,7 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
         {/* CREATE PROMO BUTTON */}
         <button
           onClick={onCreatePromo}
-          className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-3 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-purple-500/20 active:scale-[0.98]"
+          className="bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white p-2 md:p-3 rounded-xl flex items-center justify-between transition-all shadow-lg shadow-purple-500/20 active:scale-[0.98] col-span-2 md:col-span-1"
         >
           <div>
             <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold mb-0.5">Tambah Produk</p>
@@ -93,7 +93,7 @@ export default function VolumePromosView({ products, onCreatePromo, onRefresh }:
       {/* Table Area */}
       <div className="bg-white rounded-xl border border-ink/10 overflow-hidden flex-1 flex flex-col">
         <div className="overflow-x-auto custom-scrollbar flex-1">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
             <thead className="bg-gray-50 border-b border-ink/5 sticky top-0 z-10">
               <tr>
                 <th className="px-4 py-3 text-[10px] font-semibold text-ink/50 uppercase tracking-wider">Produk</th>

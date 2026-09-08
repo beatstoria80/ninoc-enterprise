@@ -15,7 +15,7 @@ export function FlashSaleTab() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 md:space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-sm font-semibold text-ink">Flash Sale Manager</h2>
@@ -29,8 +29,8 @@ export function FlashSaleTab() {
         </button>
       </div>
 
-      <div className="bg-white border border-ink/5 rounded-lg overflow-hidden">
-        <table className="w-full text-left text-xs">
+      <div className="bg-white border border-ink/5 rounded-lg overflow-x-auto custom-scrollbar">
+        <table className="w-full text-left text-xs whitespace-nowrap min-w-[600px]">
           <thead className="bg-ink/[0.02] text-ink/60 border-b border-ink/5 uppercase tracking-wider font-medium text-[10px]">
             <tr>
               <th className="px-4 py-3">Status</th>
@@ -105,7 +105,7 @@ export function FlashSaleTab() {
                 <button onClick={() => actions.setIsModalOpen(false)} className="text-ink/40 hover:text-ink"><X size={18} /></button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-5 grid grid-cols-1 md:grid-cols-3 gap-6 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto p-3 md:p-5 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 custom-scrollbar">
                 
                 {/* SETTINGS PANEL */}
                 <div className="space-y-4 md:col-span-1 border-r border-ink/5 pr-4">
