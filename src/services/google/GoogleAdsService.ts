@@ -144,11 +144,19 @@ export class GoogleAdsService {
              budgetStr = `Rp ${(Number(row.campaign_budget.amount_micros) / 1000000).toLocaleString('id-ID')} / harian`;
           }
 
+          const statusMap: Record<string, string> = {
+            '2': 'ENABLED',
+            '3': 'PAUSED',
+            '4': 'REMOVED'
+          };
+          const rawStatus = String(row.campaign?.status || 'UNKNOWN');
+          const mappedStatus = statusMap[rawStatus] || rawStatus;
+
           campaigns.push({
             id: row.campaign?.id?.toString() || 'unknown',
             name: String(row.campaign?.name || 'Unnamed Campaign'),
-            status: String(row.campaign?.status || 'UNKNOWN') as any,
-            deliveryStatus: String(row.campaign?.status || 'UNKNOWN'),
+            status: mappedStatus as any,
+            deliveryStatus: mappedStatus,
             budget: String(budgetStr),
             endDate: 'Sedang berjalan',
             spend: spendIdr,

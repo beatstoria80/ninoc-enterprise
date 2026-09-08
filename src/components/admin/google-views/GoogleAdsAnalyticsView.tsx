@@ -19,45 +19,45 @@ export function GoogleAdsAnalyticsView({ data, timeFilter }: { data: GoogleAdsDa
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-20">
       
-      {/* Top Metrics Grid */}
+      {/* Top Metrics Grid - Compact & Data Dense */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="bg-blue-600 text-white rounded-xl p-4 shadow-[0_4px_12px_rgba(37,99,235,0.2)] flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:bg-white/20 transition-colors" />
-          <p className="text-[11px] font-semibold text-white/80 uppercase tracking-wider mb-2 flex items-center gap-1.5"><DollarSign size={14}/> Total Spend</p>
-          <div>
-            <p className="text-2xl md:text-3xl font-mono tracking-tight font-light">Rp {fIDR(overview.totalSpend)}</p>
+        <div className="bg-blue-600 text-white rounded-lg p-3 shadow-sm flex flex-col justify-between relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 blur-xl group-hover:bg-white/20 transition-colors" />
+          <p className="text-[10px] font-bold text-white/80 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><DollarSign size={12}/> Biaya Iklan</p>
+          <div className="flex items-end justify-between">
+            <p className="text-xl font-mono tracking-tight font-medium">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(overview.totalSpend)}</p>
           </div>
         </div>
 
-        <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-          <p className="text-[11px] font-semibold text-ink/60 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Target size={14}/> Konversi (Pembelian)</p>
-          <div>
-            <p className="text-2xl md:text-3xl font-mono tracking-tight text-emerald-600">{overview.totalConversions.toLocaleString('id-ID')}</p>
-            <p className="text-[10px] text-ink/50 mt-1 font-mono">Rp {fIDR(overview.cpa)} CPA</p>
+        <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
+          <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Target size={12}/> Konversi</p>
+          <div className="flex items-end justify-between">
+            <p className="text-xl font-mono tracking-tight text-emerald-600 font-medium">{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.totalConversions)}</p>
+            <p className="text-[9px] text-ink/40 font-mono">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.cpa)} CPA</p>
           </div>
         </div>
 
-        <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-          <p className="text-[11px] font-semibold text-ink/60 uppercase tracking-wider mb-2 flex items-center gap-1.5"><MousePointerClick size={14}/> Total Klik</p>
-          <div>
-            <p className="text-2xl md:text-3xl font-mono tracking-tight text-ink">{overview.totalClicks.toLocaleString('id-ID')}</p>
-            <p className="text-[10px] text-ink/50 mt-1 font-mono">Rp {fIDR(overview.cpc)} CPC</p>
+        <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
+          <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MousePointerClick size={12}/> Klik</p>
+          <div className="flex items-end justify-between">
+            <p className="text-xl font-mono tracking-tight text-ink font-medium">{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.totalClicks)}</p>
+            <p className="text-[9px] text-ink/40 font-mono">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.cpc)} CPC</p>
           </div>
         </div>
 
-        <div className="bg-white border border-ink/10 rounded-xl p-4 shadow-sm flex flex-col justify-between">
-          <p className="text-[11px] font-semibold text-ink/60 uppercase tracking-wider mb-2 flex items-center gap-1.5"><Eye size={14}/> Tayangan (Impr)</p>
-          <div>
-            <p className="text-2xl md:text-3xl font-mono tracking-tight text-ink">{overview.totalImpressions.toLocaleString('id-ID')}</p>
-            <p className="text-[10px] text-ink/50 mt-1 font-mono">Rp {fIDR(overview.cpm)} CPM</p>
+        <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
+          <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Eye size={12}/> Tayangan</p>
+          <div className="flex items-end justify-between">
+            <p className="text-xl font-mono tracking-tight text-ink font-medium">{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.totalImpressions)}</p>
+            <p className="text-[9px] text-ink/40 font-mono">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.cpm)} CPM</p>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-100 rounded-xl p-4 shadow-sm flex flex-col justify-between relative overflow-hidden">
-          <p className="text-[11px] font-semibold text-emerald-800/70 uppercase tracking-wider mb-2 flex items-center gap-1.5">Avg ROAS & CTR</p>
-          <div>
-            <p className="text-2xl md:text-3xl font-mono tracking-tight text-emerald-700">{overview.averageRoas.toFixed(2)}x</p>
-            <p className="text-[11px] text-emerald-600/70 mt-1 font-mono">{overview.averageCtr.toFixed(2)}% CTR</p>
+        <div className="bg-emerald-50/50 border border-emerald-100 rounded-lg p-3 shadow-sm flex flex-col justify-between relative overflow-hidden">
+          <p className="text-[10px] font-bold text-emerald-800/60 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">Avg ROAS & CTR</p>
+          <div className="flex items-end justify-between">
+            <p className="text-xl font-mono tracking-tight text-emerald-700 font-medium">{overview.averageRoas.toFixed(1)}x</p>
+            <p className="text-[10px] font-bold text-emerald-600/70 mt-1">{overview.averageCtr.toFixed(2)}%</p>
           </div>
         </div>
       </div>
@@ -105,7 +105,7 @@ export function GoogleAdsAnalyticsView({ data, timeFilter }: { data: GoogleAdsDa
                   tick={{fontSize: 10, fill: '#64748b'}} 
                   axisLine={false} 
                   tickLine={false}
-                  tickFormatter={(val) => `Rp ${(val/1000000).toFixed(0)}M`}
+                  tickFormatter={(val) => `Rp ${new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}`}
                   width={60}
                 />
                 <YAxis 
