@@ -25,31 +25,31 @@ export function GoogleAdsAnalyticsView({ data, timeFilter }: { data: GoogleAdsDa
           <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full -mr-8 -mt-8 blur-xl group-hover:bg-white/20 transition-colors" />
           <p className="text-[10px] font-bold text-white/80 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><DollarSign size={12}/> Biaya Iklan</p>
           <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight font-medium">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(overview.totalSpend)}</p>
+            <p className="text-xl font-mono tracking-tight font-medium">Rp {fIDR(overview.totalSpend)}</p>
           </div>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
           <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Target size={12}/> Konversi</p>
           <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-emerald-600 font-medium">{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.totalConversions)}</p>
-            <p className="text-[9px] text-ink/40 font-mono">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.cpa)} CPA</p>
+            <p className="text-xl font-mono tracking-tight text-emerald-600 font-medium">{overview.totalConversions.toLocaleString('id-ID')}</p>
+            <p className="text-[9px] text-ink/40 font-mono">Rp {fIDR(overview.cpa)} CPA</p>
           </div>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
           <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><MousePointerClick size={12}/> Klik</p>
           <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-ink font-medium">{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.totalClicks)}</p>
-            <p className="text-[9px] text-ink/40 font-mono">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.cpc)} CPC</p>
+            <p className="text-xl font-mono tracking-tight text-ink font-medium">{overview.totalClicks.toLocaleString('id-ID')}</p>
+            <p className="text-[9px] text-ink/40 font-mono">Rp {fIDR(overview.cpc)} CPC</p>
           </div>
         </div>
 
         <div className="bg-white border border-ink/10 rounded-lg p-3 shadow-sm flex flex-col justify-between">
           <p className="text-[10px] font-bold text-ink/50 uppercase tracking-wider mb-1.5 flex items-center gap-1.5"><Eye size={12}/> Tayangan</p>
           <div className="flex items-end justify-between">
-            <p className="text-xl font-mono tracking-tight text-ink font-medium">{new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.totalImpressions)}</p>
-            <p className="text-[9px] text-ink/40 font-mono">Rp {new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(overview.cpm)} CPM</p>
+            <p className="text-xl font-mono tracking-tight text-ink font-medium">{overview.totalImpressions.toLocaleString('id-ID')}</p>
+            <p className="text-[9px] text-ink/40 font-mono">Rp {fIDR(overview.cpm)} CPM</p>
           </div>
         </div>
 
