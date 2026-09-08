@@ -70,32 +70,29 @@ export function GoogleAdsTab() {
   return (
     <div className="flex-1 overflow-y-auto minimal-scroll space-y-4 w-full pr-2 pb-24">
       {/* HEADER & FILTER TABS */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-ink/10 pb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-ink/10 pb-3">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <span className="inline-flex items-center justify-center p-1.5 bg-blue-50 text-blue-600 rounded-md">
               <Globe className="w-5 h-5" />
             </span>
-            <h1 className="text-xl font-bold tracking-tight text-ink">
+            <h1 className="text-lg font-bold tracking-tight text-ink">
               Google Ads Analytics
             </h1>
           </div>
-          <p className="text-xs md:text-sm text-ink/70">
-            Pantau performa kampanye Google Search, Display, dan PMax Anda secara real-time.
-          </p>
           
-          <div className="flex items-center gap-2 mt-4 bg-ink/[0.03] p-1 rounded-lg w-fit border border-ink/10 overflow-x-auto">
+          <div className="hidden md:flex items-center gap-1 bg-ink/[0.03] p-1 rounded-lg border border-ink/10">
             <button 
               onClick={() => setViewMode('ads')}
-              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'ads' ? "bg-white shadow-sm text-blue-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+              className={cn("px-3 py-1 rounded text-[11px] font-bold transition-all flex items-center gap-1.5", viewMode === 'ads' ? "bg-white shadow-sm text-blue-700" : "text-ink/60 hover:text-ink")}
             >
-              <TrendingUp size={14} /> Paid Ads
+              <TrendingUp size={12} /> Paid Ads
             </button>
             <button 
               onClick={() => setViewMode('tracking')}
-              className={cn("px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 whitespace-nowrap", viewMode === 'tracking' ? "bg-white shadow-sm text-purple-700 scale-100" : "text-ink/60 hover:text-ink hover:bg-ink/5 active:scale-95")}
+              className={cn("px-3 py-1 rounded text-[11px] font-bold transition-all flex items-center gap-1.5", viewMode === 'tracking' ? "bg-white shadow-sm text-purple-700" : "text-ink/60 hover:text-ink")}
             >
-              <Settings size={14} /> Tracking & Integrations
+              <Settings size={12} /> Tracking
             </button>
           </div>
         </div>
