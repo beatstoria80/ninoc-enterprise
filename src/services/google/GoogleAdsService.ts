@@ -84,7 +84,13 @@ export class GoogleAdsService {
       case '24h': return 'TODAY';
       case '7d': return 'LAST_7_DAYS';
       case '28d': return 'LAST_30_DAYS';
-      case '90d': return 'LAST_90_DAYS';
+      case '90d': {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - 90);
+        const toStr = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return `BETWEEN '${toStr(start)}' AND '${toStr(end)}'`;
+      }
       case 'all': return 'ALL_TIME';
       default: return 'LAST_30_DAYS';
     }
