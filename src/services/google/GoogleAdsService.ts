@@ -184,11 +184,37 @@ export class GoogleAdsService {
       `;
       
       const trendResponse = await customer.query(trendQuery);
-      const trend = (trendResponse || []).map((row: any) => ({
-        date: String(row.segments?.date || ''),
-        spend: Number(row.metrics?.cost_micros || 0) / 1000000,
-        conversions: Number(row.metrics?.conversions || 0)
-      }));
+      
+      const rawTrend = (trendResponse || []).reduce((acc: any, row: any) => {
+        const d = String(row.segments?.date || '');
+        if (d) {
+          acc[d] = {
+            spend: Number(row.metrics?.cost_micros || 0) / 1000000,
+            conversions: Number(row.metrics?.conversions || 0)
+          };
+        }
+        return acc;
+      }, {});
+
+      const trend = [];
+      const daysCount = timeFilter === '7d' ? 7 : timeFilter === '28d' ? 30 : timeFilter === '90d' ? 90 : timeFilter === '24h' ? 1 : 30;
+      
+      // Generate continuous chronological dates
+      const today = new Date();
+      for (let i = daysCount - 1; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        const dateStr = `${yyyy}-${mm}-${dd}`;
+        
+        trend.push({
+          date: dateStr,
+          spend: rawTrend[dateStr]?.spend || 0,
+          conversions: rawTrend[dateStr]?.conversions || 0
+        });
+      }
 
       const averageCtr = totalImpressions > 0 ? (totalClicks / totalImpressions) * 100 : 0;
       const averageRoas = totalSpend > 0 && totalConversions > 0 ? ((totalConversions * 150000) / totalSpend) : 0;
