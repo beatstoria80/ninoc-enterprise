@@ -8,6 +8,7 @@ import { createClient } from '@/utils/supabase/client';
 interface DiscountPeriodsViewProps {
   products: Product[];
   onCreatePromo: () => void;
+  onEditPromo: (product: Product) => void;
   onRefresh: () => void;
 }
 
@@ -26,7 +27,7 @@ const STATUS_CONFIG = {
   expired: { label: 'Berakhir',   className: 'bg-gray-100 text-gray-500',      icon: XCircle,     sortOrder: 2 },
 } as const;
 
-export default function DiscountPeriodsView({ products, onCreatePromo, onRefresh }: DiscountPeriodsViewProps) {
+export default function DiscountPeriodsView({ products, onCreatePromo, onEditPromo, onRefresh }: DiscountPeriodsViewProps) {
   const supabase = createClient();
 
   const discountProducts = useMemo(() => {
