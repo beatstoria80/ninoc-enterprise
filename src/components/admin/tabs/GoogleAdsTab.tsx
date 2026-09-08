@@ -120,9 +120,19 @@ export function GoogleAdsTab() {
         <div className="flex flex-col items-center justify-center py-20 bg-rose/5 border border-dashed border-rose/20 rounded-xl p-8 mt-4">
            <AlertTriangle className="w-12 h-12 text-rose mb-4" />
            <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Google Ads API Error</h2>
-           <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
+           <p className="text-sm text-ink/70 text-center max-w-lg mb-4">
              {data.error}
            </p>
+           {data.error.includes('permission') && (
+             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 max-w-lg w-full mt-2">
+               <p className="text-xs font-bold text-amber-800 uppercase tracking-wider mb-2">💡 Panduan Penyelesaian:</p>
+               <ul className="text-xs text-amber-700 space-y-1.5 list-disc list-inside">
+                 <li>Pastikan <code className="bg-amber-100 px-1 py-0.5 rounded text-[10px] font-mono">GOOGLE_ADS_LOGIN_CUSTOMER_ID</code> sudah diisi dengan <strong>Manager Account (MCC) ID</strong> Anda.</li>
+                 <li>Pastikan <code className="bg-amber-100 px-1 py-0.5 rounded text-[10px] font-mono">GOOGLE_ADS_CUSTOMER_ID</code> adalah ID akun iklan (Client Account), <strong>bukan</strong> ID MCC.</li>
+                 <li>Jika menggunakan Vercel, tambahkan kedua variabel di <strong>Vercel Dashboard → Settings → Environment Variables</strong>.</li>
+               </ul>
+             </div>
+           )}
         </div>
       )}
 

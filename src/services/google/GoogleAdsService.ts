@@ -8,16 +8,48 @@ import type {
 } from './types';
 
 export class GoogleAdsService {
+  /**
+   * Sanitize a Google Ads Customer ID by stripping all non-digit characters.
+   * Google Ads API requires purely numeric IDs (e.g., "1234567890"), 
+   * but users often copy-paste them with hyphens (e.g., "123-456-7890").
+   */
+  private static sanitizeCustomerId(id: string | undefined): string | undefined {
+    if (!id) return undefined;
+    const cleaned = id.replace(/[^0-9]/g, '');
+    return cleaned.length > 0 ? cleaned : undefined;
+  }
+
   private static getCustomer() {
     const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
     const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
     const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN;
-    const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
-    const loginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
+    const rawCustomerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
+    const rawLoginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
 
-    if (!clientId || !clientSecret || !developerToken || !refreshToken || !customerId) {
+    if (!clientId || !clientSecret || !developerToken || !refreshToken || !rawCustomerId) {
+      // Log which specific vars are missing for faster debugging
+      const missing = [];
+      if (!clientId) missing.push('GOOGLE_ADS_CLIENT_ID');
+      if (!clientSecret) missing.push('GOOGLE_ADS_CLIENT_SECRET');
+      if (!developerToken) missing.push('GOOGLE_ADS_DEVELOPER_TOKEN');
+      if (!refreshToken) missing.push('GOOGLE_ADS_REFRESH_TOKEN');
+      if (!rawCustomerId) missing.push('GOOGLE_ADS_CUSTOMER_ID');
+      console.warn(`[GoogleAdsService] Tidak terkonfigurasi — env vars kosong: ${missing.join(', ')}`);
       return null;
+    }
+
+    const customerId = this.sanitizeCustomerId(rawCustomerId)!;
+    const loginCustomerId = this.sanitizeCustomerId(rawLoginCustomerId);
+
+    // CRITICAL: If accessing a client account via an MCC (Manager) account,
+    // login_customer_id MUST be set. Log a warning if it's missing.
+    if (!loginCustomerId) {
+      console.warn(
+        '[GoogleAdsService] GOOGLE_ADS_LOGIN_CUSTOMER_ID tidak di-set. ' +
+        'Jika akun Google Ads Anda dikelola melalui MCC (Manager Account), ' +
+        'variabel ini WAJIB diisi dengan ID Manager Account Anda.'
+      );
     }
 
     const client = new GoogleAdsApi({
@@ -28,7 +60,7 @@ export class GoogleAdsService {
 
     return client.Customer({
       customer_id: customerId,
-      login_customer_id: loginCustomerId || undefined,
+      login_customer_id: loginCustomerId,
       refresh_token: refreshToken,
     });
   }
