@@ -446,7 +446,7 @@ export default function MobileLayout({
                 setSearchQuery('');
                 setSearchResults([]);
               }}
-              className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-[500]"
+              className="fixed inset-0 bg-ink/40 z-[500]"
             />
 
             {/* Search Modal */}
@@ -523,9 +523,9 @@ export default function MobileLayout({
                         <p className="text-xs font-medium text-ink uppercase tracking-tight">{product.name}</p>
                         <p className="text-xs text-rose italic tracking-wider mt-0.5">IDR {product.price.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</p>
                       </div>
-                      <motion.div animate={{ x: [0, 3, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+                      <div className="text-ink/30">
                         <ArrowRightIcon />
-                      </motion.div>
+                      </div>
                     </Link>
                   </motion.div>
                 ))}
@@ -547,7 +547,7 @@ export default function MobileLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-[500]"
+              className="fixed inset-0 bg-ink/40 z-[500]"
             />
 
             {/* Drawer */}

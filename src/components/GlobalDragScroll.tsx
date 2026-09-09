@@ -31,6 +31,9 @@ export default function GlobalDragScroll() {
       document.documentElement.classList.remove('admin-route');
     }
 
+    // Skip entirely on touch devices — drag-scroll is a desktop-mouse feature
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
     const handleMouseDown = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0) return;
 

@@ -5,8 +5,18 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 
 export default function GlobalCursor() {
+  const [isTouchDevice, setIsTouchDevice] = useState(true); // Default true to prevent flash
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  const pathname = usePathname();
+  const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
+
+  // Detect touch device on mount — before any heavy work
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsTouchDevice(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
 
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
@@ -20,16 +30,10 @@ export default function GlobalCursor() {
   const trailX = useSpring(mouseX, trailConfig);
   const trailY = useSpring(mouseY, trailConfig);
 
-  const pathname = usePathname();
-  const isDashboardRoute = pathname?.startsWith('/admin') || pathname?.startsWith('/dashboard');
-
   useEffect(() => {
-    // Nonaktifkan custom cursor di area admin dashboard untuk menghindari lag (loncat-loncat)
-    // dan mengembalikan hardware cursor bawaan agar lebih responsif.
-    if (isDashboardRoute) return;
+    // Skip on touch devices or dashboard routes
+    if (isTouchDevice || isDashboardRoute) return;
 
-    // Only run on desktop/devices with a precise mouse
-    if (window.matchMedia('(pointer: coarse)').matches) return;
     // Defer state update to avoid cascading render warning
     const timeout = setTimeout(() => setIsVisible(true), 0);
 
@@ -64,9 +68,9 @@ export default function GlobalCursor() {
       window.removeEventListener('mouseover', handleMouseOver);
       clearTimeout(timeout);
     };
-  }, [mouseX, mouseY, isDashboardRoute]);
+  }, [mouseX, mouseY, isDashboardRoute, isTouchDevice]);
 
-  if (isDashboardRoute || !isVisible) return null;
+  if (isTouchDevice || isDashboardRoute || !isVisible) return null;
 
   return (
     <>
