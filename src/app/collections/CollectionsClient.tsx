@@ -13,6 +13,7 @@ import { useBrandColor } from '@/components/BrandProvider';
 import { Collection, Product, CollectionProduct } from '@/components/admin/types';
 import { useRouter } from 'next/navigation';
 import { formatCategoryLabel } from '@/lib/departmentDomain';
+import { isDiscountActive } from '@/lib/domain/product';
 import { useCatalogViews } from '@/hooks/shop/useCatalogViews';
 
 function cn(...inputs: ClassValue[]) {
@@ -252,11 +253,20 @@ function ProductCard({ product }: { product: Product }) {
               <Package size={24} />
             </div>
           )}
-          {product.price_tag && (
-            <div className="absolute top-1.5 right-1.5 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 text-[8px] md:text-[7px] font-medium uppercase tracking-[0.15em] shadow-sm z-10 pointer-events-none">
-              {product.price_tag}
+          {/* Program & Promo Badge — Top Right (Orange & White) */}
+          {isDiscountActive(product) && product.original_price ? (
+            <div className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-1.5 py-0.5 shadow-sm pointer-events-none flex items-center gap-1">
+              <span className="text-[8px] md:text-[7px] font-bold uppercase tracking-wider leading-none">
+                -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+              </span>
             </div>
-          )}
+          ) : product.price_tag ? (
+            <div className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-1.5 py-0.5 shadow-sm pointer-events-none">
+              <span className="text-[8px] md:text-[7px] font-bold uppercase tracking-[0.15em] leading-none">
+                {product.price_tag}
+              </span>
+            </div>
+          ) : null}
         </div>
         <div className="p-1.5 md:p-2 space-y-1.5 md:space-y-1.5 flex flex-col justify-between flex-grow">
           <div>

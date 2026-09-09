@@ -86,26 +86,20 @@ function ProductCard({ product }: { product: Product }) {
               STUDIO EDITION
             </div>
 
-            {product.price_tag && (
-              <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
-                {product.price_tag}
+            {/* Program & Promo Badge — Top Right (Orange & White) */}
+            {isDiscountActive(product) && product.original_price ? (
+              <div suppressHydrationWarning className="absolute top-2 right-2 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none flex items-center gap-1">
+                <span suppressHydrationWarning className="text-[10px] md:text-[8px] font-bold uppercase tracking-wider leading-none">
+                  -{Math.round(((product.original_price! - (product.price || 0)) / product.original_price!) * 100)}%
+                </span>
               </div>
-            )}
-
-            {/* Discount Badge - Top Right (below price_tag if exists) */}
-            {(() => {
-              const hasDiscount = isDiscountActive(product);
-              if (hasDiscount) {
-                return (
-                  <div suppressHydrationWarning className={`absolute ${product.price_tag ? 'top-10 md:top-8' : 'top-2'} right-2 z-10 bg-orange-500 text-white px-2 py-1 rounded-[2px] shadow-md`}>
-                    <span suppressHydrationWarning className="text-[10px] md:text-[8px] font-bold leading-none">
-                      -{Math.round(((product.original_price! - (product.price || 0)) / product.original_price!) * 100)}%
-                    </span>
-                  </div>
-                );
-              }
-              return null;
-            })()}
+            ) : product.price_tag ? (
+              <div className="absolute top-2 right-2 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none">
+                <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.15em] leading-none">
+                  {product.price_tag}
+                </span>
+              </div>
+            ) : null}
           </div>
 
           <div className="p-2.5 md:p-2 flex flex-col flex-grow justify-between gap-2 md:gap-1.5">
