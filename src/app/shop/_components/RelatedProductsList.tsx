@@ -56,6 +56,14 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
                   }
                   return null;
                 })()}
+                {/* Program & Promo Badge - Top Right */}
+                {!isDiscountActive(p) && p.price_tag && (
+                  <div className="absolute top-1.5 right-1.5 z-10 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 shadow-sm pointer-events-none">
+                    <span className="text-[7px] font-medium uppercase tracking-[0.15em] leading-none">
+                      {p.price_tag}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="space-y-1 px-1">
                 <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>

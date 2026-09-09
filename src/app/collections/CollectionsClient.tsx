@@ -253,7 +253,7 @@ function ProductCard({ product }: { product: Product }) {
             </div>
           )}
           {product.price_tag && (
-            <div className="absolute top-1 right-1 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 text-[6px] md:text-[5px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
+            <div className="absolute top-1.5 right-1.5 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 text-[8px] md:text-[7px] font-medium uppercase tracking-[0.15em] shadow-sm z-10 pointer-events-none">
               {product.price_tag}
             </div>
           )}

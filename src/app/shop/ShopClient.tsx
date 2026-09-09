@@ -246,6 +246,12 @@ function MobileShopView({ filterSystem, dict, activeFlashSales }: { filterSystem
                             )}
                           </div>
                         )}
+
+                        {product.price_tag && (
+                          <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[9px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
+                            {product.price_tag}
+                          </div>
+                        )}
                         
                         <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                       </div>

@@ -144,6 +144,13 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
               {product.price_tag ? 'SALE' : 'NEW'}
             </motion.div>
           )}
+
+          {/* Program & Promo Badge - Top Right */}
+          {product.price_tag && (
+            <div className="absolute top-0 right-0 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] shadow-sm z-10 pointer-events-none">
+              {product.price_tag}
+            </div>
+          )}
         </motion.div>
 
         <motion.div variants={cardContentVariants} className="flex flex-col flex-grow">

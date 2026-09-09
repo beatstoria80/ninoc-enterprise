@@ -87,6 +87,15 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
           return null;
         })()}
 
+        {/* Program & Promo Badge - Top Right */}
+        {product.price_tag && (
+          <div className="absolute top-1.5 right-1.5 z-10 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 shadow-sm pointer-events-none">
+            <span className="text-[8px] font-medium uppercase tracking-[0.15em] leading-none">
+              {product.price_tag}
+            </span>
+          </div>
+        )}
+
         {/* Quick Add Button (appears on touch) */}
         <div className="absolute bottom-2 right-2 z-10">
           <button onClick={handleQuickBuy} className="w-8 h-8 bg-white/90 backdrop-blur-md rounded-none flex items-center justify-center border border-ink/10 shadow-sm active:scale-90 transition-all text-ink hover:text-white hover:bg-ink">
