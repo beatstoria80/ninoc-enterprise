@@ -160,6 +160,17 @@ export function AllProductsView({
                       Affiliate
                     </div>
                   )}
+                  {product.badge_text && (
+                    <div className="w-fit px-2 py-1 bg-violet-600 text-white text-[9px] uppercase tracking-wider rounded shadow-sm max-w-[120px] truncate">
+                      {product.badge_text}
+                    </div>
+                  )}
+                  {(product.original_price || product.bundle_discount_amount) && (
+                    <div className="w-fit px-2 py-1 bg-amber-500 text-white text-[9px] uppercase tracking-wider rounded shadow-sm flex items-center gap-1">
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m11.1 7.1 6.3 6.3c.4.4.4 1 0 1.4l-5 5c-.4.4-1 .4-1.4 0l-6.3-6.3a2 2 0 0 1-.6-1.4V7c0-1.1.9-2 2-2h5.1c.5 0 1 .2 1.4.6Z"/><circle cx="10" cy="10" r="1"/></svg>
+                      Promo
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="p-3 space-y-2">
@@ -198,10 +209,22 @@ export function AllProductsView({
                   {product.price_tag && (
                     <div className="text-[9px] uppercase tracking-[0.25em] text-rose font-medium">{product.price_tag}</div>
                   )}
-                  <p className="text-xs font-medium text-ink leading-none">
-                    {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                    <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs font-medium text-ink leading-none">
+                      {Number(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      <span className="text-[9px] font-normal text-gray-400 ml-1">IDR</span>
+                    </p>
+                    {product.original_price && product.original_price > product.price && (
+                      <p className="text-[10px] text-gray-400 line-through">
+                        {Number(product.original_price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                      </p>
+                    )}
+                  </div>
+                  {product.original_price && product.original_price > product.price && (
+                    <div className="inline-block px-1.5 py-0.5 bg-rose/10 text-rose text-[8px] font-bold uppercase tracking-wider rounded-sm mt-0.5">
+                      {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+                    </div>
+                  )}
                 </div>
 
                 {/* Analytics Info (Views & Sold) */}
