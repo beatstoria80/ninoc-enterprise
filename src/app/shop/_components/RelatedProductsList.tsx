@@ -42,28 +42,20 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
                   <SafeImage src={p.image_url} alt={p.image_alt || p.name} className="object-contain group-hover:scale-105 transition-transform duration-700" sizes="(max-width: 768px) 120px, 160px" />
                 </div>
                 <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                {/* Discount Badge - Top Right */}
-                {(() => {
-                  const hasDiscount = isDiscountActive(p);
-                  if (hasDiscount) {
-                    return (
-                      <div suppressHydrationWarning className="absolute top-1.5 right-1.5 z-10 bg-orange-500 text-white px-1.5 py-0.5 rounded-[2px] shadow-md">
-                        <span suppressHydrationWarning className="text-[8px] font-bold leading-none">
-                          -{Math.round(((p.original_price! - (p.price || 0)) / p.original_price!) * 100)}%
-                        </span>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-                {/* Program & Promo Badge - Top Right */}
-                {!isDiscountActive(p) && p.price_tag && (
-                  <div className="absolute top-1.5 right-1.5 z-10 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1 py-0.5 shadow-sm pointer-events-none">
-                    <span className="text-[7px] font-medium uppercase tracking-[0.15em] leading-none">
+                {/* Program & Promo Badge — Top Right (Orange & White) */}
+                {isDiscountActive(p) && p.original_price ? (
+                  <div suppressHydrationWarning className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none flex items-center gap-1">
+                    <span suppressHydrationWarning className="text-[9px] font-bold uppercase tracking-wider leading-none">
+                      -{Math.round(((p.original_price! - (p.price || 0)) / p.original_price!) * 100)}%
+                    </span>
+                  </div>
+                ) : p.price_tag ? (
+                  <div className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none">
+                    <span className="text-[8px] font-bold uppercase tracking-[0.15em] leading-none">
                       {p.price_tag}
                     </span>
                   </div>
-                )}
+                ) : null}
               </div>
               <div className="space-y-1 px-1">
                 <h3 className="text-xs md:text-[10px] md:text-xs font-display font-medium italic uppercase tracking-tight text-ink group-hover:text-rose transition-colors leading-tight line-clamp-1">{p.name}</h3>

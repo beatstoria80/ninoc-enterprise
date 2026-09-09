@@ -11,6 +11,7 @@ import { useCart } from '@/store/useCart';
 import { useBrandColor } from '@/components/BrandProvider';
 import { CategoryType } from '@/types';
 import { classifyDepartment } from '@/lib/departmentDomain';
+import { isDiscountActive } from '@/lib/domain/product';
 import Link from '@/components/LocalizedLink';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -145,12 +146,20 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
             </motion.div>
           )}
 
-          {/* Program & Promo Badge - Top Right */}
-          {product.price_tag && (
-            <div className="absolute top-0 right-0 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[9px] font-medium uppercase tracking-[0.15em] shadow-sm z-10 pointer-events-none">
-              {product.price_tag}
+          {/* Program & Promo Badge — Top Right (Orange & White) */}
+          {isDiscountActive(product) && product.original_price ? (
+            <div className="absolute top-0 right-0 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none flex items-center gap-1">
+              <span className="text-[9px] font-bold uppercase tracking-wider leading-none">
+                -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+              </span>
             </div>
-          )}
+          ) : product.price_tag ? (
+            <div className="absolute top-0 right-0 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none">
+              <span className="text-[8px] font-bold uppercase tracking-[0.15em] leading-none">
+                {product.price_tag}
+              </span>
+            </div>
+          ) : null}
         </motion.div>
 
         <motion.div variants={cardContentVariants} className="flex flex-col flex-grow">

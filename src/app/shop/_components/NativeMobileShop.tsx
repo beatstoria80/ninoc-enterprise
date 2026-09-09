@@ -72,29 +72,20 @@ export function NativeMobileProductCard({ product, onTap }: { product: ProductCa
           </div>
         )}
 
-        {/* Discount Badge - Top Right */}
-        {(() => {
-          const hasDiscount = isDiscountActive(product);
-          if (hasDiscount) {
-            return (
-              <div suppressHydrationWarning className="absolute top-1.5 right-1.5 z-10 bg-orange-500 text-white px-1.5 py-0.5 rounded-[2px] shadow-md">
-                <span suppressHydrationWarning className="text-[9px] font-bold leading-none">
-                  -{Math.round(((product.original_price! - product.price) / product.original_price!) * 100)}%
-                </span>
-              </div>
-            );
-          }
-          return null;
-        })()}
-
-        {/* Program & Promo Badge - Top Right */}
-        {product.price_tag && (
-          <div className="absolute top-1.5 right-1.5 z-10 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-1.5 py-0.5 shadow-sm pointer-events-none">
-            <span className="text-[8px] font-medium uppercase tracking-[0.15em] leading-none">
+        {/* Program & Promo Badge — Top Right (Orange & White) */}
+        {isDiscountActive(product) && product.original_price ? (
+          <div suppressHydrationWarning className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none flex items-center gap-1">
+            <span suppressHydrationWarning className="text-[9px] font-bold uppercase tracking-wider leading-none">
+              -{Math.round(((product.original_price! - product.price) / product.original_price!) * 100)}%
+            </span>
+          </div>
+        ) : product.price_tag ? (
+          <div className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none">
+            <span className="text-[8px] font-bold uppercase tracking-[0.15em] leading-none">
               {product.price_tag}
             </span>
           </div>
-        )}
+        ) : null}
 
         {/* Quick Add Button (appears on touch) */}
         <div className="absolute bottom-2 right-2 z-10">

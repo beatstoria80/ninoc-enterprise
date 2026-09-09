@@ -246,12 +246,20 @@ function MobileShopView({ filterSystem, dict, activeFlashSales }: { filterSystem
                             )}
                           </div>
                         )}
-
-                        {product.price_tag && (
-                          <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[9px] font-medium uppercase tracking-[0.2em] shadow-sm z-10 pointer-events-none">
-                            {product.price_tag}
+                        {/* Program & Promo Badge — Top Right (Orange & White) */}
+                        {isDiscountActive(product) && product.original_price ? (
+                          <div className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none flex items-center gap-1">
+                            <span className="text-[9px] font-bold uppercase tracking-wider leading-none">
+                              -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+                            </span>
                           </div>
-                        )}
+                        ) : product.price_tag ? (
+                          <div className="absolute top-1.5 right-1.5 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none">
+                            <span className="text-[8px] font-bold uppercase tracking-[0.15em] leading-none">
+                              {product.price_tag}
+                            </span>
+                          </div>
+                        ) : null}
                         
                         <div className="absolute inset-0 bg-ink/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
                       </div>
@@ -408,12 +416,20 @@ function DesktopShopView({ filterSystem, dict, activeFlashSales }: { filterSyste
                           )}
                         </div>
                       )}
-
-                      {product.price_tag && (
-                        <div className="absolute top-2 right-2 bg-white/95 backdrop-blur-sm text-rose border border-rose/10 px-2 py-1 text-[11px] md:text-[8px] font-medium uppercase tracking-[0.2em] shadow-sm z-10">
-                          {product.price_tag}
+                      {/* Program & Promo Badge — Top Right (Orange & White) */}
+                      {isDiscountActive(product) && product.original_price ? (
+                        <div className="absolute top-2 right-2 z-10 bg-[#FF6B00] text-white px-2.5 py-1 shadow-md pointer-events-none flex items-center gap-1">
+                          <span className="text-[11px] md:text-[9px] font-bold uppercase tracking-wider leading-none">
+                            -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
+                          </span>
                         </div>
-                      )}
+                      ) : product.price_tag ? (
+                        <div className="absolute top-2 right-2 z-10 bg-[#FF6B00] text-white px-2.5 py-1 shadow-md pointer-events-none">
+                          <span className="text-[10px] md:text-[8px] font-bold uppercase tracking-[0.15em] leading-none">
+                            {product.price_tag}
+                          </span>
+                        </div>
+                      ) : null}
 
 
                     </div>
