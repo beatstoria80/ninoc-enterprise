@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { productCardVariants, cardImageVariants, cardContentVariants, DURATION, EASING } from '@/lib/animations';
 import DragSlider from '@/components/DragSlider';
-import { useCart } from '@/store/useCart';
 import { useBrandColor } from '@/components/BrandProvider';
 import { CategoryType } from '@/types';
 import { classifyDepartment } from '@/lib/departmentDomain';
@@ -87,8 +86,16 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-10% 0px' });
   const [isHovered, setIsHovered] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const brandColor = useBrandColor();
   const darkColor = { color: '#141414' };
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsMounted(true);
+  }, []);
+
+  const hasActiveDiscount = isMounted && isDiscountActive(product);
 
   const categoryInfo = getCategoryInfo(product.category);
   const CategoryIcon = categoryInfo?.icon || ApparelIcon;
@@ -133,21 +140,18 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
             </div>
           )}
 
-          {(product.price_tag || index < 3) && (
+          {(!hasActiveDiscount && !product.price_tag && index < 3) && (
             <motion.div
-              className={cn(
-                "absolute top-0 left-0 text-white px-2 py-1 text-[10px] uppercase tracking-widest z-10 font-bold",
-                product.price_tag ? "bg-rose" : "bg-ink"
-              )}
+              className="absolute top-0 left-0 text-white px-2 py-1 text-[10px] uppercase tracking-widest z-10 font-bold bg-ink"
               animate={{ opacity: isHovered ? 0.9 : 1 }}
               transition={{ duration: DURATION.fast }}
             >
-              {product.price_tag ? 'SALE' : 'NEW'}
+              NEW
             </motion.div>
           )}
 
           {/* Program & Promo Badge — Top Right (Orange & White) */}
-          {isDiscountActive(product) && product.original_price ? (
+          {hasActiveDiscount && product.original_price ? (
             <div className="absolute top-0 right-0 z-10 bg-[#FF6B00] text-white px-2 py-1 shadow-md pointer-events-none flex items-center gap-1">
               <span className="text-[9px] font-bold uppercase tracking-wider leading-none">
                 -{Math.round(((product.original_price - (product.price || 0)) / product.original_price) * 100)}%
@@ -180,20 +184,9 @@ function ProductCard({ product, index }: { product: Product, index: number }) {
             </motion.h3>
           </div>
           <div className="mt-auto pt-1 border-t border-ink/5 space-y-1.5">
-            {product.price_tag && (
-              <div className="flex items-center gap-1 border border-rose/20 px-1 py-0.5 bg-rose/[0.02] w-fit">
-                <span className="text-[6px] md:text-[7px] font-medium text-rose uppercase tracking-widest flex items-center gap-0.5">
-                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-rose">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                  {product.price_tag}
-                </span>
-              </div>
-            )}
             <div className="flex items-center justify-between">
               <div className="flex flex-col">
-                {product.original_price && product.original_price > product.price && !product.price_tag?.includes('REDEEM') && (
+                {hasActiveDiscount && product.original_price && !product.price_tag?.includes('REDEEM') && (
                   <span className="line-through text-ink/40 text-[9px] md:text-[10px] font-medium not-italic leading-none mb-0.5">
                     IDR {product.original_price.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
                   </span>
