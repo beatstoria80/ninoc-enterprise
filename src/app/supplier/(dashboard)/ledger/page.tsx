@@ -1,5 +1,5 @@
 import { createClient } from '@/utils/supabase/server';
-import { Banknote, TrendingUp, DollarSign, Download, ArrowUpRight, Calendar, ArrowDownRight, Clock, Box } from 'lucide-react';
+import { Banknote, TrendingUp, DollarSign, ArrowUpRight, ArrowDownRight, Clock, Box } from 'lucide-react';
 import { PayoutRequestButton } from '@/components/supplier/PayoutRequestButton';
 
 export default async function SupplierLedgerPage() {
@@ -111,14 +111,11 @@ export default async function SupplierLedgerPage() {
           <h1 className="text-2xl font-bold font-display text-gray-900">Virtual Inventory Finance</h1>
           <p className="text-gray-500 text-sm mt-1">Track your dropship revenues, campaign fees, and withdrawals.</p>
         </div>
-        <button className="bg-ink text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-ink/90 transition-colors flex items-center gap-2">
-          <Download size={16} />
-          Export Statement
-        </button>
+
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+        <div className="bg-gradient-to-br from-emerald-600 to-emerald-800 p-6 text-white shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 p-6 opacity-10">
             <DollarSign size={100} />
           </div>
@@ -137,7 +134,7 @@ export default async function SupplierLedgerPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-center">
+        <div className="bg-white border border-gray-200 p-6 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
               <Box size={20} />
@@ -147,7 +144,7 @@ export default async function SupplierLedgerPage() {
           <h3 className="text-3xl font-bold text-gray-900">Rp {netSalesThisMonth.toLocaleString('id-ID')}</h3>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 flex flex-col justify-center">
+        <div className="bg-white border border-gray-200 p-6 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
               <Clock size={20} />
@@ -160,10 +157,9 @@ export default async function SupplierLedgerPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div className="bg-white border border-gray-200 overflow-hidden flex flex-col">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
             <h3 className="text-lg font-bold text-gray-900">Payout History</h3>
-            <button className="text-sm font-medium text-blue-600 hover:text-blue-700">View All</button>
           </div>
           <div className="p-0 overflow-x-auto flex-1">
             <table className="w-full text-left text-sm">
@@ -210,12 +206,9 @@ export default async function SupplierLedgerPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+        <div className="bg-white border border-gray-200 overflow-hidden flex flex-col">
           <div className="p-6 border-b border-gray-100 flex items-center justify-between">
             <h3 className="text-lg font-bold text-gray-900">Double-Entry Ledger (Virtual Inventory)</h3>
-            <button className="p-2 text-gray-400 hover:text-ink hover:bg-gray-50 rounded-lg">
-              <Calendar size={18} />
-            </button>
           </div>
           <div className="p-6 flex-1">
             <div className="space-y-6">

@@ -99,7 +99,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
         <div className="md:col-span-3 space-y-6">
           {tab === 'company' && (
             <>
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-100">
                   <h2 className="text-lg font-bold text-gray-900">{dict.companyInfoTitle}</h2>
                   <p className="text-sm text-gray-500 mt-1">{dict.companyDesc}</p>
@@ -107,7 +107,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
                 <SupplierForm supplierData={supplierData} lang={lang} />
               </div>
 
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="bg-white border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b border-gray-100 flex items-center justify-between">
                   <div>
                     <h2 className="text-lg font-bold text-gray-900">{dict.fulfillmentTitle}</h2>
@@ -164,7 +164,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
           )}
 
           {tab === 'account' && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white border border-gray-200 overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">{dict.accountTitle}</h2>
                 <p className="text-sm text-gray-500 mt-1">{dict.accountDesc}</p>
@@ -174,7 +174,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
           )}
 
           {tab === 'bank' && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white border border-gray-200 overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">{dict.bankTitle}</h2>
                 <p className="text-sm text-gray-500 mt-1">{dict.bankDesc}</p>
@@ -184,7 +184,7 @@ export default async function SupplierSettingsPage(props: { searchParams: Promis
           )}
 
           {tab === 'security' && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white border border-gray-200 overflow-hidden">
               <div className="p-6 border-b border-gray-100">
                 <h2 className="text-lg font-bold text-gray-900">{dict.securityTitle}</h2>
                 <p className="text-sm text-gray-500 mt-1">{dict.securityDesc}</p>

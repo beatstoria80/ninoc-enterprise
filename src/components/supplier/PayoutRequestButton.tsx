@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,6 +20,7 @@ export function PayoutRequestButton({
   initialAccountNumber,
   initialAccountName
 }: PayoutRequestButtonProps) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,9 +69,9 @@ export function PayoutRequestButton({
       toast.success('Pengajuan penarikan dana berhasil dikirim!');
       setIsOpen(false);
       
-      // Delay reload to let user see success message
+      // Refresh server data without full page reload
       setTimeout(() => {
-        window.location.reload();
+        router.refresh();
       }, 1500);
 
     } catch (err: any) {

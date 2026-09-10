@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { PackageX, AlertTriangle, Video, Search, MessageSquare, X, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { createClient } from '@/utils/supabase/client';
@@ -24,6 +25,7 @@ export default function SupplierReturnsClient({
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     // Realtime subscription for returns updates
@@ -33,7 +35,7 @@ export default function SupplierReturnsClient({
         // Simple refresh strategy: reload window to get fresh server props
         // In a complex app, we'd fetch the specific retur
         toast('Return status updated by Admin');
-        window.location.reload();
+        router.refresh();
       })
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'retur_messages' }, payload => {
         const newMsg = payload.new;
@@ -49,7 +51,7 @@ export default function SupplierReturnsClient({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [selectedRetur, supabase]);
+  }, [selectedRetur, supplierId, router, supabase]);
 
   const loadMessages = React.useCallback(async (returId: string) => {
     setIsLoadingMessages(true);
@@ -112,7 +114,7 @@ export default function SupplierReturnsClient({
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 overflow-hidden">
         <div className="p-4 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row gap-4 items-center justify-between">
           <div className="flex gap-2 w-full md:w-auto">
             <div className="px-4 py-2 bg-ink text-white text-sm font-medium rounded-full">
@@ -206,7 +208,7 @@ export default function SupplierReturnsClient({
       </div>
 
       {/* Cancellations Section */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mt-8">
+      <div className="bg-white border border-gray-200 overflow-hidden mt-8">
         <div className="p-4 border-b border-gray-100 bg-gray-50/50">
           <h2 className="font-medium text-ink">Cancelled Orders ({cancellations.length})</h2>
         </div>

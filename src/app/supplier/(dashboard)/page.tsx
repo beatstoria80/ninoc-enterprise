@@ -2,6 +2,7 @@ import { getCurrentSupplier } from '@/lib/services/supplier';
 import { getSupplierInventoryStats, getSupplierDashboardMetrics } from '@/lib/services/inventory';
 import { Package, LineChart, TrendingUp, DollarSign, UtensilsCrossed, ArrowUpRight, Activity, Truck } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { SupplierSalesChart } from '@/components/supplier/SupplierSalesChart';
 
 export default async function SupplierDashboard() {
@@ -102,7 +103,7 @@ export default async function SupplierDashboard() {
             <div className="text-[10px] font-bold text-gray-500 tracking-widest uppercase flex items-center gap-2">
               <Activity size={14} /> Fulfillment Rate
             </div>
-            <h3 className="text-2xl font-medium text-gray-900">100%</h3>
+            <h3 className="text-2xl font-medium text-gray-900">—</h3>
           </div>
         </div>
       </div>
@@ -121,9 +122,9 @@ export default async function SupplierDashboard() {
         <div className="bg-white border border-gray-200 p-6 flex flex-col">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
             <h3 className="text-[10px] uppercase tracking-widest font-bold text-gray-900">Recent Logistics</h3>
-            <button className="text-gray-400 hover:text-gray-900 transition-colors">
+            <Link href="/supplier/logistics" className="text-gray-400 hover:text-gray-900 transition-colors">
               <ArrowUpRight size={14} />
-            </button>
+            </Link>
           </div>
           <div className="flex-1">
             {recentMovements.length > 0 ? (
