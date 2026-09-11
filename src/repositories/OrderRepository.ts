@@ -143,6 +143,7 @@ export class OrderRepository {
    */
   public async createOrderWithInventoryLock(
     orderId: string,
+    orderNumber: string,
     grossAmount: number,
     affiliateId: string | null,
     customer: any,
@@ -187,7 +188,8 @@ export class OrderRepository {
       p_courier: aggregatedCourier,
       p_shipping_address: shippingAddress,
       p_items: dbOrderItems,
-      p_shipments: shipments
+      p_shipments: shipments,
+      p_order_number: orderNumber
     });
 
     if (error) {

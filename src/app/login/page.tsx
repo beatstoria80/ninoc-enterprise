@@ -51,13 +51,8 @@ export default function LoginPage() {
       let loginPassword = password;
       let isSupplierLogin = false;
 
-      // Smart Backdoor (maps dummy credentials to the real auth account to get a valid token)
-      if (email === 'adm' && password === '111') {
-        loginEmail = 'admin@ninoc.store';
-        loginPassword = 'NinocAdmin2026!';
-      } else if (!email.includes('@')) {
-        // If it's a username (no @) and admin login failed above, 
-        // assume it's a supplier/staff username mapped to @ninoc.store
+      if (!email.includes('@')) {
+        // If it's a username (no @), assume it's a supplier/staff username mapped to @ninoc.store
         loginEmail = `${email.trim().toLowerCase()}@ninoc.store`;
         isSupplierLogin = true;
       }

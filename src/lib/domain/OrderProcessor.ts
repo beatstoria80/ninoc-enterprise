@@ -62,17 +62,12 @@ export class OrderProcessor {
       // B. Secure Voucher Consumption (Financial integrity)
       const appliedPromo = (existingOrder.shipping_address as any)?.promo_code;
       if (appliedPromo) {
-        console.log(`[OrderProcessor] Consuming voucher quota securely for promo: ${appliedPromo}`);
-        const { data: voucher } = await supabaseAdmin
-          .from('vouchers')
-          .select('id, usage_count')
-          .eq('code', appliedPromo)
-          .single();
-        if (voucher) {
-          await supabaseAdmin
-            .from('vouchers')
-            .update({ usage_count: (voucher.usage_count || 0) + 1 })
-            .eq('id', voucher.id);
+        console.log(`[OrderProcessor] Consuming voucher quota atomically for promo: ${appliedPromo}`);
+        const { error: voucherError } = await supabaseAdmin.rpc('increment_voucher_usage', {
+          p_code: appliedPromo
+        });
+        if (voucherError) {
+          console.error(`[OrderProcessor] Voucher increment failed for promo: ${appliedPromo}`, voucherError);
         }
       }
 

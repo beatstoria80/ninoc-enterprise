@@ -244,6 +244,8 @@ export class PricingEngine {
       calculatedGrossAmount -= promo.discountAmount;
     }
 
+    calculatedGrossAmount = Math.round(calculatedGrossAmount);
+
     if (calculatedGrossAmount <= 0) {
       return { grossAmount: 0, domainItems: [], dbOrderItems: [], error: 'Invalid total price' };
     }

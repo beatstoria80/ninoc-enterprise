@@ -144,9 +144,9 @@ export class CheckoutService {
 
   public async rollbackFlashSaleLocks(reservedItems: { id: string; qty: number }[]) {
     for (const res of reservedItems) {
-      await this.supabaseAdmin.rpc('reserve_flash_sale_stock', {
+      await this.supabaseAdmin.rpc('rollback_flash_sale_stock', {
         p_flash_sale_item_id: res.id,
-        p_qty: -res.qty
+        p_qty: res.qty
       });
     }
   }
@@ -305,7 +305,7 @@ export class CheckoutService {
     const lastName = (customerDetails.last_name || '').toUpperCase();
     
     const orderCreation = await this.orderRepo.createOrderWithInventoryLock(
-      orderId, pricing.grossAmount, affiliateId, customerDetails, shippingDetails,
+      orderId, orderNumber, pricing.grossAmount, affiliateId, customerDetails, shippingDetails,
       firstName, lastName, pricing.dbOrderItems, shipments, validatedPromo?.code
     );
 
@@ -314,18 +314,31 @@ export class CheckoutService {
       return DomainFailure(orderCreation.error || 'Failed to create order', 'CONFLICT');
     }
 
-    // 6. Payment & Async Tasks
-    const transaction = await this.processPaymentGateway(
-      orderId, pricing.grossAmount, customerDetails, pricing.domainItems, shippingDetails, flashSaleOrderItems
-    );
+    // 6. Payment Gateway with Rollback on Failure
+    try {
+      const transaction = await this.processPaymentGateway(
+        orderId, pricing.grossAmount, customerDetails, pricing.domainItems, shippingDetails, flashSaleOrderItems
+      );
 
-    this.dispatchAsyncTasks(customerDetails, orderId);
+      this.dispatchAsyncTasks(customerDetails, orderId);
 
-    return DomainSuccess({
-      token: transaction.token as string,
-      redirect_url: transaction.redirect_url as string,
-      orderId,
-      orderNumber,
-    });
+      return DomainSuccess({
+        token: transaction.token as string,
+        redirect_url: transaction.redirect_url as string,
+        orderId,
+        orderNumber,
+      });
+    } catch (paymentError) {
+      console.error(`[CheckoutService] Midtrans Snap failed for ${orderId}, initiating inventory rollback:`, paymentError);
+      
+      // Rollback: restock inventory + flash sale locks
+      await this.supabaseAdmin.rpc('restock_inventory', { p_order_id: orderId });
+      await this.rollbackFlashSaleLocks(lockResult.reservedItems);
+      
+      // Mark order as failed so it doesn't linger
+      await this.supabaseAdmin.from('orders').update({ status: 'cancelled', payment_status: 'failed' }).eq('id', orderId);
+      
+      return DomainFailure('Gagal menghubungi sistem pembayaran. Silakan coba lagi dalam beberapa saat.', 'INTERNAL_ERROR');
+    }
   }
 }
