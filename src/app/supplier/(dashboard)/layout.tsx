@@ -40,13 +40,14 @@ export default async function SupplierLayout({
   }
 
   const supplierName = supplierContext.suppliers?.name || 'Supplier Portal';
+  const partnerCode = supplierContext.suppliers?.partner_code || 'SUP-PENDING';
   const isFNB = supplierContext.pillar === 'FNB';
 
   return (
     <div className="h-screen bg-gray-50 flex overflow-hidden">
       <SupplierNotificationListener userId={supplierContext.user_id} />
       
-      <SupplierNavigation supplierName={supplierName} isFNB={isFNB}>
+      <SupplierNavigation supplierName={supplierName} isFNB={isFNB} partnerCode={partnerCode}>
         {/* Main Content */}
         <main className="flex-1 flex flex-col min-w-0 relative">
           <div className="flex-1 overflow-auto p-4 md:p-8">

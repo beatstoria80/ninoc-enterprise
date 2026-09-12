@@ -68,6 +68,10 @@ export async function submitSupplierApplication(formData: FormData) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
+  // Generate Unique Partner Code (e.g., SUP-A1B2C3)
+  const uniqueId = crypto.randomUUID().split('-')[0].substring(0, 6).toUpperCase();
+  const partner_code = `SUP-${uniqueId}`;
+
   // Insert into suppliers
   const { data: supplier, error: supplierError } = await supabaseAdmin
     .from('suppliers')
@@ -83,7 +87,8 @@ export async function submitSupplierApplication(formData: FormData) {
       id_card_url,
       tax_id_url,
       business_license_url,
-      status: 'pending'
+      status: 'pending',
+      partner_code
     })
     .select()
     .single();

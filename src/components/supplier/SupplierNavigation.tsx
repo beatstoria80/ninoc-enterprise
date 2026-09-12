@@ -9,10 +9,11 @@ import { SupplierLogoutButton } from './SupplierLogoutButton';
 interface SupplierNavigationProps {
   supplierName: string;
   isFNB: boolean;
+  partnerCode: string;
   children?: React.ReactNode;
 }
 
-export function SupplierNavigation({ supplierName, isFNB, children }: SupplierNavigationProps) {
+export function SupplierNavigation({ supplierName, isFNB, partnerCode, children }: SupplierNavigationProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -36,7 +37,8 @@ export function SupplierNavigation({ supplierName, isFNB, children }: SupplierNa
     <div className="flex flex-col h-full w-full">
       <div className="p-6 border-b border-white/10 shrink-0">
         <h1 className="text-xl font-display italic text-white mb-1">NINOC B2B</h1>
-        <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-white/70">{supplierName}</p>
+        <p className="text-xs md:text-[10px] font-medium uppercase tracking-[0.2em] text-white/70">{supplierName || 'Merek Belum Diatur'}</p>
+        <p className="text-xs font-mono text-white/50 mt-1">{partnerCode}</p>
         <div className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 bg-white/10 rounded text-[10px] font-medium uppercase tracking-wider text-white">
           {isFNB ? <UtensilsCrossed size={12} /> : <Package size={12} />}
           {isFNB ? 'F&B Partner' : 'Retail Partner'}
