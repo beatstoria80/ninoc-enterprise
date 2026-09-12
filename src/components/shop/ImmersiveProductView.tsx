@@ -412,7 +412,7 @@ export default function ImmersiveProductView({
                        >
                          {colorImg ? (
                            <div className="w-3 h-3 rounded-full overflow-hidden shrink-0 border border-current">
-                             <Image src={colorImg} alt={color} width={12} height={12} className="w-full h-full object-cover" unoptimized />
+                             <Image src={colorImg} alt={color} width={12} height={12} className="w-full h-full object-cover" />
                            </div>
                          ) : (
                            <span className={cn("w-1.5 h-1.5 rounded-full", isSelected ? "bg-emerald-400" : "bg-emerald-500 animate-pulse")} />
@@ -501,7 +501,7 @@ export default function ImmersiveProductView({
              <div className="lg:hidden bg-white p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.15)] flex gap-3 items-center shrink-0 pb-6 z-[100]">
                {/* Thumbnail */}
                <div className="w-12 h-12 rounded border border-gray-100 shrink-0 overflow-hidden relative bg-gray-50">
-                 {images.length > 0 && <Image src={images[0]} alt="thumb" fill className="object-cover" unoptimized />}
+                 {images.length > 0 && <Image src={images[0]} alt="thumb" fill className="object-cover" />}
                </div>
                
                {/* Product Info */}
@@ -653,7 +653,7 @@ export default function ImmersiveProductView({
                         >
                           {colorImg && (
                             <div className="w-4 h-4 rounded-full overflow-hidden shrink-0 border border-current">
-                              <Image src={colorImg} alt={color} width={16} height={16} className="w-full h-full object-cover" unoptimized />
+                              <Image src={colorImg} alt={color} width={16} height={16} className="w-full h-full object-cover" />
                             </div>
                           )}
                           <span>{color}</span>

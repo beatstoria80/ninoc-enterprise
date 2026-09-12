@@ -24,7 +24,7 @@ export function DynamicBanner() {
     const fetchBanners = async () => {
       const { data } = await supabase
         .from('banners')
-        .select('*')
+        .select('id, title, desktop_image_url, tablet_image_url, mobile_image_url, link_url, is_active, order_index')
         .eq('is_active', true)
         .order('order_index', { ascending: true });
         
