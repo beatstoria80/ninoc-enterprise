@@ -24,7 +24,7 @@ export const getCurrentSupplier = cache(async () => {
       .select('*, suppliers(name, partner_code, status, contact_email, contact_phone, bank_name, bank_account_number, bank_account_holder)')
       .eq('user_id', user.id)
       .limit(1)
-      .single(),
+      .maybeSingle(),
     supabaseAdmin
       .from('warehouses')
       .select('*')
