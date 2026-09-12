@@ -45,16 +45,17 @@ export default async function SupplierLayout({
   return (
     <div className="min-h-screen bg-gray-50 flex">
       <SupplierNotificationListener userId={supplierContext.user_id} />
-      <SupplierNavigation supplierName={supplierName} isFNB={isFNB} />
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-hidden relative">
-        <div className="flex-1 overflow-auto p-4 md:p-8">
-          <PageTransition>
-            {children}
-          </PageTransition>
-        </div>
-      </main>
+      
+      <SupplierNavigation supplierName={supplierName} isFNB={isFNB}>
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-hidden relative">
+          <div className="flex-1 overflow-auto p-4 md:p-8">
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </div>
+        </main>
+      </SupplierNavigation>
     </div>
   );
 }
