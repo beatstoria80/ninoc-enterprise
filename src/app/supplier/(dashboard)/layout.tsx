@@ -43,12 +43,12 @@ export default async function SupplierLayout({
   const isFNB = supplierContext.pillar === 'FNB';
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="h-screen bg-gray-50 flex overflow-hidden">
       <SupplierNotificationListener userId={supplierContext.user_id} />
       
       <SupplierNavigation supplierName={supplierName} isFNB={isFNB}>
         {/* Main Content */}
-        <main className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-hidden relative">
+        <main className="flex-1 flex flex-col min-w-0 relative">
           <div className="flex-1 overflow-auto p-4 md:p-8">
             <PageTransition>
               {children}
