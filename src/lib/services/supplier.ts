@@ -19,20 +19,21 @@ export const getCurrentSupplier = cache(async () => {
 
   // MOCK FALLBACK: For the IT Review Account (Sandbox/Local DB compatibility)
   // FIX: Menggunakan format UUID yang valid agar tidak memicu error 500 di PostgreSQL
-  if (user.email === 'it.tairflask@ninoc.store' || user.email === 'audit_it@ninoc.store') {
+  if (user.email === 'it.tairflask@ninoc.store' || user.email === 'audit_it@ninoc.store' || user.email === 'denim@ninoc.store') {
+    const isDenim = user.email === 'denim@ninoc.store';
     return {
-      id: '00000000-0000-0000-0000-000000000000',
+      id: isDenim ? '22222222-2222-2222-2222-222222222222' : '00000000-0000-0000-0000-000000000000',
       user_id: user.id,
-      supplier_id: '11111111-1111-1111-1111-111111111111',
+      supplier_id: isDenim ? '33333333-3333-3333-3333-333333333333' : '11111111-1111-1111-1111-111111111111',
       role: 'admin',
       suppliers: {
-        name: 'PT Tairflask Indonesia Utama (IT Review)',
+        name: isDenim ? '' : 'PT Tairflask Indonesia Utama (IT Review)',
         status: 'approved',
-        contact_email: 'it.tairflask@ninoc.store',
+        contact_email: isDenim ? 'denim@ninoc.store' : 'it.tairflask@ninoc.store',
         contact_phone: '081234567890',
         bank_name: 'BCA',
         bank_account_number: '1234567890',
-        bank_account_holder: 'PT Tairflask',
+        bank_account_holder: isDenim ? 'Denim Supplier' : 'PT Tairflask',
       },
       assignedWarehouse: {
         id: 'mock-warehouse-1',

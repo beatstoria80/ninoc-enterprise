@@ -8,13 +8,19 @@ Gunakan akun ini untuk masuk ke panel utama Admin (Kelola Pesanan, Produk, dan K
 - **Kata Sandi:** `NinocAdmin2026!`
 - **Jalur Pintas (Smart Backdoor):** Pada halaman *Login*, Anda dapat sekadar mengetikkan `adm` di kolom email dan `111` di kolom kata sandi. Sistem akan otomatis memasukkan Anda ke akun ini.
 
-## 2. Supplier Dashboard (B2B Partner)
+## 2. Supplier Dashboard (B2B Partner) - Akun IT
 Gunakan akun ini untuk masuk ke panel Supplier (Kelola *Virtual Inventory*, *Request Allocation*, dan memantau *Ledger / Campaign Fee*).
 - **Email:** `audit_it@ninoc.store`
 - **Kata Sandi:** `akses123!`
 - **Keterangan:** Akun khusus audit IT. Akun ini ditautkan ke entitas Supplier simulasi (PT Tairflask Indonesia Utama). Sangat aman untuk menguji *checkout* potongan HPP dan *Campaign Fee*.
 
-## 3. Akun Pelanggan (User Tamu / Guest)
+## 3. Supplier Dashboard (B2B Partner) - Akun Denim (Nama Kosong)
+Akun ini khusus dibuat untuk pengujian SKU baru (Celana Panjang Denim) dengan kondisi nama perusahaan/brand (Company Name) yang sengaja dikosongkan.
+- **Email:** `denim@ninoc.store`
+- **Kata Sandi:** `akses123!`
+- **Keterangan:** Nama perusahaan kosong (`""`). Sangat cocok untuk menguji *UI/UX edge case* saat supplier belum melengkapi profil mereka.
+
+## 4. Akun Pelanggan (User Tamu / Guest)
 Untuk pengujian simulasi alur pembelian (Cart -> Checkout -> Midtrans):
 - **Email Pembeli Bebas:** Gunakan format email sembarang yang valid, contoh: `tester1@gmail.com`
 - **Nomor Telepon:** `081234567890`
