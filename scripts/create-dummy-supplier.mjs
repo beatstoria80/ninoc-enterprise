@@ -20,7 +20,7 @@ async function run() {
 
   let userId;
   if (authError) {
-    if (authError.message.includes('already registered')) {
+    if (authError.status === 422 || authError.code === 'email_exists' || authError.message.includes('already been registered')) {
       console.log('User already exists, finding ID...');
       const { data: usersData } = await supabase.auth.admin.listUsers();
       userId = usersData.users.find(u => u.email === email)?.id;
@@ -46,6 +46,9 @@ async function run() {
     return;
   }
 
+  console.log('Cleaning up partial supplier record if exists...');
+  await supabase.from('suppliers').delete().eq('partner_code', 'SUP-DENIM');
+
   console.log('Creating supplier record...');
   const { data: supplier, error: supError } = await supabase
     .from('suppliers')
@@ -53,7 +56,8 @@ async function run() {
       name: '',
       contact_email: email,
       contact_phone: '081234567890',
-      status: 'approved'
+      status: 'active',
+      partner_code: 'SUP-DENIM'
     })
     .select()
     .single();
@@ -69,7 +73,7 @@ async function run() {
     .insert({
       supplier_id: supplier.id,
       user_id: userId,
-      role: 'admin'
+      role: 'owner'
     });
 
   if (mappingError) {
