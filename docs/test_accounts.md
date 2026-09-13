@@ -20,7 +20,13 @@ Akun ini khusus dibuat untuk pengujian SKU baru (Celana Panjang Denim) dengan ko
 - **Kata Sandi:** `akses123!`
 - **Keterangan:** Nama perusahaan kosong (`""`). Sangat cocok untuk menguji *UI/UX edge case* saat supplier belum melengkapi profil mereka.
 
-## 4. Akun Pelanggan (User Tamu / Guest)
+## 4. Supplier Dashboard - Akun Status "Pending"
+Akun ini sengaja dikunci dalam status `pending` di dalam *database* untuk menguji antarmuka (UI) "Application Under Review".
+- **Email:** `pending@ninoc.store`
+- **Kata Sandi:** `akses123!`
+- **Keterangan:** Jika Anda login menggunakan akun ini, sistem tidak akan membiarkan Anda masuk ke Dasbor dan akan menahan Anda di layar Karantina/Review.
+
+## 5. Akun Pelanggan (User Tamu / Guest)
 Untuk pengujian simulasi alur pembelian (Cart -> Checkout -> Midtrans):
 - **Email Pembeli Bebas:** Gunakan format email sembarang yang valid, contoh: `tester1@gmail.com`
 - **Nomor Telepon:** `081234567890`

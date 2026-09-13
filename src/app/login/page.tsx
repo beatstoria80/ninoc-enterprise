@@ -69,7 +69,7 @@ export default function LoginPage() {
       }
       
       const nextUrl = new URLSearchParams(window.location.search).get('next');
-      if (isSupplierLogin || loginEmail === 'supplier_test@ninoc.store' || loginEmail === 'it.tairflask@ninoc.store' || loginEmail === 'audit_it@ninoc.store' || nextUrl === '/supplier') {
+      if (isSupplierLogin || loginEmail === 'supplier_test@ninoc.store' || loginEmail === 'it.tairflask@ninoc.store' || loginEmail === 'audit_it@ninoc.store' || loginEmail === 'denim@ninoc.store' || nextUrl === '/supplier') {
         window.location.href = '/supplier';
       } else if (nextUrl) {
         window.location.href = nextUrl;

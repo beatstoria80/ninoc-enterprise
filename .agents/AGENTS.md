@@ -182,3 +182,16 @@ The root cause was that:
 # Infrastructure Note: Meta Configuration
 
 **Rule:** The website infrastructure is already fully integrated with Meta Configurations (WhatsApp Business API, Webhooks, etc). Future agents MUST NOT assume the Meta environment is empty or prompt the user to create a new Meta App from scratch. The environment variables (like `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`, etc.) are already established in the production/sandbox environments. Skip basic Meta onboarding unless explicitly asked to troubleshoot.
+
+# History Case: Supplier Production Security Upgrade & Bypassing KYC (12 September 2026)
+
+**Background & Actions Taken:**
+1. **Removed MOCK FALLBACK (`supplier.ts`)**: The system no longer uses hardcoded fallback logic for testing accounts (like `audit_it` or `denim`). All B2B accounts must now explicitly exist in the `supplier_users` and `suppliers` table with a valid `partner_code`.
+2. **KYC Onboarding Intercept**: Next.js middleware forces all new Supabase Auth users to complete the `customer_profiles` KYC (First Name, Phone, Address). To bypass this for dummy/testing accounts, a backend script must directly `UPSERT` the user's data into `customer_profiles` with `is_verified: true`.
+3. **Ledger UI Overhaul**: The `/supplier/ledger` UI was strictly redesigned to a minimalist, dense, and enterprise-grade layout. Removed giant UI cards and excessive padding.
+4. **Route Protection Validation**: The `/supplier` route is impenetrable by unauthorized/foreign users because `layout.tsx` enforces three layers of security: Server-Side JWT Verification -> DB Mapping Check (`supplier_users`) -> Application Status Check (Quarantine screen for `status: 'pending'`).
+
+**Rules for Future Agents:**
+- NEVER add `MOCK FALLBACK` back into `getCurrentSupplier()`. The application is now in a Live Production State.
+- If you need to create testing accounts for the B2B portal, inject them directly into the DB using the `create-dummy-supplier.mjs` script (which handles Auth, Profiles, Suppliers, and Supplier Users).
+- Maintain the minimalist, high-density aesthetic across all internal dashboards. Do not use oversized consumer-facing UI components for B2B tools.
