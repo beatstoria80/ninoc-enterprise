@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { DayPicker, DateRange } from 'react-day-picker';
-import { format, subDays, startOfDay, isSameDay } from 'date-fns';
+import { format, subDays, startOfDay, isSameDay, subMonths } from 'date-fns';
 import { id } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -21,7 +21,7 @@ const PRESETS = [
   { label: '7 Hari Terakhir', value: '7d', getRange: () => ({ from: subDays(getStartOfToday(), 7), to: getStartOfToday() }) },
   { label: '28 Hari Terakhir', value: '28d', getRange: () => ({ from: subDays(getStartOfToday(), 28), to: getStartOfToday() }) },
   { label: '3 Bulan Terakhir', value: '90d', getRange: () => ({ from: subDays(getStartOfToday(), 90), to: getStartOfToday() }) },
-  { label: 'Sepanjang Waktu', value: 'all', getRange: () => ({ from: new Date(2020, 0, 1), to: getStartOfToday() }) },
+  { label: 'Sepanjang Waktu', value: 'all', getRange: () => ({ from: subMonths(getStartOfToday(), 37), to: getStartOfToday() }) },
 ];
 
 const parseLocalDate = (dateStr: string) => {
