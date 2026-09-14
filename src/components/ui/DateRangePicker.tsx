@@ -36,8 +36,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(undefined);
   const [activePreset, setActivePreset] = useState<string | null>(null);
 
-  // Sinkronisasi state internal dengan prop `value` setiap kali popover dibuka atau `value` berubah
-  useEffect(() => {
+  const syncStateWithValue = () => {
     if (value.startsWith('custom:')) {
       const parts = value.split(':');
       if (parts.length === 3) {
@@ -54,7 +53,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
         setActivePreset(value);
       }
     }
-  }, [value, isOpen]);
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -155,7 +154,12 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   return (
     <div className="relative inline-block text-left" ref={containerRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen) {
+            syncStateWithValue();
+          }
+          setIsOpen(!isOpen);
+        }}
         className={cn(
           "bg-white border text-ink/80 hover:text-ink px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all shadow-sm",
           isOpen ? "border-blue-500 ring-2 ring-blue-500/20" : "border-ink/15 hover:border-ink/30"
