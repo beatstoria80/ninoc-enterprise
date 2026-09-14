@@ -67,7 +67,29 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
   const handleSelect = (range: DateRange | undefined, selectedDay: Date) => {
     setActivePreset(null);
-    setSelectedRange(range);
+    if (!selectedDay) return;
+
+    const clickDate = startOfDay(selectedDay);
+
+    // 1. Jika belum ada yang dipilih, ATAU rentang sudah lengkap (kedua tanggal terisi)
+    // -> Mulai rentang baru dengan klik ini sebagai Start Date.
+    if (!selectedRange || (selectedRange.from && selectedRange.to)) {
+      setSelectedRange({ from: clickDate, to: undefined });
+      return;
+    }
+
+    // 2. Jika baru ada Start Date (sedang mencari End Date)
+    if (selectedRange.from && !selectedRange.to) {
+      const fromDate = startOfDay(selectedRange.from);
+      
+      // Dukung klik mundur: Jika End Date dipilih sebelum Start Date, otomatis Swap (Tukar posisinya)
+      if (clickDate < fromDate) {
+        setSelectedRange({ from: clickDate, to: fromDate });
+      } else {
+        setSelectedRange({ from: fromDate, to: clickDate });
+      }
+      return;
+    }
   };
 
   const applyPreset = (presetValue: string, range: DateRange) => {
