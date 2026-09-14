@@ -67,53 +67,7 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
   const handleSelect = (range: DateRange | undefined, selectedDay: Date) => {
     setActivePreset(null);
-    
-    if (!selectedDay) return; // Fail-safe
-
-    // Normalisasi waktu ke start of day agar kalkulasi jarak (distance) akurat tanpa terpengaruh jam/menit
-    const normalizedSelectedDay = startOfDay(selectedDay);
-
-    if (!selectedRange || (!selectedRange.from && !selectedRange.to)) {
-      setSelectedRange({ from: normalizedSelectedDay });
-      return;
-    }
-
-    const from = selectedRange.from ? startOfDay(selectedRange.from) : undefined;
-    const to = selectedRange.to ? startOfDay(selectedRange.to) : undefined;
-
-    if (from && to) {
-      // Jika rentang sudah lengkap, dan user klik tanggal baru
-      const distFrom = Math.abs(normalizedSelectedDay.getTime() - from.getTime());
-      const distTo = Math.abs(normalizedSelectedDay.getTime() - to.getTime());
-
-      // Pindahkan Start atau End berdasarkan mana yang terdekat
-      if (distFrom <= distTo) {
-        setSelectedRange({ from: normalizedSelectedDay, to });
-      } else {
-        setSelectedRange({ from, to: normalizedSelectedDay });
-      }
-      return;
-    }
-
-    if (from && !to) {
-      // Jika baru Start date yang dipilih
-      if (normalizedSelectedDay < from) {
-        setSelectedRange({ from: normalizedSelectedDay, to: from });
-      } else {
-        setSelectedRange({ from, to: normalizedSelectedDay });
-      }
-      return;
-    }
-    
-    if (!from && to) {
-        // Edge case: to ada tapi from tidak ada
-      if (normalizedSelectedDay > to) {
-        setSelectedRange({ from: to, to: normalizedSelectedDay });
-      } else {
-        setSelectedRange({ from: normalizedSelectedDay, to });
-      }
-      return;
-    }
+    setSelectedRange(range);
   };
 
   const applyPreset = (presetValue: string, range: DateRange) => {
