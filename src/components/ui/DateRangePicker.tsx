@@ -14,36 +14,47 @@ interface DateRangePickerProps {
   onChange: (value: string) => void;
 }
 
+const getStartOfToday = () => startOfDay(new Date());
+
 const PRESETS = [
-  { label: 'Hari Ini', value: '24h', getRange: () => ({ from: new Date(), to: new Date() }) },
-  { label: '7 Hari Terakhir', value: '7d', getRange: () => ({ from: subDays(new Date(), 7), to: new Date() }) },
-  { label: '28 Hari Terakhir', value: '28d', getRange: () => ({ from: subDays(new Date(), 28), to: new Date() }) },
-  { label: '3 Bulan Terakhir', value: '90d', getRange: () => ({ from: subDays(new Date(), 90), to: new Date() }) },
-  { label: 'Sepanjang Waktu', value: 'all', getRange: () => ({ from: new Date(2020, 0, 1), to: new Date() }) },
+  { label: 'Hari Ini', value: '24h', getRange: () => ({ from: getStartOfToday(), to: getStartOfToday() }) },
+  { label: '7 Hari Terakhir', value: '7d', getRange: () => ({ from: subDays(getStartOfToday(), 7), to: getStartOfToday() }) },
+  { label: '28 Hari Terakhir', value: '28d', getRange: () => ({ from: subDays(getStartOfToday(), 28), to: getStartOfToday() }) },
+  { label: '3 Bulan Terakhir', value: '90d', getRange: () => ({ from: subDays(getStartOfToday(), 90), to: getStartOfToday() }) },
+  { label: 'Sepanjang Waktu', value: 'all', getRange: () => ({ from: new Date(2020, 0, 1), to: getStartOfToday() }) },
 ];
+
+const parseLocalDate = (dateStr: string) => {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
 
 export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize selected range from value
-  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(() => {
+  const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(undefined);
+  const [activePreset, setActivePreset] = useState<string | null>(null);
+
+  // Sinkronisasi state internal dengan prop `value` setiap kali popover dibuka atau `value` berubah
+  useEffect(() => {
     if (value.startsWith('custom:')) {
       const parts = value.split(':');
       if (parts.length === 3) {
-        return {
-          from: new Date(parts[1]),
-          to: new Date(parts[2])
-        };
+        setSelectedRange({
+          from: parseLocalDate(parts[1]),
+          to: parseLocalDate(parts[2])
+        });
+        setActivePreset(null);
       }
     } else {
       const preset = PRESETS.find(p => p.value === value);
-      if (preset) return preset.getRange();
+      if (preset) {
+        setSelectedRange(preset.getRange());
+        setActivePreset(value);
+      }
     }
-    return undefined;
-  });
-
-  const [activePreset, setActivePreset] = useState<string | null>(value.startsWith('custom:') ? null : value);
+  }, [value, isOpen]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -58,44 +69,56 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const handleSelect = (range: DateRange | undefined, selectedDay: Date) => {
     setActivePreset(null);
     
-    if (!selectedDay) {
-      setSelectedRange(range);
-      return;
-    }
+    if (!selectedDay) return; // Fail-safe
+
+    // Normalisasi waktu ke start of day agar kalkulasi jarak (distance) akurat tanpa terpengaruh jam/menit
+    const normalizedSelectedDay = startOfDay(selectedDay);
 
     if (!selectedRange || (!selectedRange.from && !selectedRange.to)) {
-      setSelectedRange({ from: selectedDay });
+      setSelectedRange({ from: normalizedSelectedDay });
       return;
     }
 
-    if (selectedRange.from && selectedRange.to) {
-      // Jika rentang sudah lengkap, dan user klik tanggal baru
-      const distFrom = Math.abs(selectedDay.getTime() - selectedRange.from.getTime());
-      const distTo = Math.abs(selectedDay.getTime() - selectedRange.to.getTime());
+    const from = selectedRange.from ? startOfDay(selectedRange.from) : undefined;
+    const to = selectedRange.to ? startOfDay(selectedRange.to) : undefined;
 
-      // Pindahkan Start atau End berdasarkan mana yang terdekat dengan tanggal yang diklik
+    if (from && to) {
+      // Jika rentang sudah lengkap, dan user klik tanggal baru
+      const distFrom = Math.abs(normalizedSelectedDay.getTime() - from.getTime());
+      const distTo = Math.abs(normalizedSelectedDay.getTime() - to.getTime());
+
+      // Pindahkan Start atau End berdasarkan mana yang terdekat
       if (distFrom <= distTo) {
-        setSelectedRange({ from: selectedDay, to: selectedRange.to });
+        setSelectedRange({ from: normalizedSelectedDay, to });
       } else {
-        setSelectedRange({ from: selectedRange.from, to: selectedDay });
+        setSelectedRange({ from, to: normalizedSelectedDay });
       }
       return;
     }
 
-    if (selectedRange.from && !selectedRange.to) {
+    if (from && !to) {
       // Jika baru Start date yang dipilih
-      if (selectedDay < selectedRange.from) {
-        setSelectedRange({ from: selectedDay, to: selectedRange.from });
+      if (normalizedSelectedDay < from) {
+        setSelectedRange({ from: normalizedSelectedDay, to: from });
       } else {
-        setSelectedRange({ from: selectedRange.from, to: selectedDay });
+        setSelectedRange({ from, to: normalizedSelectedDay });
+      }
+      return;
+    }
+    
+    if (!from && to) {
+        // Edge case: to ada tapi from tidak ada
+      if (normalizedSelectedDay > to) {
+        setSelectedRange({ from: to, to: normalizedSelectedDay });
+      } else {
+        setSelectedRange({ from: normalizedSelectedDay, to });
       }
       return;
     }
   };
 
   const applyPreset = (presetValue: string, range: DateRange) => {
-    setSelectedRange(range);
-    setActivePreset(presetValue);
+    // Kita panggil onChange, efeknya useEffect akan sinkronisasi state
     onChange(presetValue);
     setIsOpen(false);
   };
@@ -110,17 +133,21 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   };
 
   const getDisplayLabel = () => {
-    if (activePreset) {
-      return PRESETS.find(p => p.value === activePreset)?.label || 'Pilih Tanggal';
-    }
-    if (selectedRange?.from) {
-      if (!selectedRange.to) {
-        return format(selectedRange.from, 'd MMM yyyy', { locale: id });
+    // Label selalu merefleksikan 'value' prop (sumber kebenaran), BUKAN selectedRange internal
+    // Hal ini agar label tidak berubah-ubah saat user baru mencoba memilih range namun belum klik 'Terapkan'
+    if (value.startsWith('custom:')) {
+      const parts = value.split(':');
+      if (parts.length === 3) {
+        const from = parseLocalDate(parts[1]);
+        const to = parseLocalDate(parts[2]);
+        if (isSameDay(from, to)) {
+            return format(from, 'd MMM yyyy', { locale: id });
+        }
+        return `${format(from, 'd MMM', { locale: id })} - ${format(to, 'd MMM yyyy', { locale: id })}`;
       }
-      if (isSameDay(selectedRange.from, selectedRange.to)) {
-        return format(selectedRange.from, 'd MMM yyyy', { locale: id });
-      }
-      return `${format(selectedRange.from, 'd MMM', { locale: id })} - ${format(selectedRange.to, 'd MMM yyyy', { locale: id })}`;
+    } else {
+      const preset = PRESETS.find(p => p.value === value);
+      if (preset) return preset.label;
     }
     return 'Pilih Rentang Tanggal';
   };
