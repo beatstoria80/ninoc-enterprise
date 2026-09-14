@@ -28,14 +28,14 @@ export class MetaAnalyticsService {
     }
 
     const formattedAdAccountId = adAccountId.startsWith('act_') ? adAccountId : `act_${adAccountId}`;
-    const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
+    const timeParams = MetaMetricsCalculator.getAdsTimeParams(timeFilter);
 
     try {
       const overviewData = await metaGraphFetch(
         `${formattedAdAccountId}/insights`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           fields: 'spend,impressions,clicks,actions'
         }
       );
@@ -67,7 +67,7 @@ export class MetaAnalyticsService {
         `${formattedAdAccountId}/campaigns`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,stop_time,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
         }
       );
@@ -122,7 +122,7 @@ export class MetaAnalyticsService {
         `${formattedAdAccountId}/insights`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           time_increment: 1,
           fields: 'date_start,spend,impressions,clicks,actions'
         }
@@ -468,13 +468,13 @@ export class MetaAnalyticsService {
     const capiToken = process.env.META_CAPI_TOKEN;
     if (!capiToken) return [];
     
-    const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
+    const timeParams = MetaMetricsCalculator.getAdsTimeParams(timeFilter);
     try {
       const trendData = await metaGraphFetch(
         `${campaignId}/insights`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           time_increment: 1,
           fields: 'date_start,spend,impressions,clicks,actions'
         }
@@ -507,13 +507,13 @@ export class MetaAnalyticsService {
     const adAccountId = process.env.META_AD_ACCOUNT_ID;
     if (!capiToken || !adAccountId) return [];
     
-    const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
+    const timeParams = MetaMetricsCalculator.getAdsTimeParams(timeFilter);
     try {
       const data = await metaGraphFetch(
         `${campaignId}/adsets`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           fields: 'id,name,status,effective_status,daily_budget,lifetime_budget,end_time,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
         }
       );
@@ -565,13 +565,13 @@ export class MetaAnalyticsService {
     const adAccountId = process.env.META_AD_ACCOUNT_ID;
     if (!capiToken || !adAccountId) return [];
     
-    const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
+    const timeParams = MetaMetricsCalculator.getAdsTimeParams(timeFilter);
     try {
       const data = await metaGraphFetch(
         `${adSetId}/ads`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           fields: 'id,name,status,effective_status,insights{spend,impressions,reach,clicks,actions,quality_ranking,engagement_rate_ranking,conversion_rate_ranking}'
         }
       );
@@ -617,7 +617,7 @@ export class MetaAnalyticsService {
   static async getAdInsightsDetail(adId: string, timeFilter: string = '28d') {
     const capiToken = process.env.META_CAPI_TOKEN;
     if (!capiToken) return null;
-    const datePreset = MetaMetricsCalculator.getAdsDatePreset(timeFilter);
+    const timeParams = MetaMetricsCalculator.getAdsTimeParams(timeFilter);
     
     try {
       const adData = await metaGraphFetch(
@@ -630,7 +630,7 @@ export class MetaAnalyticsService {
         `${adId}/insights`,
         capiToken,
         {
-          date_preset: datePreset,
+          ...timeParams,
           fields: 'spend,impressions,reach,clicks,actions,inline_link_clicks,video_p50_watched_actions,video_p100_watched_actions,video_play_actions'
         }
       );
@@ -639,7 +639,7 @@ export class MetaAnalyticsService {
       const conversions = MetaMetricsCalculator.getPurchasesCount(ins.actions);
       
       // Demographics
-      const demoData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, breakdowns: 'age,gender' });
+      const demoData = await metaGraphFetch(`${adId}/insights`, capiToken, { ...timeParams, breakdowns: 'age,gender' });
       const demographics = (demoData.data || []).map((d: any) => ({
         age: d.age || 'Unknown',
         gender: d.gender === 'male' ? 'Laki-laki' : d.gender === 'female' ? 'Perempuan' : 'Non-Biner',
@@ -647,7 +647,7 @@ export class MetaAnalyticsService {
       }));
       
       // Placements
-      const placeData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, breakdowns: 'publisher_platform,platform_position' });
+      const placeData = await metaGraphFetch(`${adId}/insights`, capiToken, { ...timeParams, breakdowns: 'publisher_platform,platform_position' });
       const placements = (placeData.data || []).map((p: any) => ({
         platform: p.publisher_platform || 'Unknown',
         placement: p.platform_position || 'Unknown',
@@ -655,14 +655,14 @@ export class MetaAnalyticsService {
       }));
 
       // Locations
-      const locData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, breakdowns: 'region' });
+      const locData = await metaGraphFetch(`${adId}/insights`, capiToken, { ...timeParams, breakdowns: 'region' });
       const locations = (locData.data || []).map((l: any) => ({
         region: l.region || 'Unknown',
         value: parseInt(l.impressions || 0, 10)
       }));
 
       // Trend
-      const trendData = await metaGraphFetch(`${adId}/insights`, capiToken, { date_preset: datePreset, time_increment: 1, fields: 'date_start,impressions,clicks,actions' }).catch(() => ({ data: [] }));
+      const trendData = await metaGraphFetch(`${adId}/insights`, capiToken, { ...timeParams, time_increment: 1, fields: 'date_start,impressions,clicks,actions' }).catch(() => ({ data: [] }));
       const trend = (trendData.data || []).map((t: any) => ({
         date: t.date_start,
         impressions: parseInt(t.impressions || 0, 10),

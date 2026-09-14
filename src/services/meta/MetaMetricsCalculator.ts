@@ -47,7 +47,32 @@ export class MetaMetricsCalculator {
     }
   }
 
+  static getAdsTimeParams(timeFilter: string): Record<string, string> {
+    if (timeFilter.startsWith('custom:')) {
+      const parts = timeFilter.split(':');
+      if (parts.length === 3) {
+        return { time_range: JSON.stringify({ since: parts[1], until: parts[2] }) };
+      }
+    }
+    return { date_preset: this.getAdsDatePreset(timeFilter) };
+  }
+
   static getOrganicUnixRange(timeFilter: string): { sinceUnix: number; untilUnix: number; days: number } {
+    if (timeFilter.startsWith('custom:')) {
+      const parts = timeFilter.split(':');
+      if (parts.length === 3) {
+        const since = new Date(`${parts[1]}T00:00:00`);
+        const until = new Date(`${parts[2]}T23:59:59`);
+        const diffTime = Math.abs(until.getTime() - since.getTime());
+        const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+        return {
+          sinceUnix: Math.floor(since.getTime() / 1000),
+          untilUnix: Math.floor(until.getTime() / 1000),
+          days
+        };
+      }
+    }
+
     const until = new Date();
     const since = new Date();
     let days = 28;
@@ -56,6 +81,7 @@ export class MetaMetricsCalculator {
       case '24h': days = 1; break;
       case '7d': days = 7; break;
       case '90d': days = 90; break;
+      case 'all': days = 365; break;
       default: days = 28; break;
     }
     

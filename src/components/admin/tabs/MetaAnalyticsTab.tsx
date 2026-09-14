@@ -8,6 +8,7 @@ import { type MetaTrackingStatus } from '@/types/metaTracking';
 import { AdsAnalyticsView } from '../meta-views/AdsAnalyticsView';
 import { OrganicAnalyticsView } from '../meta-views/OrganicAnalyticsView';
 import { TrackingIntegrationsView } from '../meta-views/TrackingIntegrationsView';
+import { DateRangePicker } from '@/components/ui/DateRangePicker';
 
 export function MetaAnalyticsTab() {
   const [loading, setLoading] = useState(true);
@@ -15,7 +16,7 @@ export function MetaAnalyticsTab() {
   const [data, setData] = useState<MetaAnalyticsData | null>(null);
   const [organicData, setOrganicData] = useState<MetaOrganicData | null>(null);
   const [trackingData, setTrackingData] = useState<MetaTrackingStatus | null>(null);
-  const [timeFilter, setTimeFilter] = useState<'24h' | '7d' | '28d' | '90d' | 'all'>('28d');
+  const [timeFilter, setTimeFilter] = useState<string>('28d');
 
   const loadData = async (filterOverride?: string, modeOverride?: 'ads' | 'organic' | 'tracking') => {
     const filter = filterOverride || timeFilter;
@@ -121,20 +122,7 @@ export function MetaAnalyticsTab() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-blue-50/50 border border-blue-100 p-1.5 rounded-lg">
-            {(['24h', '7d', '28d', '90d'] as const).map(f => (
-              <button
-                key={f}
-                onClick={() => setTimeFilter(f)}
-                className={cn(
-                  "px-3 py-1.5 rounded-md text-xs font-bold transition-all",
-                  timeFilter === f ? "bg-blue-600 text-white shadow-sm" : "text-blue-900/60 hover:text-blue-900 hover:bg-blue-100/50"
-                )}
-              >
-                {f === '24h' ? '24 Jam' : f === '7d' ? '7 Hari' : f === '28d' ? '28 Hari' : '3 Bulan'}
-              </button>
-            ))}
-          </div>
+          <DateRangePicker value={timeFilter} onChange={setTimeFilter} />
           
           <button 
             onClick={() => loadData()} 
