@@ -175,52 +175,48 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
             initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.15, ease: "easeOut" }}
+            transition={{ duration: 0.1, ease: "easeOut" }}
             className="absolute right-0 mt-2 z-50 bg-white rounded-xl shadow-2xl border border-ink/10 flex flex-col md:flex-row overflow-hidden"
             style={{ width: 'max-content' }}
           >
-            {/* Presets Sidebar */}
-            <div className="w-full md:w-48 bg-ink/[0.02] border-b md:border-b-0 md:border-r border-ink/10 p-3 flex flex-col gap-1">
-              <div className="text-xs font-bold text-ink/50 uppercase tracking-wider mb-2 px-3 pt-2">Rentang Waktu</div>
-              {PRESETS.map((preset) => (
-                <button
-                  key={preset.value}
-                  onClick={() => applyPreset(preset.value, preset.getRange())}
-                  className={cn(
-                    "px-3 py-2 text-left text-sm font-medium rounded-md transition-colors",
-                    activePreset === preset.value
-                      ? "bg-blue-50 text-blue-700"
-                      : "text-ink/70 hover:bg-ink/5 hover:text-ink"
-                  )}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Calendar */}
+            {/* Calendar (Kiri) */}
             <div className="p-4 flex flex-col">
               <style dangerouslySetInnerHTML={{__html: `
-                .rdp { --rdp-cell-size: 36px; --rdp-accent-color: #2563eb; --rdp-background-color: #eff6ff; margin: 0; }
+                .rdp { --rdp-cell-size: 36px; --rdp-accent-color: #1a73e8; --rdp-background-color: #e8f0fe; margin: 0; font-family: inherit; }
                 
-                /* Hari di tengah rentang waktu (warna soft blue) */
+                /* Default selected day (single day atau default) */
+                .rdp-day_selected {
+                  background-color: var(--rdp-accent-color) !important;
+                  color: white !important;
+                  border-radius: 50% !important;
+                  font-weight: 500;
+                }
+
+                /* Hari di tengah rentang waktu (Pill connector) */
                 .rdp-day_range_middle { 
                   background-color: var(--rdp-background-color) !important; 
-                  color: #1e293b !important;
+                  color: #1a73e8 !important; /* Material Google Ads uses blue text for range */
                   border-radius: 0 !important;
+                  font-weight: 500;
                 }
                 
-                /* Tanggal Start dan End dengan background bulat solid */
-                .rdp-day_range_start, .rdp-day_range_end, .rdp-day_selected:not(.rdp-day_range_middle) { 
+                /* Tanggal Start (Bentuk Kapsul Kiri) */
+                .rdp-day_range_start:not(.rdp-day_range_end) { 
                   background-color: var(--rdp-accent-color) !important; 
                   color: white !important; 
-                  border-radius: 50% !important; 
-                  font-weight: bold;
+                  border-radius: 50% 0 0 50% !important; 
+                }
+
+                /* Tanggal End (Bentuk Kapsul Kanan) */
+                .rdp-day_range_end:not(.rdp-day_range_start) { 
+                  background-color: var(--rdp-accent-color) !important; 
+                  color: white !important; 
+                  border-radius: 0 50% 50% 0 !important; 
                 }
 
                 /* Hover untuk tanggal yang tidak dipilih */
                 .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { 
-                  background-color: #f3f4f6; 
+                  background-color: #f1f3f4; 
                   border-radius: 50%;
                 }
               `}} />
@@ -248,19 +244,38 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setIsOpen(false)}
-                    className="px-4 py-2 text-sm font-medium text-ink/70 hover:text-ink transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-[#1a73e8] hover:bg-[#1a73e8]/5 rounded-md transition-colors"
                   >
                     Batal
                   </button>
                   <button 
                     onClick={handleApplyCustom}
                     disabled={!selectedRange?.from || !selectedRange?.to}
-                    className="bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-all shadow-sm"
+                    className="bg-[#1a73e8] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#1765cc] text-white px-5 py-2 rounded-md text-sm font-medium transition-all shadow-sm"
                   >
                     Terapkan
                   </button>
                 </div>
               </div>
+            </div>
+
+            {/* Presets Sidebar (Kanan ala Google Ads) */}
+            <div className="w-full md:w-48 bg-[#f8f9fa] border-t md:border-t-0 md:border-l border-ink/10 p-3 flex flex-col gap-1">
+              <div className="text-xs font-bold text-ink/50 uppercase tracking-wider mb-2 px-3 pt-2">Rentang Waktu</div>
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.value}
+                  onClick={() => applyPreset(preset.value, preset.getRange())}
+                  className={cn(
+                    "px-3 py-2 text-left text-sm font-medium rounded-md transition-colors",
+                    activePreset === preset.value
+                      ? "bg-[#e8f0fe] text-[#1a73e8]"
+                      : "text-ink/70 hover:bg-black/5 hover:text-ink"
+                  )}
+                >
+                  {preset.label}
+                </button>
+              ))}
             </div>
           </motion.div>
         )}
