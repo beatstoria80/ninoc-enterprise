@@ -55,9 +55,42 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSelect = (range: DateRange | undefined) => {
-    setSelectedRange(range);
+  const handleSelect = (range: DateRange | undefined, selectedDay: Date) => {
     setActivePreset(null);
+    
+    if (!selectedDay) {
+      setSelectedRange(range);
+      return;
+    }
+
+    if (!selectedRange || (!selectedRange.from && !selectedRange.to)) {
+      setSelectedRange({ from: selectedDay });
+      return;
+    }
+
+    if (selectedRange.from && selectedRange.to) {
+      // Jika rentang sudah lengkap, dan user klik tanggal baru
+      const distFrom = Math.abs(selectedDay.getTime() - selectedRange.from.getTime());
+      const distTo = Math.abs(selectedDay.getTime() - selectedRange.to.getTime());
+
+      // Pindahkan Start atau End berdasarkan mana yang terdekat dengan tanggal yang diklik
+      if (distFrom <= distTo) {
+        setSelectedRange({ from: selectedDay, to: selectedRange.to });
+      } else {
+        setSelectedRange({ from: selectedRange.from, to: selectedDay });
+      }
+      return;
+    }
+
+    if (selectedRange.from && !selectedRange.to) {
+      // Jika baru Start date yang dipilih
+      if (selectedDay < selectedRange.from) {
+        setSelectedRange({ from: selectedDay, to: selectedRange.from });
+      } else {
+        setSelectedRange({ from: selectedRange.from, to: selectedDay });
+      }
+      return;
+    }
   };
 
   const applyPreset = (presetValue: string, range: DateRange) => {
@@ -138,8 +171,27 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
             <div className="p-4 flex flex-col">
               <style dangerouslySetInnerHTML={{__html: `
                 .rdp { --rdp-cell-size: 36px; --rdp-accent-color: #2563eb; --rdp-background-color: #eff6ff; margin: 0; }
-                .rdp-day_selected, .rdp-day_selected:focus-visible, .rdp-day_selected:hover { color: white; opacity: 1; background-color: var(--rdp-accent-color); }
-                .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { background-color: #f3f4f6; }
+                
+                /* Hari di tengah rentang waktu (warna soft blue) */
+                .rdp-day_range_middle { 
+                  background-color: var(--rdp-background-color) !important; 
+                  color: #1e293b !important;
+                  border-radius: 0 !important;
+                }
+                
+                /* Tanggal Start dan End dengan background bulat solid */
+                .rdp-day_range_start, .rdp-day_range_end, .rdp-day_selected:not(.rdp-day_range_middle) { 
+                  background-color: var(--rdp-accent-color) !important; 
+                  color: white !important; 
+                  border-radius: 50% !important; 
+                  font-weight: bold;
+                }
+
+                /* Hover untuk tanggal yang tidak dipilih */
+                .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { 
+                  background-color: #f3f4f6; 
+                  border-radius: 50%;
+                }
               `}} />
               <DayPicker
                 mode="range"
