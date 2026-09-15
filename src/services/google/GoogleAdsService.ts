@@ -22,17 +22,15 @@ export class GoogleAdsService {
   private static getCustomer() {
     const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
-    const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
     const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN;
     const rawCustomerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
     const rawLoginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
 
-    if (!clientId || !clientSecret || !developerToken || !refreshToken || !rawCustomerId) {
+    if (!clientId || !clientSecret || !refreshToken || !rawCustomerId) {
       // Log which specific vars are missing for faster debugging
       const missing = [];
       if (!clientId) missing.push('GOOGLE_ADS_CLIENT_ID');
       if (!clientSecret) missing.push('GOOGLE_ADS_CLIENT_SECRET');
-      if (!developerToken) missing.push('GOOGLE_ADS_DEVELOPER_TOKEN');
       if (!refreshToken) missing.push('GOOGLE_ADS_REFRESH_TOKEN');
       if (!rawCustomerId) missing.push('GOOGLE_ADS_CUSTOMER_ID');
       console.warn(`[GoogleAdsService] Tidak terkonfigurasi — env vars kosong: ${missing.join(', ')}`);
@@ -55,7 +53,8 @@ export class GoogleAdsService {
     const client = new GoogleAdsApi({
       client_id: clientId,
       client_secret: clientSecret,
-      developer_token: developerToken,
+      // developer_token is deprecated and no longer required for Google Cloud project-linked access
+      developer_token: '', 
     });
 
     console.log('[GoogleAdsService] Authenticating with:', {

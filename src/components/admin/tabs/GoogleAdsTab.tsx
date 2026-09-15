@@ -84,7 +84,7 @@ export function GoogleAdsTab() {
         <AlertTriangle className="w-12 h-12 text-rose mb-4" />
         <h2 className="text-xl font-bold uppercase tracking-tight text-ink mb-2">Google Ads Belum Terhubung</h2>
         <p className="text-sm text-ink/70 text-center max-w-lg mb-6">
-          Kredensial <strong>Google Ads API</strong> tidak lengkap. Pastikan Anda telah menambahkan \`GOOGLE_ADS_CLIENT_ID\`, \`GOOGLE_ADS_DEVELOPER_TOKEN\`, \`GOOGLE_ADS_REFRESH_TOKEN\` dan \`GOOGLE_ADS_CUSTOMER_ID\` di environment variables.
+          Kredensial <strong>Google Ads API</strong> tidak lengkap. Pastikan Anda telah menambahkan \`GOOGLE_ADS_CLIENT_ID\`, \`GOOGLE_ADS_REFRESH_TOKEN\` dan \`GOOGLE_ADS_CUSTOMER_ID\` di environment variables.
         </p>
       </div>
     );
