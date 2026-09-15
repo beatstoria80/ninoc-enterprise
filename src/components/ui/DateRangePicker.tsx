@@ -35,6 +35,14 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
   const [selectedRange, setSelectedRange] = useState<DateRange | undefined>(undefined);
   const [activePreset, setActivePreset] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile(); // Check initial
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const syncStateWithValue = () => {
     if (value.startsWith('custom:')) {
@@ -152,11 +160,10 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.1, ease: "easeOut" }}
-            className="absolute right-0 mt-2 z-50 bg-white rounded-xl shadow-2xl border border-ink/10 flex flex-col md:flex-row overflow-hidden"
-            style={{ width: 'max-content' }}
+            className="absolute right-0 mt-2 z-50 bg-white rounded-xl shadow-2xl border border-ink/10 flex flex-col md:flex-row overflow-hidden w-[calc(100vw-32px)] md:w-max max-w-[320px] md:max-w-none origin-top-right"
           >
             {/* Calendar (Kiri) */}
-            <div className="p-4 flex flex-col">
+            <div className="p-4 flex flex-col items-center md:items-start w-full">
               <style dangerouslySetInnerHTML={{__html: `
                 .rdp { --rdp-cell-size: 36px; --rdp-accent-color: #1a73e8; --rdp-background-color: #e8f0fe; margin: 0; font-family: inherit; }
                 
@@ -201,9 +208,9 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
                 selected={selectedRange}
                 onSelect={handleSelect}
                 locale={id}
-                numberOfMonths={2}
+                numberOfMonths={isMobile ? 1 : 2}
                 pagedNavigation
-                className="border-b border-ink/5 pb-4"
+                className="border-b border-ink/5 pb-4 w-full flex justify-center"
               />
               
               <div className="flex justify-between items-center mt-4 px-2">

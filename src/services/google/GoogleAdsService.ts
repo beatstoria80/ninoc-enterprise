@@ -70,19 +70,19 @@ export class GoogleAdsService {
     });
   }
 
-  private static getDatePreset(timeFilter: string): string {
+  private static getDateCondition(timeFilter: string): string {
     if (timeFilter.startsWith('range:')) {
       const [, start, end] = timeFilter.split(':');
       if (start && end) {
-        // e.g. "BETWEEN '2026-08-01' AND '2026-08-15'"
-        return `BETWEEN '${start}' AND '${end}'`;
+        // e.g. "segments.date BETWEEN '2026-08-01' AND '2026-08-15'"
+        return `segments.date BETWEEN '${start}' AND '${end}'`;
       }
     }
     
     switch (timeFilter) {
-      case '24h': return 'TODAY';
-      case '7d': return 'LAST_7_DAYS';
-      case '28d': return 'LAST_30_DAYS';
+      case '24h': return 'segments.date DURING TODAY';
+      case '7d': return 'segments.date DURING LAST_7_DAYS';
+      case '28d': return 'segments.date DURING LAST_30_DAYS';
       case '90d': {
         const end = new Date();
         const start = new Date();
@@ -96,10 +96,10 @@ export class GoogleAdsService {
           day: '2-digit' 
         }).format(d);
         
-        return `BETWEEN '${formatWIB(start)}' AND '${formatWIB(end)}'`;
+        return `segments.date BETWEEN '${formatWIB(start)}' AND '${formatWIB(end)}'`;
       }
-      case 'all': return 'ALL_TIME';
-      default: return 'LAST_30_DAYS';
+      case 'all': return `segments.date BETWEEN '2000-01-01' AND '2050-12-31'`;
+      default: return 'segments.date DURING LAST_30_DAYS';
     }
   }
 
@@ -131,7 +131,7 @@ export class GoogleAdsService {
       };
     }
 
-    const datePreset = this.getDatePreset(timeFilter);
+    const dateCondition = this.getDateCondition(timeFilter);
 
     try {
       const campaignQuery = `
@@ -146,7 +146,7 @@ export class GoogleAdsService {
           metrics.search_impression_share,
           campaign_budget.amount_micros
         FROM campaign 
-        WHERE segments.date DURING ${datePreset}
+        WHERE ${dateCondition}
           AND campaign.status IN ('ENABLED', 'PAUSED')
       `;
 
@@ -159,7 +159,7 @@ export class GoogleAdsService {
           metrics.clicks,
           metrics.impressions
         FROM campaign
-        WHERE segments.date DURING ${datePreset}
+        WHERE ${dateCondition}
           AND campaign.status IN ('ENABLED', 'PAUSED')
         ORDER BY segments.date ASC
       `;
@@ -278,7 +278,7 @@ export class GoogleAdsService {
     const customer = this.getCustomer();
     if (!customer) return [];
     
-    const datePreset = this.getDatePreset(timeFilter);
+    const dateCondition = this.getDateCondition(timeFilter);
     try {
       const query = `
         SELECT 
@@ -292,7 +292,7 @@ export class GoogleAdsService {
           metrics.search_impression_share
         FROM ad_group
         WHERE campaign.id = ${campaignId} 
-          AND segments.date DURING ${datePreset}
+          AND ${dateCondition}
           AND ad_group.status IN ('ENABLED', 'PAUSED')
       `;
       const response = await customer.query(query);
@@ -329,7 +329,7 @@ export class GoogleAdsService {
     const customer = this.getCustomer();
     if (!customer) return [];
     
-    const datePreset = this.getDatePreset(timeFilter);
+    const dateCondition = this.getDateCondition(timeFilter);
     try {
       const query = `
         SELECT 
@@ -342,7 +342,7 @@ export class GoogleAdsService {
           metrics.conversions
         FROM ad_group_ad
         WHERE ad_group.id = ${adGroupId} 
-          AND segments.date DURING ${datePreset}
+          AND ${dateCondition}
           AND ad_group_ad.status IN ('ENABLED', 'PAUSED')
       `;
       const response = await customer.query(query);
@@ -380,7 +380,7 @@ export class GoogleAdsService {
     const customer = this.getCustomer();
     if (!customer) return null;
     
-    const datePreset = this.getDatePreset(timeFilter);
+    const dateCondition = this.getDateCondition(timeFilter);
     try {
       // 1. Get Ad level overview
       const query = `
@@ -396,7 +396,7 @@ export class GoogleAdsService {
           metrics.ctr
         FROM ad_group_ad
         WHERE ad_group_ad.ad.id = ${adId}
-          AND segments.date DURING ${datePreset}
+          AND ${dateCondition}
       `;
       const response = await customer.query(query);
       if (!response || response.length === 0) return null;
@@ -422,7 +422,7 @@ export class GoogleAdsService {
           metrics.conversions
         FROM ad_group_ad
         WHERE ad_group_ad.ad.id = ${adId}
-          AND segments.date DURING ${datePreset}
+          AND ${dateCondition}
         ORDER BY segments.date ASC
       `;
       const trendResponse = await customer.query(trendQuery);
