@@ -44,16 +44,16 @@ export function OrganicAnalyticsView({ data, timeFilter }: OrganicAnalyticsViewP
       )}
 
       {/* ORGANIC TAB SELECTOR */}
-      <div className="flex items-center gap-6 border-b border-ink/10 pb-1">
+      <div className="flex items-center gap-4 md:gap-6 border-b border-ink/10 pb-1 overflow-x-auto minimal-scroll">
         <button 
           onClick={() => setOrganicTab('instagram')}
-          className={cn("text-sm font-bold pb-3 border-b-2 transition-colors flex items-center gap-2", organicTab === 'instagram' ? "text-pink-600 border-pink-600" : "text-ink/40 border-transparent hover:text-ink/80")}
+          className={cn("text-sm font-bold pb-3 border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap shrink-0", organicTab === 'instagram' ? "text-pink-600 border-pink-600" : "text-ink/40 border-transparent hover:text-ink/80")}
         >
           <Camera size={16} className={organicTab === 'instagram' ? "text-pink-500" : ""} /> Instagram
         </button>
         <button 
           onClick={() => setOrganicTab('facebook')}
-          className={cn("text-sm font-bold pb-3 border-b-2 transition-colors flex items-center gap-2", organicTab === 'facebook' ? "text-blue-600 border-blue-600" : "text-ink/40 border-transparent hover:text-ink/80")}
+          className={cn("text-sm font-bold pb-3 border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap shrink-0", organicTab === 'facebook' ? "text-blue-600 border-blue-600" : "text-ink/40 border-transparent hover:text-ink/80")}
         >
           <MonitorSmartphone size={16} className={organicTab === 'facebook' ? "text-blue-500" : ""} /> Facebook Page
         </button>

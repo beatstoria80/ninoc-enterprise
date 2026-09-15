@@ -137,7 +137,7 @@ export default function LoginPage() {
             <button
               onClick={handleGoogleAuth}
               disabled={isLoading}
-              className="w-full bg-white border border-ink/10 text-ink py-4 rounded-none text-xs md:text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-3 hover:bg-ink/5 transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 shadow-sm"
+              className="w-full bg-white border border-ink/10 text-ink py-4 rounded-none text-sm uppercase tracking-widest font-medium flex items-center justify-center gap-3 hover:bg-ink/5 transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2 shadow-sm"
             >
               {isLoading ? (
                 <span>Memproses...</span>
@@ -151,30 +151,30 @@ export default function LoginPage() {
 
             <div className="flex items-center gap-4 py-2">
               <hr className="flex-1 border-ink/5" />
-              <span className="text-[11px] md:text-[8px] font-medium uppercase tracking-widest text-ink/50">Atau Akses Manual</span>
+              <span className="text-[11px] font-medium uppercase tracking-widest text-ink/50">Atau Akses Manual</span>
               <hr className="flex-1 border-ink/5" />
             </div>
 
             {/* Email Form */}
             <form onSubmit={handleEmailAuth} className="space-y-3">
               <div className="relative">
-                <Mail size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
+                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
                 <input
                   type="text"
                   value={email}
                   onChange={(e) => { setEmail(e.target.value); setError(''); }}
-                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3.5 px-11 text-sm font-medium text-ink outline-none tracking-wider focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
                   placeholder="EMAIL / USERNAME"
                   required
                 />
               </div>
               <div className="relative">
-                <Lock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-ink/50" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3 px-10 text-xs md:text-[10px] font-medium text-ink outline-none tracking-widest focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
+                  className="w-full bg-white border border-ink/10 focus:border-rose rounded-none py-3.5 px-11 text-sm font-medium text-ink outline-none tracking-wider focus:ring-2 focus:ring-rose/20 placeholder:text-ink/50 transition-all"
                   placeholder="KATA SANDI"
                   required
                 />
@@ -184,7 +184,7 @@ export default function LoginPage() {
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-ink/50 hover:text-ink transition-colors focus:outline-none"
                   aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                 >
-                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
               <div className="flex justify-center py-2">
@@ -196,16 +196,16 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading || (!captchaToken && email !== 'adm')}
-                className="w-full bg-ink text-white py-3 rounded-none text-xs md:text-[10px] uppercase tracking-widest font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
+                className="w-full bg-ink text-white py-3.5 rounded-none text-sm uppercase tracking-widest font-medium flex items-center justify-center gap-2 hover:bg-rose transition-all disabled:opacity-50 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose focus-visible:ring-offset-2"
               >
                 <span>Masuk</span>
-                <ArrowRight size={12} />
+                <ArrowRight size={14} />
               </button>
             </form>
 
             {/* Error */}
             {error && (
-              <p className="text-xs md:text-[10px] font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
+              <p className="text-xs font-medium uppercase tracking-widest text-rose bg-rose/5 border border-rose/10 px-4 py-3 rounded-none">{error}</p>
             )}
 
             {/* Guest */}

@@ -169,11 +169,11 @@ export function WebAnalyticsTab() {
 
         <div className="flex flex-wrap items-center gap-3">
           {/* Section Selector */}
-          <div className="bg-ink/5 p-1 rounded-lg flex items-center border border-ink/10 text-xs font-semibold">
+          <div className="bg-ink/5 p-1 rounded-lg flex items-center border border-ink/10 text-xs font-semibold overflow-x-auto minimal-scroll">
             <button
               onClick={() => setActiveSection('all')}
               className={cn(
-                "px-3 py-1.5 rounded-md transition-all duration-200",
+                "px-3 py-1.5 rounded-md transition-all duration-200 whitespace-nowrap shrink-0",
                 activeSection === 'all' ? "bg-white text-ink shadow-sm" : "text-ink/60 hover:text-ink"
               )}
             >
@@ -182,7 +182,7 @@ export function WebAnalyticsTab() {
             <button
               onClick={() => setActiveSection('ga4')}
               className={cn(
-                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shrink-0",
                 activeSection === 'ga4' ? "bg-indigo-600 text-white shadow-sm" : "text-ink/60 hover:text-ink"
               )}
             >
@@ -191,7 +191,7 @@ export function WebAnalyticsTab() {
             <button
               onClick={() => setActiveSection('gsc')}
               className={cn(
-                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shrink-0",
                 activeSection === 'gsc' ? "bg-emerald-600 text-white shadow-sm" : "text-ink/60 hover:text-ink"
               )}
             >
@@ -200,7 +200,7 @@ export function WebAnalyticsTab() {
             <button
               onClick={() => setActiveSection('products')}
               className={cn(
-                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1.5 whitespace-nowrap shrink-0",
                 activeSection === 'products' ? "bg-purple-600 text-white shadow-sm" : "text-ink/60 hover:text-ink"
               )}
             >
