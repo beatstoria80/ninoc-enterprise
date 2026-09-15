@@ -195,3 +195,14 @@ The root cause was that:
 - NEVER add `MOCK FALLBACK` back into `getCurrentSupplier()`. The application is now in a Live Production State.
 - If you need to create testing accounts for the B2B portal, inject them directly into the DB using the `create-dummy-supplier.mjs` script (which handles Auth, Profiles, Suppliers, and Supplier Users).
 - Maintain the minimalist, high-density aesthetic across all internal dashboards. Do not use oversized consumer-facing UI components for B2B tools.
+
+# Infrastructure Note: Google Ads API Authentication (15 September 2026)
+
+**Background & Rules for Future Agents:**
+Google Ads API has sunset the use of Developer Tokens in API call headers in favor of Google Cloud Project-linked access.
+
+**CRITICAL Rules:**
+1. **Developer Token Removal**: NEVER attempt to add, require, or validate GOOGLE_ADS_DEVELOPER_TOKEN in the .env or in any GoogleAdsApi client initialization code (e.g., GoogleAdsService.ts). The token field should be omitted or passed as an empty string.
+2. **Access Management**: All access management for Google Ads API is now handled purely through **IAM roles** (Owner/Editor) on the specific Google Cloud Project (ID: 558984968121). 
+3. **Troubleshooting Guidance**: If the user experiences API access errors, DO NOT ask them to regenerate a Developer Token. Instead, instruct them to verify their IAM roles in Google Cloud Console or check their GOOGLE_ADS_CLIENT_ID / GOOGLE_ADS_CUSTOMER_ID.
+4. **Environment Variables**: The only required environment variables for Google Ads API are GOOGLE_ADS_CLIENT_ID, GOOGLE_ADS_CLIENT_SECRET, GOOGLE_ADS_REFRESH_TOKEN, and GOOGLE_ADS_CUSTOMER_ID (plus GOOGLE_ADS_LOGIN_CUSTOMER_ID if using an MCC).
