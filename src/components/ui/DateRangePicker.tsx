@@ -155,112 +155,137 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.95 }}
-            transition={{ duration: 0.1, ease: "easeOut" }}
-            className="absolute right-0 mt-2 z-50 bg-white rounded-xl shadow-2xl border border-ink/10 flex flex-col md:flex-row overflow-hidden w-[calc(100vw-32px)] md:w-max max-w-[320px] md:max-w-none origin-top-right"
-          >
-            {/* Calendar (Kiri) */}
-            <div className="p-4 flex flex-col items-center md:items-start w-full">
-              <style dangerouslySetInnerHTML={{__html: `
-                .rdp { --rdp-cell-size: 36px; --rdp-accent-color: #1a73e8; --rdp-background-color: #e8f0fe; margin: 0; font-family: inherit; }
-                
-                /* Default selected day (single day atau default) */
-                .rdp-day_selected {
-                  background-color: var(--rdp-accent-color) !important;
-                  color: white !important;
-                  border-radius: 50% !important;
-                  font-weight: 500;
-                }
-
-                /* Hari di tengah rentang waktu (Pill connector) */
-                .rdp-day_range_middle { 
-                  background-color: var(--rdp-background-color) !important; 
-                  color: #1a73e8 !important; /* Material Google Ads uses blue text for range */
-                  border-radius: 0 !important;
-                  font-weight: 500;
-                }
-                
-                /* Tanggal Start (Bentuk Kapsul Kiri) */
-                .rdp-day_range_start:not(.rdp-day_range_end) { 
-                  background-color: var(--rdp-accent-color) !important; 
-                  color: white !important; 
-                  border-radius: 50% 0 0 50% !important; 
-                }
-
-                /* Tanggal End (Bentuk Kapsul Kanan) */
-                .rdp-day_range_end:not(.rdp-day_range_start) { 
-                  background-color: var(--rdp-accent-color) !important; 
-                  color: white !important; 
-                  border-radius: 0 50% 50% 0 !important; 
-                }
-
-                /* Hover untuk tanggal yang tidak dipilih */
-                .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { 
-                  background-color: #f1f3f4; 
-                  border-radius: 50%;
-                }
-              `}} />
-              <DayPicker
-                mode="range"
-                selected={selectedRange}
-                onSelect={handleSelect}
-                locale={id}
-                numberOfMonths={isMobile ? 1 : 2}
-                pagedNavigation
-                className="border-b border-ink/5 pb-4 w-full flex justify-center"
+          <>
+            {/* Backdrop for Mobile */}
+            {isMobile && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsOpen(false)}
+                className="fixed inset-0 z-[90] bg-black/40 backdrop-blur-sm"
               />
-              
-              <div className="flex justify-between items-center mt-4 px-2">
-                <div className="text-sm font-medium text-ink/60">
-                  {selectedRange?.from ? (
-                    <>
-                      {format(selectedRange.from, 'dd/MM/yyyy')} 
-                      {selectedRange.to ? ` - ${format(selectedRange.to, 'dd/MM/yyyy')}` : ' - ...'}
-                    </>
-                  ) : (
-                    "Pilih rentang tanggal"
-                  )}
+            )}
+
+            <motion.div
+              initial={isMobile ? { opacity: 0, y: "100%" } : { opacity: 0, y: 8, scale: 0.95 }}
+              animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, scale: 1 }}
+              exit={isMobile ? { opacity: 0, y: "100%" } : { opacity: 0, y: 8, scale: 0.95 }}
+              transition={{ duration: isMobile ? 0.3 : 0.15, ease: [0.23, 1, 0.32, 1] }}
+              className={cn(
+                "z-[100] bg-white shadow-2xl flex flex-col md:flex-row overflow-hidden",
+                isMobile 
+                  ? "fixed inset-x-0 bottom-0 rounded-t-3xl max-h-[85vh] overflow-y-auto" 
+                  : "absolute right-0 mt-2 rounded-xl border border-ink/10 md:w-max md:max-w-none origin-top-right"
+              )}
+            >
+              {/* Handle untuk swipe down indicator di Mobile */}
+              {isMobile && (
+                <div className="w-full flex justify-center pt-3 pb-1 sticky top-0 bg-white z-10">
+                  <div className="w-12 h-1.5 rounded-full bg-ink/20" />
                 </div>
-                <div className="flex gap-2">
-                  <button 
-                    onClick={() => setIsOpen(false)}
-                    className="px-4 py-2 text-sm font-medium text-[#1a73e8] hover:bg-[#1a73e8]/5 rounded-md transition-colors"
-                  >
-                    Batal
-                  </button>
-                  <button 
-                    onClick={handleApplyCustom}
-                    disabled={!selectedRange?.from || !selectedRange?.to}
-                    className="bg-[#1a73e8] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#1765cc] text-white px-5 py-2 rounded-md text-sm font-medium transition-all shadow-sm"
-                  >
-                    Terapkan
-                  </button>
+              )}
+
+              {/* Calendar (Kiri) */}
+              <div className="p-4 flex flex-col items-center md:items-start w-full">
+                <style dangerouslySetInnerHTML={{__html: `
+                  .rdp { --rdp-cell-size: 36px; --rdp-accent-color: #1a73e8; --rdp-background-color: #e8f0fe; margin: 0; font-family: inherit; }
+                  
+                  /* Default selected day (single day atau default) */
+                  .rdp-day_selected {
+                    background-color: var(--rdp-accent-color) !important;
+                    color: white !important;
+                    border-radius: 50% !important;
+                    font-weight: 500;
+                  }
+
+                  /* Hari di tengah rentang waktu (Pill connector) */
+                  .rdp-day_range_middle { 
+                    background-color: var(--rdp-background-color) !important; 
+                    color: #1a73e8 !important; /* Material Google Ads uses blue text for range */
+                    border-radius: 0 !important;
+                    font-weight: 500;
+                  }
+                  
+                  /* Tanggal Start (Bentuk Kapsul Kiri) */
+                  .rdp-day_range_start:not(.rdp-day_range_end) { 
+                    background-color: var(--rdp-accent-color) !important; 
+                    color: white !important; 
+                    border-radius: 50% 0 0 50% !important; 
+                  }
+
+                  /* Tanggal End (Bentuk Kapsul Kanan) */
+                  .rdp-day_range_end:not(.rdp-day_range_start) { 
+                    background-color: var(--rdp-accent-color) !important; 
+                    color: white !important; 
+                    border-radius: 0 50% 50% 0 !important; 
+                  }
+
+                  /* Hover untuk tanggal yang tidak dipilih */
+                  .rdp-button:hover:not([disabled]):not(.rdp-day_selected) { 
+                    background-color: #f1f3f4; 
+                    border-radius: 50%;
+                  }
+                `}} />
+                <DayPicker
+                  mode="range"
+                  selected={selectedRange}
+                  onSelect={handleSelect}
+                  locale={id}
+                  numberOfMonths={isMobile ? 1 : 2}
+                  pagedNavigation
+                  className="border-b border-ink/5 pb-4 w-full flex justify-center"
+                />
+                
+                <div className="flex justify-between items-center mt-4 px-2 w-full">
+                  <div className="text-sm font-medium text-ink/60">
+                    {selectedRange?.from ? (
+                      <>
+                        {format(selectedRange.from, 'dd/MM/yyyy')} 
+                        {selectedRange.to ? ` - ${format(selectedRange.to, 'dd/MM/yyyy')}` : ' - ...'}
+                      </>
+                    ) : (
+                      "Pilih rentang tanggal"
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => setIsOpen(false)}
+                      className="px-4 py-2 text-sm font-medium text-[#1a73e8] hover:bg-[#1a73e8]/5 rounded-md transition-colors"
+                    >
+                      Batal
+                    </button>
+                    <button 
+                      onClick={handleApplyCustom}
+                      disabled={!selectedRange?.from || !selectedRange?.to}
+                      className="bg-[#1a73e8] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#1765cc] text-white px-5 py-2 rounded-md text-sm font-medium transition-all shadow-sm"
+                    >
+                      Terapkan
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Presets Sidebar (Kanan ala Google Ads) */}
-            <div className="w-full md:w-48 bg-[#f8f9fa] border-t md:border-t-0 md:border-l border-ink/10 p-3 flex flex-col gap-1">
-              <div className="text-xs font-bold text-ink/50 uppercase tracking-wider mb-2 px-3 pt-2">Rentang Waktu</div>
-              {PRESETS.map((preset) => (
-                <button
-                  key={preset.value}
-                  onClick={() => applyPreset(preset.value, preset.getRange())}
-                  className={cn(
-                    "px-3 py-2 text-left text-sm font-medium rounded-md transition-colors",
-                    activePreset === preset.value
-                      ? "bg-[#e8f0fe] text-[#1a73e8]"
-                      : "text-ink/70 hover:bg-black/5 hover:text-ink"
-                  )}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-          </motion.div>
+              {/* Presets Sidebar (Kanan ala Google Ads) */}
+              <div className="w-full md:w-48 bg-[#f8f9fa] border-t md:border-t-0 md:border-l border-ink/10 p-3 flex flex-col gap-1 pb-8 md:pb-3">
+                <div className="text-xs font-bold text-ink/50 uppercase tracking-wider mb-2 px-3 pt-2">Rentang Waktu</div>
+                {PRESETS.map((preset) => (
+                  <button
+                    key={preset.value}
+                    onClick={() => applyPreset(preset.value, preset.getRange())}
+                    className={cn(
+                      "px-3 py-2 text-left text-sm font-medium rounded-md transition-colors",
+                      activePreset === preset.value
+                        ? "bg-[#e8f0fe] text-[#1a73e8]"
+                        : "text-ink/70 hover:bg-black/5 hover:text-ink"
+                    )}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>
