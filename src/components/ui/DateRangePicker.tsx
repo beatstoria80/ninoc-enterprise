@@ -38,7 +38,14 @@ export function DateRangePicker({ value, onChange }: DateRangePickerProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const isTouch = window.matchMedia('(pointer: coarse)').matches;
+      const isShort = window.innerHeight < 500;
+      const isNarrow = window.innerWidth < 768;
+      
+      // Use mobile bottom sheet if the screen is narrow OR if it's a short touch screen (landscape phone)
+      setIsMobile(isNarrow || (isTouch && isShort));
+    };
     checkMobile(); // Check initial
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
