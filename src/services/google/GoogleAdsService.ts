@@ -23,6 +23,7 @@ export class GoogleAdsService {
     const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
     const refreshToken = process.env.GOOGLE_ADS_REFRESH_TOKEN;
+    const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
     const rawCustomerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
     const rawLoginCustomerId = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
 
@@ -35,6 +36,14 @@ export class GoogleAdsService {
       if (!rawCustomerId) missing.push('GOOGLE_ADS_CUSTOMER_ID');
       console.warn(`[GoogleAdsService] Tidak terkonfigurasi — env vars kosong: ${missing.join(', ')}`);
       return null;
+    }
+
+    if (!developerToken) {
+      console.warn(
+        '[GoogleAdsService] GOOGLE_ADS_DEVELOPER_TOKEN tidak di-set. ' +
+        'Library google-ads-api@24.x masih mengirim header developer-token pada setiap API call. ' +
+        'Pastikan variabel ini terisi di .env.local dan Vercel Environment Variables.'
+      );
     }
 
     const customerId = this.sanitizeCustomerId(rawCustomerId)!;
@@ -53,8 +62,11 @@ export class GoogleAdsService {
     const client = new GoogleAdsApi({
       client_id: clientId,
       client_secret: clientSecret,
-      // developer_token is deprecated and no longer required for Google Cloud project-linked access
-      developer_token: '', 
+      // NOTE: google-ads-api@24.x npm library still sends "developer-token" header
+      // on every gRPC/REST call (verified in node_modules/google-ads-api/build/src/service.js).
+      // Passing an empty string causes Google Ads API to reject ALL requests.
+      // The developer_token MUST be read from env vars for the library to function.
+      developer_token: developerToken || '', 
     });
 
     console.log('[GoogleAdsService] Authenticating with:', {

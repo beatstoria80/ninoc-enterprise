@@ -599,7 +599,30 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   return (
     <>
-    <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden">
+    {/* PORTRAIT LOCK OVERLAY FOR MOBILE ADMIN */}
+    <div className="md:hidden fixed inset-0 z-[9999] bg-white flex-col items-center justify-center p-8 text-center portrait:flex landscape:hidden print:hidden">
+      <div className="relative w-24 h-24 mb-8">
+        <motion.div
+          animate={{ rotate: 90 }}
+          transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 1, ease: "easeInOut" }}
+          className="absolute inset-0 flex items-center justify-center"
+        >
+          <div className="w-16 h-24 border-4 border-rose rounded-xl relative">
+            <div className="w-6 h-1 bg-rose/30 rounded-full absolute top-2 left-1/2 -translate-x-1/2" />
+            <div className="w-4 h-4 bg-rose/10 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2" />
+          </div>
+        </motion.div>
+      </div>
+      <h2 className="text-xl font-display font-medium text-ink uppercase tracking-wider mb-3">
+        Putar Perangkat Anda
+      </h2>
+      <p className="text-sm text-ink/70 max-w-[280px] mx-auto leading-relaxed">
+        Admin Dashboard dioptimalkan untuk tampilan lanskap (horizontal). 
+        Silakan putar HP Anda untuk pengalaman UI & visibilitas data yang lebih presisi dan elegan.
+      </p>
+    </div>
+
+    <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden portrait:hidden md:portrait:flex">
       {/* MOBILE TOP BAR */}
       <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-2">

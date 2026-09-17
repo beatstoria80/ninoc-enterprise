@@ -199,10 +199,11 @@ The root cause was that:
 # Infrastructure Note: Google Ads API Authentication (15 September 2026)
 
 **Background & Rules for Future Agents:**
-Google Ads API has sunset the use of Developer Tokens in API call headers in favor of Google Cloud Project-linked access.
+While Google Cloud has shifted towards project-linked IAM-based access for Google Ads, the npm library `google-ads-api@24.x` (used in this project) still **requires** a `developer_token` in the `GoogleAdsApi` constructor. The library sends it as a `developer-token` header on every gRPC/REST call (verified in `node_modules/google-ads-api/build/src/service.js`).
 
 **CRITICAL Rules:**
-1. **Developer Token Removal**: NEVER attempt to add, require, or validate GOOGLE_ADS_DEVELOPER_TOKEN in the .env or in any GoogleAdsApi client initialization code (e.g., GoogleAdsService.ts). The token field should be omitted or passed as an empty string.
-2. **Access Management**: All access management for Google Ads API is now handled purely through **IAM roles** (Owner/Editor) on the specific Google Cloud Project (ID: 558984968121). 
-3. **Troubleshooting Guidance**: If the user experiences API access errors, DO NOT ask them to regenerate a Developer Token. Instead, instruct them to verify their IAM roles in Google Cloud Console or check their GOOGLE_ADS_CLIENT_ID / GOOGLE_ADS_CUSTOMER_ID.
-4. **Environment Variables**: The only required environment variables for Google Ads API are GOOGLE_ADS_CLIENT_ID, GOOGLE_ADS_CLIENT_SECRET, GOOGLE_ADS_REFRESH_TOKEN, and GOOGLE_ADS_CUSTOMER_ID (plus GOOGLE_ADS_LOGIN_CUSTOMER_ID if using an MCC).
+1. **Developer Token is REQUIRED by the library**: The `GOOGLE_ADS_DEVELOPER_TOKEN` env var MUST be read and passed to the `GoogleAdsApi({ developer_token })` constructor. Passing an empty string causes Google Ads API to **reject ALL requests**, breaking the entire Google Ads Manager UI in the admin dashboard. This was the root cause of a production outage on 17 September 2026.
+2. **Access Management**: IAM roles (Owner/Editor) on Google Cloud Project (ID: 558984968121) control API access at the cloud level, but the library still needs the developer token for the HTTP header.
+3. **Troubleshooting Guidance**: If the user experiences API access errors, check: (a) `GOOGLE_ADS_DEVELOPER_TOKEN` is set and valid, (b) `GOOGLE_ADS_LOGIN_CUSTOMER_ID` is the MCC ID, (c) `GOOGLE_ADS_CUSTOMER_ID` is the client account ID.
+4. **Environment Variables**: The required environment variables for Google Ads API are: `GOOGLE_ADS_CLIENT_ID`, `GOOGLE_ADS_CLIENT_SECRET`, `GOOGLE_ADS_DEVELOPER_TOKEN`, `GOOGLE_ADS_REFRESH_TOKEN`, `GOOGLE_ADS_CUSTOMER_ID` (plus `GOOGLE_ADS_LOGIN_CUSTOMER_ID` if using an MCC).
+
