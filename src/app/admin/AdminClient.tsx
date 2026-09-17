@@ -622,68 +622,69 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       </p>
     </div>
 
-    <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden portrait:hidden md:portrait:flex">
-      {/* MOBILE TOP BAR */}
-      <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
-        <div className="flex items-center gap-2">
-          <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
-          <span className="text-[9px] text-gray-300 uppercase tracking-wider">Admin</span>
-        </div>
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-2 text-gray-400 hover:text-rose"
-        >
-          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
-      </header>
+    {/* MOBILE TOP BAR */}
+    <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14 portrait:hidden">
+      <div className="flex items-center gap-2">
+        <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
+        <span className="text-[9px] text-gray-300 uppercase tracking-wider">Admin</span>
+      </div>
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="p-2 text-gray-400 hover:text-rose"
+      >
+        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+    </header>
 
-      {/* MOBILE SLIDE-OVER MENU */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[600] md:hidden">
-          <div className="absolute inset-0 bg-ink/20" onClick={() => setIsMobileMenuOpen(false)} />
-          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
-            <div className="p-3 border-b border-gray-100 flex items-center justify-between">
-              <div>
-                <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">NINOC</div>
-                <p className="text-[9px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
-              </div>
-              <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 text-gray-300 hover:text-rose">
-                <X size={16} />
-              </button>
+    {/* MOBILE SLIDE-OVER MENU */}
+    {isMobileMenuOpen && (
+      <div className="fixed inset-0 z-[600] md:hidden portrait:hidden">
+        <div className="absolute inset-0 bg-ink/20" onClick={() => setIsMobileMenuOpen(false)} />
+        <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
+          <div className="p-3 border-b border-gray-100 flex items-center justify-between">
+            <div>
+              <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">NINOC</div>
+              <p className="text-[9px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
             </div>
-            <nav className="flex-1 overflow-y-auto minimal-scroll py-2">
-              {navItems.map((item) => (
-                <SidebarItem 
-                  key={item.id}
-                  icon={item.icon} 
-                  label={item.label} 
-                  active={item.activeKeys.includes(activeTab)} 
-                  onClick={() => {
-                    if (!item.subItems) {
-                      setActiveTab(item.activeKeys[0]);
-                      setIsMobileMenuOpen(false);
-                    }
-                  }} 
-                  badge={item.badge}
-                  subItems={item.subItems?.map((sub: any) => ({
-                    label: sub.label,
-                    id: sub.id,
-                    active: activeTab === sub.id,
-                    onClick: () => { setActiveTab(sub.id); setIsMobileMenuOpen(false); },
-                    badge: sub.badge
-                  }))}
-                />
-              ))}
-            </nav>
-            <div className="p-2 border-t border-gray-100">
-              <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-2 py-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
-                <LogOut size={16} />
-                <span className="text-[10px] uppercase tracking-wider">Logout</span>
-              </button>
-            </div>
-          </aside>
-        </div>
-      )}
+            <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 text-gray-300 hover:text-rose">
+              <X size={16} />
+            </button>
+          </div>
+          <nav className="flex-1 overflow-y-auto minimal-scroll py-2 no-drag pointer-events-auto">
+            {navItems.map((item) => (
+              <SidebarItem 
+                key={item.id}
+                icon={item.icon} 
+                label={item.label} 
+                active={item.activeKeys.includes(activeTab)} 
+                onClick={() => {
+                  if (!item.subItems) {
+                    setActiveTab(item.activeKeys[0]);
+                    setIsMobileMenuOpen(false);
+                  }
+                }} 
+                badge={item.badge}
+                subItems={item.subItems?.map((sub: any) => ({
+                  label: sub.label,
+                  id: sub.id,
+                  active: activeTab === sub.id,
+                  onClick: () => { setActiveTab(sub.id); setIsMobileMenuOpen(false); },
+                  badge: sub.badge
+                }))}
+              />
+            ))}
+          </nav>
+          <div className="p-2 border-t border-gray-100">
+            <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-2 py-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+              <LogOut size={16} />
+              <span className="text-[10px] uppercase tracking-wider">Logout</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+    )}
+
+    <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden portrait:hidden md:portrait:flex">
 
       {/* DESKTOP SIDEBAR */}
       <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-100 z-10 shrink-0 h-full overflow-y-auto custom-scrollbar">
