@@ -91,7 +91,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   const [isLoading, setIsLoading] = useState(true);
   const [adminUser, setAdminUser] = useState<{ id: string; email?: string; role?: string } | null>(initialUser);
-  
+
   // Hooks for Data
   const { products, toggleFeatured, deleteProduct, fetchProducts } = useAdminProducts();
   const { orders, setOrders, pendingOrdersCount } = useAdminOrders();
@@ -116,7 +116,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   // Toast Notification State
   type ToastMessage = { id: number; text: string; type: 'success' | 'error' | 'info' } | null;
   const [toast, setToast] = useState<ToastMessage>(null);
-  
+
   const showToast = useCallback((text: string, type: 'success' | 'error' | 'info' = 'success') => {
     const id = Date.now();
     setToast({ id, text, type });
@@ -140,19 +140,19 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   // Sales Analytics state
   const [selectedYear, setSelectedYear] = useState<number>(2026);
-  
+
   const { salesChartData, profitChartData } = React.useMemo(() => {
     if (!orders || orders.length === 0) return { salesChartData: [], profitChartData: [] };
-    
+
     const monthlySales = new Map<string, number>();
     const monthlyProfit = new Map<string, number>();
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    
+
     months.forEach(month => {
       monthlySales.set(month, 0);
       monthlyProfit.set(month, 0);
     });
-    
+
     orders.forEach(order => {
       if (['paid', 'shipped', 'delivered'].includes(order.status) || order.payment_status === 'success') {
         const orderDate = new Date(order.created_at);
@@ -160,24 +160,24 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
           const monthStr = months[orderDate.getMonth()];
           const price = Number(order.total_price) || 0;
           monthlySales.set(monthStr, (monthlySales.get(monthStr) || 0) + price);
-          
+
           let cost = 0;
           order.order_items?.forEach(item => {
             const costing = productCostings[item.product_id];
             if (costing) {
-               const unitCost = (costing.supplier_cost || 0) + (costing.shipping_cost || 0) + (costing.packaging_cost || 0);
-               cost += unitCost * item.quantity;
+              const unitCost = (costing.supplier_cost || 0) + (costing.shipping_cost || 0) + (costing.packaging_cost || 0);
+              cost += unitCost * item.quantity;
             } else {
-               cost += (Number(item.price_at_purchase) * item.quantity) * 0.7; // Fallback 70% cost estimate
+              cost += (Number(item.price_at_purchase) * item.quantity) * 0.7; // Fallback 70% cost estimate
             }
           });
-          
+
           const profit = price - cost;
           monthlyProfit.set(monthStr, (monthlyProfit.get(monthStr) || 0) + profit);
         }
       }
     });
-    
+
     return {
       salesChartData: months.map(month => ({ month, sales: monthlySales.get(month) || 0 })),
       profitChartData: months.map(month => ({ month, profit: monthlyProfit.get(month) || 0 }))
@@ -464,7 +464,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
   ).length;
 
   // Chat - fetch from support_tickets with messages removed (handled by AdminSupportProvider)
-  
+
   // Real-time subscription for support messages removed (handled by AdminSupportProvider or no longer needed in AdminClient)
 
   // Real-time subscription for customer profiles (membership updates) removed (handled by AdminCustomersProvider)
@@ -492,7 +492,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   const allNavItems: any[] = [
     { id: 'overview', icon: LayoutDashboard, label: 'Dashboard', activeKeys: ['overview'], roles: ['super_admin', 'finance'] },
-    { 
+    {
       id: 'report', icon: BarChart3, label: 'Finance & Accounting', activeKeys: ['finance', 'accounting', 'opex', 'product_costings'],
       roles: ['super_admin', 'finance'],
       subItems: [
@@ -502,7 +502,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         { id: 'opex', label: 'Opex Tracker' }
       ]
     },
-    { 
+    {
       id: 'transaction', icon: ShoppingBag, label: 'Transactions & Logistics', activeKeys: ['orders', 'logistics', 'returns'], badge: (pendingOrdersCount || 0) + (pendingReturnsCount || 0) > 0 ? (pendingOrdersCount || 0) + (pendingReturnsCount || 0) : undefined,
       roles: ['super_admin', 'outbound_logistics'],
       subItems: [
@@ -511,7 +511,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         { id: 'returns', label: 'Retur & Reimbursement', badge: pendingReturnsCount > 0 ? pendingReturnsCount : undefined }
       ]
     },
-    { 
+    {
       id: 'inventory_wms', icon: Box, label: 'Inventory & WMS', activeKeys: ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'],
       roles: ['super_admin', 'finance', 'inbound_warehouse'],
       subItems: [
@@ -523,7 +523,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         { id: 'stock_ledger', label: 'Kartu Stok (Ledger)', roles: ['super_admin', 'inbound_warehouse'] }
       ]
     },
-    { 
+    {
       id: 'catalog', icon: Package, label: 'Catalog & Content', activeKeys: ['products', 'upload', 'logbook'],
       roles: ['super_admin'],
       subItems: [
@@ -532,7 +532,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         { id: 'logbook', label: 'Studio Logbook' }
       ]
     },
-    { 
+    {
       id: 'supply', icon: Factory, label: 'Partner & Supplier Hub', activeKeys: ['submissions', 'suppliers', 'supplier_withdrawals'],
       roles: ['super_admin', 'finance'],
       subItems: [
@@ -541,14 +541,14 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         { id: 'supplier_withdrawals', label: 'Payout Requests' }
       ]
     },
-    { 
+    {
       id: 'programs_group', icon: Gift, label: 'Programs & Promotions', activeKeys: ['programs'],
       roles: ['super_admin', 'finance'],
       subItems: [
         { id: 'programs', label: 'Program Center' }
       ]
     },
-    { 
+    {
       id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'],
       roles: ['super_admin', 'finance'],
       subItems: [
@@ -559,7 +559,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         { id: 'web_analytics', label: 'Web Analytics (GA4/GSC)' }
       ]
     },
-    { 
+    {
       id: 'support_crm', icon: MessageSquare, label: 'CRM & Customer Support', activeKeys: ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'], badge: totalUnreadChats > 0 ? totalUnreadChats : undefined,
       roles: ['super_admin', 'outbound_logistics', 'finance'],
       subItems: [
@@ -599,1141 +599,1138 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   return (
     <>
-    {/* PORTRAIT LOCK OVERLAY FOR MOBILE ADMIN */}
-    <div className="md:hidden fixed inset-0 z-[9999] bg-white flex-col items-center justify-center p-8 text-center portrait:flex landscape:hidden print:hidden">
-      <div className="relative w-24 h-24 mb-8">
-        <motion.div
-          animate={{ rotate: 90 }}
-          transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 1, ease: "easeInOut" }}
-          className="absolute inset-0 flex items-center justify-center"
-        >
-          <div className="w-16 h-24 border-4 border-rose rounded-xl relative">
-            <div className="w-6 h-1 bg-rose/30 rounded-full absolute top-2 left-1/2 -translate-x-1/2" />
-            <div className="w-4 h-4 bg-rose/10 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2" />
-          </div>
-        </motion.div>
-      </div>
-      <h2 className="text-xl font-display font-medium text-ink uppercase tracking-wider mb-3">
-        Putar Perangkat Anda
-      </h2>
-      <p className="text-sm text-ink/70 max-w-[280px] mx-auto leading-relaxed">
-        Admin Dashboard dioptimalkan untuk tampilan lanskap (horizontal). 
-        Silakan putar HP Anda untuk pengalaman UI & visibilitas data yang lebih presisi dan elegan.
-      </p>
-    </div>
-
-    {/* MOBILE TOP BAR */}
-    <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14 portrait:hidden">
-      <div className="flex items-center gap-2">
-        <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
-        <span className="text-[9px] text-gray-300 uppercase tracking-wider">Admin</span>
-      </div>
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="p-2 text-gray-400 hover:text-rose"
-      >
-        {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-    </header>
-
-    {/* MOBILE SLIDE-OVER MENU */}
-    {isMobileMenuOpen && (
-      <div className="fixed inset-0 z-[600] md:hidden portrait:hidden">
-        <div className="absolute inset-0 bg-ink/20" onClick={() => setIsMobileMenuOpen(false)} />
-        <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
-          <div className="p-3 border-b border-gray-100 flex items-center justify-between">
-            <div>
-              <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">NINOC</div>
-              <p className="text-[9px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
+      {/* PORTRAIT LOCK OVERLAY FOR MOBILE ADMIN */}
+      <div className="md:hidden fixed inset-0 z-[9999] bg-white flex-col items-center justify-center p-8 text-center portrait:flex landscape:hidden print:hidden">
+        <div className="relative w-24 h-24 mb-8">
+          <motion.div
+            animate={{ rotate: 90 }}
+            transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 1, ease: "easeInOut" }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <div className="w-16 h-24 border-4 border-rose rounded-xl relative">
+              <div className="w-6 h-1 bg-rose/30 rounded-full absolute top-2 left-1/2 -translate-x-1/2" />
+              <div className="w-4 h-4 bg-rose/10 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2" />
             </div>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 text-gray-300 hover:text-rose">
-              <X size={16} />
-            </button>
+          </motion.div>
+        </div>
+        <h2 className="text-xl font-display font-medium text-ink uppercase tracking-wider mb-3">
+          Putar Perangkat Anda
+        </h2>
+        <p className="text-sm text-ink/70 max-w-[280px] mx-auto leading-relaxed">
+          Admin Dashboard dioptimalkan untuk tampilan lanskap (horizontal).
+          Silakan putar HP Anda untuk pengalaman UI & visibilitas data yang lebih presisi dan elegan.
+        </p>
+      </div>
+
+      {/* MOBILE TOP BAR */}
+      <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14 portrait:hidden">
+        <div className="flex items-center gap-2">
+          <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
+          <span className="text-[9px] text-gray-300 uppercase tracking-wider">Admin</span>
+        </div>
+        <button
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="p-2 text-gray-400 hover:text-rose"
+        >
+          {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </header>
+
+      {/* MOBILE SLIDE-OVER MENU */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-[600] md:hidden portrait:hidden">
+          <div className="absolute inset-0 bg-ink/20" onClick={() => setIsMobileMenuOpen(false)} />
+          <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
+            <div className="p-3 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <div className="font-display font-medium text-xl italic tracking-tighter text-rose uppercase">NINOC</div>
+                <p className="text-[9px] uppercase tracking-[0.4em] text-gray-300 mt-1">Admin Control Center</p>
+              </div>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-1 text-gray-300 hover:text-rose">
+                <X size={16} />
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto minimal-scroll py-2 no-drag pointer-events-auto">
+              {navItems.map((item) => (
+                <SidebarItem
+                  key={item.id}
+                  icon={item.icon}
+                  label={item.label}
+                  active={item.activeKeys.includes(activeTab)}
+                  onClick={() => {
+                    if (!item.subItems) {
+                      setActiveTab(item.activeKeys[0]);
+                      setIsMobileMenuOpen(false);
+                    }
+                  }}
+                  badge={item.badge}
+                  subItems={item.subItems?.map((sub: any) => ({
+                    label: sub.label,
+                    id: sub.id,
+                    active: activeTab === sub.id,
+                    onClick: () => { setActiveTab(sub.id); setIsMobileMenuOpen(false); },
+                    badge: sub.badge
+                  }))}
+                />
+              ))}
+            </nav>
+            <div className="p-2 border-t border-gray-100">
+              <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-2 py-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
+                <LogOut size={16} />
+                <span className="text-[10px] uppercase tracking-wider">Logout</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden portrait:hidden md:portrait:flex">
+
+        {/* DESKTOP SIDEBAR */}
+        <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-100 z-10 shrink-0 h-full overflow-y-auto custom-scrollbar">
+          <div className="p-3 sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-50 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase">NINOC</span>
+              <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Internal Portal</span>
+            </div>
           </div>
-          <nav className="flex-1 overflow-y-auto minimal-scroll py-2 no-drag pointer-events-auto">
+          <nav className="flex-1 px-4 py-6 space-y-1">
             {navItems.map((item) => (
-              <SidebarItem 
+              <SidebarItem
                 key={item.id}
-                icon={item.icon} 
-                label={item.label} 
-                active={item.activeKeys.includes(activeTab)} 
+                icon={item.icon}
+                label={item.label}
+                active={item.activeKeys.includes(activeTab)}
                 onClick={() => {
-                  if (!item.subItems) {
-                    setActiveTab(item.activeKeys[0]);
-                    setIsMobileMenuOpen(false);
-                  }
-                }} 
+                  if (!item.subItems) setActiveTab(item.activeKeys[0]);
+                }}
                 badge={item.badge}
                 subItems={item.subItems?.map((sub: any) => ({
                   label: sub.label,
                   id: sub.id,
                   active: activeTab === sub.id,
-                  onClick: () => { setActiveTab(sub.id); setIsMobileMenuOpen(false); },
+                  onClick: () => setActiveTab(sub.id),
                   badge: sub.badge
                 }))}
               />
             ))}
           </nav>
-          <div className="p-2 border-t border-gray-100">
-            <button onClick={() => supabase.auth.signOut().then(() => { window.location.href = '/'; })} className="w-full flex items-center gap-3 px-2 py-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
-              <LogOut size={16} />
-              <span className="text-[10px] uppercase tracking-wider">Logout</span>
+
+          <div className="p-2 border-t border-ink/5">
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                window.location.href = '/';
+              }}
+              className="w-full flex items-center gap-3 px-2 py-1.5 text-ink/80 hover:text-rose hover:bg-rose/5 rounded transition-all"
+            >
+              <LogOut size={14} />
+              <span className="text-[9px] uppercase tracking-wider font-medium">Logout</span>
             </button>
           </div>
         </aside>
-      </div>
-    )}
 
-    <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden portrait:hidden md:portrait:flex">
-
-      {/* DESKTOP SIDEBAR */}
-      <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-100 z-10 shrink-0 h-full overflow-y-auto custom-scrollbar">
-        <div className="p-3 sticky top-0 bg-white/80 backdrop-blur-sm z-10 border-b border-gray-50 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="font-display font-medium text-2xl italic tracking-tighter text-rose uppercase">NINOC</span>
-            <span className="text-[10px] text-gray-400 uppercase tracking-widest font-medium">Internal Portal</span>
-          </div>
-        </div>
-        <nav className="flex-1 px-4 py-6 space-y-1">
-          {navItems.map((item) => (
-            <SidebarItem 
-              key={item.id} 
-              icon={item.icon} 
-              label={item.label} 
-              active={item.activeKeys.includes(activeTab)} 
-              onClick={() => {
-                if (!item.subItems) setActiveTab(item.activeKeys[0]);
-              }}
-              badge={item.badge}
-              subItems={item.subItems?.map((sub: any) => ({
-                label: sub.label,
-                id: sub.id,
-                active: activeTab === sub.id,
-                onClick: () => setActiveTab(sub.id),
-                badge: sub.badge
-              }))}
-            />
-          ))}
-        </nav>
-
-        <div className="p-2 border-t border-ink/5">
-          <button
-            onClick={async () => {
-              await supabase.auth.signOut();
-              window.location.href = '/';
-            }}
-            className="w-full flex items-center gap-3 px-2 py-1.5 text-ink/80 hover:text-rose hover:bg-rose/5 rounded transition-all"
-          >
-            <LogOut size={14} />
-            <span className="text-[9px] uppercase tracking-wider font-medium">Logout</span>
-          </button>
-        </div>
-      </aside>
-
-      {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col overflow-hidden pt-14 md:pt-0">
-        {/* Desktop Header */}
-        <header className="hidden md:flex h-14 bg-white border-b border-ink/5 px-8 items-center justify-between shrink-0">
-          <div className="flex-1 flex items-center gap-2">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-ink/80">
-              {['products', 'upload', 'logbook'].includes(activeTab) ? 'Catalog / ' :
-               ['orders', 'logistics', 'returns'].includes(activeTab) ? 'Transaction / ' :
-               ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'].includes(activeTab) ? 'Inventory & WMS / ' :
-               ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance & Accounting / ' :
-               ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'].includes(activeTab) ? 'CRM & Support / ' :
-               ['submissions', 'suppliers', 'supplier_withdrawals'].includes(activeTab) ? 'Partner Hub / ' :
-               ['programs'].includes(activeTab) ? 'Programs / ' :
-               ['marketing', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
-               'Dashboard / '}
-            </span>
-            <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
-              {activeTab === 'overview' ? 'Overview' :
-               activeTab === 'products' ? 'Product List' :
-               activeTab === 'upload' ? 'Bulk Asset Manager' :
-               activeTab === 'logbook' ? 'Studio Logbook' :
-               activeTab === 'orders' ? 'Online Orders' :
-               activeTab === 'logistics' ? 'Shipping & Logistics' :
-               activeTab === 'returns' ? 'Retur & Reimbursement' :
-               activeTab === 'submissions' ? 'Product Submissions' :
-               activeTab === 'suppliers' ? 'Partner Review' :
-               activeTab === 'supplier_withdrawals' ? 'Payout Requests' :
-               activeTab === 'warehouse' ? 'Ninoc Warehouse Hub' :
-               activeTab === 'customers' ? 'Membership Database' :
-               activeTab === 'affiliates' ? 'Affiliates Network' :
-               activeTab === 'programs' ? 'Program Center' :
-               activeTab === 'marketing' ? 'Marketing & ROAS' :
-               activeTab === 'banners' ? 'Banners UI/UX' :
-               activeTab === 'google_ads' ? 'Google Ads Manager' :
-               activeTab === 'meta_analytics' ? 'Meta Ads Analytics' :
-               activeTab === 'web_analytics' ? 'Web Analytics (GA4/GSC)' :
-               activeTab === 'inventory' ? 'Stock Management' :
-               activeTab === 'po' ? 'Purchase Orders' :
-               activeTab === 'do' ? 'Inbound Receiving' :
-               activeTab === 'stock_ledger' ? 'Kartu Stok' :
-               activeTab === 'stock_opname' ? 'Stock Opname' :
-               activeTab === 'finance' ? 'Finance Dashboard' :
-               activeTab === 'product_costings' ? 'Product Costing Config' :
-               activeTab === 'accounting' ? 'Accounting / Jurnal' :
-               activeTab === 'opex' ? 'Opex Tracker' :
-               activeTab === 'messages' ? 'Support Chat' :
-               activeTab === 'placeholders' ? 'Quick Reply Templates' :
-               activeTab === 'wabroadcast' ? 'WA Broadcast' :
-               activeTab === 'email_broadcast' ? 'Email Broadcast' :
-               activeTab === 'settings' ? 'System Settings' : activeTab}
-            </h1>
-          </div>
-          
-          <div className="flex-1 max-w-md mx-8">
-            <div className="relative group">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/90 group-focus-within:text-rose transition-colors" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Cari pesanan, produk, atau menu..."
-                className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 rounded-md text-xs md:text-[11px] font-medium focus:outline-none focus:border-rose/50 transition-all placeholder:text-ink/80"
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 flex items-center justify-end gap-5 relative">
-            {(showNotificationsModal || showUserMenuModal) && (
-              <div 
-                onClick={() => {
-                  setShowNotificationsModal(false);
-                  setShowUserMenuModal(false);
-                }} 
-                className="fixed inset-0 z-40" 
-              />
-            )}
-
-            <button 
-              onClick={() => {
-                setShowNotificationsModal(!showNotificationsModal);
-                setShowUserMenuModal(false);
-              }}
-              className="relative p-1.5 text-ink/80 hover:text-ink transition-colors focus:outline-none z-50"
-              title="Notifikasi Sistem"
-            >
-              <Bell size={16} />
-              {pendingOrdersCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
-              )}
-            </button>
-
-            {/* Notifications Dropdown */}
-            <AnimatePresence>
-              {showNotificationsModal && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-28 top-12 w-80 bg-white border border-ink/10 rounded-xl shadow-2xl p-4 z-50 text-ink"
-                >
-                  <div className="flex items-center justify-between border-b border-ink/5 pb-2.5 mb-3">
-                    <span className="font-semibold text-xs uppercase tracking-wider flex items-center gap-1.5 text-ink">
-                      <Bell size={13} className="text-rose" /> Notifikasi Sistem
-                    </span>
-                    <button onClick={() => setShowNotificationsModal(false)} className="text-ink/40 hover:text-ink transition-colors">
-                      <X size={14} />
-                    </button>
-                  </div>
-                  <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
-                    {pendingOrdersCount > 0 && (
-                      <div 
-                        onClick={() => { setActiveTab('orders'); setShowNotificationsModal(false); }}
-                        className="p-3 bg-rose/5 hover:bg-rose/10 border border-rose/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
-                      >
-                        <div className="p-1.5 bg-rose/10 rounded-md text-rose mt-0.5">
-                          <Package size={15} />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-ink">Pesanan Baru Tertunda</p>
-                          <p className="text-[11px] text-ink/70 mt-0.5">Terdapat <span className="font-bold text-rose">{pendingOrdersCount}</span> pesanan menunggu untuk diproses dan dikirim.</p>
-                        </div>
-                      </div>
-                    )}
-                    {lowStockProductsCount > 0 && (
-                      <div 
-                        onClick={() => { setActiveTab('inventory'); setShowNotificationsModal(false); }}
-                        className="p-3 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
-                      >
-                        <div className="p-1.5 bg-amber-500/10 rounded-md text-amber-600 mt-0.5">
-                          <AlertTriangle size={15} />
-                        </div>
-                        <div>
-                          <p className="text-xs font-semibold text-ink">Stok Menipis</p>
-                          <p className="text-[11px] text-ink/70 mt-0.5"><span className="font-bold text-amber-600">{lowStockProductsCount}</span> produk memiliki stok di bawah batas aman (5 unit).</p>
-                        </div>
-                      </div>
-                    )}
-                    {pendingOrdersCount === 0 && lowStockProductsCount === 0 && (
-                      <div className="py-8 text-center">
-                        <div className="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <CheckCircle size={20} />
-                        </div>
-                        <p className="text-xs font-semibold text-ink">Semua Bersih & Aman!</p>
-                        <p className="text-[11px] text-ink/60 mt-0.5">Tidak ada pesanan tertunda atau stok menipis saat ini.</p>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="h-6 w-px bg-ink/5 mx-1" />
-
-            <div 
-              onClick={() => {
-                setShowUserMenuModal(!showUserMenuModal);
-                setShowNotificationsModal(false);
-              }}
-              className="flex items-center gap-3 cursor-pointer group relative z-50"
-              title="Akun Admin"
-            >
-              <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden border border-ink/5 group-hover:border-rose/20 transition-colors">
-                {adminUser?.email ? (
-                  <span className="text-[9px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
-                ) : (
-                  <User size={12} className="text-ink/90" />
-                )}
-              </div>
-              <span className="text-[10px] font-medium text-ink group-hover:text-rose transition-colors">
-                {adminUser?.email?.split('@')[0] || 'Admin User'}
+        {/* MAIN CONTENT */}
+        <div className="flex-1 flex flex-col overflow-hidden pt-14 md:pt-0">
+          {/* Desktop Header */}
+          <header className="hidden md:flex h-14 bg-white border-b border-ink/5 px-8 items-center justify-between shrink-0">
+            <div className="flex-1 flex items-center gap-2">
+              <span className="text-[10px] font-medium uppercase tracking-wider text-ink/80">
+                {['products', 'upload', 'logbook'].includes(activeTab) ? 'Catalog / ' :
+                  ['orders', 'logistics', 'returns'].includes(activeTab) ? 'Transaction / ' :
+                    ['inventory', 'warehouse', 'stock_opname', 'po', 'do', 'stock_ledger'].includes(activeTab) ? 'Inventory & WMS / ' :
+                      ['finance', 'accounting', 'opex', 'product_costings'].includes(activeTab) ? 'Finance & Accounting / ' :
+                        ['messages', 'placeholders', 'wabroadcast', 'email_broadcast', 'customers', 'affiliates'].includes(activeTab) ? 'CRM & Support / ' :
+                          ['submissions', 'suppliers', 'supplier_withdrawals'].includes(activeTab) ? 'Partner Hub / ' :
+                            ['programs'].includes(activeTab) ? 'Programs / ' :
+                              ['marketing', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'].includes(activeTab) ? 'Marketing / ' :
+                                'Dashboard / '}
               </span>
+              <h1 className="text-[10px] font-medium text-ink uppercase tracking-wider">
+                {activeTab === 'overview' ? 'Overview' :
+                  activeTab === 'products' ? 'Product List' :
+                    activeTab === 'upload' ? 'Bulk Asset Manager' :
+                      activeTab === 'logbook' ? 'Studio Logbook' :
+                        activeTab === 'orders' ? 'Online Orders' :
+                          activeTab === 'logistics' ? 'Shipping & Logistics' :
+                            activeTab === 'returns' ? 'Retur & Reimbursement' :
+                              activeTab === 'submissions' ? 'Product Submissions' :
+                                activeTab === 'suppliers' ? 'Partner Review' :
+                                  activeTab === 'supplier_withdrawals' ? 'Payout Requests' :
+                                    activeTab === 'warehouse' ? 'Ninoc Warehouse Hub' :
+                                      activeTab === 'customers' ? 'Membership Database' :
+                                        activeTab === 'affiliates' ? 'Affiliates Network' :
+                                          activeTab === 'programs' ? 'Program Center' :
+                                            activeTab === 'marketing' ? 'Marketing & ROAS' :
+                                              activeTab === 'banners' ? 'Banners UI/UX' :
+                                                activeTab === 'google_ads' ? 'Google Ads Manager' :
+                                                  activeTab === 'meta_analytics' ? 'Meta Ads Analytics' :
+                                                    activeTab === 'web_analytics' ? 'Web Analytics (GA4/GSC)' :
+                                                      activeTab === 'inventory' ? 'Stock Management' :
+                                                        activeTab === 'po' ? 'Purchase Orders' :
+                                                          activeTab === 'do' ? 'Inbound Receiving' :
+                                                            activeTab === 'stock_ledger' ? 'Kartu Stok' :
+                                                              activeTab === 'stock_opname' ? 'Stock Opname' :
+                                                                activeTab === 'finance' ? 'Finance Dashboard' :
+                                                                  activeTab === 'product_costings' ? 'Product Costing Config' :
+                                                                    activeTab === 'accounting' ? 'Accounting / Jurnal' :
+                                                                      activeTab === 'opex' ? 'Opex Tracker' :
+                                                                        activeTab === 'messages' ? 'Support Chat' :
+                                                                          activeTab === 'placeholders' ? 'Quick Reply Templates' :
+                                                                            activeTab === 'wabroadcast' ? 'WA Broadcast' :
+                                                                              activeTab === 'email_broadcast' ? 'Email Broadcast' :
+                                                                                activeTab === 'settings' ? 'System Settings' : activeTab}
+              </h1>
             </div>
 
-            {/* User Profile Menu Dropdown */}
-            <AnimatePresence>
-              {showUserMenuModal && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute right-0 top-12 w-56 bg-white border border-ink/10 rounded-xl shadow-2xl p-2.5 z-50 text-ink"
-                >
-                  <div className="px-3 py-2.5 bg-ink/[0.02] rounded-lg border border-ink/5 mb-2">
-                    <p className="text-xs font-bold text-ink truncate">{adminUser?.email || 'Admin User'}</p>
-                    <p className="text-[9px] text-rose font-bold mt-0.5 uppercase tracking-wider">{adminUser?.role || 'Super Admin'}</p>
-                  </div>
-                  <div className="space-y-1">
-                    <button 
-                      onClick={() => { setActiveTab('settings'); setShowUserMenuModal(false); }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 hover:text-ink hover:bg-ink/5 rounded-lg transition-all text-left font-medium"
-                    >
-                      <Settings size={14} className="text-ink/60" />
-                      <span>Pengaturan Sistem</span>
-                    </button>
-                    <button 
-                      onClick={() => { setActiveTab('overview'); setShowUserMenuModal(false); }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 hover:text-ink hover:bg-ink/5 rounded-lg transition-all text-left font-medium"
-                    >
-                      <LayoutDashboard size={14} className="text-ink/60" />
-                      <span>Ringkasan Bisnis</span>
-                    </button>
-                  </div>
-                  <div className="border-t border-ink/5 mt-2 pt-2">
-                    <button 
-                      onClick={async () => {
-                        await supabase.auth.signOut();
-                        window.location.href = '/';
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose hover:bg-rose/5 rounded-lg transition-all text-left font-semibold"
-                    >
-                      <LogOut size={14} />
-                      <span>Keluar (Logout)</span>
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </header>
-
-        {/* Content */}
-        <section className="flex-1 overflow-y-auto flex flex-col p-4 md:px-8 md:py-6 custom-scrollbar">
-          
-          {activeTab === 'overview' && (
-            <OverviewTab 
-              finance={finance} 
-              products={products} 
-              pendingOrders={pendingOrdersCount} 
-              orders={orders} 
-              setActiveTab={setActiveTab} 
-              openOrderDetail={openOrderDetail} 
-              salesChartData={salesChartData}
-              profitChartData={profitChartData}
-            />
-          )}
-
-          {activeTab === 'products' && (
-            <ProductsTab 
-              products={products}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              openProductModal={openProductModal}
-              toggleFeatured={toggleFeatured}
-              deleteProduct={deleteProduct}
-            />
-          )}
-
-          {activeTab === 'upload' && (
-            <UploadTab 
-              bulkFiles={bulkFiles}
-              bulkProductLink={bulkProductLink}
-              setBulkProductLink={setBulkProductLink}
-              setActiveTab={setActiveTab}
-              handleBulkFileSelect={handleBulkFileSelect}
-              handleBulkImageUpload={handleBulkImageUpload}
-              bulkUploading={bulkUploading}
-              bulkResults={bulkResults}
-              allUploadHistory={allUploadHistory}
-            />
-          )}
-
-          {activeTab === 'inventory' && (
-            <InventoryTab 
-              products={products}
-            />
-          )}
-
-          {activeTab === 'po' && <PoManager products={products} />}
-          {activeTab === 'do' && <DoReceiving />}
-          {activeTab === 'stock_ledger' && <StockLedger />}
-          {activeTab === 'stock_opname' && <StockOpname products={products} adminEmail={adminUser?.email || 'admin'} />}
-
-          {activeTab === 'orders' && (
-            <OrdersTab 
-              orders={orders}
-              products={products}
-              statusFilter={statusFilter}
-              setStatusFilter={setStatusFilter}
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              openOrderDetail={openOrderDetail}
-              onUpdateOrderPrinted={(orderId, printedAt) => {
-                setOrders(prev => prev.map(o => o.id === orderId ? { ...o, printed_at: printedAt } : o));
-              }}
-            />
-          )}
-
-          {activeTab === 'logistics' && (
-            <LogisticsTab 
-              orders={orders}
-              logisticsFilter={logisticsFilter}
-              setLogisticsFilter={setLogisticsFilter}
-              logisticsSelectedOrder={logisticsSelectedOrder}
-              setLogisticsSelectedOrder={setLogisticsSelectedOrder}
-              openOrderDetail={openOrderDetail}
-              onOrderUpdated={(updatedOrder) => {
-                setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
-              }}
-            />
-          )}
-
-          {activeTab === 'logbook' && (
-            <LogbookTab />
-          )}
-
-          {activeTab === 'returns' && (
-            <ReturTab />
-          )}
-
-          {activeTab === 'submissions' && (
-            <SubmissionsTab />
-          )}
-
-          {activeTab === 'suppliers' && (
-            <SuppliersTab />
-          )}
-
-          {activeTab === 'supplier_withdrawals' && (
-            <PayoutRequestsTab />
-          )}
-
-          {activeTab === 'warehouse' && (
-            <WarehouseTab />
-          )}
-
-          {activeTab === 'opex' && <OpexTracker adminEmail={adminUser?.email || 'admin'} />}
-
-          {activeTab === 'finance' && (
-            <FinanceDashboard />
-          )}
-          {activeTab === 'product_costings' && (
-            <ProductCostingTab />
-          )}
-
-          {activeTab === 'accounting' && (
-            <FinanceTab
-              finance={finance}
-              products={products}
-              orders={orders}
-              financeTab={financeTab}
-              setFinanceTab={setFinanceTab}
-              productCostings={productCostings}
-              setSelectedProductForCosting={setSelectedProductForCosting}
-              setCostingForm={setCostingForm}
-              setIsCostingModalOpen={setIsCostingModalOpen}
-            />
-          )}
-
-          {activeTab === 'messages' && (
-            <MessagesTab
-              chatSessions={chatSessions}
-              activeChatSession={activeChatSession}
-              setActiveChatSession={setActiveChatSession}
-              newMessage={newMessage}
-              setNewMessage={setNewMessage}
-              sendMessage={handleSendMessage}
-              fetchChatSessions={fetchChatSessions}
-            />
-          )}
-
-          {activeTab === 'google_ads' && (
-            <GoogleAdsTab />
-          )}
-
-          {activeTab === 'web_analytics' && (
-            <WebAnalyticsTab />
-          )}
-
-          {activeTab === 'meta_analytics' && (
-            <MetaAnalyticsTab />
-          )}
-
-          {activeTab === 'placeholders' && <PlaceholderTab />}
-
-          {activeTab === 'wabroadcast' && <WABroadcastTab />}
-          {activeTab === 'email_broadcast' && <EmailBroadcastTab customers={customers} />}
-
-          {activeTab === 'customers' && (
-            <CustomersTab 
-              customers={customers}
-              customerSearchQuery={customerSearchQuery}
-              setCustomerSearchQuery={setCustomerSearchQuery}
-              setSelectedCustomer={setSelectedCustomer}
-              setCustomerForm={setCustomerForm}
-              setIsCustomerModalOpen={setIsCustomerModalOpen}
-            />
-          )}
-
-          {activeTab === 'affiliates' && <AffiliatesTab />}
-
-          {activeTab === 'marketing' && <MarketingTab />}
-          {activeTab === 'programs' && <ProgramsTab products={products} onRefreshProducts={fetchProducts} />}
-          {activeTab === 'banners' && <BannersTab />}
-
-          {activeTab === 'settings' && <SettingsTab />}
-
-        </section>
-        </div>
-
-      {/* ===== TOAST NOTIFICATION ===== */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className={cn(
-              "fixed bottom-6 right-6 z-[300] flex items-center gap-3 px-2 py-1.5 rounded-lg shadow-xl shadow-black/5 border",
-              toast.type === 'success' ? 'bg-[#f0fdf4] border-[#bbf7d0] text-[#166534]' :
-              toast.type === 'error' ? 'bg-[#fef2f2] border-[#fecaca] text-[#991b1b]' :
-              'bg-[#eff6ff] border-[#bfdbfe] text-[#1e40af]'
-            )}
-          >
-            {toast.type === 'success' ? <CheckCircle size={20} className="text-[#16a34a]" /> :
-             toast.type === 'error' ? <AlertCircle size={20} className="text-[#dc2626]" /> :
-             <Info size={20} className="text-[#2563eb]" />}
-            <span className="text-xs font-medium pr-4">{toast.text}</span>
-            <button onClick={() => setToast(null)} className="absolute right-2 top-2 opacity-50 hover:opacity-100">
-              <X size={14} />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <ProductModal 
-        isProductModalOpen={isProductModalOpen} setIsProductModalOpen={setIsProductModalOpen}
-        isEditMode={isEditMode} productForm={productForm} setProductForm={setProductForm}
-        dbDepartments={dbDepartments} dbCategories={dbCategories} dbWarehouses={dbWarehouses}
-        isUploadingProductImage={isUploadingProductImage} setIsUploadingProductImage={setIsUploadingProductImage}
-        saveProduct={saveProduct} 
-        addVariant={addVariant} removeVariant={removeVariant} updateVariant={updateVariant} handleProductImageUpload={handleProductImageUpload}
-        isFnB={isFnB} isObjects={isObjects}
-        isSeoPanelOpen={isSeoPanelOpen} setIsSeoPanelOpen={setIsSeoPanelOpen}
-        showToast={showToast} handleProductNameChange={handleProductNameChange}
-      />
-      {/* ===== COSTING MODAL ===== */}
-      <AnimatePresence>
-        {isCostingModalOpen && selectedProductForCosting && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg my-auto bg-white rounded-2xl flex flex-col max-h-[90vh]"
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-medium text-gray-900">Product Costing</h2>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">{selectedProductForCosting.name}</p>
-                </div>
-                <button onClick={() => setIsCostingModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                  <X size={18} />
-                </button>
+            <div className="flex-1 max-w-md mx-8">
+              <div className="relative group">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/90 group-focus-within:text-rose transition-colors" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Cari pesanan, produk, atau menu..."
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-ink/10 rounded-md text-xs md:text-[11px] font-medium focus:outline-none focus:border-rose/50 transition-all placeholder:text-ink/80"
+                />
               </div>
+            </div>
 
-              <div className="p-3 space-y-5 overflow-y-auto flex-1">
-                {/* Cost Components */}
-                <div className="space-y-3">
-                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Component</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Supplier Cost</label>
-                      <input type="number" value={costingForm.supplier_cost} onChange={e => setCostingForm({...costingForm, supplier_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Shipping Cost</label>
-                      <input type="number" value={costingForm.shipping_cost} onChange={e => setCostingForm({...costingForm, shipping_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Packaging Cost</label>
-                      <input type="number" value={costingForm.packaging_cost} onChange={e => setCostingForm({...costingForm, packaging_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Operasional %</label>
-                      <input type="number" value={costingForm.operasional_pct} onChange={e => setCostingForm({...costingForm, operasional_pct: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tax */}
-                <div>
-                  <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Tax Rate (%)</label>
-                  <input type="number" value={costingForm.tax_rate} onChange={e => setCostingForm({...costingForm, tax_rate: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                </div>
-
-                {/* Courier Costs */}
-                <div className="space-y-3">
-                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Kurir</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Regency</label>
-                      <input type="number" value={costingForm.courier_regency_cost} onChange={e => setCostingForm({...costingForm, courier_regency_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Inter-Regency</label>
-                      <input type="number" value={costingForm.courier_inter_regency_cost} onChange={e => setCostingForm({...costingForm, courier_inter_regency_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Same Day</label>
-                      <input type="number" value={costingForm.courier_same_day_cost} onChange={e => setCostingForm({...costingForm, courier_same_day_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Instant</label>
-                      <input type="number" value={costingForm.courier_instant_cost} onChange={e => setCostingForm({...costingForm, courier_instant_cost: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Target & Selling Price */}
-                <div className="space-y-3 pt-2 border-t border-gray-100">
-                  <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Margin & Harga Jual</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Target Margin %</label>
-                      <input type="number" value={costingForm.target_margin_pct} onChange={e => setCostingForm({...costingForm, target_margin_pct: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                    <div>
-                      <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Selling Price</label>
-                      <input type="number" value={costingForm.selling_price} onChange={e => setCostingForm({...costingForm, selling_price: Number(e.target.value)})} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Preview */}
-                <div className="bg-ink/[0.02] rounded-xl p-2 space-y-2">
-                  <p className="text-[9px] uppercase tracking-widest text-gray-400 font-medium">Cost Preview</p>
-                  <div className="flex justify-between text-[10px]">
-                    <span className="text-gray-500">Base Cost</span>
-                    <span className="font-medium">IDR {(costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost).toLocaleString('id-ID')}</span>
-                  </div>
-                  <div className="flex justify-between text-[10px]">
-                    <span className="text-gray-500">Operasional ({costingForm.operasional_pct}%)</span>
-                    <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100).toLocaleString('id-ID')}</span>
-                  </div>
-                  <div className="flex justify-between text-[10px]">
-                    <span className="text-gray-500">Tax ({costingForm.tax_rate}%)</span>
-                    <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100 * costingForm.tax_rate / 100).toLocaleString('id-ID')}</span>
-                  </div>
-                  <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
-                    <span className="text-[10px] font-medium text-gray-700">Total Cost</span>
-                    <span className="text-[10px] font-medium text-rose">
-                      IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * (1 + costingForm.operasional_pct / 100) * (1 + costingForm.tax_rate / 100)).toLocaleString('id-ID')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="sticky bottom-0 bg-white px-1.5 py-1 border-t border-gray-100 flex items-center justify-end gap-3">
-                <button onClick={() => setIsCostingModalOpen(false)} className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-lg">
-                  Cancel
-                </button>
-                <button
-                  onClick={async () => {
-                    const baseCost = costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost;
-                    const withOpr = baseCost * (1 + costingForm.operasional_pct / 100);
-                    const withTax = withOpr * (1 + costingForm.tax_rate / 100);
-                    const { error } = await supabase.from('product_costings').upsert({
-                      product_id: selectedProductForCosting!.id,
-                      supplier_cost: costingForm.supplier_cost,
-                      shipping_cost: costingForm.shipping_cost,
-                      packaging_cost: costingForm.packaging_cost,
-                      operational_pct: costingForm.operasional_pct,
-                      tax_rate: costingForm.tax_rate,
-                      courier_regency_cost: costingForm.courier_regency_cost,
-                      courier_inter_regency_cost: costingForm.courier_inter_regency_cost,
-                      courier_same_day_cost: costingForm.courier_same_day_cost,
-                      courier_instant_cost: costingForm.courier_instant_cost,
-                      target_margin_pct: costingForm.target_margin_pct,
-                      selling_price: costingForm.selling_price
-                    }, { onConflict: 'product_id' });
-                    if (error) {
-                      showToast(`Gagal menyimpan costing: ${error.message}`, 'error');
-                    } else {
-                      showToast('Product costing berhasil disimpan!', 'success');
-                      await fetchFinancialData();
-                      setIsCostingModalOpen(false);
-                    }
+            <div className="flex-1 flex items-center justify-end gap-5 relative">
+              {(showNotificationsModal || showUserMenuModal) && (
+                <div
+                  onClick={() => {
+                    setShowNotificationsModal(false);
+                    setShowUserMenuModal(false);
                   }}
-                  className="flex items-center gap-2 px-5 py-2 bg-rose text-white rounded-lg hover:bg-rose/90"
-                >
-                  <Save size={14} />
-                  <span className="text-[10px] uppercase tracking-wider">Save Costing</span>
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  className="fixed inset-0 z-40"
+                />
+              )}
 
-      {/* ===== ORDER DETAIL MODAL ===== */}
-      <AnimatePresence>
-        {isOrderModalOpen && selectedOrder && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-3"
-            onClick={() => {
-              setIsOrderModalOpen(false);
-              setIsPrintPreviewOpen(false);
-            }}
-          >
-            <div 
-              className="flex items-stretch justify-center max-h-[90vh] shadow-2xl rounded-xl max-w-full"
-              onClick={e => e.stopPropagation()}
-            >
-              {/* ORDER DETAIL MODAL CONTENT */}
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className={cn(
-                  "bg-white overflow-y-auto transition-all duration-300 flex flex-col relative",
-                  isPrintPreviewOpen 
-                    ? "w-[95vw] sm:w-[500px] rounded-l-xl rounded-r-none" 
-                    : "w-[95vw] sm:w-[672px] rounded-xl"
-                )}
+              <button
+                onClick={() => {
+                  setShowNotificationsModal(!showNotificationsModal);
+                  setShowUserMenuModal(false);
+                }}
+                className="relative p-1.5 text-ink/80 hover:text-ink transition-colors focus:outline-none z-50"
+                title="Notifikasi Sistem"
               >
-              <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
-                  <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id}</h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => {
-                    setIsPrintPreviewOpen(true);
-                  }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
-                    <Printer size={14} />
-                    <span className="text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
-                  </button>
-                  <button onClick={() => {
-                    setIsOrderModalOpen(false);
-                    setIsPrintPreviewOpen(false);
-                  }} className="p-2 hover:bg-gray-100 rounded-lg">
-                    <X size={20} />
-                  </button>
-                </div>
-              </div>
+                <Bell size={16} />
+                {pendingOrdersCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-rose rounded-full animate-pulse" />
+                )}
+              </button>
 
-              <div className="p-3 flex flex-col gap-2">
-                {/* Row 1: Status & Tracking */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {/* Status */}
-                  <div className="border border-gray-200 p-3 rounded-lg">
-                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
-                    <div className="flex flex-wrap gap-1">
-                      {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
-                        <button
-                          key={status}
-                          onClick={() => updateOrderStatus(selectedOrder.id, status as OrderStatus)}
-                          className={cn(
-                            "px-2 py-1 text-[9px] uppercase tracking-wider rounded border transition-colors",
-                            selectedOrder.status === status
-                              ? "bg-rose text-white border-rose"
-                              : "bg-white text-gray-600 border-gray-200 hover:border-rose"
-                          )}
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Tracking */}
-                  <div className="border border-gray-200 p-3 rounded-lg">
-                    <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
-                    <input
-                      type="text"
-                      defaultValue={selectedOrder.tracking_id || ''}
-                      onBlur={(e) => updateTrackingId(selectedOrder.id, e.target.value)}
-                      placeholder="Input tracking number..."
-                      className="w-full px-3 py-1.5 text-xs font-mono border border-gray-200 rounded focus:outline-none focus:border-rose/50"
-                    />
-                  </div>
-                </div>
-
-                {/* Row 2: Customer Destination */}
-                <div className="border border-gray-200 p-3 rounded-lg">
-                  <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
-                  <div className="text-xs leading-relaxed text-gray-800">
-                    <span className="font-medium uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
-                    <span className="text-gray-500 font-mono">
-                      {selectedOrder.shipping_address?.phone || '-'}
-                    </span>
-                    <br />
-                    {selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
-                  </div>
-                </div>
-
-                {/* Row 3: Items */}
-                <div className="border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="bg-gray-50 px-1.5 py-1 border-b border-gray-200">
-                    <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Garment Items</p>
-                  </div>
-                  <div className="divide-y divide-gray-100">
-                    {selectedOrder.order_items?.map((item, idx) => {
-                      const variantSku = item.sku || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.sku || 'N/A';
-                      const variantColor = item.color || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.color;
-                      const variantSize = item.size || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.size || 'OS';
-                      
-                      return (
-                        <div key={idx} className="flex justify-between items-center p-3 text-xs hover:bg-gray-50/50 transition-colors">
-                          <div>
-                            <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
-                            <div className="flex items-center gap-2 mt-1">
-                              {variantColor && (
-                                <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">CLR: {variantColor}</span>
-                              )}
-                              <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {variantSize}</span>
-                              <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">QTY: {item.quantity}</span>
-                              <span className="text-[10px] text-rose font-mono font-bold bg-rose/5 px-1.5 py-0.5 rounded border border-rose/10 uppercase tracking-widest">{variantSku}</span>
-                            </div>
-                          </div>
-                          <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Row 4: Summary */}
-                <div className="border border-gray-200 rounded-lg p-3 text-[10px] uppercase tracking-wider text-gray-500 flex flex-col gap-2">
-                  <div className="flex justify-between">
-                    <span>Value Subtotal</span>
-                    <span className="text-gray-900 font-mono">IDR {(() => {
-                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-                      return sub.toLocaleString('id-ID');
-                    })()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Logistics</span>
-                    <span className="text-gray-900 font-mono">+ IDR {(() => {
-                      const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
-                      const platform = 2500;
-                      let shipping = selectedOrder.shipping_address?.shipping_cost;
-                      if (typeof shipping !== 'number') {
-                        shipping = selectedOrder.total_price - sub - platform;
-                      }
-                      return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
-                    })()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>PPN (11%)</span>
-                    <span className="text-gray-500 font-mono text-[9px] uppercase tracking-widest bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">Termasuk</span>
-                  </div>
-                  <div className="flex justify-between pb-2 border-b border-gray-100">
-                    <span>Platform Fee</span>
-                    <span className="text-gray-900 font-mono">+ IDR 2.500</span>
-                  </div>
-                  <div className="flex justify-between pt-1">
-                    <span className="font-medium text-rose">GRAND TOTAL</span>
-                    <span className="text-xs font-medium font-mono text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* HIDDEN PRINTABLE LABEL (RENDERED FOR INNERHTML EXTRACT) */}
-              <div id="printable-label" className="hidden">
-                <ShippingLabel order={selectedOrder} />
-              </div>
-            </motion.div>
-
-            {/* PRINT PREVIEW ATTACHED ON RIGHT */}
-            <AnimatePresence>
-              {isPrintPreviewOpen && (
-                <motion.div
-                  initial={{ width: 0, opacity: 0 }}
-                  animate={{ width: 400, opacity: 1 }}
-                  exit={{ width: 0, opacity: 0 }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                  className="bg-gray-100 rounded-r-xl border-l border-gray-200 overflow-hidden hidden sm:flex flex-col z-[210] relative"
-                >
-                  <div className="w-[400px] h-full flex flex-col">
-                    <div className="flex items-center justify-between p-2 bg-white border-b border-gray-200 shrink-0">
-                      <p className="text-xs font-medium uppercase tracking-widest text-gray-900">Label Preview</p>
-                      <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
-                        <X size={16} />
+              {/* Notifications Dropdown */}
+              <AnimatePresence>
+                {showNotificationsModal && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-28 top-12 w-80 bg-white border border-ink/10 rounded-xl shadow-2xl p-4 z-50 text-ink"
+                  >
+                    <div className="flex items-center justify-between border-b border-ink/5 pb-2.5 mb-3">
+                      <span className="font-semibold text-xs uppercase tracking-wider flex items-center gap-1.5 text-ink">
+                        <Bell size={13} className="text-rose" /> Notifikasi Sistem
+                      </span>
+                      <button onClick={() => setShowNotificationsModal(false)} className="text-ink/40 hover:text-ink transition-colors">
+                        <X size={14} />
                       </button>
                     </div>
-                    
-                    {/* Label Canvas Preview - Scaled to fit container */}
-                    {/* 
+                    <div className="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-1">
+                      {pendingOrdersCount > 0 && (
+                        <div
+                          onClick={() => { setActiveTab('orders'); setShowNotificationsModal(false); }}
+                          className="p-3 bg-rose/5 hover:bg-rose/10 border border-rose/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
+                        >
+                          <div className="p-1.5 bg-rose/10 rounded-md text-rose mt-0.5">
+                            <Package size={15} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-ink">Pesanan Baru Tertunda</p>
+                            <p className="text-[11px] text-ink/70 mt-0.5">Terdapat <span className="font-bold text-rose">{pendingOrdersCount}</span> pesanan menunggu untuk diproses dan dikirim.</p>
+                          </div>
+                        </div>
+                      )}
+                      {lowStockProductsCount > 0 && (
+                        <div
+                          onClick={() => { setActiveTab('inventory'); setShowNotificationsModal(false); }}
+                          className="p-3 bg-amber-500/5 hover:bg-amber-500/10 border border-amber-500/10 rounded-lg cursor-pointer transition-all flex items-start gap-3"
+                        >
+                          <div className="p-1.5 bg-amber-500/10 rounded-md text-amber-600 mt-0.5">
+                            <AlertTriangle size={15} />
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold text-ink">Stok Menipis</p>
+                            <p className="text-[11px] text-ink/70 mt-0.5"><span className="font-bold text-amber-600">{lowStockProductsCount}</span> produk memiliki stok di bawah batas aman (5 unit).</p>
+                          </div>
+                        </div>
+                      )}
+                      {pendingOrdersCount === 0 && lowStockProductsCount === 0 && (
+                        <div className="py-8 text-center">
+                          <div className="w-10 h-10 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <CheckCircle size={20} />
+                          </div>
+                          <p className="text-xs font-semibold text-ink">Semua Bersih & Aman!</p>
+                          <p className="text-[11px] text-ink/60 mt-0.5">Tidak ada pesanan tertunda atau stok menipis saat ini.</p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <div className="h-6 w-px bg-ink/5 mx-1" />
+
+              <div
+                onClick={() => {
+                  setShowUserMenuModal(!showUserMenuModal);
+                  setShowNotificationsModal(false);
+                }}
+                className="flex items-center gap-3 cursor-pointer group relative z-50"
+                title="Akun Admin"
+              >
+                <div className="w-7 h-7 rounded-full bg-ink/5 flex items-center justify-center overflow-hidden border border-ink/5 group-hover:border-rose/20 transition-colors">
+                  {adminUser?.email ? (
+                    <span className="text-[9px] font-medium text-ink uppercase">{adminUser.email.charAt(0)}</span>
+                  ) : (
+                    <User size={12} className="text-ink/90" />
+                  )}
+                </div>
+                <span className="text-[10px] font-medium text-ink group-hover:text-rose transition-colors">
+                  {adminUser?.email?.split('@')[0] || 'Admin User'}
+                </span>
+              </div>
+
+              {/* User Profile Menu Dropdown */}
+              <AnimatePresence>
+                {showUserMenuModal && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 top-12 w-56 bg-white border border-ink/10 rounded-xl shadow-2xl p-2.5 z-50 text-ink"
+                  >
+                    <div className="px-3 py-2.5 bg-ink/[0.02] rounded-lg border border-ink/5 mb-2">
+                      <p className="text-xs font-bold text-ink truncate">{adminUser?.email || 'Admin User'}</p>
+                      <p className="text-[9px] text-rose font-bold mt-0.5 uppercase tracking-wider">{adminUser?.role || 'Super Admin'}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <button
+                        onClick={() => { setActiveTab('settings'); setShowUserMenuModal(false); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 hover:text-ink hover:bg-ink/5 rounded-lg transition-all text-left font-medium"
+                      >
+                        <Settings size={14} className="text-ink/60" />
+                        <span>Pengaturan Sistem</span>
+                      </button>
+                      <button
+                        onClick={() => { setActiveTab('overview'); setShowUserMenuModal(false); }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-ink/80 hover:text-ink hover:bg-ink/5 rounded-lg transition-all text-left font-medium"
+                      >
+                        <LayoutDashboard size={14} className="text-ink/60" />
+                        <span>Ringkasan Bisnis</span>
+                      </button>
+                    </div>
+                    <div className="border-t border-ink/5 mt-2 pt-2">
+                      <button
+                        onClick={async () => {
+                          await supabase.auth.signOut();
+                          window.location.href = '/';
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-rose hover:bg-rose/5 rounded-lg transition-all text-left font-semibold"
+                      >
+                        <LogOut size={14} />
+                        <span>Keluar (Logout)</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </header>
+
+          {/* Content */}
+          <section className="flex-1 overflow-y-auto flex flex-col p-4 md:px-8 md:py-6 custom-scrollbar">
+
+            {activeTab === 'overview' && (
+              <OverviewTab
+                finance={finance}
+                products={products}
+                pendingOrders={pendingOrdersCount}
+                orders={orders}
+                setActiveTab={setActiveTab}
+                openOrderDetail={openOrderDetail}
+                salesChartData={salesChartData}
+                profitChartData={profitChartData}
+              />
+            )}
+
+            {activeTab === 'products' && (
+              <ProductsTab
+                products={products}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                openProductModal={openProductModal}
+                toggleFeatured={toggleFeatured}
+                deleteProduct={deleteProduct}
+              />
+            )}
+
+            {activeTab === 'upload' && (
+              <UploadTab
+                bulkFiles={bulkFiles}
+                bulkProductLink={bulkProductLink}
+                setBulkProductLink={setBulkProductLink}
+                setActiveTab={setActiveTab}
+                handleBulkFileSelect={handleBulkFileSelect}
+                handleBulkImageUpload={handleBulkImageUpload}
+                bulkUploading={bulkUploading}
+                bulkResults={bulkResults}
+                allUploadHistory={allUploadHistory}
+              />
+            )}
+
+            {activeTab === 'inventory' && (
+              <InventoryTab
+                products={products}
+              />
+            )}
+
+            {activeTab === 'po' && <PoManager products={products} />}
+            {activeTab === 'do' && <DoReceiving />}
+            {activeTab === 'stock_ledger' && <StockLedger />}
+            {activeTab === 'stock_opname' && <StockOpname products={products} adminEmail={adminUser?.email || 'admin'} />}
+
+            {activeTab === 'orders' && (
+              <OrdersTab
+                orders={orders}
+                products={products}
+                statusFilter={statusFilter}
+                setStatusFilter={setStatusFilter}
+                searchQuery={searchQuery}
+                setSearchQuery={setSearchQuery}
+                openOrderDetail={openOrderDetail}
+                onUpdateOrderPrinted={(orderId, printedAt) => {
+                  setOrders(prev => prev.map(o => o.id === orderId ? { ...o, printed_at: printedAt } : o));
+                }}
+              />
+            )}
+
+            {activeTab === 'logistics' && (
+              <LogisticsTab
+                orders={orders}
+                logisticsFilter={logisticsFilter}
+                setLogisticsFilter={setLogisticsFilter}
+                logisticsSelectedOrder={logisticsSelectedOrder}
+                setLogisticsSelectedOrder={setLogisticsSelectedOrder}
+                openOrderDetail={openOrderDetail}
+                onOrderUpdated={(updatedOrder) => {
+                  setOrders(prev => prev.map(o => o.id === updatedOrder.id ? updatedOrder : o));
+                }}
+              />
+            )}
+
+            {activeTab === 'logbook' && (
+              <LogbookTab />
+            )}
+
+            {activeTab === 'returns' && (
+              <ReturTab />
+            )}
+
+            {activeTab === 'submissions' && (
+              <SubmissionsTab />
+            )}
+
+            {activeTab === 'suppliers' && (
+              <SuppliersTab />
+            )}
+
+            {activeTab === 'supplier_withdrawals' && (
+              <PayoutRequestsTab />
+            )}
+
+            {activeTab === 'warehouse' && (
+              <WarehouseTab />
+            )}
+
+            {activeTab === 'opex' && <OpexTracker adminEmail={adminUser?.email || 'admin'} />}
+
+            {activeTab === 'finance' && (
+              <FinanceDashboard />
+            )}
+            {activeTab === 'product_costings' && (
+              <ProductCostingTab />
+            )}
+
+            {activeTab === 'accounting' && (
+              <FinanceTab
+                finance={finance}
+                products={products}
+                orders={orders}
+                financeTab={financeTab}
+                setFinanceTab={setFinanceTab}
+                productCostings={productCostings}
+                setSelectedProductForCosting={setSelectedProductForCosting}
+                setCostingForm={setCostingForm}
+                setIsCostingModalOpen={setIsCostingModalOpen}
+              />
+            )}
+
+            {activeTab === 'messages' && (
+              <MessagesTab
+                chatSessions={chatSessions}
+                activeChatSession={activeChatSession}
+                setActiveChatSession={setActiveChatSession}
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                sendMessage={handleSendMessage}
+                fetchChatSessions={fetchChatSessions}
+              />
+            )}
+
+            {activeTab === 'google_ads' && (
+              <GoogleAdsTab />
+            )}
+
+            {activeTab === 'web_analytics' && (
+              <WebAnalyticsTab />
+            )}
+
+            {activeTab === 'meta_analytics' && (
+              <MetaAnalyticsTab />
+            )}
+
+            {activeTab === 'placeholders' && <PlaceholderTab />}
+
+            {activeTab === 'wabroadcast' && <WABroadcastTab />}
+            {activeTab === 'email_broadcast' && <EmailBroadcastTab customers={customers} />}
+
+            {activeTab === 'customers' && (
+              <CustomersTab
+                customers={customers}
+                customerSearchQuery={customerSearchQuery}
+                setCustomerSearchQuery={setCustomerSearchQuery}
+                setSelectedCustomer={setSelectedCustomer}
+                setCustomerForm={setCustomerForm}
+                setIsCustomerModalOpen={setIsCustomerModalOpen}
+              />
+            )}
+
+            {activeTab === 'affiliates' && <AffiliatesTab />}
+
+            {activeTab === 'marketing' && <MarketingTab />}
+            {activeTab === 'programs' && <ProgramsTab products={products} onRefreshProducts={fetchProducts} />}
+            {activeTab === 'banners' && <BannersTab />}
+
+            {activeTab === 'settings' && <SettingsTab />}
+
+          </section>
+        </div>
+
+        {/* ===== TOAST NOTIFICATION ===== */}
+        <AnimatePresence>
+          {toast && (
+            <motion.div
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              className={cn(
+                "fixed bottom-6 right-6 z-[300] flex items-center gap-3 px-2 py-1.5 rounded-lg shadow-xl shadow-black/5 border",
+                toast.type === 'success' ? 'bg-[#f0fdf4] border-[#bbf7d0] text-[#166534]' :
+                  toast.type === 'error' ? 'bg-[#fef2f2] border-[#fecaca] text-[#991b1b]' :
+                    'bg-[#eff6ff] border-[#bfdbfe] text-[#1e40af]'
+              )}
+            >
+              {toast.type === 'success' ? <CheckCircle size={20} className="text-[#16a34a]" /> :
+                toast.type === 'error' ? <AlertCircle size={20} className="text-[#dc2626]" /> :
+                  <Info size={20} className="text-[#2563eb]" />}
+              <span className="text-xs font-medium pr-4">{toast.text}</span>
+              <button onClick={() => setToast(null)} className="absolute right-2 top-2 opacity-50 hover:opacity-100">
+                <X size={14} />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <ProductModal
+          isProductModalOpen={isProductModalOpen} setIsProductModalOpen={setIsProductModalOpen}
+          isEditMode={isEditMode} productForm={productForm} setProductForm={setProductForm}
+          dbDepartments={dbDepartments} dbCategories={dbCategories} dbWarehouses={dbWarehouses}
+          isUploadingProductImage={isUploadingProductImage} setIsUploadingProductImage={setIsUploadingProductImage}
+          saveProduct={saveProduct}
+          addVariant={addVariant} removeVariant={removeVariant} updateVariant={updateVariant} handleProductImageUpload={handleProductImageUpload}
+          isFnB={isFnB} isObjects={isObjects}
+          isSeoPanelOpen={isSeoPanelOpen} setIsSeoPanelOpen={setIsSeoPanelOpen}
+          showToast={showToast} handleProductNameChange={handleProductNameChange}
+        />
+        {/* ===== COSTING MODAL ===== */}
+        <AnimatePresence>
+          {isCostingModalOpen && selectedProductForCosting && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-3 overflow-y-auto"
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="w-full max-w-lg my-auto bg-white rounded-2xl flex flex-col max-h-[90vh]"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="sticky top-0 bg-white px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                  <div>
+                    <h2 className="text-lg font-medium text-gray-900">Product Costing</h2>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider mt-0.5">{selectedProductForCosting.name}</p>
+                  </div>
+                  <button onClick={() => setIsCostingModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="p-3 space-y-5 overflow-y-auto flex-1">
+                  {/* Cost Components */}
+                  <div className="space-y-3">
+                    <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Component</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Supplier Cost</label>
+                        <input type="number" value={costingForm.supplier_cost} onChange={e => setCostingForm({ ...costingForm, supplier_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Shipping Cost</label>
+                        <input type="number" value={costingForm.shipping_cost} onChange={e => setCostingForm({ ...costingForm, shipping_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Packaging Cost</label>
+                        <input type="number" value={costingForm.packaging_cost} onChange={e => setCostingForm({ ...costingForm, packaging_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Operasional %</label>
+                        <input type="number" value={costingForm.operasional_pct} onChange={e => setCostingForm({ ...costingForm, operasional_pct: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tax */}
+                  <div>
+                    <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Tax Rate (%)</label>
+                    <input type="number" value={costingForm.tax_rate} onChange={e => setCostingForm({ ...costingForm, tax_rate: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                  </div>
+
+                  {/* Courier Costs */}
+                  <div className="space-y-3">
+                    <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Biaya Kurir</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Regency</label>
+                        <input type="number" value={costingForm.courier_regency_cost} onChange={e => setCostingForm({ ...costingForm, courier_regency_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Inter-Regency</label>
+                        <input type="number" value={costingForm.courier_inter_regency_cost} onChange={e => setCostingForm({ ...costingForm, courier_inter_regency_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Same Day</label>
+                        <input type="number" value={costingForm.courier_same_day_cost} onChange={e => setCostingForm({ ...costingForm, courier_same_day_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Instant</label>
+                        <input type="number" value={costingForm.courier_instant_cost} onChange={e => setCostingForm({ ...costingForm, courier_instant_cost: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Target & Selling Price */}
+                  <div className="space-y-3 pt-2 border-t border-gray-100">
+                    <h3 className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Margin & Harga Jual</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Target Margin %</label>
+                        <input type="number" value={costingForm.target_margin_pct} onChange={e => setCostingForm({ ...costingForm, target_margin_pct: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                      <div>
+                        <label className="block text-[9px] uppercase tracking-wider text-gray-500 mb-1">Selling Price</label>
+                        <input type="number" value={costingForm.selling_price} onChange={e => setCostingForm({ ...costingForm, selling_price: Number(e.target.value) })} className="w-full px-1.5 py-1 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Preview */}
+                  <div className="bg-ink/[0.02] rounded-xl p-2 space-y-2">
+                    <p className="text-[9px] uppercase tracking-widest text-gray-400 font-medium">Cost Preview</p>
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-gray-500">Base Cost</span>
+                      <span className="font-medium">IDR {(costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost).toLocaleString('id-ID')}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-gray-500">Operasional ({costingForm.operasional_pct}%)</span>
+                      <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100).toLocaleString('id-ID')}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px]">
+                      <span className="text-gray-500">Tax ({costingForm.tax_rate}%)</span>
+                      <span className="font-medium">IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * costingForm.operasional_pct / 100 * costingForm.tax_rate / 100).toLocaleString('id-ID')}</span>
+                    </div>
+                    <div className="border-t border-gray-200 pt-2 mt-2 flex justify-between">
+                      <span className="text-[10px] font-medium text-gray-700">Total Cost</span>
+                      <span className="text-[10px] font-medium text-rose">
+                        IDR {Math.round((costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost) * (1 + costingForm.operasional_pct / 100) * (1 + costingForm.tax_rate / 100)).toLocaleString('id-ID')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sticky bottom-0 bg-white px-1.5 py-1 border-t border-gray-100 flex items-center justify-end gap-3">
+                  <button onClick={() => setIsCostingModalOpen(false)} className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded-lg">
+                    Cancel
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const baseCost = costingForm.supplier_cost + costingForm.shipping_cost + costingForm.packaging_cost;
+                      const withOpr = baseCost * (1 + costingForm.operasional_pct / 100);
+                      const withTax = withOpr * (1 + costingForm.tax_rate / 100);
+                      const { error } = await supabase.from('product_costings').upsert({
+                        product_id: selectedProductForCosting!.id,
+                        supplier_cost: costingForm.supplier_cost,
+                        shipping_cost: costingForm.shipping_cost,
+                        packaging_cost: costingForm.packaging_cost,
+                        operational_pct: costingForm.operasional_pct,
+                        tax_rate: costingForm.tax_rate,
+                        courier_regency_cost: costingForm.courier_regency_cost,
+                        courier_inter_regency_cost: costingForm.courier_inter_regency_cost,
+                        courier_same_day_cost: costingForm.courier_same_day_cost,
+                        courier_instant_cost: costingForm.courier_instant_cost,
+                        target_margin_pct: costingForm.target_margin_pct,
+                        selling_price: costingForm.selling_price
+                      }, { onConflict: 'product_id' });
+                      if (error) {
+                        showToast(`Gagal menyimpan costing: ${error.message}`, 'error');
+                      } else {
+                        showToast('Product costing berhasil disimpan!', 'success');
+                        await fetchFinancialData();
+                        setIsCostingModalOpen(false);
+                      }
+                    }}
+                    className="flex items-center gap-2 px-5 py-2 bg-rose text-white rounded-lg hover:bg-rose/90"
+                  >
+                    <Save size={14} />
+                    <span className="text-[10px] uppercase tracking-wider">Save Costing</span>
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ===== ORDER DETAIL MODAL ===== */}
+        <AnimatePresence>
+          {isOrderModalOpen && selectedOrder && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[200] bg-black/50 backdrop-blur-sm flex items-center justify-center p-2 sm:p-3"
+              onClick={() => {
+                setIsOrderModalOpen(false);
+                setIsPrintPreviewOpen(false);
+              }}
+            >
+              <div
+                className="flex items-stretch justify-center max-h-[90vh] shadow-2xl rounded-xl max-w-full"
+                onClick={e => e.stopPropagation()}
+              >
+                {/* ORDER DETAIL MODAL CONTENT */}
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  className={cn(
+                    "bg-white overflow-y-auto transition-all duration-300 flex flex-col relative",
+                    isPrintPreviewOpen
+                      ? "w-[95vw] sm:w-[500px] rounded-l-xl rounded-r-none"
+                      : "w-[95vw] sm:w-[672px] rounded-xl"
+                  )}
+                >
+                  <div className="sticky top-0 bg-white px-8 py-6 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-wider text-gray-400">Order Detail</p>
+                      <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id}</h2>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => {
+                        setIsPrintPreviewOpen(true);
+                      }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
+                        <Printer size={14} />
+                        <span className="text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
+                      </button>
+                      <button onClick={() => {
+                        setIsOrderModalOpen(false);
+                        setIsPrintPreviewOpen(false);
+                      }} className="p-2 hover:bg-gray-100 rounded-lg">
+                        <X size={20} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="p-3 flex flex-col gap-2">
+                    {/* Row 1: Status & Tracking */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {/* Status */}
+                      <div className="border border-gray-200 p-3 rounded-lg">
+                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Order Status</p>
+                        <div className="flex flex-wrap gap-1">
+                          {['pending', 'paid', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                            <button
+                              key={status}
+                              onClick={() => updateOrderStatus(selectedOrder.id, status as OrderStatus)}
+                              className={cn(
+                                "px-2 py-1 text-[9px] uppercase tracking-wider rounded border transition-colors",
+                                selectedOrder.status === status
+                                  ? "bg-rose text-white border-rose"
+                                  : "bg-white text-gray-600 border-gray-200 hover:border-rose"
+                              )}
+                            >
+                              {status}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Tracking */}
+                      <div className="border border-gray-200 p-3 rounded-lg">
+                        <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Airway Bill / Resi</p>
+                        <input
+                          type="text"
+                          defaultValue={selectedOrder.tracking_id || ''}
+                          onBlur={(e) => updateTrackingId(selectedOrder.id, e.target.value)}
+                          placeholder="Input tracking number..."
+                          className="w-full px-3 py-1.5 text-xs font-mono border border-gray-200 rounded focus:outline-none focus:border-rose/50"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Row 2: Customer Destination */}
+                    <div className="border border-gray-200 p-3 rounded-lg">
+                      <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-2">Destination Manifest</p>
+                      <div className="text-xs leading-relaxed text-gray-800">
+                        <span className="font-medium uppercase mr-2">{selectedOrder.shipping_address?.name}</span>
+                        <span className="text-gray-500 font-mono">
+                          {selectedOrder.shipping_address?.phone || '-'}
+                        </span>
+                        <br />
+                        {selectedOrder.shipping_address?.address}, {selectedOrder.shipping_address?.city}, {selectedOrder.shipping_address?.postal_code}
+                      </div>
+                    </div>
+
+                    {/* Row 3: Items */}
+                    <div className="border border-gray-200 rounded-lg overflow-hidden">
+                      <div className="bg-gray-50 px-1.5 py-1 border-b border-gray-200">
+                        <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Garment Items</p>
+                      </div>
+                      <div className="divide-y divide-gray-100">
+                        {selectedOrder.order_items?.map((item, idx) => {
+                          const variantSku = item.sku || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.sku || 'N/A';
+                          const variantColor = item.color || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.color;
+                          const variantSize = item.size || products.find(p => p.id === item.product_id)?.variants?.find(v => v.id === item.variant_id)?.size || 'OS';
+
+                          return (
+                            <div key={idx} className="flex justify-between items-center p-3 text-xs hover:bg-gray-50/50 transition-colors">
+                              <div>
+                                <span className="font-medium text-gray-900">{item.product_name || 'PRODUCT'}</span>
+                                <div className="flex items-center gap-2 mt-1">
+                                  {variantColor && (
+                                    <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">CLR: {variantColor}</span>
+                                  )}
+                                  <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">SZ: {variantSize}</span>
+                                  <span className="text-[10px] text-gray-500 font-medium bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">QTY: {item.quantity}</span>
+                                  <span className="text-[10px] text-rose font-mono font-bold bg-rose/5 px-1.5 py-0.5 rounded border border-rose/10 uppercase tracking-widest">{variantSku}</span>
+                                </div>
+                              </div>
+                              <span className="font-mono text-gray-900">IDR {item.price_at_purchase.toLocaleString('id-ID')}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Row 4: Summary */}
+                    <div className="border border-gray-200 rounded-lg p-3 text-[10px] uppercase tracking-wider text-gray-500 flex flex-col gap-2">
+                      <div className="flex justify-between">
+                        <span>Value Subtotal</span>
+                        <span className="text-gray-900 font-mono">IDR {(() => {
+                          const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                          return sub.toLocaleString('id-ID');
+                        })()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Logistics</span>
+                        <span className="text-gray-900 font-mono">+ IDR {(() => {
+                          const sub = selectedOrder.order_items?.reduce((acc, item) => acc + (item.price_at_purchase * item.quantity), 0) || 0;
+                          const platform = 2500;
+                          let shipping = selectedOrder.shipping_address?.shipping_cost;
+                          if (typeof shipping !== 'number') {
+                            shipping = selectedOrder.total_price - sub - platform;
+                          }
+                          return shipping > 0 ? shipping.toLocaleString('id-ID') : '0';
+                        })()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>PPN (11%)</span>
+                        <span className="text-gray-500 font-mono text-[9px] uppercase tracking-widest bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200">Termasuk</span>
+                      </div>
+                      <div className="flex justify-between pb-2 border-b border-gray-100">
+                        <span>Platform Fee</span>
+                        <span className="text-gray-900 font-mono">+ IDR 2.500</span>
+                      </div>
+                      <div className="flex justify-between pt-1">
+                        <span className="font-medium text-rose">GRAND TOTAL</span>
+                        <span className="text-xs font-medium font-mono text-rose">IDR {selectedOrder.total_price.toLocaleString('id-ID')}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* HIDDEN PRINTABLE LABEL (RENDERED FOR INNERHTML EXTRACT) */}
+                  <div id="printable-label" className="hidden">
+                    <ShippingLabel order={selectedOrder} />
+                  </div>
+                </motion.div>
+
+                {/* PRINT PREVIEW ATTACHED ON RIGHT */}
+                <AnimatePresence>
+                  {isPrintPreviewOpen && (
+                    <motion.div
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: 400, opacity: 1 }}
+                      exit={{ width: 0, opacity: 0 }}
+                      transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                      className="bg-gray-100 rounded-r-xl border-l border-gray-200 overflow-hidden hidden sm:flex flex-col z-[210] relative"
+                    >
+                      <div className="w-[400px] h-full flex flex-col">
+                        <div className="flex items-center justify-between p-2 bg-white border-b border-gray-200 shrink-0">
+                          <p className="text-xs font-medium uppercase tracking-widest text-gray-900">Label Preview</p>
+                          <button onClick={() => setIsPrintPreviewOpen(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                            <X size={16} />
+                          </button>
+                        </div>
+
+                        {/* Label Canvas Preview - Scaled to fit container */}
+                        {/* 
                       scale(0.68) trick: 
                       - ShippingLabel is 100mm × 150mm
                       - After scale(0.68): visual footprint = 68mm × 102mm ≈ 257px × 386px
                       - We size the outer wrapper to the visual size so no dead space or clipping
                     */}
-                    <div className="flex-1 overflow-auto bg-gray-50/50 flex items-center justify-center py-6">
-                      <div style={{ position: 'relative', width: '68mm', height: '102mm', flexShrink: 0 }}>
-                        <div style={{
-                          position: 'absolute',
-                          top: 0,
-                          left: 0,
-                          width: '100mm',
-                          height: '150mm',
-                          transform: 'scale(0.68)',
-                          transformOrigin: 'top left',
-                          overflow: 'hidden',
-                        }}>
-                          <div className="bg-white shadow-xl rounded-sm" style={{ width: '100mm', height: '150mm' }}>
-                            <ShippingLabel order={selectedOrder} />
+                        <div className="flex-1 overflow-auto bg-gray-50/50 flex items-center justify-center py-6">
+                          <div style={{ position: 'relative', width: '68mm', height: '102mm', flexShrink: 0 }}>
+                            <div style={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              width: '100mm',
+                              height: '150mm',
+                              transform: 'scale(0.68)',
+                              transformOrigin: 'top left',
+                              overflow: 'hidden',
+                            }}>
+                              <div className="bg-white shadow-xl rounded-sm" style={{ width: '100mm', height: '150mm' }}>
+                                <ShippingLabel order={selectedOrder} />
+                              </div>
+                            </div>
                           </div>
                         </div>
+
+                        <div className="p-2 bg-white border-t border-gray-200 shrink-0">
+                          <button
+                            onClick={() => {
+                              const order = selectedOrder;
+                              if (!order) return;
+
+                              if ((order.print_count || 0) > 0) {
+                                // Already printed -> Show Authorization Modal
+                                setReprintReason('');
+                                setIsReprintModalOpen(true);
+                              } else {
+                                // First time printing -> Execute immediately
+                                executePrint(order, false);
+                              }
+                            }}
+                            className="w-full py-1.5 bg-black text-white font-medium text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
+                          >
+                            <Printer size={16} /> Print to Thermal Printer
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="p-2 bg-white border-t border-gray-200 shrink-0">
-                      <button
-                        onClick={() => {
-                          const order = selectedOrder;
-                          if (!order) return;
-                          
-                          if ((order.print_count || 0) > 0) {
-                            // Already printed -> Show Authorization Modal
-                            setReprintReason('');
-                            setIsReprintModalOpen(true);
-                          } else {
-                            // First time printing -> Execute immediately
-                            executePrint(order, false);
-                          }
-                        }}
-                        className="w-full py-1.5 bg-black text-white font-medium text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
-                      >
-                        <Printer size={16} /> Print to Thermal Printer
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* ===== CUSTOMER MODAL ===== */}
-      <CustomerModal
-        isOpen={isCustomerModalOpen}
-        onClose={() => setIsCustomerModalOpen(false)}
-        customer={selectedCustomer}
-        form={customerForm}
-        setForm={setCustomerForm}
-        onSave={saveCustomer}
-      />
+        {/* ===== CUSTOMER MODAL ===== */}
+        <CustomerModal
+          isOpen={isCustomerModalOpen}
+          onClose={() => setIsCustomerModalOpen(false)}
+          customer={selectedCustomer}
+          form={customerForm}
+          setForm={setCustomerForm}
+          onSave={saveCustomer}
+        />
 
-      {/* ===== REPRINT AUTHORIZATION MODAL ===== */}
-      <AnimatePresence>
-        {isReprintModalOpen && selectedOrder && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[600] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2"
-            onClick={() => setIsReprintModalOpen(false)}
-          >
+        {/* ===== REPRINT AUTHORIZATION MODAL ===== */}
+        <AnimatePresence>
+          {isReprintModalOpen && selectedOrder && (
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
-              onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[600] bg-black/60 backdrop-blur-sm flex items-center justify-center p-2"
+              onClick={() => setIsReprintModalOpen(false)}
             >
-              {/* Header */}
-              <div className="bg-amber-50 border-b border-amber-200 p-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                    <AlertTriangle size={20} className="text-amber-600" />
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+                onClick={(e: React.MouseEvent) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="bg-amber-50 border-b border-amber-200 p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                      <AlertTriangle size={20} className="text-amber-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-amber-900 text-xs">Otorisasi Cetak Ulang</h3>
+                      <p className="text-xs text-amber-700 mt-0.5">
+                        Resi ini sudah pernah dicetak {selectedOrder.print_count || 1}× sebelumnya
+                      </p>
+                    </div>
                   </div>
+                </div>
+
+                {/* Body */}
+                <div className="p-5 space-y-2">
+                  {/* Print History Info */}
+                  <div className="bg-gray-50 rounded-lg p-3 space-y-1.5">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500">Order ID</span>
+                      <span className="font-mono font-semibold text-gray-900">#{(selectedOrder.id || '').toUpperCase()}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500">Terakhir dicetak oleh</span>
+                      <span className="font-medium text-gray-900">{selectedOrder.last_printed_by || '-'}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-gray-500">Waktu cetak terakhir</span>
+                      <span className="font-medium text-gray-900">
+                        {selectedOrder.last_printed_at
+                          ? new Date(selectedOrder.last_printed_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+                          : '-'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Reason Selection */}
                   <div>
-                    <h3 className="font-semibold text-amber-900 text-xs">Otorisasi Cetak Ulang</h3>
-                    <p className="text-xs text-amber-700 mt-0.5">
-                      Resi ini sudah pernah dicetak {selectedOrder.print_count || 1}× sebelumnya
+                    <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                      Alasan Cetak Ulang <span className="text-rose">*</span>
+                    </label>
+                    <div className="space-y-2">
+                      {[
+                        { value: 'Printer Rusak / Mati Lampu', icon: '⚡' },
+                        { value: 'Hasil Cetak Tidak Jelas / Buram', icon: '🖨️' },
+                        { value: 'Label Robek / Rusak Fisik', icon: '📄' },
+                        { value: 'Perubahan Data Pengiriman', icon: '📦' },
+                        { value: 'Permintaan Supervisor', icon: '👤' },
+                      ].map((opt) => (
+                        <label
+                          key={opt.value}
+                          className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${reprintReason === opt.value
+                              ? 'border-rose bg-rose/5'
+                              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            }`}
+                        >
+                          <input
+                            type="radio"
+                            name="reprint-reason"
+                            value={opt.value}
+                            checked={reprintReason === opt.value}
+                            onChange={(e) => setReprintReason(e.target.value)}
+                            className="sr-only"
+                          />
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${reprintReason === opt.value ? 'border-rose bg-rose' : 'border-gray-300'
+                            }`}>
+                            {reprintReason === opt.value && (
+                              <Check size={12} className="text-white" />
+                            )}
+                          </div>
+                          <span className="text-xs">{opt.icon}</span>
+                          <span className="text-xs font-medium text-gray-700">{opt.value}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Confirmation Checkbox */}
+                  <div className="bg-blue-50 rounded-lg p-3 flex items-start gap-3">
+                    <div className="mt-0.5">
+                      <Info size={14} className="text-blue-500" />
+                    </div>
+                    <p className="text-[11px] text-blue-700 leading-relaxed">
+                      Cetak ulang diperbolehkan selama <strong>stok fisik barang tidak ada selisih</strong>.
+                      Setiap aktivitas cetak ulang akan terekam di sistem audit secara otomatis
+                      (siapa, kapan, dan alasannya).
                     </p>
                   </div>
                 </div>
-              </div>
 
-              {/* Body */}
-              <div className="p-5 space-y-2">
-                {/* Print History Info */}
-                <div className="bg-gray-50 rounded-lg p-3 space-y-1.5">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Order ID</span>
-                    <span className="font-mono font-semibold text-gray-900">#{(selectedOrder.id || '').toUpperCase()}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Terakhir dicetak oleh</span>
-                    <span className="font-medium text-gray-900">{selectedOrder.last_printed_by || '-'}</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-gray-500">Waktu cetak terakhir</span>
-                    <span className="font-medium text-gray-900">
-                      {selectedOrder.last_printed_at 
-                        ? new Date(selectedOrder.last_printed_at).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
-                        : '-'}
-                    </span>
-                  </div>
+                {/* Footer */}
+                <div className="p-5 border-t border-gray-100 flex gap-3">
+                  <button
+                    onClick={() => setIsReprintModalOpen(false)}
+                    className="flex-1 py-2.5 px-4 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    disabled={!reprintReason}
+                    onClick={() => {
+                      if (!reprintReason || !selectedOrder) return;
+                      setIsReprintModalOpen(false);
+                      executePrint(selectedOrder, true);
+                      showToast(`Reprint terotorisasi: ${reprintReason}`, 'info');
+                    }}
+                    className={`flex-1 py-2.5 px-4 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${reprintReason
+                        ? 'bg-amber-500 text-white hover:bg-amber-600 cursor-pointer'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      }`}
+                  >
+                    <Printer size={14} />
+                    Cetak Ulang
+                  </button>
                 </div>
-
-                {/* Reason Selection */}
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                    Alasan Cetak Ulang <span className="text-rose">*</span>
-                  </label>
-                  <div className="space-y-2">
-                    {[
-                      { value: 'Printer Rusak / Mati Lampu', icon: '⚡' },
-                      { value: 'Hasil Cetak Tidak Jelas / Buram', icon: '🖨️' },
-                      { value: 'Label Robek / Rusak Fisik', icon: '📄' },
-                      { value: 'Perubahan Data Pengiriman', icon: '📦' },
-                      { value: 'Permintaan Supervisor', icon: '👤' },
-                    ].map((opt) => (
-                      <label
-                        key={opt.value}
-                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                          reprintReason === opt.value
-                            ? 'border-rose bg-rose/5'
-                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="reprint-reason"
-                          value={opt.value}
-                          checked={reprintReason === opt.value}
-                          onChange={(e) => setReprintReason(e.target.value)}
-                          className="sr-only"
-                        />
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                          reprintReason === opt.value ? 'border-rose bg-rose' : 'border-gray-300'
-                        }`}>
-                          {reprintReason === opt.value && (
-                            <Check size={12} className="text-white" />
-                          )}
-                        </div>
-                        <span className="text-xs">{opt.icon}</span>
-                        <span className="text-xs font-medium text-gray-700">{opt.value}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Confirmation Checkbox */}
-                <div className="bg-blue-50 rounded-lg p-3 flex items-start gap-3">
-                  <div className="mt-0.5">
-                    <Info size={14} className="text-blue-500" />
-                  </div>
-                  <p className="text-[11px] text-blue-700 leading-relaxed">
-                    Cetak ulang diperbolehkan selama <strong>stok fisik barang tidak ada selisih</strong>. 
-                    Setiap aktivitas cetak ulang akan terekam di sistem audit secara otomatis 
-                    (siapa, kapan, dan alasannya).
-                  </p>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="p-5 border-t border-gray-100 flex gap-3">
-                <button
-                  onClick={() => setIsReprintModalOpen(false)}
-                  className="flex-1 py-2.5 px-4 border border-gray-200 rounded-lg text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
-                >
-                  Batal
-                </button>
-                <button
-                  disabled={!reprintReason}
-                  onClick={() => {
-                    if (!reprintReason || !selectedOrder) return;
-                    setIsReprintModalOpen(false);
-                    executePrint(selectedOrder, true);
-                    showToast(`Reprint terotorisasi: ${reprintReason}`, 'info');
-                  }}
-                  className={`flex-1 py-2.5 px-4 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-all ${
-                    reprintReason
-                      ? 'bg-amber-500 text-white hover:bg-amber-600 cursor-pointer'
-                      : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  <Printer size={14} />
-                  Cetak Ulang
-                </button>
-              </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </main>
+          )}
+        </AnimatePresence>
+      </main>
 
-    {/* ===== PRINTABLE SHIPPING LABEL ===== */}
-    {selectedOrder && (
-      <div className="hidden print:block w-[10cm] max-w-[10cm] font-sans box-border mx-auto bg-white text-black p-0 m-0">
-        <ShippingLabel order={selectedOrder} />
-      </div>
-    )}
-    {/* PUSH NOTIFICATION MANAGER FOR ADMINS ONLY */}
-    <PushNotificationManager />
+      {/* ===== PRINTABLE SHIPPING LABEL ===== */}
+      {selectedOrder && (
+        <div className="hidden print:block w-[10cm] max-w-[10cm] font-sans box-border mx-auto bg-white text-black p-0 m-0">
+          <ShippingLabel order={selectedOrder} />
+        </div>
+      )}
+      {/* PUSH NOTIFICATION MANAGER FOR ADMINS ONLY */}
+      <PushNotificationManager />
     </>
   );
 }
