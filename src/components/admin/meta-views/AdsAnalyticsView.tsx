@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ComposedChart, Area, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
-import { DollarSign, Target, MousePointer, Eye, TrendingUp, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight, Download, Loader2 } from 'lucide-react';
+import { ComposedChart, Area, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+import { DollarSign, Target, MousePointer, Eye, TrendingUp, BarChart2, AlertCircle, ShoppingCart, Activity, ArrowUpRight, ArrowDownRight, Download, Loader2 } from 'lucide-react';
 import type { MetaAnalyticsData } from '@/services/meta/types';
 import { cn } from '@/lib/utils';
 import { MetaAdsTable } from './MetaAdsTable';
@@ -18,6 +18,7 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
   const [selectedCampaign, setSelectedCampaign] = useState<string>('all');
   const [fetchedTrend, setFetchedTrend] = useState<any>(null);
   const [loadingTrend, setLoadingTrend] = useState(false);
+  const [chartStyle, setChartStyle] = useState<'line' | 'bar'>('line');
   const [activeMetrics, setActiveMetrics] = useState({
     spend: true,
     conversions: true,
@@ -252,69 +253,103 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
       <div className="bg-white border border-ink/10 rounded-2xl p-4 md:p-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
-          <h3 className="text-xs font-bold text-ink flex items-center gap-2">
-            <TrendingUp size={14} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
-            {trendData && trendData.length > 0 && (
-              <LandscapeChartPreview title="Tren Performa Harian" subtitle={`Meta Ads — ${getTimeLabel()}`}>
-                <div className="w-full h-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                      <defs>
-                        <linearGradient id="colorSpendLs" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
-                          <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
-                      <XAxis 
-                        dataKey="date" 
-                        tick={{ fontSize: 10, fill: '#64748b' }} 
-                        tickLine={false} 
-                        axisLine={{ stroke: '#e2e8f0' }} 
-                        tickFormatter={(val) => val.split('-').slice(1).join('/')} 
-                      />
-                      <YAxis 
-                        yAxisId="left" 
-                        tick={{ fontSize: 10, fill: '#64748b' }} 
-                        tickLine={false} 
-                        axisLine={false} 
-                        tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)} 
-                      />
-                      <YAxis 
-                        yAxisId="right" 
-                        orientation="right" 
-                        tick={{ fontSize: 10, fill: '#64748b' }} 
-                        tickLine={false} 
-                        axisLine={false} 
-                        tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}
-                      />
-                      <RechartsTooltip 
-                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
-                        formatter={(value: any, name: any) => {
-                          if (name === "spend" || name === "cpa" || name === "cpm") return [`Rp ${new Intl.NumberFormat('id-ID').format(value)}`, name.toUpperCase()];
-                          if (name === "roas") return [`${Number(value).toFixed(2)}x`, 'ROAS'];
-                          if (name === "ctr") return [`${Number(value).toFixed(2)}%`, 'CTR'];
-                          if (name === "conversions") return [value.toLocaleString('id-ID'), 'Pembelian'];
-                          if (name === "impressions") return [value.toLocaleString('id-ID'), 'Impressions'];
-                          if (name === "clicks") return [value.toLocaleString('id-ID'), 'Clicks'];
-                          return [value, name];
-                        }}
-                        labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
-                      />
-                      {activeMetrics.spend && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpendLs)" name="spend" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
-                      {activeMetrics.conversions && <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="conversions" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
-                      {activeMetrics.impressions && <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} dot={false} name="impressions" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
-                      {activeMetrics.clicks && <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2} dot={false} name="clicks" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
-                      {activeMetrics.roas && <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#14b8a6" strokeWidth={2} dot={false} name="roas" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
-                      {activeMetrics.cpa && <Line yAxisId="left" type="monotone" dataKey="cpa" stroke="#f97316" strokeWidth={2} dot={false} name="cpa" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
-                      {activeMetrics.cpm && <Line yAxisId="left" type="monotone" dataKey="cpm" stroke="#6366f1" strokeWidth={2} dot={false} name="cpm" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
-                      {activeMetrics.ctr && <Line yAxisId="right" type="monotone" dataKey="ctr" stroke="#a855f7" strokeWidth={2} dot={false} name="ctr" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
-              </LandscapeChartPreview>
-            )}
-          </h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="text-xs font-bold text-ink flex items-center gap-2">
+              <TrendingUp size={14} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
+              {trendData && trendData.length > 0 && (
+                <LandscapeChartPreview title="Tren Performa Harian" subtitle={`Meta Ads — ${getTimeLabel()}`}>
+                  <div className="w-full h-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <ComposedChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="colorSpendLs" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                        <XAxis 
+                          dataKey="date" 
+                          tick={{ fontSize: 10, fill: '#64748b' }} 
+                          tickLine={false} 
+                          axisLine={{ stroke: '#e2e8f0' }} 
+                          tickFormatter={(val) => val.split('-').slice(1).join('/')} 
+                        />
+                        <YAxis 
+                          yAxisId="left" 
+                          tick={{ fontSize: 10, fill: '#64748b' }} 
+                          tickLine={false} 
+                          axisLine={false} 
+                          tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)} 
+                        />
+                        <YAxis 
+                          yAxisId="right" 
+                          orientation="right" 
+                          tick={{ fontSize: 10, fill: '#64748b' }} 
+                          tickLine={false} 
+                          axisLine={false} 
+                          tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}
+                        />
+                        <RechartsTooltip 
+                          contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
+                          formatter={(value: any, name: any) => {
+                            if (name === "spend" || name === "cpa" || name === "cpm") return [`Rp ${new Intl.NumberFormat('id-ID').format(value)}`, name.toUpperCase()];
+                            if (name === "roas") return [`${Number(value).toFixed(2)}x`, 'ROAS'];
+                            if (name === "ctr") return [`${Number(value).toFixed(2)}%`, 'CTR'];
+                            if (name === "conversions") return [value.toLocaleString('id-ID'), 'Pembelian'];
+                            if (name === "impressions") return [value.toLocaleString('id-ID'), 'Impressions'];
+                            if (name === "clicks") return [value.toLocaleString('id-ID'), 'Clicks'];
+                            return [value, name];
+                          }}
+                          labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                        />
+                        {chartStyle === 'line' ? (
+                          <>
+                            {activeMetrics.spend && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpendLs)" name="spend" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                            {activeMetrics.conversions && <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="conversions" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                            {activeMetrics.impressions && <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} dot={false} name="impressions" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                            {activeMetrics.clicks && <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2} dot={false} name="clicks" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                            {activeMetrics.roas && <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#14b8a6" strokeWidth={2} dot={false} name="roas" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                            {activeMetrics.cpa && <Line yAxisId="left" type="monotone" dataKey="cpa" stroke="#f97316" strokeWidth={2} dot={false} name="cpa" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                            {activeMetrics.cpm && <Line yAxisId="left" type="monotone" dataKey="cpm" stroke="#3b82f6" strokeWidth={2} dot={false} name="cpm" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                            {activeMetrics.ctr && <Line yAxisId="right" type="monotone" dataKey="ctr" stroke="#ec4899" strokeWidth={2} dot={false} name="ctr" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                          </>
+                        ) : (
+                          <>
+                            {activeMetrics.spend && <Bar yAxisId="left" dataKey="spend" fill="#f43f5e" name="spend" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.conversions && <Bar yAxisId="right" dataKey="conversions" fill="#10b981" name="conversions" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.impressions && <Bar yAxisId="left" dataKey="impressions" fill="#0ea5e9" name="impressions" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.clicks && <Bar yAxisId="left" dataKey="clicks" fill="#f59e0b" name="clicks" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.roas && <Bar yAxisId="right" dataKey="roas" fill="#14b8a6" name="roas" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.cpa && <Bar yAxisId="left" dataKey="cpa" fill="#f97316" name="cpa" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.cpm && <Bar yAxisId="left" dataKey="cpm" fill="#3b82f6" name="cpm" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                            {activeMetrics.ctr && <Bar yAxisId="right" dataKey="ctr" fill="#ec4899" name="ctr" radius={[4, 4, 0, 0]} isAnimationActive={false} maxBarSize={40} />}
+                          </>
+                        )}
+                      </ComposedChart>
+                    </ResponsiveContainer>
+                  </div>
+                </LandscapeChartPreview>
+              )}
+            </h3>
+            
+            <div className="flex items-center gap-1 bg-ink/5 p-1 rounded-lg ml-2">
+              <button 
+                onClick={() => setChartStyle('line')}
+                className={cn("p-1.5 rounded transition-all", chartStyle === 'line' ? "bg-white text-blue-600 shadow-sm" : "text-ink/50 hover:text-ink")}
+                title="Line Chart"
+              >
+                <TrendingUp size={14} />
+              </button>
+              <button 
+                onClick={() => setChartStyle('bar')}
+                className={cn("p-1.5 rounded transition-all", chartStyle === 'bar' ? "bg-white text-blue-600 shadow-sm" : "text-ink/50 hover:text-ink")}
+                title="Bar Chart"
+              >
+                <BarChart2 size={14} />
+              </button>
+            </div>
+          </div>
           <div className="flex items-center gap-2">
             <select 
               className="text-[11px] border border-ink/10 rounded-md px-2 py-1.5 bg-white text-ink shadow-sm max-w-[200px] md:max-w-xs focus:ring-2 focus:ring-blue-500 outline-none"
@@ -358,12 +393,12 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
           ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-orange-500"></span> CPA</button>
           <button 
             onClick={() => toggleMetric('cpm')}
-            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.cpm ? "bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
-          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-indigo-500"></span> CPM</button>
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.cpm ? "bg-blue-50 text-blue-700 border-blue-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-blue-500"></span> CPM</button>
           <button 
             onClick={() => toggleMetric('ctr')}
-            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.ctr ? "bg-purple-50 text-purple-700 border-purple-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
-          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-purple-500"></span> CTR</button>
+            className={cn("px-2 py-1 rounded text-[10px] font-bold transition-colors border", activeMetrics.ctr ? "bg-pink-50 text-pink-700 border-pink-200 shadow-sm" : "bg-ink/5 text-ink/50 border-transparent hover:bg-ink/10")}
+          ><span className="w-2 h-2 rounded-full inline-block mr-1 bg-pink-500"></span> CTR</button>
         </div>
 
         <div className="h-[280px] w-full">
@@ -417,14 +452,29 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
                   labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
                 />
                 
-                {activeMetrics.spend && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpend)" name="spend" activeDot={{ r: 5, strokeWidth: 0 }} />}
-                {activeMetrics.conversions && <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="conversions" activeDot={{ r: 5, strokeWidth: 0 }} />}
-                {activeMetrics.impressions && <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} dot={false} name="impressions" activeDot={{ r: 5, strokeWidth: 0 }} />}
-                {activeMetrics.clicks && <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2} dot={false} name="clicks" activeDot={{ r: 5, strokeWidth: 0 }} />}
-                {activeMetrics.roas && <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#14b8a6" strokeWidth={2} dot={false} name="roas" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
-                {activeMetrics.cpa && <Line yAxisId="left" type="monotone" dataKey="cpa" stroke="#f97316" strokeWidth={2} dot={false} name="cpa" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
-                {activeMetrics.cpm && <Line yAxisId="left" type="monotone" dataKey="cpm" stroke="#6366f1" strokeWidth={2} dot={false} name="cpm" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
-                {activeMetrics.ctr && <Line yAxisId="right" type="monotone" dataKey="ctr" stroke="#a855f7" strokeWidth={2} dot={false} name="ctr" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                {chartStyle === 'line' ? (
+                  <>
+                    {activeMetrics.spend && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpend)" name="spend" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                    {activeMetrics.conversions && <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="conversions" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                    {activeMetrics.impressions && <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} dot={false} name="impressions" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                    {activeMetrics.clicks && <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2} dot={false} name="clicks" activeDot={{ r: 5, strokeWidth: 0 }} />}
+                    {activeMetrics.roas && <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#14b8a6" strokeWidth={2} dot={false} name="roas" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                    {activeMetrics.cpa && <Line yAxisId="left" type="monotone" dataKey="cpa" stroke="#f97316" strokeWidth={2} dot={false} name="cpa" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                    {activeMetrics.cpm && <Line yAxisId="left" type="monotone" dataKey="cpm" stroke="#3b82f6" strokeWidth={2} dot={false} name="cpm" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                    {activeMetrics.ctr && <Line yAxisId="right" type="monotone" dataKey="ctr" stroke="#ec4899" strokeWidth={2} dot={false} name="ctr" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" />}
+                  </>
+                ) : (
+                  <>
+                    {activeMetrics.spend && <Bar yAxisId="left" dataKey="spend" fill="#f43f5e" name="spend" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.conversions && <Bar yAxisId="right" dataKey="conversions" fill="#10b981" name="conversions" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.impressions && <Bar yAxisId="left" dataKey="impressions" fill="#0ea5e9" name="impressions" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.clicks && <Bar yAxisId="left" dataKey="clicks" fill="#f59e0b" name="clicks" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.roas && <Bar yAxisId="right" dataKey="roas" fill="#14b8a6" name="roas" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.cpa && <Bar yAxisId="left" dataKey="cpa" fill="#f97316" name="cpa" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.cpm && <Bar yAxisId="left" dataKey="cpm" fill="#3b82f6" name="cpm" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                    {activeMetrics.ctr && <Bar yAxisId="right" dataKey="ctr" fill="#ec4899" name="ctr" radius={[4, 4, 0, 0]} maxBarSize={40} />}
+                  </>
+                )}
               </ComposedChart>
             </ResponsiveContainer>
           ) : (
