@@ -47,7 +47,6 @@ const AffiliatesTab = dynamic(() => import('@/components/admin/tabs/AffiliatesTa
 const ProgramsTab = dynamic(() => import('@/components/admin/tabs/ProgramsTab'), { ssr: false });
 const MarketingTab = dynamic(() => import('@/components/admin/tabs/MarketingTab').then(mod => mod.MarketingTab), { ssr: false });
 const BannersTab = dynamic(() => import('@/components/admin/tabs/BannersTab').then(mod => mod.BannersTab), { ssr: false });
-const CampaignPlannerTab = dynamic(() => import('@/components/admin/tabs/CampaignPlannerTab').then(mod => mod.CampaignPlannerTab), { ssr: false });
 const GoogleAdsTab = dynamic(() => import('@/components/admin/tabs/GoogleAdsTab').then(mod => mod.GoogleAdsTab), { ssr: false });
 const WebAnalyticsTab = dynamic(() => import('@/components/admin/tabs/WebAnalyticsTab').then(mod => mod.WebAnalyticsTab), { ssr: false });
 const MetaAnalyticsTab = dynamic(() => import('@/components/admin/tabs/MetaAnalyticsTab').then(mod => mod.MetaAnalyticsTab), { ssr: false });
@@ -550,10 +549,9 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
       ]
     },
     {
-      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'campaign_planner', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'],
+      id: 'marketing_group', icon: TrendingUp, label: 'Marketing & Analytics', activeKeys: ['marketing', 'google_ads', 'web_analytics', 'meta_analytics', 'banners'],
       roles: ['super_admin', 'finance'],
       subItems: [
-        { id: 'campaign_planner', label: 'AI Campaign Planner' },
         { id: 'banners', label: 'Banners UI/UX' },
         { id: 'marketing', label: 'Marketing & ROAS' },
         { id: 'google_ads', label: 'Google Ads Manager' },
@@ -1101,7 +1099,6 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
             {activeTab === 'affiliates' && <AffiliatesTab />}
 
             {activeTab === 'marketing' && <MarketingTab />}
-            {activeTab === 'campaign_planner' && <CampaignPlannerTab />}
             {activeTab === 'programs' && <ProgramsTab products={products} onRefreshProducts={fetchProducts} />}
             {activeTab === 'banners' && <BannersTab />}
 
