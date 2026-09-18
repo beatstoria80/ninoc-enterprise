@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { BrainCircuit, Download, RefreshCw, Calendar, Target, DollarSign, ListPlus, CheckCircle2 } from 'lucide-react';
+import { BrainCircuit, Download, RefreshCw, Calendar, Target, Wallet, ListPlus, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Helper for formatted IDR
@@ -178,7 +178,7 @@ export function CampaignPlannerTab() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-ink/70 uppercase tracking-wider mb-1 block flex items-center gap-1">
-                    <DollarSign size={12}/> Daily Budget
+                    <Wallet size={12}/> Daily Budget (Rp)
                   </label>
                   <input 
                     type="number" 
