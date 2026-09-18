@@ -599,31 +599,9 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
   return (
     <>
-      {/* PORTRAIT LOCK OVERLAY FOR MOBILE ADMIN */}
-      <div className="md:hidden fixed inset-0 z-[9999] bg-white flex-col items-center justify-center p-8 text-center portrait:flex landscape:hidden print:hidden">
-        <div className="relative w-24 h-24 mb-8">
-          <motion.div
-            animate={{ rotate: 90 }}
-            transition={{ repeat: Infinity, duration: 1.5, repeatDelay: 1, ease: "easeInOut" }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            <div className="w-16 h-24 border-4 border-rose rounded-xl relative">
-              <div className="w-6 h-1 bg-rose/30 rounded-full absolute top-2 left-1/2 -translate-x-1/2" />
-              <div className="w-4 h-4 bg-rose/10 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2" />
-            </div>
-          </motion.div>
-        </div>
-        <h2 className="text-xl font-display font-medium text-ink uppercase tracking-wider mb-3">
-          Putar Perangkat Anda
-        </h2>
-        <p className="text-sm text-ink/70 max-w-[280px] mx-auto leading-relaxed">
-          Admin Dashboard dioptimalkan untuk tampilan lanskap (horizontal).
-          Silakan putar HP Anda untuk pengalaman UI & visibilitas data yang lebih presisi dan elegan.
-        </p>
-      </div>
 
       {/* MOBILE TOP BAR */}
-      <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14 portrait:hidden">
+      <header className="fixed top-0 left-0 right-0 z-[500] bg-white border-b border-gray-100 md:hidden flex items-center justify-between px-4 h-14">
         <div className="flex items-center gap-2">
           <span className="font-display font-medium text-lg italic tracking-tighter text-rose uppercase">NINOC</span>
           <span className="text-[9px] text-gray-300 uppercase tracking-wider">Admin</span>
@@ -638,7 +616,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
 
       {/* MOBILE SLIDE-OVER MENU */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-[600] md:hidden portrait:hidden">
+        <div className="fixed inset-0 z-[600] md:hidden">
           <div className="absolute inset-0 bg-ink/20" onClick={() => setIsMobileMenuOpen(false)} />
           <aside className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-2xl flex flex-col">
             <div className="p-3 border-b border-gray-100 flex items-center justify-between">
@@ -684,7 +662,7 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
         </div>
       )}
 
-      <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden portrait:hidden md:portrait:flex">
+      <main className="h-screen w-full bg-gray-50/50 flex overflow-hidden print:hidden">
 
         {/* DESKTOP SIDEBAR */}
         <aside className="hidden md:flex w-64 flex-col bg-white border-r border-gray-100 z-10 shrink-0 h-full overflow-y-auto custom-scrollbar">

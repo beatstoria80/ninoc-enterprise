@@ -6,6 +6,7 @@ import { Activity, Users, MousePointerClick, Search, AlertTriangle, AlertCircle,
 import { type WebAnalyticsData } from '@/types/analytics';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { LandscapeChartPreview } from '@/components/admin/ui/LandscapeChartPreview';
 
 export function WebAnalyticsTab() {
   const [loading, setLoading] = useState(true);
@@ -362,6 +363,34 @@ export function WebAnalyticsTab() {
                       <span className="flex items-center gap-1 text-amber-700">
                         <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Pageviews
                       </span>
+                      <LandscapeChartPreview title="Tren Pengunjung & Pageviews" subtitle={`GA4 — ${getTimeLabel()}`}>
+                        <div className="w-full h-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={data.ga4.trend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                              <defs>
+                                <linearGradient id="colorVisLs" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.35}/>
+                                  <stop offset="95%" stopColor="#4f46e5" stopOpacity={0.0}/>
+                                </linearGradient>
+                                <linearGradient id="colorPvLs" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.25}/>
+                                  <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0}/>
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                              <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                              <YAxis tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                              <Tooltip 
+                                contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                                labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                                formatter={(value: any, name: any) => [Number(value).toLocaleString(), name === 'visitors' ? 'Pengunjung Aktif' : 'Pageviews']}
+                              />
+                              <Area type="monotone" dataKey="visitors" stroke="#4f46e5" strokeWidth={2.5} fillOpacity={1} fill="url(#colorVisLs)" name="visitors" />
+                              <Area type="monotone" dataKey="pageviews" stroke="#f59e0b" strokeWidth={2} fillOpacity={1} fill="url(#colorPvLs)" name="pageviews" />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </LandscapeChartPreview>
                     </div>
                   </div>
                   <div className="h-[260px] w-full">
@@ -630,6 +659,38 @@ export function WebAnalyticsTab() {
                       <span className="flex items-center gap-1.5 text-sky-700">
                         <span className="w-2.5 h-2.5 rounded-full bg-sky-500 inline-block"></span> Impressions
                       </span>
+                      <LandscapeChartPreview title="Tren Performa GSC" subtitle={`Google Search Console — ${getTimeLabel()}`}>
+                        <div className="w-full h-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            {data.gsc.trend && data.gsc.trend.length > 0 ? (
+                              <AreaChart data={data.gsc.trend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                <defs>
+                                  <linearGradient id="colorClicksLs" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#059669" stopOpacity={0.35}/>
+                                    <stop offset="95%" stopColor="#059669" stopOpacity={0.0}/>
+                                  </linearGradient>
+                                  <linearGradient id="colorImpLs" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="5%" stopColor="#0284c7" stopOpacity={0.25}/>
+                                    <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0}/>
+                                  </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                                <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                                <YAxis tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                                <Tooltip 
+                                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                                  labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                                  formatter={(value: any, name: any) => [Number(value).toLocaleString(), name === 'clicks' ? 'Total Clicks' : 'Impressions']}
+                                />
+                                <Area type="monotone" dataKey="clicks" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#colorClicksLs)" name="clicks" />
+                                <Area type="monotone" dataKey="impressions" stroke="#0284c7" strokeWidth={2} fillOpacity={1} fill="url(#colorImpLs)" name="impressions" />
+                              </AreaChart>
+                            ) : (
+                              <div className="h-full flex items-center justify-center text-xs text-ink/50">Grafik tidak tersedia</div>
+                            )}
+                          </ResponsiveContainer>
+                        </div>
+                      </LandscapeChartPreview>
                     </div>
                   </div>
 
