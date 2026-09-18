@@ -36,30 +36,39 @@ export function CampaignPlannerTab() {
           name: 'Broad_Prospecting_Auto',
           budget: broadBudget,
           audience: primaryAudience,
+          location: 'Indonesia',
+          ageMin: 18,
+          ageMax: 34,
           placement: 'Advantage+',
           ads: [
-            { name: 'AD01_Main_Video', format: 'Video', copy: 'Promo utama diskon 30%.' },
-            { name: 'AD02_Carousel_Catalog', format: 'Carousel', copy: 'Koleksi terlaris NINOC.' }
+            { name: 'AD01_Main_Video', title: 'Promo utama diskon 30%', copy: 'Diskon 30% all item untuk streetwear lovers.', link: 'https://ninoc.store', cta: 'SHOP_NOW' },
+            { name: 'AD02_Carousel_Catalog', title: 'Koleksi terlaris NINOC', copy: 'Kaos yang paling sering sold out.', link: 'https://ninoc.store/collections/best-seller', cta: 'SHOP_NOW' }
           ]
         },
         {
           id: 'ADSET_02_NICHE',
           name: 'Niche_Stack_Interests',
           budget: nicheBudget,
-          audience: 'Urban, Fashion, Music (18-28)',
-          placement: 'Manual (Reels & Feed)',
+          audience: 'Urban, Fashion, Music',
+          location: 'Jakarta, Bandung, Surabaya',
+          ageMin: 18,
+          ageMax: 28,
+          placement: 'Manual Feed Reels',
           ads: [
-            { name: 'AD03_FitCheck_Reels', format: 'Video 9:16', copy: 'Review kaos & Fit check OOTD.' }
+            { name: 'AD03_FitCheck_Reels', title: 'Review kaos & Fit check OOTD', copy: 'Kaos oversized paling pas buat nongkrong.', link: 'https://ninoc.store', cta: 'SHOP_NOW' }
           ]
         },
         {
           id: 'ADSET_03_RETARGETING',
           name: 'Retargeting_30D_VC_ATC',
           budget: rtBudget,
-          audience: 'VC & ATC 30D, Exclude Purch 30D',
+          audience: 'VC_30D + ATC_30D Exclude Purchase_30D',
+          location: 'Indonesia',
+          ageMin: 18,
+          ageMax: 34,
           placement: 'Advantage+',
           ads: [
-            { name: 'AD04_DPA_Reminder', format: 'Dynamic', copy: 'Masih di keranjang? Checkout sekarang.' }
+            { name: 'AD04_DPA_Reminder', title: 'Masih di keranjang?', copy: 'Checkout sekarang mumpung ada stok.', link: 'https://ninoc.store/cart', cta: 'SHOP_NOW' }
           ]
         }
       ];
@@ -71,28 +80,40 @@ export function CampaignPlannerTab() {
   };
 
   const handleDownloadCSV = () => {
-    // Generate CSV for Meta Bulk Import
+    // Generate CSV for Meta Bulk Import matching user specification exactly
     const headers = [
       'Campaign Name', 'Campaign Objective', 'Ad Set Name', 'Ad Set Daily Budget',
-      'Location', 'Detailed Targeting', 'Placement', 'Ad Name', 'Ad Format', 'Body', 'URL Tags'
+      'Location', 'Age Min', 'Age Max', 'Detailed Targeting', 'Placement', 
+      'Ad Name', 'Title', 'Body', 'Link', 'Call To Action', 'URL Tags'
     ];
     
+    // Helper to escape CSV strings: wrap in quotes and escape internal quotes
+    const escapeCSV = (str: any) => {
+      if (str === null || str === undefined) return '""';
+      const safeStr = String(str).replace(/"/g, '""');
+      return `"${safeStr}"`;
+    };
+
     let csvContent = headers.join(',') + '\n';
     
     adSets.forEach(set => {
       set.ads.forEach((ad: any) => {
         const row = [
-          `"${campaignName}"`,
-          `"${objective}"`,
-          `"${set.name}"`,
-          `${set.budget}`,
-          `"Indonesia"`,
-          `"${set.audience}"`,
-          `"${set.placement}"`,
-          `"${ad.name}"`,
-          `"${ad.format}"`,
-          `"${ad.copy}"`,
-          `"utm_source=meta&utm_campaign=${campaignName}"`
+          escapeCSV(campaignName),
+          escapeCSV(objective),
+          escapeCSV(set.name),
+          escapeCSV(set.budget),
+          escapeCSV(set.location),
+          escapeCSV(set.ageMin),
+          escapeCSV(set.ageMax),
+          escapeCSV(set.audience),
+          escapeCSV(set.placement),
+          escapeCSV(ad.name),
+          escapeCSV(ad.title),
+          escapeCSV(ad.copy),
+          escapeCSV(ad.link),
+          escapeCSV(ad.cta),
+          escapeCSV(`utm_source=meta&utm_campaign=${campaignName.toLowerCase().replace(/\s+/g, '_')}`)
         ];
         csvContent += row.join(',') + '\n';
       });
@@ -271,11 +292,11 @@ export function CampaignPlannerTab() {
                           {set.ads.map((ad: any, aIdx: number) => (
                             <div key={aIdx} className="bg-indigo-50/50 border border-indigo-100 rounded p-2.5 flex items-start gap-3">
                               <div className="bg-indigo-100 text-indigo-600 font-bold text-[10px] px-1.5 py-0.5 rounded mt-0.5">
-                                {ad.format}
+                                {ad.cta || 'AD'}
                               </div>
                               <div>
                                 <p className="text-xs font-semibold text-ink">{ad.name}</p>
-                                <p className="text-[11px] text-ink/70 mt-0.5">{ad.copy}</p>
+                                <p className="text-[11px] text-ink/70 mt-0.5">{ad.title} - {ad.copy}</p>
                               </div>
                             </div>
                           ))}
