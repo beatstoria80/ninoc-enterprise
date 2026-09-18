@@ -7,6 +7,7 @@ import type { MetaAnalyticsData } from '@/services/meta/types';
 import { cn } from '@/lib/utils';
 import { MetaAdsTable } from './MetaAdsTable';
 import { getCampaignTrendAction } from '@/actions/metaAnalytics';
+import { LandscapeChartPreview } from '@/components/admin/ui/LandscapeChartPreview';
 
 interface AdsAnalyticsViewProps {
   data: MetaAnalyticsData;
@@ -253,6 +254,66 @@ export function AdsAnalyticsView({ data, timeFilter }: AdsAnalyticsViewProps) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-3">
           <h3 className="text-xs font-bold text-ink flex items-center gap-2">
             <TrendingUp size={14} className="text-blue-600" /> Tren Performa Harian ({getTimeLabel()})
+            {trendData && trendData.length > 0 && (
+              <LandscapeChartPreview title="Tren Performa Harian" subtitle={`Meta Ads — ${getTimeLabel()}`}>
+                <div className="w-full h-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ComposedChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorSpendLs" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.4}/>
+                          <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                      <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 10, fill: '#64748b' }} 
+                        tickLine={false} 
+                        axisLine={{ stroke: '#e2e8f0' }} 
+                        tickFormatter={(val) => val.split('-').slice(1).join('/')} 
+                      />
+                      <YAxis 
+                        yAxisId="left" 
+                        tick={{ fontSize: 10, fill: '#64748b' }} 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)} 
+                      />
+                      <YAxis 
+                        yAxisId="right" 
+                        orientation="right" 
+                        tick={{ fontSize: 10, fill: '#64748b' }} 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tickFormatter={(val) => Intl.NumberFormat('id-ID', { notation: 'compact', maximumFractionDigits: 1 }).format(val)}
+                      />
+                      <RechartsTooltip 
+                        contentStyle={{ backgroundColor: '#fff', borderRadius: '8px', fontSize: '11px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', border: '1px solid rgba(0,0,0,0.05)', padding: '10px' }}
+                        formatter={(value: any, name: any) => {
+                          if (name === "spend" || name === "cpa" || name === "cpm") return [`Rp ${new Intl.NumberFormat('id-ID').format(value)}`, name.toUpperCase()];
+                          if (name === "roas") return [`${Number(value).toFixed(2)}x`, 'ROAS'];
+                          if (name === "ctr") return [`${Number(value).toFixed(2)}%`, 'CTR'];
+                          if (name === "conversions") return [value.toLocaleString('id-ID'), 'Pembelian'];
+                          if (name === "impressions") return [value.toLocaleString('id-ID'), 'Impressions'];
+                          if (name === "clicks") return [value.toLocaleString('id-ID'), 'Clicks'];
+                          return [value, name];
+                        }}
+                        labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                      />
+                      {activeMetrics.spend && <Area yAxisId="left" type="monotone" dataKey="spend" stroke="#f43f5e" strokeWidth={2} fill="url(#colorSpendLs)" name="spend" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                      {activeMetrics.conversions && <Line yAxisId="right" type="monotone" dataKey="conversions" stroke="#10b981" strokeWidth={2} dot={false} name="conversions" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                      {activeMetrics.impressions && <Line yAxisId="left" type="monotone" dataKey="impressions" stroke="#0ea5e9" strokeWidth={2} dot={false} name="impressions" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                      {activeMetrics.clicks && <Line yAxisId="left" type="monotone" dataKey="clicks" stroke="#f59e0b" strokeWidth={2} dot={false} name="clicks" activeDot={{ r: 5, strokeWidth: 0 }} isAnimationActive={false} />}
+                      {activeMetrics.roas && <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#14b8a6" strokeWidth={2} dot={false} name="roas" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                      {activeMetrics.cpa && <Line yAxisId="left" type="monotone" dataKey="cpa" stroke="#f97316" strokeWidth={2} dot={false} name="cpa" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                      {activeMetrics.cpm && <Line yAxisId="left" type="monotone" dataKey="cpm" stroke="#6366f1" strokeWidth={2} dot={false} name="cpm" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                      {activeMetrics.ctr && <Line yAxisId="right" type="monotone" dataKey="ctr" stroke="#a855f7" strokeWidth={2} dot={false} name="ctr" activeDot={{ r: 5, strokeWidth: 0 }} strokeDasharray="5 5" isAnimationActive={false} />}
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                </div>
+              </LandscapeChartPreview>
+            )}
           </h3>
           <div className="flex items-center gap-2">
             <select 
