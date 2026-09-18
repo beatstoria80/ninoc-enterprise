@@ -28,6 +28,19 @@ interface LandscapeChartPreviewProps {
  */
 export function LandscapeChartPreview({ title, subtitle, children }: LandscapeChartPreviewProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      if (isOpen) {
+        document.body.style.overflow = '';
+      }
+    };
+  }, [isOpen]);
 
   const handleOpen = useCallback(() => {
     setIsOpen(true);
@@ -53,7 +66,7 @@ export function LandscapeChartPreview({ title, subtitle, children }: LandscapeCh
       </button>
 
       {/* Fullscreen Landscape Overlay */}
-      {typeof window !== 'undefined' && createPortal(
+      {mounted && typeof window !== 'undefined' && createPortal(
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -71,7 +84,9 @@ export function LandscapeChartPreview({ title, subtitle, children }: LandscapeCh
                   // Swap width/height via transform to simulate landscape
                   width: '100vh',
                   height: '100vw',
-                  transform: 'rotate(90deg)',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%) rotate(90deg)',
                   transformOrigin: 'center center',
                 }}
               >
