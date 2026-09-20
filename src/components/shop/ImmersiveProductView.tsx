@@ -475,18 +475,21 @@ export default function ImmersiveProductView({
                <div className="w-px h-3 bg-ink/10" />
                <button 
                  onClick={async () => {
+                   const cleanUrl = window.location.origin + window.location.pathname;
+                   const shareText = `Cek ${product.name} di NINOC!`;
+                   
                    if (navigator.share) {
                      try {
                        await navigator.share({
-                         title: product.name,
-                         text: `Cek ${product.name} di NINOC B2B!`,
-                         url: window.location.href,
+                         title: 'NINOC',
+                         text: shareText,
+                         url: cleanUrl,
                        });
                      } catch (err) {
                        console.error('Error sharing:', err);
                      }
                    } else {
-                     navigator.clipboard.writeText(window.location.href);
+                     navigator.clipboard.writeText(cleanUrl);
                      alert('Link disalin ke clipboard!');
                    }
                  }}
