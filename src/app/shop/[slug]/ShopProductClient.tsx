@@ -376,7 +376,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => setActiveInfoTab(activeInfoTab === 'specs' ? null : 'specs')}
-                      className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
+                      className={`text-[9px] md:text-xs lg:text-[10px] font-bold md:font-medium uppercase tracking-[0.2em] md:tracking-[0.3em] transition-colors flex items-center gap-1 ${
                         activeInfoTab === 'specs' ? 'text-ink' : 'text-ink/50 hover:text-ink/50'
                       }`}
                     >
@@ -385,7 +385,7 @@ export default function ShopProductClient({ slug, productSchema, dict, initialPr
                     <span className="text-ink/10">|</span>
                     <button
                       onClick={() => setActiveInfoTab(activeInfoTab === 'measurement' ? null : 'measurement')}
-                      className={`text-sm md:text-xs lg:text-[10px] font-medium uppercase tracking-[0.3em] transition-colors flex items-center gap-1 ${
+                      className={`text-[9px] md:text-xs lg:text-[10px] font-bold md:font-medium uppercase tracking-[0.2em] md:tracking-[0.3em] transition-colors flex items-center gap-1 ${
                         activeInfoTab === 'measurement' ? 'text-ink' : 'text-ink/50 hover:text-ink/50'
                       }`}
                     >
