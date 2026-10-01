@@ -1273,7 +1273,7 @@ export function OrdersTab({
                                       <div className="mt-4">
                                         <button 
                                           onClick={(e) => { e.stopPropagation(); handlePrintSingleLabel(order); }}
-                                          disabled={order.status === 'pending' || order.payment_status === 'pending'}
+                                          disabled={order.status === 'pending' || order.payment_status === 'pending' || order.status === 'cancelled'}
                                           className="w-full flex justify-center items-center gap-2 bg-ink text-white py-2.5 rounded-sm hover:bg-ink/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-[10px] font-medium uppercase tracking-widest"
                                         >
                                           <Printer size={12} />
