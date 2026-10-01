@@ -148,7 +148,7 @@ export default async function SupplierLogisticsOrderDetail({ params }: { params:
           )}
           {hasTrackingLabel && (
             <div className="p-2 flex items-center">
-              <PrintWaybillButton />
+              <PrintWaybillButton disabled={orderData.status === OrderStatus.CANCELLED} />
             </div>
           )}
         </div>
