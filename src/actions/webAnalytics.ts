@@ -351,10 +351,12 @@ export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId
 
       const fetchGsc = async (bodyObj: any) => {
         try {
+          // Always request "fresh" data (dataState: 'all') to prevent empty 24h/recent queries
+          const payload = { ...bodyObj, dataState: 'all' };
           const res = await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(siteUrl)}/searchAnalytics/query`, {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyObj)
+            body: JSON.stringify(payload)
           });
           const data = await res.json();
           if (data.error) throw new Error(data.error.message || data.error.status);
