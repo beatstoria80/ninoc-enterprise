@@ -18,6 +18,7 @@ export function WebAnalyticsTab() {
   const [productSearchQuery, setProductSearchQuery] = useState('');
   const [suppliers, setSuppliers] = useState<{id: string, name: string}[]>([]);
   const [selectedSupplierId, setSelectedSupplierId] = useState<string>('all');
+  const [lastFetchedAt, setLastFetchedAt] = useState<Date | null>(null);
 
   const getTimeLabel = () => {
     switch (timeFilter) {
@@ -99,6 +100,7 @@ export function WebAnalyticsTab() {
       
       if (result.success) {
         setData(result.data);
+        setLastFetchedAt(new Date());
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
@@ -730,7 +732,7 @@ export function WebAnalyticsTab() {
 
                 {/* Tabbed Table: Queries, Pages, Countries, Devices */}
                 <div className="bg-white border border-ink/10 rounded-xl overflow-hidden shadow-sm flex flex-col">
-                  <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex items-center justify-between">
+                  <div className="p-3 border-b border-ink/10 bg-ink/[0.015] flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap items-center gap-1 bg-ink/5 p-1 rounded-lg text-[11px] font-bold">
                       <button
                         onClick={() => setGscTableTab('queries')}
@@ -768,6 +770,24 @@ export function WebAnalyticsTab() {
                       >
                         Perangkat
                       </button>
+                    </div>
+                    {/* Timestamp + GSC Link */}
+                    <div className="flex items-center gap-2">
+                      {lastFetchedAt && (
+                        <span className="flex items-center gap-1 text-[10px] text-ink/40 font-medium">
+                          <Clock size={10} className="text-ink/30" />
+                          Data: {lastFetchedAt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
+                      )}
+                      <a
+                        href="https://search.google.com/search-console/performance/search-analytics?resource_id=https%3A%2F%2Fninoc.store%2F"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2 py-1 rounded-md transition-all"
+                      >
+                        <ArrowUpRight size={10} />
+                        Buka GSC
+                      </a>
                     </div>
                   </div>
 

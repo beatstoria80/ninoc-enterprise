@@ -367,7 +367,7 @@ export async function getWebAnalyticsData(timeFilter: string = '28d', supplierId
 
       const [gscTotal, gscQueries, gscTrend, gscPages, gscCountries, gscDev] = await Promise.all([
         fetchGsc({ startDate: startStr, endDate: endStr }),
-        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['query'], rowLimit: 10 }),
+        fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['query'], rowLimit: 25 }),
         fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['date'] }),
         fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['page'], rowLimit: 8 }),
         fetchGsc({ startDate: startStr, endDate: endStr, dimensions: ['country'], rowLimit: 6 }),
