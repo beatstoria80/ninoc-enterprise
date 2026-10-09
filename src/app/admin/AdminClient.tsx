@@ -1340,9 +1340,18 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                       <h2 className="text-lg font-medium text-gray-900">{selectedOrder.id}</h2>
                     </div>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => {
-                        setIsPrintPreviewOpen(true);
-                      }} className="p-2 bg-black text-white hover:bg-rose rounded-lg flex items-center gap-2 transition-colors">
+                      <button 
+                        onClick={() => {
+                          setIsPrintPreviewOpen(true);
+                        }} 
+                        disabled={selectedOrder.status === 'cancelled'}
+                        className={cn(
+                          "p-2 rounded-lg flex items-center gap-2 transition-colors",
+                          selectedOrder.status === 'cancelled' 
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+                            : "bg-black text-white hover:bg-rose"
+                        )}
+                      >
                         <Printer size={14} />
                         <span className="text-[10px] uppercase font-medium tracking-widest hidden sm:block">Print Resi</span>
                       </button>
@@ -1537,7 +1546,13 @@ export default function AdminDashboard({ initialUser }: { initialUser: any }) {
                                 executePrint(order, false);
                               }
                             }}
-                            className="w-full py-1.5 bg-black text-white font-medium text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 hover:bg-rose transition-colors"
+                            disabled={selectedOrder.status === 'cancelled'}
+                            className={cn(
+                              "w-full py-1.5 font-medium text-xs uppercase tracking-widest rounded flex justify-center items-center gap-2 transition-colors",
+                              selectedOrder.status === 'cancelled'
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                : "bg-black text-white hover:bg-rose"
+                            )}
                           >
                             <Printer size={16} /> Print to Thermal Printer
                           </button>
