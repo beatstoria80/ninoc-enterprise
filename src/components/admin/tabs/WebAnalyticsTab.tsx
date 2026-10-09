@@ -697,36 +697,36 @@ export function WebAnalyticsTab() {
                   </div>
 
                   <div className="h-[340px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
                       {data.gsc.trend && data.gsc.trend.length > 0 ? (
-                        <AreaChart data={data.gsc.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                          <defs>
-                            <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#059669" stopOpacity={0.35}/>
-                              <stop offset="95%" stopColor="#059669" stopOpacity={0.0}/>
-                            </linearGradient>
-                            <linearGradient id="colorImp" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="5%" stopColor="#0284c7" stopOpacity={0.25}/>
-                              <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0}/>
-                            </linearGradient>
-                          </defs>
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
-                          <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
-                          <YAxis tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
-                          <Tooltip 
-                            contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
-                            labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
-                            formatter={(value: any, name: any) => [Number(value).toLocaleString(), name === 'clicks' ? 'Total Clicks' : 'Impressions']}
-                          />
-                          <Area type="monotone" dataKey="clicks" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#colorClicks)" name="clicks" />
-                          <Area type="monotone" dataKey="impressions" stroke="#0284c7" strokeWidth={2} fillOpacity={1} fill="url(#colorImp)" name="impressions" />
-                        </AreaChart>
+                        <ResponsiveContainer width="100%" height="100%">
+                          <AreaChart data={data.gsc.trend} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <defs>
+                              <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#059669" stopOpacity={0.35}/>
+                                <stop offset="95%" stopColor="#059669" stopOpacity={0.0}/>
+                              </linearGradient>
+                              <linearGradient id="colorImp" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="5%" stopColor="#0284c7" stopOpacity={0.25}/>
+                                <stop offset="95%" stopColor="#0284c7" stopOpacity={0.0}/>
+                              </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(0,0,0,0.06)" />
+                            <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={{ stroke: '#e2e8f0' }} tickFormatter={(val) => val.split('-').slice(1).join('/')} />
+                            <YAxis tick={{ fontSize: 11, fill: '#64748b' }} tickLine={false} axisLine={false} />
+                            <Tooltip 
+                              contentStyle={{ backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', fontSize: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
+                              labelStyle={{ fontWeight: 'bold', color: '#1e293b', marginBottom: '4px' }}
+                              formatter={(value: any, name: any) => [Number(value).toLocaleString(), name === 'clicks' ? 'Total Clicks' : 'Impressions']}
+                            />
+                            <Area type="monotone" dataKey="clicks" stroke="#059669" strokeWidth={2.5} fillOpacity={1} fill="url(#colorClicks)" name="clicks" />
+                            <Area type="monotone" dataKey="impressions" stroke="#0284c7" strokeWidth={2} fillOpacity={1} fill="url(#colorImp)" name="impressions" />
+                          </AreaChart>
+                        </ResponsiveContainer>
                       ) : (
                         <div className="h-full flex items-center justify-center text-xs text-ink/50 bg-ink/[0.01] rounded-lg border border-dashed border-ink/10">
                           Grafik tren GSC belum tersedia untuk periode ini
                         </div>
                       )}
-                    </ResponsiveContainer>
                   </div>
                 </div>
 
