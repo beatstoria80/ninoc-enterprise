@@ -43,6 +43,7 @@ export function useProductForm(
     price_tag: '',
     badge_text: '',
     variant_label: '',
+    display_order: 999,
     variants: [] as { id: string; size: string; color: string; stock_quantity: number; sku?: string }[]
   });
 
@@ -106,6 +107,7 @@ export function useProductForm(
         price_tag: product.price_tag || '',
         badge_text: product.badge_text || '',
         variant_label: product.variant_label || '',
+        display_order: typeof product.display_order === 'number' ? product.display_order : 999,
         variants: product.variants?.length ? product.variants.map(v => {
           const parsedStock = typeof v.stock_quantity === 'number' && !isNaN(v.stock_quantity) 
             ? v.stock_quantity 
@@ -152,6 +154,7 @@ export function useProductForm(
         price_tag: '',
         badge_text: '',
         variant_label: '',
+        display_order: 999,
         variants: []
       } as any);
     }
@@ -311,6 +314,7 @@ export function useProductForm(
         price_tag: productForm.price_tag || null,
         badge_text: productForm.badge_text || null,
         variant_label: productForm.variant_label || null,
+        display_order: parseInt(String((productForm as any).display_order)) || 999,
         updated_at: new Date().toISOString()
       };
 

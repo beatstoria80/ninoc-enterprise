@@ -85,7 +85,6 @@ export default function LogbookDetailClient({
       if (navigator.share) {
         await navigator.share({
           title: `${title} | NINOC Logbook Studio`,
-          text: excerpt,
           url: window.location.href,
         });
       } else {

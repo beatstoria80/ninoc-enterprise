@@ -68,6 +68,7 @@ export interface Product {
   is_perishable?: boolean;
   departments?: Department | null;
   warehouses?: Warehouse | null;
+  display_order?: number;
   created_at: string;
   variant_label?: string | null;
   supplier_id?: string | null;

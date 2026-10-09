@@ -68,6 +68,20 @@ export async function GET() {
       const totalStock = product.stock || variantStock;
       const availability = totalStock > 0 ? 'in stock' : 'out of stock';
 
+      // Add perspective images if they exist
+      const additionalImages: string[] = [
+        product.perspective1,
+        product.perspective2,
+        product.perspective3,
+        product.perspective4
+      ].filter((img): img is string => typeof img === 'string' && img.trim().length > 0)
+       .map(img => img.startsWith('http') ? img : `${appUrl}${img}`);
+
+      let additionalImageTags = '';
+      for (const extraImg of additionalImages) {
+        additionalImageTags += `\n      <g:additional_image_link>${escapeXml(extraImg)}</g:additional_image_link>`;
+      }
+
       xmlItems += `
     <item>
       <g:id>${escapeXml(String(product.id))}</g:id>
@@ -75,7 +89,7 @@ export async function GET() {
       <g:description>${escapeXml(product.description || product.name || '')}</g:description>
       <g:link>${escapeXml(link)}</g:link>
       <g:mobile_link>${escapeXml(link)}</g:mobile_link>
-      <g:image_link>${escapeXml(imageLink)}</g:image_link>
+      <g:image_link>${escapeXml(imageLink)}</g:image_link>${additionalImageTags}
       <g:brand>NINOC</g:brand>
       <g:condition>new</g:condition>
       <g:availability>${availability}</g:availability>

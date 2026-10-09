@@ -31,6 +31,8 @@ export interface ShopProduct {
   bundle_min_qty?: number | null;
   bundle_discount_amount?: number | null;
   specifications?: Array<{ label: string; value: string }> | null;
+  display_order?: number;
+  created_at?: string;
   variants?: Array<{
     id?: string;
     size?: string;
@@ -262,7 +264,14 @@ export function useShopFilters(initialProducts: ShopProduct[], initialCategory: 
           const viewsB = allViews?.[b.slug] ?? 0;
           return viewsB - viewsA;
         }
-        return 0;
+        // Default ('newest'): sort by display_order first (lower = top), then by created_at desc
+        const orderA = a.display_order ?? 999;
+        const orderB = b.display_order ?? 999;
+        if (orderA !== orderB) return orderA - orderB;
+        // Tie-break by newest created_at
+        const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+        const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+        return dateB - dateA;
       });
   }, [initialProducts, selectedCategory, searchQuery, subCategory, selectedSize, selectedColor, priceRange, sortBy, allViews]);
 

@@ -200,7 +200,7 @@ export function ProductModal(props: any) {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold">Harga Final (IDR)</label>
                         <input
@@ -211,9 +211,19 @@ export function ProductModal(props: any) {
                           className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 font-semibold text-ink"
                         />
                       </div>
+                      <div>
+                        <label className="block text-[10px] uppercase tracking-wider text-gray-500 mb-1 font-semibold" title="Lebih kecil angka, semakin di atas urutannya.">
+                          Display Order (Catalog)
+                        </label>
+                        <input
+                          type="number"
+                          value={productForm.display_order ?? 999}
+                          onChange={(e) => setProductForm({ ...productForm, display_order: parseInt(e.target.value) || 0 })}
+                          placeholder="999"
+                          className="w-full px-2 py-1.5 border border-gray-200 rounded-lg text-xs focus:outline-none focus:border-rose/50 font-semibold text-ink"
+                        />
+                      </div>
                     </div>
-
-
 
                     <div className="grid grid-cols-1 gap-3">
                       <div>

@@ -3,7 +3,6 @@ import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
 
 import "./globals.css";
 import Script from "next/script";
-import NextTopLoader from 'nextjs-toploader';
 import ClientPlatformManager from "@/components/ClientPlatformManager";
 import BrandProvider from "@/components/BrandProvider";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
@@ -297,7 +296,6 @@ export default async function RootLayout({
         <Suspense fallback={null}>
           <MetaPixel />
         </Suspense>
-        <NextTopLoader color="#e8527a" showSpinner={false} height={3} speed={100} crawlSpeed={100} easing="ease-in-out" />
         <GoogleAnalytics gaId="AW-18363665188" />
         {process.env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />}
         {process.env.NEXT_PUBLIC_GTM_ID && <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID} />}

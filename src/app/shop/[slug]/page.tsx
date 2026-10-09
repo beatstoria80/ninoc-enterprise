@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { data: product } = await supabase
     .from('products')
-    .select('name, description, price, image_url, category, price_tag')
+    .select('name, description, price, image_url, category, price_tag, perspective1, perspective2, perspective3, perspective4')
     .eq('slug', slug)
     .single();
 
@@ -32,18 +32,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? product.description.slice(0, 160)
     : `Beli ${product.name} dari NINOC — Premium Archival Garment Studio. IDR ${product.price?.toLocaleString('id-ID')}.`;
 
+  const ogImages = [product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4]
+    .filter((img): img is string => typeof img === 'string' && img.length > 0)
+    .map(url => ({
+      url,
+      width: 1080,
+      height: 1080,
+      alt: product.name
+    }));
+
+  const twitterImages = [product.image_url, product.perspective1, product.perspective2, product.perspective3, product.perspective4]
+    .filter((img): img is string => typeof img === 'string' && img.length > 0);
+
   return {
     title: `${product.name} — Premium Archival Garment`,
     description,
     openGraph: {
       title: `${product.name} | NINOC STORE`,
       description,
-      images: product.image_url ? [{ 
-        url: product.image_url, 
-        width: 1080,
-        height: 1080,
-        alt: product.name 
-      }] : [],
+      images: ogImages.length > 0 ? ogImages : [],
       type: 'website',
       siteName: 'NINOC STORE',
     },
@@ -51,7 +58,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: `${product.name} | NINOC STORE`,
       description,
-      images: product.image_url ? [product.image_url] : [],
+      images: twitterImages.length > 0 ? twitterImages : [],
     },
     appLinks: {
       web: {
@@ -142,12 +149,20 @@ export default async function ShopProductPage({ params }: Props) {
     ? product.description.slice(0, 160)
     : `Beli ${product.name} dari NINOC — Premium Archival Garment Studio. IDR ${product.price?.toLocaleString('id-ID')}.`;
 
+  const imagesForSchema = [
+    product.image_url,
+    product.perspective1,
+    product.perspective2,
+    product.perspective3,
+    product.perspective4
+  ].filter((img): img is string => typeof img === 'string' && img.length > 0);
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
     description,
-    image: product.image_url ? [product.image_url] : [],
+    image: imagesForSchema.length > 0 ? imagesForSchema : [],
     url: `${BASE_URL}/shop/${slug}`,
     sku: slug,
     category: product.category || 'Apparel',
@@ -171,10 +186,12 @@ export default async function ShopProductPage({ params }: Props) {
       hasMerchantReturnPolicy: {
         '@type': 'MerchantReturnPolicy',
         applicableCountry: 'ID',
+        returnPolicyCountry: 'ID',
         returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
-        merchantReturnDays: 2,
+        merchantReturnDays: 7,
         returnMethod: 'https://schema.org/ReturnByMail',
-        returnFees: 'https://schema.org/FreeReturn'
+        returnFees: 'https://schema.org/FreeReturn',
+        returnPolicyUrl: `${BASE_URL}/refund-policy`
       },
       shippingDetails: {
         '@type': 'OfferShippingDetails',

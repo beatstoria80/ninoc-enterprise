@@ -149,6 +149,11 @@ export function AllProductsView({
                       B2B: {product.suppliers?.name || 'Supplier'}
                     </div>
                   )}
+                  {product.display_order !== undefined && product.display_order !== 999 && (
+                    <div className="w-fit px-2 py-1 bg-ink text-white text-[9px] uppercase tracking-wider rounded shadow-sm font-bold flex items-center gap-1">
+                      Rank: #{product.display_order}
+                    </div>
+                  )}
 
                   {product.is_featured && (
                     <div className="w-fit px-2 py-1 bg-rose text-white text-[9px] uppercase tracking-wider rounded shadow-sm">

@@ -39,18 +39,13 @@ export const InteractiveMascotVideo: React.FC<InteractiveMascotVideoProps> = ({
       style={{ touchAction: 'none', ...style }}
     >
       <div className="relative w-full h-full flex items-center justify-center bg-transparent md:bg-[#e3e4e7]">
-        {!isMounted ? (
-          // Server-Side Rendering Fallback: Menghindari hydration mismatch dengan tidak memuat <video> desktop yang berat
-          <div className="absolute inset-0 w-full h-full md:hidden">
-            <MascotMobile config={config} />
-          </div>
-        ) : isMobile ? (
-          // Kontainer Video Mobile: Tampil secara instan di HP, tidak pernah mendownload video 38MB
-          <div className="absolute inset-0 w-full h-full">
-            <MascotMobile config={config} />
-          </div>
-        ) : (
-          // Kontainer Video Desktop: Tampil secara instan di PC/Laptop/Tablet (768px ke atas)
+        {/* Kontainer Video Mobile: Tampil secara instan di HP, tidak pernah mendownload video 38MB */}
+        <div className={`absolute inset-0 w-full h-full ${!isMounted ? 'md:hidden' : (isMobile ? 'block' : 'hidden')}`}>
+          <MascotMobile config={config} />
+        </div>
+        
+        {/* Kontainer Video Desktop: Tampil secara instan di PC/Laptop/Tablet (768px ke atas) */}
+        {isMounted && !isMobile && (
           <div className="relative w-full h-full flex items-center justify-center bg-[#e3e4e7]">
             <MascotDesktop config={config} pointerTracker={pointerTracker} onLoaded={onLoaded} />
           </div>
