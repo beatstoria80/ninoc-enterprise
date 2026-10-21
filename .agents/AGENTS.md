@@ -23,6 +23,12 @@ When moving to production, always ensure the following environment variables are
 ## 2. Database & Supabase Configuration
 - Before going live, ensure all Postgres database migrations (`supabase/migrations/*.sql`) have been pushed to the production database.
 - **CRITICAL - RLS Policies**: Ensure Row Level Security (RLS) policies are safe. NEVER directly query `auth.users` in policies without a `SECURITY DEFINER` function, as this causes `permission denied for table users` errors for `authenticated` users. Always use `auth.jwt()->'user_metadata'` or check against a public table (like `admin_roles` or `admin_users`).
+- **CRITICAL - Supabase Data API Grants (Post-October 30 Rules)**: Supabase no longer automatically grants Data API permissions to new tables in the public schema. When creating any new table in a migration, you MUST explicitly include grants:
+  ```sql
+  GRANT SELECT ON public.<table_name> TO anon;
+  GRANT SELECT, INSERT, UPDATE, DELETE ON public.<table_name> TO authenticated;
+  GRANT ALL ON public.<table_name> TO service_role;
+  ```
 - Make sure webhooks and Edge Functions inside Supabase point to the production API (e.g., Midtrans webhooks, Biteship webhooks).
 
 ## 3. UI/UX and Testing Code
