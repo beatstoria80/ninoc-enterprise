@@ -125,7 +125,7 @@ export default function GlobalCursor() {
           width: isHovering ? 48 : 10,
           height: isHovering ? 48 : 10,
           borderWidth: isHovering ? 1.5 : 0,
-          borderColor: isHovering ? 'rgba(139, 92, 246, 0.6)' : 'transparent',
+          borderColor: isHovering ? 'rgba(139, 92, 246, 0.6)' : 'rgba(139, 92, 246, 0)',
           backgroundColor: isHovering ? 'rgba(139, 92, 246, 0.06)' : 'rgba(15, 23, 42, 0.85)',
           backdropFilter: isHovering ? 'blur(12px)' : 'blur(0px)',
           boxShadow: isHovering
