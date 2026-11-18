@@ -15,6 +15,7 @@ ATURAN KETAT MENJAWAB (ZERO-HALLUCINATION GUARDRAILS):
 PRINSIP SUMBER TERTUTUP (STRICT GROUNDING):
 - Kamu HANYA diperbolehkan mengambil fakta, data, definisi, dan instruksi dari BASIS PENGETAHUAN di atas.
 - DILARANG menggunakan pengetahuan eksternal, asumsi, perkiraan, atau beropini di luar dokumen yang diberikan.
+- Jika pengguna menanyakan seputar fashion, produk pakaian, koleksi terbaru, new arrivals, kaos, hoodie, polo, pesanan, atau katalog toko, kamu WAJIB menjawab secara ramah, jelas, dan informatif dengan merujuk data pada [KOLEKSI FASHION TERBARU & KATALOG PRODUK RESMI NINOC] di atas. Sebutkan nama produk, harga resmi, varian/stok, dan tautan halamannya.
 
 PENANGANAN PERTANYAAN DI LUAR BASIS DATA (FALLBACK PROTOCOL):
 - Jika jawaban atas pertanyaan pengguna TIDAK DITEMUKAN atau TIDAK DISEBUTKAN secara eksplisit di dalam Basis Pengetahuan, kamu WAJIB menjawab persis dengan kalimat berikut: "Mohon maaf, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan ajukan pertanyaan seputar fitur atau panduan yang tersedia."
@@ -32,6 +33,54 @@ FORMAT & KEBERSIHAN TEKS (MOBILE/WEB FRIENDLY):
 
 const FALLBACK_RESPONSE = 'Mohon maaf, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan ajukan pertanyaan seputar fitur atau panduan yang tersedia.';
 
+// ─── RAG PRODUCT CATALOG RETRIEVER ──────────────────────────────────────────
+async function fetchProductsForRAG(query: string) {
+  const SELECT_FIELDS = 'id, name, price, category, slug, variants(color, size, stock_quantity, sku)';
+
+  try {
+    // 1. Fetch latest published products
+    const { data: latest } = await supabaseAdmin
+      .from('products')
+      .select(SELECT_FIELDS)
+      .order('created_at', { ascending: false })
+      .limit(8);
+
+    // 2. Fetch specific matching products if query has relevant keywords
+    const qClean = (query || '').toLowerCase().replace(/[^a-zA-Z0-9\s]/g, ' ').trim();
+    const stopWords = new Set(['apa', 'yang', 'dari', 'ada', 'dan', 'ini', 'itu', 'saya', 'kak', 'min', 'bisa', 'dong']);
+    const tokens = qClean.split(/\s+/).filter(t => t.length > 2 && !stopWords.has(t));
+
+    let matched: any[] = [];
+    if (tokens.length > 0) {
+      const orFilter = tokens
+        .slice(0, 4)
+        .map(t => `name.ilike.%${t}%,category.ilike.%${t}%,description.ilike.%${t}%`)
+        .join(',');
+
+      const { data: mData } = await supabaseAdmin
+        .from('products')
+        .select(SELECT_FIELDS)
+        .or(orFilter)
+        .limit(6);
+
+      if (mData) matched = mData;
+    }
+
+    // Combine and deduplicate
+    const map = new Map<string, any>();
+    [...matched, ...(latest || [])].forEach((p: any) => {
+      if (p?.id && !map.has(p.id)) {
+        map.set(p.id, p);
+      }
+    });
+
+    return Array.from(map.values()).slice(0, 8);
+  } catch (err: any) {
+    console.error('[AI-Chat-RAG] Product fetch error:', err.message);
+    return [];
+  }
+}
+
 // ─── RAG KNOWLEDGE BASE RETRIEVER ──────────────────────────────────────────
 async function buildKnowledgeBase(ticketId: string, userMessage: string): Promise<string> {
   const sections: string[] = [];
@@ -41,6 +90,7 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
 - Nama Toko: NINOC
 - Website Resmi: https://ninoc.store
 - Instagram Resmi: @ninoc.co
+- Kategori Fashion Resmi yang Dijual: Kaos / Graphic T-Shirt Streetwear (Pria, Wanita, Unisex), Hoodie Street Art & Graffiti, Polo Shirt Gothic, Aksesoris & Skateboard Tech Deck.
 - Alamat Toko Fisik & Gudang: Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Rancasari, Bandung, Jawa Barat 40292
 - Layanan Ekspedisi Pengiriman: JNE, J&T, Sicepat, serta Instant/Sameday (Grab/Gojek)
 - Metode Pembayaran Resmi: QRIS, Transfer Bank (BCA, Mandiri, BNI, BRI), E-Wallet (GoPay, OVO, ShopeePay), Virtual Account, Kartu Kredit
@@ -123,25 +173,23 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
     console.error('[AI-Chat-RAG] Failed to load order context:', err.message);
   }
 
-  // 4. Retrieval Katalog Produk Relevan (RAG Berbasis Pertanyaan Pengguna)
-  try {
-    const productResult = await executeAiTool('search_products', { keyword: userMessage });
-    if (productResult?.success && Array.isArray(productResult.products) && productResult.products.length > 0) {
-      const productLines = productResult.products.slice(0, 8).map((p: any) => {
-        const variants = Array.isArray(p.variants)
-          ? p.variants.map((v: any) => `${v.size || 'OS'}${v.color ? ` (${v.color})` : ''}: Stok ${v.stock ?? 0}`).join(', ')
-          : 'Cek di website';
-        return `- Nama Produk: ${p.name}
-  Kategori: ${p.category || 'Apparel'}
+  // 4. Retrieval Katalog Produk & Koleksi Fashion Resmi (RAG Terverifikasi Database)
+  const products = await fetchProductsForRAG(userMessage);
+  if (products.length > 0) {
+    const productLines = products.map((p: any) => {
+      const variants = Array.isArray(p.variants)
+        ? p.variants.map((v: any) => `${v.size || 'OS'}${v.color ? ` (${v.color})` : ''}: Stok ${v.stock_quantity ?? 0}`).join(', ')
+        : 'Cek di website';
+      return `- Nama Produk: ${p.name}
+  Kategori: ${p.category || 'Pakaian'}
   Harga Resmi: Rp ${(p.price || 0).toLocaleString('id-ID')}
   Varian & Ketersediaan Stok: ${variants}
   Tautan Halaman Produk: https://ninoc.store/shop/${p.slug} [PRODUK:${p.slug}]`;
-      });
+    });
 
-      sections.push(`[KATALOG PRODUK RESMI TERSEDIA]\n${productLines.join('\n\n')}`);
-    }
-  } catch (err: any) {
-    console.error('[AI-Chat-RAG] Failed to search products:', err.message);
+    sections.push(`[KOLEKSI FASHION TERBARU & KATALOG PRODUK RESMI NINOC]
+Koleksi fashion terbaru, rilisan anyar (new arrivals), dan produk ready stock saat ini meliputi:
+${productLines.join('\n\n')}`);
   }
 
   return sections.join('\n\n==================================================\n\n');
@@ -223,8 +271,13 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
     return null;
   }
 
-  // Recommended Groq Models
-  const models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+  // High-performance Groq Models with Zero-Hallucination & Closed-Domain RAG
+  const models = [
+    'qwen/qwen3.8-27b',
+    'openai/gpt-oss-120b',
+    'llama-3.3-70b-versatile',
+    'llama-3.1-8b-instant'
+  ];
 
   for (const modelName of models) {
     // Hyperparameters designed for Zero-Hallucination & Closed-Domain RAG
