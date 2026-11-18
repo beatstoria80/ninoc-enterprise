@@ -105,7 +105,57 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
   * Tinggi >180 cm atau Berat >80 kg: Size XL atau XXL / 2XL
 - Pusat Bantuan Resmi: https://ninoc.store/help`);
 
-  // 2. Panduan & Dokumen dari Atelier Settings (CMS Database)
+  // 2. FAQ & Kebiasaan Belanja Konsumen Indonesia (Indonesian E-Commerce Habits)
+  sections.push(`[FAQ RESMI & KEBIASAAN BELANJA KONSUMEN INDONESIA (E-COMMERCE HABIT KNOWLEDGE)]
+1. BAHAN, KAIN, & KUALITAS PRODUK:
+- Bahan Kaos: 100% Cotton Combed 24s kualitas premium. Gramasi pas (tidak tipis menerawang, tidak tebal gerah), adem, halus, dan berdaya serap keringat tinggi sehingga sangat nyaman di iklim tropis.
+- Bahan Hoodie: Heavyweight Cotton Fleece berkualitas tinggi yang tebal, lembut di bagian dalam, hangat namun tetap breathable.
+- Sablon & Grafis: Menggunakan teknologi High-Quality DTF (Direct-to-Film) & Plastisol dengan warna tajam, detail presisi, serta tahan cuci dan tidak mudah retak/pecah.
+- Kerah & Jahitan: O-Neck dengan rib leher kokoh tidak mudah melar, dijahit rapi dengan standar clothing/distro garmen premium.
+- Asal Produksi: 100% Original Brand NINOC Studio, dirancang dan diproduksi langsung di Bandung, Jawa Barat (Made in Bandung, Indonesia).
+
+2. KESESUAIAN GENDER & MODEL POTONGAN (FIT):
+- Gender: Semua koleksi kaos dan hoodie NINOC didesain UNISEX (sangat cocok dan pas dikenakan oleh pria maupun wanita).
+- Model Potongan (Cutting): Tersedia pilihan Regular Fit dan Oversized Boxy Streetwear yang trendi.
+- Panduan Ukuran (Size Guide):
+  * TB 150-165 cm, BB 45-55 kg: Size S atau M
+  * TB 165-175 cm, BB 55-68 kg: Size M atau L
+  * TB 175-183 cm, BB 68-80 kg: Size L atau XL
+  * TB >180 cm atau BB >80 kg: Size XL atau XXL / 2XL
+
+3. METODE PEMBAYARAN & SISTEM COD:
+- Metode Pembayaran Tersedia: QRIS (dapat dipindai dari semua bank & e-wallet seperti GoPay, OVO, ShopeePay, Dana, LinkAja), Virtual Account (BCA, Mandiri, BNI, BRI), serta Kartu Kredit/Debit.
+- Transaksi Non-Tunai: Seluruh pembayaran dilakukan secara cashless melalui payment gateway resmi di website https://ninoc.store demi verifikasi instan otomatis dan keamanan transaksi pelanggan.
+
+4. PENGIRIMAN, GUDANG, ESTIMASI SAMPAI, & ONGKIR:
+- Asal Pengiriman: Dikirim langsung dari warehouse pusat NINOC di Kota Bandung, Jawa Barat.
+- Jangkauan Wilayah: Menjangkau SELURUH INDONESIA (dari Sabang sampai Merauke, termasuk Papua, Maluku, Sulawesi, Kalimantan, Sumatra, Bali, Nusa Tenggara, hingga seluruh Pulau Jawa).
+- Pilihan Ekspedisi: JNE, J&T, SiCepat (Layanan Reguler & Kargo).
+- Kurir Instant / Sameday: Tersedia kurir Grab & Gojek khusus untuk pembeli di wilayah Bandung dan sekitarnya.
+- Estimasi Waktu Pengiriman: Pulau Jawa 1-3 hari kerja; Luar Pulau Jawa 3-5 hari kerja; Wilayah Papua dan pelosok 5-8 hari kerja.
+- Cek Tarif Ongkir: Ongkos kirim dihitung dan ditampilkan secara transparan dan otomatis di halaman checkout website sesuai alamat lengkap tujuan.
+
+5. KEBIJAKAN GARANSI, RETUR, & TUKAR SIZE:
+- Garansi Tukar Size: Jika baju kebesaran atau kekecilan, pelanggan dapat mengajukan penukaran ukuran (tukar size).
+- Garansi Produk Cacat / Salah Kirim: Penggantian produk baru atau pengembalian dana (refund) penuh jika produk yang diterima cacat, rusak, atau tidak sesuai pesanan.
+- Prosedur Retur: Cukup mengisi formulir pengajuan retur resmi di https://ninoc.store/retur.
+- Syarat Retur: Hangtag produk masih utuh/terpasang, produk belum dicuci, pengajuan maksimal 3 hari setelah paket diterima, dan menyertakan video unboxing.
+
+6. CEK RESI & LACAK STATUS PESANAN:
+- Nomor Resi Otomatis: Resi pengiriman akan otomatis terbit setelah pesanan diserahkan ke kurir dan dapat dicek pada akun pembeli di website.
+- Lacak via Chat: Pelanggan dapat menanyakan status pesanan langsung di live chat ini dengan memberikan Nomor Pesanan (contoh: NINOC-xxxx).
+
+7. PENGEMASAN & KEAMANAN PACKING:
+- Standar Packing: Setiap produk dikemas higienis dengan plastik pelindung dalam ziplock/polybag dan dibungkus polymailer tebal waterproof (tahan air & anti-robek) atau kotak kardus tebal untuk menjaga produk tiba dalam kondisi sempurna.
+
+8. KEASLIAN & REQUEST CUSTOM DESAIN:
+- 100% Produk Original: Semua produk yang dijual adalah koleksi asli brand NINOC Studio.
+- Custom Desain: Saat ini NINOC hanya menjual koleksi grafis & artwork eksklusif original karya studio kreatif NINOC, dan belum melayani jasa custom sablon satuan dari desain eksternal.
+
+9. CARA BELANJA DI WEBSITE:
+- Cara Order: Buka https://ninoc.store/shop -> Pilih produk, varian warna, dan ukuran -> Klik "Beli Sekarang" atau "Tambah ke Keranjang" -> Masukkan alamat pengiriman -> Pilih kurir dan bayar via QRIS/VA.`);
+
+  // 3. Panduan & Dokumen dari Atelier Settings (CMS Database)
   try {
     const keys = [
       'help_guide_customer_care',
