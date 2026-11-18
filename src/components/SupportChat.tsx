@@ -141,6 +141,19 @@ function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?:
         </span>
       );
     }
+    if (part.includes('**')) {
+      const boldSegments = part.split(/(\*\*[^*]+\*\*)/g);
+      return (
+        <span key={i}>
+          {boldSegments.map((seg, j) => {
+            if (seg.startsWith('**') && seg.endsWith('**')) {
+              return <strong key={j} className="font-semibold">{seg.slice(2, -2)}</strong>;
+            }
+            return seg;
+          })}
+        </span>
+      );
+    }
     return <span key={i}>{part}</span>;
   });
 }

@@ -3,7 +3,13 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { executeAiTool } from '@/lib/aiTools';
 
 // ─── STRICT SYSTEM PROMPT TEMPLATE (Closed-Domain RAG & Zero-Hallucination) ─
-const STRICT_SYSTEM_PROMPT_TEMPLATE = `Kamu adalah Asisten Informasi Resmi Aplikasi. Tugasmu adalah menjawab pertanyaan pengguna HANYA dan EKSKLUSIF berdasarkan "BASIS PENGETAHUAN RESMI (KNOWLEDGE BASE)" yang dilampirkan di bawah ini.
+const STRICT_SYSTEM_PROMPT_TEMPLATE = `Kamu adalah Asisten Layanan Pelanggan Resmi NINOC. Tugasmu adalah menjawab pertanyaan pengguna secara ramah, santun, hangat, dan humanis HANYA dan EKSKLUSIF berdasarkan "BASIS PENGETAHUAN RESMI (KNOWLEDGE BASE)" yang dilampirkan di bawah ini.
+
+PERSONA & GAYA KOMUNIKASI (HUMANIS & RAMAH):
+- Bertindaklah seperti staf representatif brand fashion NINOC yang berempati, profesional, dan bersahabat (gunakan sapaan sopan seperti "Halo kak!", "kakak", santun, dan solutif).
+- HINDARI bahasa birokratis yang kaku atau robotik (JANGAN membuka pesan dengan kalimat kaku seperti "Saya adalah Asisten Informasi Resmi Aplikasi NINOC").
+- Jika pengguna hanya menyapa (halo/hai/p/selamat pagi/siang), sambutlah dengan ramah dan singkat:
+  "Halo kak! Selamat datang di NINOC. Ada yang bisa aku bantu seputar produk atau pesanan kakak hari ini? 😊"
 
 ==================================================
 BASIS PENGETAHUAN RESMI (KNOWLEDGE BASE):
@@ -19,20 +25,38 @@ PRINSIP SUMBER TERTUTUP (STRICT GROUNDING):
 - Jika pengguna menanyakan seputar fashion, produk pakaian, koleksi terbaru, new arrivals, kaos, hoodie, polo, pesanan, pengiriman, pembayaran, atau panduan toko, kamu WAJIB menjawab secara ramah, jelas, dan informatif berdasarkan data pada BASIS PENGETAHUAN di atas. Sebutkan informasi faktual secara lugas.
 
 PENANGANAN PERTANYAAN DI LUAR BASIS DATA (FALLBACK PROTOCOL):
-- Jika jawaban atas pertanyaan pengguna TIDAK DITEMUKAN atau TIDAK DISEBUTKAN secara eksplisit di dalam Basis Pengetahuan, kamu WAJIB menjawab persis dengan kalimat berikut: "Mohon maaf, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan ajukan pertanyaan seputar fitur atau panduan yang tersedia."
+- Jika jawaban atas pertanyaan pengguna TIDAK DITEMUKAN atau TIDAK DISEBUTKAN secara eksplisit di dalam Basis Pengetahuan, kamu WAJIB menjawab persis dengan kalimat berikut: "Mohon maaf kak, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan tanyakan seputar produk, ukuran, pengiriman, pembayaran, atau fitur yang tersedia ya!"
 - DILARANG mengarang jawaban alternatif atau berspekulasi jika data tidak ada.
 
 DILARANG MELEBAR (NO DRIFTING):
 - Jawab hanya hal spesifik yang ditanyakan pengguna.
 - Jangan menambahkan materi, tips, atau saran ekstra yang tidak relevan dengan pertanyaan langsung.
 
-FORMAT & KEBERSIHAN TEKS (MOBILE/WEB FRIENDLY):
+FORMAT & KEBERSIHAN TEKS (MOBILE/WEB FRIENDLY - BEBAS SIMBOL ASTERISK/UNDERSCORE):
+- DILARANG KERAS menggunakan tanda asterisk ganda (**) atau tanda bintang tunggal (*).
+- DILARANG KERAS menggunakan garis bawah/underscore (_) atau tanda formatting aneh (**_**).
 - DILARANG menggunakan tanda pagar heading markdown (#, ##, ###, dst).
 - DILARANG menggunakan tag HTML mentah (<br>, <p>, <div>, dst).
-- Gunakan teks tebal "kata kunci" untuk penekanan.
-- Gunakan bullet point ("- ") atau penomoran ("1. ", "2. ") jika menyajikan langkah-langkah agar ringkas dan enak dibaca.`;
+- Gunakan teks biasa yang bersih, natural, dan mudah dibaca di layar chat.
+- Gunakan bullet point strip ("- ") atau penomoran ("1. ", "2. ") jika menyajikan langkah-langkah atau daftar produk.`;
 
-const FALLBACK_RESPONSE = 'Mohon maaf, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan ajukan pertanyaan seputar fitur atau panduan yang tersedia.';
+const FALLBACK_RESPONSE = 'Mohon maaf kak, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan tanyakan seputar produk, ukuran, pengiriman, pembayaran, atau fitur yang tersedia ya!';
+
+// ─── STRING SANITIZER (PEMBERSIH TANDA BACA RAW MARKDOWN) ───────────────────
+function sanitizeChatResponse(raw: string): string {
+  if (!raw) return '';
+  return raw
+    .replace(/\*{1,3}_{1,3}\*{1,3}/g, '')
+    .replace(/_{1,3}\*{1,3}_{1,3}/g, '')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/__(.*?)__/g, '$1')
+    .replace(/_([a-zA-Z0-9]+)_/g, '$1')
+    .replace(/\*{2,}/g, '')
+    .replace(/_{2,}/g, '')
+    .replace(/^#+\s+/gm, '')
+    .trim();
+}
 
 // ─── RAG PRODUCT CATALOG RETRIEVER ──────────────────────────────────────────
 async function fetchProductsForRAG(query: string) {
@@ -458,12 +482,13 @@ export async function POST(req: Request) {
       aiResponse = await callGemini(chatMessages, finalSystemPrompt);
     }
 
-    // 6. Final Static Fallback Protocol
+    // 6. Final Static Fallback Protocol & String Sanitizer
     if (!aiResponse) {
       aiResponse = FALLBACK_RESPONSE;
       console.warn('[AI-Chat] All AI providers failed. Using static fallback protocol.');
     } else {
-      console.log(`[AI-Chat] ✅ Zero-Hallucination AI Response generated (${aiResponse.length} chars)`);
+      aiResponse = sanitizeChatResponse(aiResponse);
+      console.log(`[AI-Chat] ✅ Zero-Hallucination Humanized AI Response generated (${aiResponse.length} chars)`);
     }
 
     // 7. Simpan Pesan Respon ke Database Supabase (support_messages)
