@@ -24,8 +24,16 @@ PRINSIP SUMBER TERTUTUP (STRICT GROUNDING):
 - Pahami variasi penulisan bahasa Indonesia sehari-hari, singkatan, serta salah ketik (typo) wajar pengguna (contoh: "pemgiriman" = pengiriman, "tersesdia" = tersedia, "ongkir" = ongkos kirim, "resi" = nomor resi/tracking).
 - Jika pengguna menanyakan seputar fashion, produk pakaian, koleksi terbaru, new arrivals, kaos, hoodie, polo, pesanan, pengiriman, pembayaran, atau panduan toko, kamu WAJIB menjawab secara ramah, jelas, dan informatif berdasarkan data pada BASIS PENGETAHUAN di atas. Sebutkan informasi faktual secara lugas.
 
-PENANGANAN PERTANYAAN DI LUAR BASIS DATA (FALLBACK PROTOCOL):
-- Jika jawaban atas pertanyaan pengguna TIDAK DITEMUKAN atau TIDAK DISEBUTKAN secara eksplisit di dalam Basis Pengetahuan, kamu WAJIB menjawab persis dengan kalimat berikut: "Mohon maaf kak, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan tanyakan seputar produk, ukuran, pengiriman, pembayaran, atau fitur yang tersedia ya!"
+PENANGANAN PRODUK/KATEGORI YANG BELUM TERSEDIA DI KATALOG:
+- Jika pengguna menanyakan produk, aksesoris, atau kategori yang TIDAK ADA di katalog NINOC (contoh: "ada topi", "jual sepatu?", "ada celana jeans?", "ada jaket kulit?", dsb):
+  * DILARANG KERAS menjawab dengan kalimat kaku seperti "informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi"!
+  * Jawablah secara ramah dan solutif: Jelaskan dengan santun bahwa produk tersebut (misal: topi) saat ini belum tersedia di katalog resmi NINOC.
+  * Jelaskan bahwa lini produk utama NINOC saat ini adalah Kaos (Graphic T-Shirt Streetwear), Hoodie Street Art & Graffiti, Polo Shirt Gothic, dan Aksesoris Skateboard Tech Deck.
+  * Berikan rekomendasi produk ready stock terpopuler yang tersedia di website beserta tautan halamannya agar pelanggan tetap dapat melihat koleksi terbaik NINOC.
+
+PENANGANAN PERTANYAAN DI LUAR TOKO (OFF-TOPIC FALLBACK):
+- Kalimat fallback HANYA digunakan jika pertanyaan pengguna SAMA SEKALI tidak berkaitan dengan toko, fashion, atau belanja (misal: membahas resep makanan, politik, sains, tugas sekolah):
+  "Mohon maaf kak, aku hanya dapat melayani informasi seputar produk, panduan ukuran, pengiriman, pembayaran, dan pesanan di toko NINOC ya! Ada yang bisa aku bantu seputar koleksi NINOC?"
 - DILARANG mengarang jawaban alternatif atau berspekulasi jika data tidak ada.
 
 DILARANG MELEBAR (NO DRIFTING):
@@ -40,7 +48,7 @@ FORMAT & KEBERSIHAN TEKS (MOBILE/WEB FRIENDLY - BEBAS SIMBOL ASTERISK/UNDERSCORE
 - Gunakan teks biasa yang bersih, natural, dan mudah dibaca di layar chat.
 - Gunakan bullet point strip ("- ") atau penomoran ("1. ", "2. ") jika menyajikan langkah-langkah atau daftar produk.`;
 
-const FALLBACK_RESPONSE = 'Mohon maaf kak, informasi mengenai hal tersebut belum tersedia di dalam pusat data panduan resmi aplikasi kami. Silakan tanyakan seputar produk, ukuran, pengiriman, pembayaran, atau fitur yang tersedia ya!';
+const FALLBACK_RESPONSE = 'Mohon maaf kak, aku hanya dapat melayani informasi seputar produk, panduan ukuran, pengiriman, pembayaran, dan pesanan di toko NINOC ya! Ada yang bisa aku bantu seputar koleksi NINOC?';
 
 // ─── STRING SANITIZER (PEMBERSIH TANDA BACA RAW MARKDOWN) ───────────────────
 function sanitizeChatResponse(raw: string): string {
@@ -116,6 +124,7 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
 - Website Resmi: https://ninoc.store
 - Instagram Resmi: @ninoc.co
 - Kategori Fashion Resmi yang Dijual: Kaos / Graphic T-Shirt Streetwear (Pria, Wanita, Unisex), Hoodie Street Art & Graffiti, Polo Shirt Gothic, Aksesoris & Skateboard Tech Deck.
+- Produk yang Belum Tersedia / Tidak Dijual: Topi/Headwear, Sepatu/Footwear, Celana Jeans, Kemeja Formal, Tas Ransel. Jika customer menanyakan produk ini, jelaskan secara ramah dan santun bahwa produk tersebut saat ini belum tersedia di katalog NINOC, lalu rekomendasikan pilihan produk ready stock (Kaos, Hoodie, Polo, Tech Deck) yang ada di website.
 - Alamat Toko Fisik & Gudang: Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya, Rancasari, Bandung, Jawa Barat 40292
 - Layanan Ekspedisi Pengiriman: JNE, J&T, Sicepat, serta Instant/Sameday (Grab/Gojek)
 - Jangkauan Wilayah Pengiriman: Mendukung pengiriman ke SELURUH INDONESIA (termasuk Papua, Maluku, Sulawesi, Kalimantan, Sumatra, Bali, Nusa Tenggara, dan Pulau Jawa) menggunakan ekspedisi reguler & kargo nasional (JNE, J&T, SiCepat). Ongkos kirim dihitung secara otomatis saat proses checkout di website sesuai alamat lengkap tujuan.
