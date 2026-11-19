@@ -170,16 +170,8 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
             </div>
           )}
 
-          {/* REFACTOR: Priority badge positioning for display_order and new arrivals */}
-          {(!hasActiveDiscount && !product.price_tag && (product.display_order !== undefined && product.display_order !== null && product.display_order < 999)) ? (
-            <motion.div
-              className="absolute top-0 left-0 text-white px-2 py-1 text-[9px] uppercase tracking-widest z-10 font-bold bg-ink shadow-sm"
-              animate={{ opacity: isHovered ? 0.9 : 1 }}
-              transition={{ duration: DURATION.fast }}
-            >
-              #{product.display_order} PICK
-            </motion.div>
-          ) : (!hasActiveDiscount && !product.price_tag && index < 3) ? (
+          {/* Badge Top Left: Standard NEW badge for first items without discount/price_tag */}
+          {(!hasActiveDiscount && !product.price_tag && index < 3) && (
             <motion.div
               className="absolute top-0 left-0 text-white px-2 py-1 text-[9px] uppercase tracking-widest z-10 font-bold bg-ink shadow-sm"
               animate={{ opacity: isHovered ? 0.9 : 1 }}
@@ -187,7 +179,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
             >
               NEW
             </motion.div>
-          ) : null}
+          )}
 
           {/* Program & Promo Badge — Top Right */}
           {hasActiveDiscount && product.original_price ? (
