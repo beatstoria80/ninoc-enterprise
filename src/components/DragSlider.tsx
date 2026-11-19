@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 
 // ═══════════════════════════════════════════════════════════════
 // DRAG SLIDER — PC mouse + Mobile touch drag
@@ -15,8 +15,16 @@ interface DragSliderProps {
   direction?: 'horizontal' | 'vertical';
 }
 
-export default function DragSlider({ children, className = '', style = {}, direction = 'horizontal' }: DragSliderProps) {
+// REFACTOR: Use forwardRef with useImperativeHandle to allow parent components (like HomeProductSlider) to control smooth programmatic scrolling
+const DragSlider = forwardRef<HTMLDivElement, DragSliderProps>(function DragSlider(
+  { children, className = '', style = {}, direction = 'horizontal' },
+  ref
+) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // REFACTOR: Expose the underlying HTMLDivElement to the parent ref
+  useImperativeHandle(ref, () => containerRef.current as HTMLDivElement);
+
   const dragRef = useRef({ 
     active: false, 
     isDragging: false, 
@@ -125,4 +133,6 @@ export default function DragSlider({ children, className = '', style = {}, direc
       {children}
     </div>
   );
-}
+});
+
+export default DragSlider;

@@ -12,21 +12,34 @@ import BrandPhilosophy from './BrandPhilosophy';
 import ConnectSection from './ConnectSection';
 import InteractiveMascotVideo from '@/components/mascot/InteractiveMascotVideo';
 import { EASING, DURATION } from '@/lib/animations';
+import type { Dictionary } from '@/lib/i18n';
 
-interface Product {
+// REFACTOR: Export unified type-safe HomeProduct interface with display_order and badge_text
+export interface HomeProduct {
   id: string;
   name: string;
   price: number;
   original_price?: number | null;
-  image_url?: string;
+  image_url?: string | null;
   slug: string;
-  category?: any;
+  category?: string | null;
+  sub_category?: string | null;
   price_tag?: string | null;
+  badge_text?: string | null;
+  display_order?: number | null;
+  created_at?: string;
+  variants?: Array<{
+    id: string;
+    sku?: string | null;
+    size?: string | null;
+    color?: string | null;
+    stock_quantity?: number | null;
+  }>;
 }
 
 interface HomeClientWrapperProps {
-  products: Product[];
-  dict: any;
+  products: HomeProduct[];
+  dict: Dictionary;
 }
 
 /**
