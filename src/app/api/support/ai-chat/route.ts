@@ -2,6 +2,81 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabaseAdmin';
 import { executeAiTool } from '@/lib/aiTools';
 
+// REFACTOR: Explicit strict typing interfaces replacing all 'any' types
+interface ProductVariantRecord {
+  color?: string | null;
+  size?: string | null;
+  stock_quantity?: number | null;
+  sku?: string | null;
+}
+
+interface ProductRecord {
+  id: string;
+  name: string;
+  price: number;
+  category?: string | null;
+  slug: string;
+  variants?: ProductVariantRecord[] | null;
+}
+
+interface OrderItemRecord {
+  product_name?: string | null;
+  quantity?: number | null;
+  size?: string | null;
+  color?: string | null;
+}
+
+interface OrderRecord {
+  id: string;
+  status: string;
+  courier?: string | null;
+  tracking_code?: string | null;
+  total_amount?: number | null;
+  created_at?: string | null;
+  order_items?: OrderItemRecord[] | null;
+}
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+interface GroqChatPayload {
+  model: string;
+  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
+  temperature: number;
+  top_p: number;
+  max_tokens: number;
+  presence_penalty: number;
+  frequency_penalty: number;
+  stream: boolean;
+}
+
+interface GeminiPayload {
+  system_instruction: {
+    parts: Array<{ text: string }>;
+  };
+  contents: Array<{
+    role: string;
+    parts: Array<{ text: string }>;
+  }>;
+  generationConfig: {
+    temperature: number;
+    topP: number;
+    maxOutputTokens: number;
+  };
+}
+
+interface GeminiCandidate {
+  content?: {
+    parts?: Array<{ text?: string }>;
+  };
+}
+
+interface GeminiResponse {
+  candidates?: GeminiCandidate[];
+}
+
 // ─── STRICT SYSTEM PROMPT TEMPLATE (Closed-Domain RAG & Zero-Hallucination) ─
 const STRICT_SYSTEM_PROMPT_TEMPLATE = `Kamu adalah Asisten Layanan Pelanggan Resmi NINOC. Tugasmu adalah menjawab pertanyaan pengguna secara ramah, santun, hangat, dan humanis HANYA dan EKSKLUSIF berdasarkan "BASIS PENGETAHUAN RESMI (KNOWLEDGE BASE)" yang dilampirkan di bawah ini.
 
@@ -67,7 +142,7 @@ function sanitizeChatResponse(raw: string): string {
 }
 
 // ─── RAG PRODUCT CATALOG RETRIEVER ──────────────────────────────────────────
-async function fetchProductsForRAG(query: string) {
+async function fetchProductsForRAG(query: string): Promise<ProductRecord[]> {
   const SELECT_FIELDS = 'id, name, price, category, slug, variants(color, size, stock_quantity, sku)';
 
   try {
@@ -83,7 +158,8 @@ async function fetchProductsForRAG(query: string) {
     const stopWords = new Set(['apa', 'yang', 'dari', 'ada', 'dan', 'ini', 'itu', 'saya', 'kak', 'min', 'bisa', 'dong']);
     const tokens = qClean.split(/\s+/).filter(t => t.length > 2 && !stopWords.has(t));
 
-    let matched: any[] = [];
+    // REFACTOR: Replaced any[] with typed ProductRecord[]
+    let matched: ProductRecord[] = [];
     if (tokens.length > 0) {
       const orFilter = tokens
         .slice(0, 4)
@@ -96,20 +172,24 @@ async function fetchProductsForRAG(query: string) {
         .or(orFilter)
         .limit(6);
 
-      if (mData) matched = mData;
+      // REFACTOR: Type assertion with ProductRecord[]
+      if (mData) matched = mData as unknown as ProductRecord[];
     }
 
     // Combine and deduplicate
-    const map = new Map<string, any>();
-    [...matched, ...(latest || [])].forEach((p: any) => {
+    // REFACTOR: Replaced Map<string, any> with Map<string, ProductRecord>
+    const map = new Map<string, ProductRecord>();
+    const latestTyped = (latest || []) as unknown as ProductRecord[];
+    [...matched, ...latestTyped].forEach((p: ProductRecord) => {
       if (p?.id && !map.has(p.id)) {
         map.set(p.id, p);
       }
     });
 
     return Array.from(map.values()).slice(0, 8);
-  } catch (err: any) {
-    console.error('[AI-Chat-RAG] Product fetch error:', err.message);
+  } catch (err: unknown) { // REFACTOR: Replaced 'err: any' with 'err: unknown'
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[AI-Chat-RAG] Product fetch error:', errorMsg);
     return [];
   }
 }
@@ -210,11 +290,12 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
         sections.push(`[PANDUAN OPERASIONAL & BANTUAN SISTEM]\n${guideLines.join('\n')}`);
       }
     }
-  } catch (err: any) {
-    console.error('[AI-Chat-RAG] Failed to load atelier help guides:', err.message);
+  } catch (err: unknown) { // REFACTOR: Type-safe unknown error handling
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[AI-Chat-RAG] Failed to load atelier help guides:', errorMsg);
   }
 
-  // 3. Retrieval Data Pesanan Pelanggan (Jika Tiket / Chat Terkait Pesanan)
+  // 4. Retrieval Data Pesanan Pelanggan (Jika Tiket / Chat Terkait Pesanan)
   try {
     let orderId: string | null = null;
 
@@ -240,9 +321,10 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
     if (orderId) {
       const orderResult = await executeAiTool('get_order_details', { order_id: orderId });
       if (orderResult?.success && orderResult.order) {
-        const o = orderResult.order;
+        // REFACTOR: Typed OrderRecord mapping
+        const o: OrderRecord = orderResult.order as OrderRecord;
         const items = Array.isArray(o.order_items)
-          ? o.order_items.map((it: any) => `${it.product_name || 'Produk'} (Qty: ${it.quantity || 1}, Size: ${it.size || '-'}, Warna: ${it.color || '-'})`).join(', ')
+          ? o.order_items.map((it: OrderItemRecord) => `${it.product_name || 'Produk'} (Qty: ${it.quantity || 1}, Size: ${it.size || '-'}, Warna: ${it.color || '-'})`).join(', ')
           : '-';
 
         sections.push(`[DATA PESANAN PENGGUNA TERVERIFIKASI]
@@ -255,16 +337,19 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
 - Tanggal Pesanan: ${o.created_at || '-'}`);
       }
     }
-  } catch (err: any) {
-    console.error('[AI-Chat-RAG] Failed to load order context:', err.message);
+  } catch (err: unknown) { // REFACTOR: Replaced 'err: any' with 'err: unknown'
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[AI-Chat-RAG] Failed to load order context:', errorMsg);
   }
 
-  // 4. Retrieval Katalog Produk & Koleksi Fashion Resmi (RAG Terverifikasi Database)
+  // 5. Retrieval Katalog Produk & Koleksi Fashion Resmi (RAG Terverifikasi Database)
   const products = await fetchProductsForRAG(userMessage);
   if (products.length > 0) {
-    const productLines = products.map((p: any) => {
+    // REFACTOR: Replaced (p: any) with (p: ProductRecord)
+    const productLines = products.map((p: ProductRecord) => {
       const variants = Array.isArray(p.variants)
-        ? p.variants.map((v: any) => `${v.size || 'OS'}${v.color ? ` (${v.color})` : ''}: Stok ${v.stock_quantity ?? 0}`).join(', ')
+        // REFACTOR: Replaced (v: any) with (v: ProductVariantRecord)
+        ? p.variants.map((v: ProductVariantRecord) => `${v.size || 'OS'}${v.color ? ` (${v.color})` : ''}: Stok ${v.stock_quantity ?? 0}`).join(', ')
         : 'Cek di website';
       return `- Nama Produk: ${p.name}
   Kategori: ${p.category || 'Pakaian'}
@@ -282,7 +367,7 @@ ${productLines.join('\n\n')}`);
 }
 
 // ─── Chat History Helper ────────────────────────────────────────────────────
-async function fetchChatHistory(ticketId: string, currentMessage: string) {
+async function fetchChatHistory(ticketId: string, currentMessage: string): Promise<ChatMessage[]> {
   const { data: historyData } = await supabaseAdmin
     .from('support_messages')
     .select('message, sender_role')
@@ -290,7 +375,8 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
     .order('created_at', { ascending: false })
     .limit(6);
 
-  const rawMessages: Array<any> = [];
+  // REFACTOR: Replaced Array<any> with ChatMessage[]
+  const rawMessages: ChatMessage[] = [];
   if (historyData) {
     const chronologicalData = [...historyData].reverse();
     for (const msg of chronologicalData) {
@@ -310,7 +396,8 @@ async function fetchChatHistory(ticketId: string, currentMessage: string) {
   }
 
   // Combine consecutive messages with the same role
-  const mergedMessages: Array<any> = [];
+  // REFACTOR: Replaced Array<any> with ChatMessage[]
+  const mergedMessages: ChatMessage[] = [];
   for (const msg of rawMessages) {
     if (mergedMessages.length > 0 && mergedMessages[mergedMessages.length - 1].role === msg.role) {
       mergedMessages[mergedMessages.length - 1].content += `\n${msg.content}`;
@@ -350,7 +437,8 @@ async function fetchGroqWithRetry(url: string, options: RequestInit, retries = 2
 }
 
 // ─── Groq Cloud (Strict Zero-Hallucination Closed-Domain Configuration) ─────
-async function callGroq(messages: Array<any>, systemPrompt: string): Promise<string | null> {
+// REFACTOR: Replaced Array<any> with ChatMessage[]
+async function callGroq(messages: ChatMessage[], systemPrompt: string): Promise<string | null> {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     console.warn('[AI-Chat] GROQ_API_KEY not set.');
@@ -366,8 +454,8 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
   ];
 
   for (const modelName of models) {
-    // Hyperparameters designed for Zero-Hallucination & Closed-Domain RAG
-    const payload: any = {
+    // REFACTOR: Replaced 'any' with typed GroqChatPayload
+    const payload: GroqChatPayload = {
       model: modelName,
       messages: [
         { role: 'system', content: systemPrompt },
@@ -402,8 +490,9 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
       if (content && typeof content === 'string' && content.trim().length > 0) {
         return content.trim();
       }
-    } catch (err: any) {
-      console.warn(`[AI-Chat] Exception with Groq model ${modelName}:`, err.message);
+    } catch (err: unknown) { // REFACTOR: Replaced 'err: any' with 'err: unknown'
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.warn(`[AI-Chat] Exception with Groq model ${modelName}:`, errorMsg);
       continue;
     }
   }
@@ -412,7 +501,8 @@ async function callGroq(messages: Array<any>, systemPrompt: string): Promise<str
 }
 
 // ─── Gemini AI (Strict Fallback Resiliency) ─────────────────────────────────
-async function callGemini(messages: Array<any>, systemPrompt: string): Promise<string | null> {
+// REFACTOR: Replaced Array<any> with ChatMessage[]
+async function callGemini(messages: ChatMessage[], systemPrompt: string): Promise<string | null> {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     console.error('[AI-Chat] GEMINI_API_KEY not set in environment.');
@@ -424,7 +514,8 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
     parts: [{ text: msg.content || '' }],
   }));
 
-  const payload: any = {
+  // REFACTOR: Replaced 'any' with typed GeminiPayload
+  const payload: GeminiPayload = {
     system_instruction: {
       parts: [{ text: systemPrompt }],
     },
@@ -449,13 +540,15 @@ async function callGemini(messages: Array<any>, systemPrompt: string): Promise<s
       return null;
     }
 
-    const data = await res.json();
+    // REFACTOR: Replaced 'any' casting with GeminiResponse interface
+    const data = (await res.json()) as GeminiResponse;
     const parts = data.candidates?.[0]?.content?.parts || [];
-    const text = parts.map((p: any) => p.text).filter(Boolean).join('\n').trim();
+    const text = parts.map(p => p.text || '').filter(Boolean).join('\n').trim();
 
     return text || null;
-  } catch (err: any) {
-    console.error('[AI-Chat] Exception with Gemini fallback:', err.message);
+  } catch (err: unknown) { // REFACTOR: Replaced 'err: any' with 'err: unknown'
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    console.error('[AI-Chat] Exception with Gemini fallback:', errorMsg);
     return null;
   }
 }
@@ -515,8 +608,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ response: aiResponse });
 
-  } catch (error: any) {
-    console.error('[AI-Chat] Unexpected error:', error.message || error);
+  } catch (error: unknown) { // REFACTOR: Replaced 'error: any' with 'error: unknown'
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    console.error('[AI-Chat] Unexpected error:', errorMsg);
     return NextResponse.json({ response: FALLBACK_RESPONSE });
   }
 }
