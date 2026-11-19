@@ -170,16 +170,7 @@ function ProductCard({ product, index }: { product: Product; index: number }) {
             </div>
           )}
 
-          {/* Badge Top Left: Standard NEW badge for first items without discount/price_tag */}
-          {(!hasActiveDiscount && !product.price_tag && index < 3) && (
-            <motion.div
-              className="absolute top-0 left-0 text-white px-2 py-1 text-[9px] uppercase tracking-widest z-10 font-bold bg-ink shadow-sm"
-              animate={{ opacity: isHovered ? 0.9 : 1 }}
-              transition={{ duration: DURATION.fast }}
-            >
-              NEW
-            </motion.div>
-          )}
+
 
           {/* Program & Promo Badge — Top Right */}
           {hasActiveDiscount && product.original_price ? (
