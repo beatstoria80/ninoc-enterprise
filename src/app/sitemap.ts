@@ -5,7 +5,10 @@ import { supabase } from '@/lib/supabase';
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = (process.env.NEXT_PUBLIC_APP_URL && !process.env.NEXT_PUBLIC_APP_URL.includes('supabase') ? process.env.NEXT_PUBLIC_APP_URL : 'https://ninoc.store');
+  let rawUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://ninoc.store';
+  if (rawUrl.includes('supabase')) rawUrl = 'https://ninoc.store';
+  if (!rawUrl.startsWith('http')) rawUrl = `https://${rawUrl}`;
+  const baseUrl = rawUrl.replace(/\/+$/, '');
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
