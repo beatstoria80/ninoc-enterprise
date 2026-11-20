@@ -39,16 +39,34 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE_URL),
     title: {
-      default: isEn ? 'NINOC — Enterprise Official Store' : 'NINOC — Enterprise Official Store',
+      default: isEn 
+        ? 'NINOC — Independent Archival Garment Studio & Lifestyle Brand' 
+        : 'NINOC — Studio Garment & Brand Lifestyle Independen Indonesia',
       template: '%s | NINOC STORE',
     },
     description: isEn 
-      ? 'NINOC is an Indonesian enterprise platform curating premium apparel, artisan objects & homeware, and specialty coffee & pantry under one roof. Shop now!'
-      : 'NINOC adalah enterprise platform Indonesia yang mengkurasi apparel premium, objek artisan & homeware, serta specialty coffee & pantry dalam satu atap. Shop now!',
-    keywords: ['enterprise store indonesia', 'apparel premium', 'specialty coffee bandung', 'homeware artisan', 'ceramics bandung', 'brand lokal Indonesia', 'premium clothing', 'pantry cafe bandung', 'objects consumer goods'],
-    authors: [{ name: 'NINOC STORE' }],
-    creator: 'NINOC STORE',
-    publisher: 'NINOC STORE',
+      ? 'NINOC is an independent archival garment studio and emerging lifestyle brand from Bandung, Indonesia. Specializing in minimalist urban streetwear, artisan objects, and specialty pantry.'
+      : 'NINOC adalah studio garment arsip independen dan brand lifestyle dari Bandung, Indonesia. Mengkurasi streetwear urban minimalis, objek artisan, dan pantry spesialti.',
+    keywords: [
+      'independent lifestyle brands from indonesia',
+      'emerging indonesian apparel brands',
+      'minimalist urban fashion',
+      'indonesian design studio',
+      'archival garment studio bandung',
+      'contemporary streetwear indonesia',
+      'bandung urban apparel',
+      'sustainable craft streetwear',
+      'ninoc design studio',
+      'apparel premium indonesia',
+      'specialty coffee bandung',
+      'homeware artisan bandung',
+      'ceramics bandung',
+      'brand lokal indonesia',
+      'objects consumer goods'
+    ],
+    authors: [{ name: 'NINOC Studio' }],
+    creator: 'NINOC Studio',
+    publisher: 'NINOC Studio',
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: 'any' },
@@ -62,25 +80,25 @@ export async function generateMetadata(): Promise<Metadata> {
       locale: isEn ? 'en_US' : 'id_ID',
       url: BASE_URL,
       siteName: 'NINOC STORE',
-      title: 'NINOC — Enterprise Official Store',
+      title: isEn ? 'NINOC — Independent Archival Garment Studio & Lifestyle Brand' : 'NINOC — Studio Garment & Brand Lifestyle Independen Indonesia',
       description: isEn
-        ? 'NINOC is an Indonesian enterprise platform curating premium apparel, artisan objects, and specialty coffee & pantry.'
-        : 'NINOC adalah enterprise platform Indonesia yang mengkurasi apparel premium, objek artisan, serta specialty coffee & pantry.',
+        ? 'Independent archival garment studio and contemporary lifestyle brand from Bandung, Indonesia. Curating minimalist urban fashion, artisan objects, and specialty pantry.'
+        : 'Studio garment arsip independen dan brand lifestyle dari Bandung, Indonesia. Mengkurasi streetwear urban minimalis, objek artisan, dan pantry spesialti.',
       images: [
         {
           url: '/og-image.png',
           width: 1200,
           height: 630,
-          alt: 'NINOC STORE — Enterprise Official Store',
+          alt: 'NINOC — Independent Archival Garment Studio & Lifestyle Brand',
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title: 'NINOC — Enterprise Official Store',
+      title: isEn ? 'NINOC — Independent Archival Garment Studio & Lifestyle Brand' : 'NINOC — Studio Garment & Brand Lifestyle Independen Indonesia',
       description: isEn
-        ? 'NINOC is an Indonesian enterprise platform curating premium apparel, objects, and specialty pantry.'
-        : 'NINOC adalah enterprise platform Indonesia yang mengkurasi apparel premium, objek artisan, dan pantry spesialti.',
+        ? 'Independent archival garment studio and emerging lifestyle brand from Bandung, Indonesia.'
+        : 'Studio garment arsip independen dan brand lifestyle dari Bandung, Indonesia.',
       images: ['/og-image.png'],
       creator: '@ninocstore',
     },
@@ -107,8 +125,9 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     alternates: {
       languages: {
-        'id': BASE_URL,
-        'en': `${BASE_URL}/en`,
+        'id-ID': BASE_URL,
+        'en-US': `${BASE_URL}/en`,
+        'x-default': BASE_URL,
       },
     },
     verification: {
@@ -155,22 +174,54 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font -- loaded via <link> for Turbopack compatibility, next/font/google causes build issues */}
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Poppins:wght@400;700;900&display=swap" rel="stylesheet" />
-        {/* Structured Data — Organization & Manufacturer */}
+        {/* Structured Data — Organization, Brand, & Design Studio Entity */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': ['Organization', 'Manufacturer', 'Brand'],
-              name: 'NINOC Enterprise',
-              alternateName: 'NINOC STORE',
+              '@type': ['Organization', 'Brand', 'ClothingStore'],
+              name: 'NINOC',
+              alternateName: ['NINOC Enterprise', 'NINOC STORE', 'NINOC Design & Garment Studio'],
               url: BASE_URL,
               logo: `${BASE_URL}/logo.png`,
-              description: 'NINOC Enterprise adalah produsen dan distributor garment pakaian bergaya industrial dan fungsional dari Bandung, Indonesia.',
+              image: `${BASE_URL}/og-image.png`,
+              slogan: 'Well-Made Things, Chosen Well — Independent Archival Garment & Lifestyle Studio',
+              description: 'NINOC is an independent archival garment studio and contemporary lifestyle brand based in Bandung, Indonesia. Specializing in minimalist urban streetwear, heavyweight combed cotton apparel, artisan lifestyle objects, and specialty pantry.',
               foundingDate: '2024',
               foundingLocation: {
                 '@type': 'Place',
-                name: 'Bandung, Indonesia'
+                name: 'Bandung, West Java, Indonesia',
+              },
+              knowsAbout: [
+                'Independent Indonesian Apparel Brands',
+                'Minimalist Urban Fashion',
+                'Archival Garment Studio & Streetwear',
+                'Contemporary Indonesian Design Studios',
+                'Bandung Subculture & Garment Architecture',
+                'Artisan Lifestyle Objects & Stoneware',
+                'Indonesian Specialty Coffee & Pantry'
+              ],
+              hasOfferCatalog: {
+                '@type': 'OfferCatalog',
+                name: 'NINOC Curated Collections',
+                itemListElement: [
+                  {
+                    '@type': 'OfferCatalog',
+                    name: 'Apparel — Archival Urban Streetwear',
+                    url: `${BASE_URL}/shop?filter=Apparel`
+                  },
+                  {
+                    '@type': 'OfferCatalog',
+                    name: 'Objects — Artisan Homeware & Lifestyle Goods',
+                    url: `${BASE_URL}/shop?filter=Objects`
+                  },
+                  {
+                    '@type': 'OfferCatalog',
+                    name: 'Pantry — Specialty Coffee & Culinary Provisions',
+                    url: `${BASE_URL}/shop?filter=Pantry`
+                  }
+                ]
               },
               address: {
                 '@type': 'PostalAddress',
@@ -184,11 +235,12 @@ export default async function RootLayout({
                 '@type': 'ContactPoint',
                 telephone: '+628211983774',
                 contactType: 'customer service',
-                areaServed: 'ID',
+                areaServed: ['ID', 'SG', 'MY', 'US', 'AU', 'Worldwide'],
                 availableLanguage: ['Indonesian', 'English'],
               },
               sameAs: [
                 'https://www.instagram.com/ninoc.co',
+                'https://tiktok.co.id/ninocenterprise',
                 'https://twitter.com/ninocstore',
               ],
             }),
@@ -205,7 +257,7 @@ export default async function RootLayout({
               image: `${BASE_URL}/og-image.png`,
               url: BASE_URL,
               priceRange: 'IDR',
-              description: 'Distributor resmi dan toko ritel untuk produk apparel dan aksesoris fungsional NINOC.',
+              description: 'Official flagship retail and online store for NINOC independent apparel, objects, and specialty pantry.',
               address: {
                 '@type': 'PostalAddress',
                 streetAddress: 'Kompleks Griya Saluyu, Blok AA No.87, Mekarjaya RANCASARI',

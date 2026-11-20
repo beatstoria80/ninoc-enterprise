@@ -91,11 +91,66 @@ export default async function LogbookDetailPage({ params }: { params: Promise<{ 
     slug: entry.slug || '',
   };
 
+  // Structured Data — Article & Breadcrumb for Generative Engine Optimization (GEO)
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${BASE_URL}/logbook/${slug}`,
+    },
+    headline: entry.title_en || entry.title,
+    description: entry.excerpt_en || entry.excerpt,
+    image: entry.image_url ? [`${BASE_URL}${entry.image_url}`] : [`${BASE_URL}/og-image.png`],
+    datePublished: entry.published_date || entry.created_at,
+    dateModified: entry.updated_at || entry.published_date || entry.created_at,
+    author: {
+      '@type': 'Organization',
+      name: 'NINOC Design & Garment Studio',
+      url: BASE_URL,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'NINOC',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${BASE_URL}/logo.png`,
+      },
+    },
+    inLanguage: ['en', 'id'],
+    about: [
+      'Independent Indonesian Apparel Brands',
+      'Minimalist Urban Fashion',
+      'Archival Garment Studio',
+      'Contemporary Indonesian Design Studios',
+    ],
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: BASE_URL },
+      { '@type': 'ListItem', position: 2, name: 'Logbook Studio', item: `${BASE_URL}/logbook` },
+      { '@type': 'ListItem', position: 3, name: entry.title_en || entry.title, item: `${BASE_URL}/logbook/${slug}` },
+    ],
+  };
+
   return (
-    <LogbookDetailClient
-      entry={formattedEntry}
-      newerEntry={newerEntry ? { id: newerEntry.entry_id, title: newerEntry.title, title_en: newerEntry.title_en, slug: newerEntry.slug } : null}
-      olderEntry={olderEntry ? { id: olderEntry.entry_id, title: olderEntry.title, title_en: olderEntry.title_en, slug: olderEntry.slug } : null}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <LogbookDetailClient
+        entry={formattedEntry}
+        newerEntry={newerEntry ? { id: newerEntry.entry_id, title: newerEntry.title, title_en: newerEntry.title_en, slug: newerEntry.slug } : null}
+        olderEntry={olderEntry ? { id: olderEntry.entry_id, title: olderEntry.title, title_en: olderEntry.title_en, slug: olderEntry.slug } : null}
+      />
+    </>
   );
 }
