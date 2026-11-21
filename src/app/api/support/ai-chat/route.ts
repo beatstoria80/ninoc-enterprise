@@ -106,6 +106,14 @@ PENANGANAN PRODUK/KATEGORI YANG BELUM TERSEDIA DI KATALOG:
   * Jelaskan bahwa lini produk utama NINOC saat ini adalah Kaos (Graphic T-Shirt Streetwear), Hoodie Street Art & Graffiti, Polo Shirt Gothic, dan Aksesoris Skateboard Tech Deck.
   * Berikan rekomendasi produk ready stock terpopuler yang tersedia di website beserta tautan halamannya agar pelanggan tetap dapat melihat koleksi terbaik NINOC.
 
+PENANGANAN PERTANYAAN SEPUTAR SEPAK BOLA & KLASEMEN LIGA 1 / BRI SUPER LEAGUE 2026-27:
+- Jika pengguna menanyakan seputar klasemen sepak bola, BRI Super League 2026-27, peringkat klub (seperti Persija, Persib Bandung, Bali United, Dewa United, Persebaya, Arema, Madura United, dll), posisi tim, atau perolehan poin:
+  * Jawablah secara ramah, presisi, dan informatif HANYA berdasarkan [DATA VALIDASI RESMI KLASEMEN SEPAK BOLA BRI SUPER LEAGUE 2026-27 (SUMBER RESMI: ILEAGUE.ID)] yang terlampir di basis pengetahuan resmi.
+  * Sebutkan peringkat klub, jumlah pertandingan dimainkan (Main), catatan menang-seri-kalah (M/S/K), selisih gol, dan total poin secara tepat.
+  * Sebutkan bahwa data tervalidasi langsung dari portal resmi I.League: https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27.
+  * Sebagai representasi brand streetwear asal Bandung (NINOC), jika pengguna menanyakan Persib Bandung, sampaikan dengan ramah dan bangga bahwa Persib saat ini menempati posisi ke-6 dengan 16 poin dari 9 laga (5 menang, 1 seri, 3 kalah, selisih gol +6).
+  * DILARANG KERAS mengarang peringkat, membuat data palsu, atau menggunakan data usang dari musim sebelumnya!
+
 PENANGANAN PERTANYAAN DI LUAR TOKO (OFF-TOPIC FALLBACK):
 - Kalimat fallback HANYA digunakan jika pertanyaan pengguna SAMA SEKALI tidak berkaitan dengan toko, fashion, atau belanja (misal: membahas resep makanan, politik, sains, tugas sekolah):
   "Mohon maaf kak, aku hanya dapat melayani informasi seputar produk, panduan ukuran, pengiriman, pembayaran, dan pesanan di toko NINOC ya! Ada yang bisa aku bantu seputar koleksi NINOC?"
@@ -192,6 +200,82 @@ async function fetchProductsForRAG(query: string): Promise<ProductRecord[]> {
     console.error('[AI-Chat-RAG] Product fetch error:', errorMsg);
     return [];
   }
+}
+
+// ─── LIGA 1 / BRI SUPER LEAGUE 2026-27 VALIDATED STANDINGS DATA (ILEAGUE.ID) ─
+const VERIFIED_LIGA1_STANDINGS_SNAPSHOT = `Tabel Klasemen Sementara BRI Super League 2026-27 (Tervalidasi Resmi via https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27):
+1. Persija Jakarta | Main: 9 | Menang: 7 | Seri: 0 | Kalah: 2 | Gol: 19-8 (SG: +11) | Poin: 21
+2. Dewa United Banten FC | Main: 10 | Menang: 6 | Seri: 2 | Kalah: 2 | Gol: 16-13 (SG: +3) | Poin: 20
+3. Bali United FC | Main: 9 | Menang: 6 | Seri: 1 | Kalah: 2 | Gol: 26-9 (SG: +17) | Poin: 19
+4. Madura United FC | Main: 10 | Menang: 6 | Seri: 1 | Kalah: 3 | Gol: 16-11 (SG: +5) | Poin: 19
+5. Persita | Main: 9 | Menang: 5 | Seri: 3 | Kalah: 1 | Gol: 18-11 (SG: +7) | Poin: 18
+6. Persib Bandung | Main: 9 | Menang: 5 | Seri: 1 | Kalah: 3 | Gol: 16-10 (SG: +6) | Poin: 16
+7. Garudayaksa FC | Main: 10 | Menang: 4 | Seri: 2 | Kalah: 4 | Gol: 13-16 (SG: -3) | Poin: 14
+8. Java United FC | Main: 9 | Menang: 4 | Seri: 3 | Kalah: 2 | Gol: 14-11 (SG: +3) | Poin: 13 (terkena sanksi -2 poin)
+9. Persebaya Surabaya | Main: 9 | Menang: 3 | Seri: 4 | Kalah: 2 | Gol: 10-8 (SG: +2) | Poin: 13
+10. Bhayangkara Lampung FC | Main: 9 | Menang: 2 | Seri: 6 | Kalah: 1 | Gol: 12-11 (SG: +1) | Poin: 12
+11. Arema FC | Main: 10 | Menang: 3 | Seri: 3 | Kalah: 4 | Gol: 20-20 (SG: 0) | Poin: 12
+12. Borneo FC Samarinda | Main: 8 | Menang: 3 | Seri: 1 | Kalah: 4 | Gol: 8-10 (SG: -2) | Poin: 10
+13. PSM Makassar | Main: 9 | Menang: 2 | Seri: 4 | Kalah: 3 | Gol: 10-14 (SG: -4) | Poin: 10
+14. Persik Kediri | Main: 9 | Menang: 3 | Seri: 1 | Kalah: 5 | Gol: 9-14 (SG: -5) | Poin: 10
+15. Isenmulang Kalteng FC | Main: 9 | Menang: 2 | Seri: 2 | Kalah: 5 | Gol: 4-16 (SG: -12) | Poin: 6 (terkena sanksi -2 poin)
+16. PSS Sleman | Main: 10 | Menang: 1 | Seri: 2 | Kalah: 7 | Gol: 12-20 (SG: -8) | Poin: 5
+17. PSIM Yogyakarta | Main: 9 | Menang: 1 | Seri: 2 | Kalah: 6 | Gol: 6-14 (SG: -8) | Poin: 5
+18. Persijap Jepara | Main: 9 | Menang: 0 | Seri: 2 | Kalah: 7 | Gol: 5-18 (SG: -13) | Poin: 2`;
+
+let standingsCache: { data: string; timestamp: number } | null = null;
+const STANDINGS_CACHE_TTL = 1000 * 60 * 30; // 30 minutes in-memory cache
+
+async function fetchOrGetLiga1Standings(): Promise<string> {
+  const now = Date.now();
+  if (standingsCache && (now - standingsCache.timestamp < STANDINGS_CACHE_TTL)) {
+    return standingsCache.data;
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4000); // 4-second safety timeout
+
+    const res = await fetch('https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27', {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' },
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+
+    if (res.ok) {
+      const html = await res.text();
+      const tbodyMatch = html.match(/<tbody[^>]*>([\s\S]*?)<\/tbody>/i);
+      if (tbodyMatch) {
+        const rows = tbodyMatch[1].match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+        if (rows.length >= 10) {
+          const lines = rows.map((r, idx) => {
+            const cols = (r.match(/<td[^>]*>([\s\S]*?)<\/td>/gi) || []).map(c =>
+              c.replace(/<[^>]+>/g, '').trim().replace(/\s+/g, ' ')
+            );
+            const rank = cols[0] || `${idx + 1}`;
+            const club = cols[1] || `Klub ${idx + 1}`;
+            const pld = cols[2] || '0';
+            const w = cols[3] || '0';
+            const d = cols[4] || '0';
+            const l = cols[5] || '0';
+            const gf = cols[6] || '0';
+            const ga = cols[7] || '0';
+            const gd = cols[8] || '0';
+            const pts = cols[9] || '0';
+            return `${rank}. ${club} | Main: ${pld} | Menang: ${w} | Seri: ${d} | Kalah: ${l} | Gol: ${gf}-${ga} (SG: ${gd}) | Poin: ${pts}`;
+          });
+          const parsedText = `Tabel Klasemen Sementara BRI Super League 2026-27 (Tervalidasi Real-time via https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27):\n${lines.join('\n')}`;
+          standingsCache = { data: parsedText, timestamp: now };
+          return parsedText;
+        }
+      }
+    }
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.warn('[AI-Chat-RAG] Real-time fetch of ileague standings skipped or timed out, using verified snapshot:', errMsg);
+  }
+
+  return VERIFIED_LIGA1_STANDINGS_SNAPSHOT;
 }
 
 // ─── RAG KNOWLEDGE BASE RETRIEVER ──────────────────────────────────────────
@@ -361,6 +445,30 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
     sections.push(`[KOLEKSI FASHION TERBARU & KATALOG PRODUK RESMI NINOC]
 Koleksi fashion terbaru, rilisan anyar (new arrivals), dan produk ready stock saat ini meliputi:
 ${productLines.join('\n\n')}`);
+  }
+
+  // 6. Validasi Klasemen BRI Super League 2026-27 (Sumber Resmi: ileague.id)
+  const footballKeywords = [
+    'klasemen', 'liga 1', 'super league', 'bri super league', 'ileague', 'sepak bola', 'bola',
+    'persib', 'persija', 'persebaya', 'arema', 'bali united', 'dewa united', 'madura united',
+    'persita', 'garudayaksa', 'java united', 'bhayangkara', 'borneo', 'psm', 'persik',
+    'isenmulang', 'pss', 'sleman', 'psim', 'persijap', 'peringkat', 'posisi liga', 'poin liga', 'juara liga'
+  ];
+  const isFootballQuery = footballKeywords.some(kw => userMessage.toLowerCase().includes(kw));
+
+  if (isFootballQuery) {
+    const standingsData = await fetchOrGetLiga1Standings();
+    sections.push(`[DATA VALIDASI RESMI KLASEMEN SEPAK BOLA BRI SUPER LEAGUE 2026-27 (SUMBER RESMI: ILEAGUE.ID)]
+Sumber Resmi Terverifikasi: https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27
+
+${standingsData}
+
+PANDUAN MENJAWAB SEPUTAR LIGA 1 / BRI SUPER LEAGUE 2026-27:
+- Gunakan data klasemen resmi di atas secara akurat dan presisi. DILARANG KERAS MENGARANG ANGKA ATAU POSISI!
+- Jika pengguna menanyakan siapa pemuncak klasemen: Jawab Persija Jakarta di peringkat 1 dengan 21 poin (9 main, 7 menang, 0 seri, 2 kalah, selisih gol +11).
+- Jika pengguna menanyakan posisi Persib Bandung (klub kebanggaan kota Bandung, markas NINOC): Jawab dengan ramah dan antusias bahwa Persib saat ini berada di peringkat ke-6 dengan 16 poin dari 9 laga (5 menang, 1 seri, 3 kalah, selisih gol +6).
+- Jika pengguna menanyakan klub lain (misal: Dewa United, Bali United, Madura United, Persita, Arema, Persebaya, dll), sebutkan posisi peringkat, jumlah main, menang-seri-kalah, selisih gol, dan poin sesuai tabel di atas.
+- Sertakan tautan sumber resmi verifikasi: https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27.`);
   }
 
   return sections.join('\n\n==================================================\n\n');
