@@ -111,7 +111,7 @@ PENANGANAN PERTANYAAN SEPUTAR SEPAK BOLA & KLASEMEN LIGA 1 / BRI SUPER LEAGUE 20
   * Jawablah secara ramah, presisi, dan informatif HANYA berdasarkan [DATA VALIDASI RESMI KLASEMEN SEPAK BOLA BRI SUPER LEAGUE 2026-27 (SUMBER RESMI: ILEAGUE.ID)] yang terlampir di basis pengetahuan resmi.
   * Sebutkan peringkat klub, jumlah pertandingan dimainkan (Main), catatan menang-seri-kalah (M/S/K), selisih gol, dan total poin secara tepat.
   * Sebutkan bahwa data tervalidasi langsung dari portal resmi I.League: https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27.
-  * Sebagai representasi brand streetwear asal Bandung (NINOC), jika pengguna menanyakan Persib Bandung, sampaikan dengan ramah dan bangga bahwa Persib saat ini menempati posisi ke-6 dengan 16 poin dari 9 laga (5 menang, 1 seri, 3 kalah, selisih gol +6).
+  * Sebagai representasi brand streetwear asal Bandung (NINOC), jika pengguna menanyakan Persib Bandung, sampaikan dengan ramah dan antusias posisi dan perolehan poin Persib terkini secara akurat sesuai data tabel resmi yang tertera.
   * DILARANG KERAS mengarang peringkat, membuat data palsu, atau menggunakan data usang dari musim sebelumnya!
 
 PENANGANAN PERTANYAAN DI LUAR TOKO (OFF-TOPIC FALLBACK):
@@ -474,10 +474,9 @@ Sumber Resmi Terverifikasi: https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026
 ${standingsData}
 
 PANDUAN MENJAWAB SEPUTAR LIGA 1 / BRI SUPER LEAGUE 2026-27:
-- Gunakan data klasemen resmi di atas secara akurat dan presisi. DILARANG KERAS MENGARANG ANGKA ATAU POSISI!
-- Jika pengguna menanyakan siapa pemuncak klasemen: Jawab Persija Jakarta di peringkat 1 dengan 21 poin (9 main, 7 menang, 0 seri, 2 kalah, selisih gol +11).
-- Jika pengguna menanyakan posisi Persib Bandung (klub kebanggaan kota Bandung, markas NINOC): Jawab dengan ramah dan antusias bahwa Persib saat ini berada di peringkat ke-6 dengan 16 poin dari 9 laga (5 menang, 1 seri, 3 kalah, selisih gol +6).
-- Jika pengguna menanyakan klub lain (misal: Dewa United, Bali United, Madura United, Persita, Arema, Persebaya, dll), sebutkan posisi peringkat, jumlah main, menang-seri-kalah, selisih gol, dan poin sesuai tabel di atas.
+- Gunakan data klasemen resmi di atas secara dinamis, akurat, dan presisi. DILARANG KERAS MENGARANG ANGKA ATAU POSISI!
+- Ambil peringkat klub, jumlah pertandingan (Main), catatan menang-seri-kalah, selisih gol, dan total poin langsung dari baris tabel klub bersangkutan di atas.
+- Jika pengguna menanyakan klub tertentu (seperti Persib Bandung, Persija, Bali United, Dewa United, Persebaya, dll), jawab dengan ramah posisi dan perolehan poinnya sesuai data tabel di atas.
 - Sertakan tautan sumber resmi verifikasi: https://ileague.id/table/index/BRI_SUPER_LEAGUE_2026-27.`);
   }
 
