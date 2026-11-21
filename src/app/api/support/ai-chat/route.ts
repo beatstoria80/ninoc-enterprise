@@ -136,7 +136,14 @@ const FALLBACK_RESPONSE = 'Mohon maaf kak, aku hanya dapat melayani informasi se
 // ─── STRING SANITIZER (PEMBERSIH TANDA BACA RAW MARKDOWN) ───────────────────
 function sanitizeChatResponse(raw: string): string {
   if (!raw) return '';
-  return raw
+  // REFACTOR: Amankan URL dari pemotongan tanda underscore (_) oleh markdown cleaner
+  const urls: string[] = [];
+  const tokenized = raw.replace(/(https?:\/\/[^\s]+)/g, (match) => {
+    urls.push(match);
+    return `__URL_TOKEN_${urls.length - 1}__`;
+  });
+
+  const cleaned = tokenized
     .replace(/\*{1,3}_{1,3}\*{1,3}/g, '')
     .replace(/_{1,3}\*{1,3}_{1,3}/g, '')
     .replace(/\*\*(.*?)\*\*/g, '$1')
@@ -147,6 +154,9 @@ function sanitizeChatResponse(raw: string): string {
     .replace(/_{2,}/g, '')
     .replace(/^#+\s+/gm, '')
     .trim();
+
+  // REFACTOR: Kembalikan URL asli dengan format utuh
+  return cleaned.replace(/__URL_TOKEN_(\d+)__/g, (_, idx) => urls[Number(idx)] || '');
 }
 
 // ─── RAG PRODUCT CATALOG RETRIEVER ──────────────────────────────────────────
