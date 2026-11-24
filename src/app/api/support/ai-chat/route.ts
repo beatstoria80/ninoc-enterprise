@@ -129,7 +129,8 @@ FORMAT & KEBERSIHAN TEKS (MOBILE/WEB FRIENDLY - BEBAS SIMBOL ASTERISK/UNDERSCORE
 - DILARANG menggunakan tanda pagar heading markdown (#, ##, ###, dst).
 - DILARANG menggunakan tag HTML mentah (<br>, <p>, <div>, dst).
 - Gunakan teks biasa yang bersih, natural, dan mudah dibaca di layar chat.
-- Gunakan bullet point strip ("- ") atau penomoran ("1. ", "2. ") jika menyajikan langkah-langkah atau daftar produk.`;
+- Gunakan bullet point strip ("- ") atau penomoran ("1. ", "2. ") jika menyajikan langkah-langkah atau daftar produk.
+- ATURAN FORMAT TAUTAN PRODUK (SINGLE CLICKABLE BUTTON): Letakkan URL produk langsung pada barisnya sendiri (contoh: https://ninoc.store/shop/slug). DILARANG KERAS menulis awalan kata "Link:" atau "Tautan:". DILARANG KERAS menaruh 2 link atau tombol duplikat untuk satu item produk yang sama. Cukup letakkan tepat 1 URL per produk.`;
 
 const FALLBACK_RESPONSE = 'Mohon maaf kak, aku hanya dapat melayani informasi seputar produk, panduan ukuran, pengiriman, pembayaran, dan pesanan di toko NINOC ya! Ada yang bisa aku bantu seputar koleksi NINOC?';
 
@@ -449,7 +450,7 @@ async function buildKnowledgeBase(ticketId: string, userMessage: string): Promis
   Kategori: ${p.category || 'Pakaian'}
   Harga Resmi: Rp ${(p.price || 0).toLocaleString('id-ID')}
   Varian & Ketersediaan Stok: ${variants}
-  Tautan Halaman Produk: https://ninoc.store/shop/${p.slug} [PRODUK:${p.slug}]`;
+  Tautan Halaman Produk: https://ninoc.store/shop/${p.slug}`;
     });
 
     sections.push(`[KOLEKSI FASHION TERBARU & KATALOG PRODUK RESMI NINOC]

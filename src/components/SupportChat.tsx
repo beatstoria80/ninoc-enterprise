@@ -86,8 +86,16 @@ async function sendCustomerNotification(ticketId: string, message: string): Prom
 
 const tokenRegex = /(\[PRODUK:[a-zA-Z0-9-_]+\]|https?:\/\/[^\s]+|URLTOKEN\d*)/g;
 
-function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?: () => void) {
-  if (!text) return null;
+function renderMessageWithLinks(rawText: string, isCustomer: boolean, onLinkClick?: () => void) {
+  if (!rawText) return null;
+
+  // REFACTOR: Bersihkan awalan "Link:" / "Tautan:" serta duplikasi URL & [PRODUK:...] agar hanya 1 tombol per item
+  const text = rawText
+    .replace(/(https?:\/\/[^\s]+)\s*\[PRODUK:[^\]]+\]/g, '$1')
+    .replace(/\[PRODUK:([^\]]+)\]\s*https?:\/\/[^\s]+/g, '[PRODUK:$1]')
+    .replace(/(?:Link|Tautan)\s*:\s*\n?\s*(https?:\/\/|\[PRODUK:|URLTOKEN)/gi, '$1')
+    .replace(/^[\s\t]*(?:Link|Tautan)\s*:[\s\t]*$/gim, '');
+
   const parts = text.split(tokenRegex);
 
   return parts.map((part, i) => {
@@ -707,7 +715,7 @@ export default function SupportChat() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className={cn(
               "fixed z-[600] bg-white shadow-2xl overflow-hidden border border-ink/5 flex flex-col origin-bottom md:origin-bottom-right",
-              "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[400px] md:h-[600px] md:rounded-2xl"
+              "bottom-0 left-0 right-0 h-[80vh] rounded-t-3xl md:bottom-12 md:right-5 md:left-auto md:w-[420px] md:h-[620px] md:rounded-2xl"
             )}
           >
             {/* Backdrop for mobile */}
@@ -884,7 +892,7 @@ export default function SupportChat() {
                         transition={{ duration: 0.2 }}
                         className={`flex ${m.sender_role === 'customer' ? 'justify-end' : 'justify-start'}`}
                       >
-                        <div className="max-w-[85%]">
+                        <div className={m.sender_role === 'customer' ? 'max-w-[80%]' : 'w-full max-w-[96%]'}>
                           <div className={`px-4 py-3 rounded-xl text-sm md:text-xs leading-relaxed whitespace-pre-wrap ${m.sender_role === 'customer' ? 'bg-ink text-white rounded-br-none' : m.is_auto_reply ? 'bg-ink/5 border border-ink/10 text-ink rounded-bl-none' : 'bg-white border border-ink/5 text-ink rounded-bl-none'}`}>
                             {renderMessageWithLinks(m.message, m.sender_role === 'customer', () => {
                               setIsOpen(false);
