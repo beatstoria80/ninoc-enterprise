@@ -136,11 +136,11 @@ const FALLBACK_RESPONSE = 'Mohon maaf kak, aku hanya dapat melayani informasi se
 // ─── STRING SANITIZER (PEMBERSIH TANDA BACA RAW MARKDOWN) ───────────────────
 function sanitizeChatResponse(raw: string): string {
   if (!raw) return '';
-  // REFACTOR: Amankan URL dari pemotongan tanda underscore (_) oleh markdown cleaner
-  const urls: string[] = [];
-  const tokenized = raw.replace(/(https?:\/\/[^\s]+)/g, (match) => {
-    urls.push(match);
-    return `__URL_TOKEN_${urls.length - 1}__`;
+  // REFACTOR: Amankan URL dan token [PRODUK:...] menggunakan placeholder bebas karakter markdown
+  const preservedItems: string[] = [];
+  const tokenized = raw.replace(/(https?:\/\/[^\s]+|\[PRODUK:[a-zA-Z0-9-_]+\])/g, (match) => {
+    preservedItems.push(match);
+    return `@@@NINOCURL${preservedItems.length - 1}@@@`;
   });
 
   const cleaned = tokenized
@@ -155,8 +155,8 @@ function sanitizeChatResponse(raw: string): string {
     .replace(/^#+\s+/gm, '')
     .trim();
 
-  // REFACTOR: Kembalikan URL asli dengan format utuh
-  return cleaned.replace(/__URL_TOKEN_(\d+)__/g, (_, idx) => urls[Number(idx)] || '');
+  // REFACTOR: Kembalikan seluruh URL dan token produk dengan format utuh dan presisi
+  return cleaned.replace(/@@@NINOCURL(\d+)@@@/g, (_, idx) => preservedItems[Number(idx)] || '');
 }
 
 // ─── RAG PRODUCT CATALOG RETRIEVER ──────────────────────────────────────────

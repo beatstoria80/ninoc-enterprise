@@ -20,17 +20,17 @@ function cn(...inputs: ClassValue[]) {
 function QuickIcon({ name, className }: { name: string; className?: string }) {
   switch (name) {
     case 'Truck':
-      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 8 23 16 16 16 16 13 1 13"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>;
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="3" width="15" height="13" /><polygon points="16 8 20 8 23 8 23 16 16 16 16 13 1 13" /><circle cx="5.5" cy="18.5" r="2.5" /><circle cx="18.5" cy="18.5" r="2.5" /></svg>;
     case 'RefreshCw':
-      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>;
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>;
     case 'Package':
-      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16.5 9.4 7.5 3.5"/><path d="m21 21-5.97-5.97a8.04 8.04 0 0 0-.91-11.6 8.1 8.1 0 0 0-12.22 0 8.06 8.06 0 0 0 .91 11.6l5.97 5.97"/><path d="M3.27 6.96 8 12l4.73-5.04"/><path d="M20.73 17 16 12l4.73-5.04"/></svg>;
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16.5 9.4 7.5 3.5" /><path d="m21 21-5.97-5.97a8.04 8.04 0 0 0-.91-11.6 8.1 8.1 0 0 0-12.22 0 8.06 8.06 0 0 0 .91 11.6l5.97 5.97" /><path d="M3.27 6.96 8 12l4.73-5.04" /><path d="M20.73 17 16 12l4.73-5.04" /></svg>;
     case 'CreditCard':
-      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20"/></svg>;
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" /><path d="M2 10h20" /></svg>;
     case 'MessageSquare':
-      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>;
     case 'AlertCircle':
-      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>;
+      return <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line x1="12" x2="12.01" y1="16" y2="16" /></svg>;
     default:
       return null;
   }
@@ -84,12 +84,12 @@ async function sendCustomerNotification(ticketId: string, message: string): Prom
   });
 }
 
-const tokenRegex = /(\[PRODUK:[a-zA-Z0-9-_]+\]|https?:\/\/[^\s]+)/g;
+const tokenRegex = /(\[PRODUK:[a-zA-Z0-9-_]+\]|https?:\/\/[^\s]+|URLTOKEN\d*)/g;
 
 function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?: () => void) {
   if (!text) return null;
   const parts = text.split(tokenRegex);
-  
+
   return parts.map((part, i) => {
     if (part.startsWith('[PRODUK:') && part.endsWith(']')) {
       const slug = part.substring(8, part.length - 1);
@@ -106,6 +106,20 @@ function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?:
       );
     }
 
+    if (part.match(/^URLTOKEN\d*/i)) {
+      const linkClass = cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 mt-1.5 mb-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all shadow-sm active:scale-95 mx-0.5 whitespace-nowrap",
+        isCustomer ? "bg-white text-ink hover:bg-white/90" : "bg-ink text-white hover:bg-ink/90"
+      );
+      return (
+        <span key={i}>
+          <Link href="/shop" className={linkClass} onClick={onLinkClick}>
+            Lihat Produk <ChevronRight size={12} strokeWidth={2.5} />
+          </Link>
+        </span>
+      );
+    }
+
     if (part.match(/^https?:\/\//)) {
       // Membersihkan tanda baca di awal dan akhir URL jika AI memasukkannya (kurung, kutip, titik, koma, dsb)
       const cleanUrl = part.replace(/[.,;?!)\]"'`>]+$/, '').replace(/^[([{"'`<]+/, '');
@@ -114,10 +128,11 @@ function renderMessageWithLinks(text: string, isCustomer: boolean, onLinkClick?:
       const urlStr = cleanUrl;
 
       let label = "Buka Tautan";
-      if (urlStr.includes('/retur')) label = "Info Tracking / Retur";
+      if (urlStr.includes('/shop/')) label = "Lihat Produk";
+      else if (urlStr.includes('/retur')) label = "Info Tracking / Retur";
       else if (urlStr.includes('/help')) label = "Info Lengkap / Bantuan";
       else if (urlStr.includes('ninoc.store')) label = "Kunjungi Website";
-      
+
       const isInternal = urlStr.startsWith('https://ninoc.store') || urlStr.startsWith('http://localhost');
       const href = isInternal ? urlStr.replace(/^https?:\/\/[^/]+/, '') || '/' : urlStr;
 
@@ -386,7 +401,7 @@ export default function SupportChat() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ticketId, message: msgText }),
       });
-      
+
       let data;
       try {
         data = await response.json();
@@ -414,7 +429,7 @@ export default function SupportChat() {
           return [...prev, tempAiMsg];
         });
       }
-      
+
     } catch (error) {
       console.error('Failed to get AI reply:', error);
     } finally {
