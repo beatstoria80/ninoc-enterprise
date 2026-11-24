@@ -18,7 +18,19 @@ interface RelatedProductsListProps {
 }
 
 export function RelatedProductsList({ relatedProducts, dict, staggerContainer, textVariants }: RelatedProductsListProps) {
-  if (relatedProducts.length === 0) return null;
+  // REFACTOR: Kunci formasi produk terkait agar 100% konsisten dengan urutan katalog (display_order ASC, created_at DESC)
+  const sortedProducts = React.useMemo(() => {
+    return [...relatedProducts].sort((a, b) => {
+      const orderA = a.display_order ?? 999;
+      const orderB = b.display_order ?? 999;
+      if (orderA !== orderB) return orderA - orderB;
+      const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+      const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+      return dateB - dateA;
+    });
+  }, [relatedProducts]);
+
+  if (sortedProducts.length === 0) return null;
 
   return (
     <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.1 }} className="mt-4 lg:mt-6 space-y-1">
@@ -30,7 +42,7 @@ export function RelatedProductsList({ relatedProducts, dict, staggerContainer, t
       </motion.div>
 
       <DragSlider className="flex gap-3 md:gap-4 pb-4 pt-1">
-        {relatedProducts.map((p) => (
+        {sortedProducts.map((p) => (
           <motion.div
             variants={textVariants}
             key={p.id}

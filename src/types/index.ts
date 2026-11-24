@@ -54,6 +54,7 @@ export interface Product {
   created_at: string;
   updated_at: string;
   variant_label?: string | null;
+  display_order?: number | null;
 }
 
 export interface Variant {
